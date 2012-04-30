@@ -27,10 +27,10 @@
  * are some things we only want to define once (global options).
  */
 
-#define VECDS_VERSION_MAJOR = 0
-#define VECDS_VERSION_MINOR = 2
+#define VECDS_VERSION_MAJOR = 1
+#define VECDS_VERSION_MINOR = 0
 #define VECDS_VERSION_PATCH = pre
-#define VECDS_VERSION       = 0.2.pre
+#define VECDS_VERSION       = 1.0.pre
 #define VECDS_DIR         = ../
 #define VECDS_INCLUDE_DIR = ../include/vecds
 #define VECDS_SOURCE_DIR  = ../source
