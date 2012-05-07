@@ -29,8 +29,8 @@
 
 #define VECDS_VERSION_MAJOR = 1
 #define VECDS_VERSION_MINOR = 0
-#define VECDS_VERSION_PATCH = pre
-#define VECDS_VERSION       = 1.0.pre
+#define VECDS_VERSION_PATCH = dev
+#define VECDS_VERSION       = ${VECDS_VERSION_MAJOR}.${VECDS_VERSION_MINOR}.${VECDS_VERSION_PATCH}
 #define VECDS_DIR         = ../
 #define VECDS_INCLUDE_DIR = ../include/vecds
 #define VECDS_SOURCE_DIR  = ../source
