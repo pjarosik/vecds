@@ -62,10 +62,12 @@ class Internal
   QString act_disl;
   QString act_core;
   QString act_mill;
+  double be, bz;
   bool choice;
   
   QPixmap img;
   
+  struct params p;
   QVector3D a_min_, a_max_;
   QVector3D min_, max_, cent_;
   QVector3D invbox[8];
@@ -86,7 +88,15 @@ class Internal
   
 //  Mat9d rot_tensor, rot_inv;
   glm::dmat3 rot_tensor, rot_inv;
-  
+/*  
+  struct params {
+    double be;
+    double bz;
+    double u0x;
+    double u0y;
+    double u0z;
+  };
+*/
   bool visible[10];
   double mfactor;
   Settings *set0;
@@ -117,18 +127,27 @@ class Internal
   void do_signes_rotation(Mat9d r_tens, QVector3D vec);
   void do_axis_rotation(Mat9d r_tens);
   
+//  int Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct);
+//  int Beta_function(const gsl_vector *x, void *par, gsl_matrix *jac);
+//  int Love_fdf(const gsl_vector *x, void *par, gsl_vector *result_funct, gsl_matrix *jac);
+  
   void calc_disloc(int nr_atom, int d_num);
   void calc_disl0();
   int atomize(QVector3D point, int wh_at);
   void SL_singleDisl(QVector3D r);
-  void mixed_u(int i);
-  void newdisl(int n_a);
+//  void mixed_u(int i);
+  void newdisl(int n_a, bool sw_iter);
   //    void mixed_u1(int disl_num, int i);
   //    void mixed_u2(int disl_num, int i);
   
   bool eqMiller(int m1[6], int m2[6]);
   void saveAtoms(QString sname);
-  
+
+  glm::dvec3 mixed_u(int i, glm::dvec3 rotdist, double be, double bz);
+  glm::dmat3 mixed_beta(int i, glm::dvec3 rotdist, double be, double bz);
+
+
+
 };
 #endif 
 

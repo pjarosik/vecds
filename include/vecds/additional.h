@@ -39,6 +39,14 @@ using namespace std;
 
 
 
+struct params {
+  double be;
+  double bz;
+  double u0x;
+  double u0y;
+  double u0z;
+};
+
 
 /**
  * The structure Atoms holds information needed to describe the

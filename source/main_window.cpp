@@ -802,7 +802,7 @@ void MainWindow::SL_dislAct()
   ActualData->processMiller(1, s1, QString("none"));
  qWarning("SL_dislAct -- 1");
  
-  ActualData->newdisl(n_a);
+  ActualData->newdisl(n_a, true);
  qWarning("SL_dislAct -- 2");
   ActualData->act_disl = s1;
  qWarning("SL_dislAct -- 3");
