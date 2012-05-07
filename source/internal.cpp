@@ -30,6 +30,83 @@
 #include <QTranslator>
 
 
+
+int Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct) {
+  double rad_fact = 1.;
+  double nu = 0.35;
+  double be = ((struct params *) par)->be;
+  double bz = ((struct params *) par)->bz;
+  double u0x = ((struct params *) par)->u0x;
+  double u0y = ((struct params *) par)->u0y;
+  double u0z = ((struct params *) par)->u0z;
+  const double distx = gsl_vector_get(x, 0);
+  const double disty = gsl_vector_get(x, 1);
+  const double distz = gsl_vector_get(x, 2);
+  double r2 = distx*distx+disty*disty;
+  double r = sqrt(r2);
+  double xx = distx/r;
+  double yy = disty/r;
+  double r02 = rad_fact*be*be; // radius of inmobile ring relative to which the atoms in the core move up
+  const double ux =  u0x - be /(2.*constant::pi)*(atan2(yy,xx)+xx*yy/(2.*(1.-nu)));// - 0.5*be;
+  const double uy = u0y + be /(8.*constant::pi*(1.-nu)) * ((1.-nu-nu)*log(r2/r02) + (xx+yy)*(xx-yy));
+  const double uz = u0z - bz/(2.*constant::pi)*atan2(yy, xx);
+  gsl_vector_set(result_funct, 0, ux);
+  gsl_vector_set(result_funct, 1, uy);
+  gsl_vector_set(result_funct, 2, uz);
+  return GSL_SUCCESS;
+}
+
+int Beta_function(const gsl_vector *x, void *par, gsl_matrix *jac) {
+  double nu = 0.35;
+  double be = ((struct params *) par)->be;
+  double bz = ((struct params *) par)->bz;
+  const double xx = gsl_vector_get(x, 0);
+  const double yy = gsl_vector_get(x, 1);
+  const double zz = gsl_vector_get(x, 2);
+  const double y2 = yy*yy;
+  const double x2 = xx*xx;
+  const double r2 = x2+y2;
+  if ( r2<1.e-15 ) {
+    cout << " Atom  in the center of dislocation core" << endl;
+    gsl_matrix_set(jac, 0, 0, 1.);
+    gsl_matrix_set(jac, 0, 1, 0.);
+    gsl_matrix_set(jac, 0, 2, 0.);
+    gsl_matrix_set(jac, 1, 0, 0.);
+    gsl_matrix_set(jac, 1, 1, 1.);
+    gsl_matrix_set(jac, 1, 2, 0.);
+    gsl_matrix_set(jac, 2, 0, 0.);
+    gsl_matrix_set(jac, 2, 1, 0.);
+    gsl_matrix_set(jac, 2, 2, 1.);
+  } else {
+    const double a = be/(4. * constant::pi * (1.-nu) * r2*r2);                  // a = bx/(4. * pi * (1.-n) * r2*r2)
+    const double bxx = 1. + a * yy * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(4) = -a * y * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xx 
+    const double byx = a * xx * ((1.-2.*nu)*x2 + (3.-2.*nu)*y2);      // u(5) = -a * x * ((1.-2.*n)*x*x + (3.-2.*n)*y*y) !yx
+    const double bzx = bz/(2.*constant::pi) * yy/r2;                            // u(6) = -bz/(2.*pi) * y/r2                       !zx
+    const double bxy = -a * xx * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2);     // u(7) =  a * x * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xy
+    const double byy = 1. - a * yy * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2); // u(8) =  a * y * ((1.+2.*n)*x*x - (1.-2.*n)*y*y) !yy
+    const double bzy = bz/(2.*constant::pi) * xx/r2;                            // u(9) = -bz/(2.*pi) * x/r2                       !zy
+    gsl_matrix_set(jac, 0, 0, bxx);
+    gsl_matrix_set(jac, 0, 1, bxy);
+    gsl_matrix_set(jac, 0, 2, 0.);
+    gsl_matrix_set(jac, 1, 0, byx);
+    gsl_matrix_set(jac, 1, 1, byy);
+    gsl_matrix_set(jac, 1, 2, 0.);
+    gsl_matrix_set(jac, 2, 0, bzx);
+    gsl_matrix_set(jac, 2, 1, bzy);
+    gsl_matrix_set(jac, 2, 2, 1.); }
+  return GSL_SUCCESS;
+}
+
+int Love_fdf(const gsl_vector *x, void *par, gsl_vector *result_funct, gsl_matrix *jac) {
+  Love_function(x, par, result_funct);
+  Beta_function(x, par, jac);
+  return GSL_SUCCESS;
+}
+
+
+
+
+
 Internal::Internal ()
 {
   // Create a bunch of internals:
@@ -441,8 +518,8 @@ void Internal::saveAtoms(QString sname)
 
 void Internal::SL_singleDisl(QVector3D rr)
 {
-  double a = actcrstr->a;
-  double c = actcrstr->c;
+//  double a = actcrstr->a;
+//  double c = actcrstr->c;
  
   rr += this->cent_;
   actdisl->rrr = rr;// + this->cent_;
@@ -466,7 +543,83 @@ void Internal::SL_singleDisl(QVector3D rr)
   return; 
 }
 
-void Internal::newdisl(int n_a)
+/*
+int Internal::Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct) {
+  double rad_fact = 1.;
+  double nu = 0.35;
+  double be = ((struct params *) par)->be;
+  double bz = ((struct params *) par)->bz;
+  double u0x = ((struct params *) par)->u0x;
+  double u0y = ((struct params *) par)->u0y;
+  double u0z = ((struct params *) par)->u0z;
+  const double distx = gsl_vector_get(x, 0);
+  const double disty = gsl_vector_get(x, 1);
+  const double distz = gsl_vector_get(x, 2);
+  double r2 = distx*distx+disty*disty;
+  double r = sqrt(r2);
+  double xx = distx/r;
+  double yy = disty/r;
+  double r02 = rad_fact*be*be; // radius of inmobile ring relative to which the atoms in the core move up
+  const double ux =  u0x - be /(2.*constant::pi)*(atan2(yy,xx)+xx*yy/(2.*(1.-nu)));// - 0.5*be;
+  const double uy = u0y + be /(8.*constant::pi*(1.-nu)) * ((1.-nu-nu)*log(r2/r02) + (xx+yy)*(xx-yy));
+  const double uz = u0z - bz/(2.*constant::pi)*atan2(yy, xx);
+  gsl_vector_set(result_funct, 0, ux);
+  gsl_vector_set(result_funct, 1, uy);
+  gsl_vector_set(result_funct, 2, uz);
+  return GSL_SUCCESS;
+}
+
+int Internal::Beta_function(const gsl_vector *x, void *par, gsl_matrix *jac) {
+  double nu = 0.35;
+  double be = ((struct params *) par)->be;
+  double bz = ((struct params *) par)->bz;
+  const double xx = gsl_vector_get(x, 0);
+  const double yy = gsl_vector_get(x, 1);
+  const double zz = gsl_vector_get(x, 2);
+  const double y2 = yy*yy;
+  const double x2 = xx*xx;
+  const double r2 = x2+y2;
+  if ( r2<1.e-15 ) {
+    cout << " Atom  in the center of dislocation core" << endl;
+    gsl_matrix_set(jac, 0, 0, 1.);
+    gsl_matrix_set(jac, 0, 1, 0.);
+    gsl_matrix_set(jac, 0, 2, 0.);
+    gsl_matrix_set(jac, 1, 0, 0.);
+    gsl_matrix_set(jac, 1, 1, 1.);
+    gsl_matrix_set(jac, 1, 2, 0.);
+    gsl_matrix_set(jac, 2, 0, 0.);
+    gsl_matrix_set(jac, 2, 1, 0.);
+    gsl_matrix_set(jac, 2, 2, 1.);
+  } else {
+    const double a = be/(4. * constant::pi * (1.-nu) * r2*r2);                  // a = bx/(4. * pi * (1.-n) * r2*r2)
+    const double bxx = 1. + a * yy * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(4) = -a * y * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xx 
+    const double byx = a * xx * ((1.-2.*nu)*x2 + (3.-2.*nu)*y2);      // u(5) = -a * x * ((1.-2.*n)*x*x + (3.-2.*n)*y*y) !yx
+    const double bzx = bz/(2.*constant::pi) * yy/r2;                            // u(6) = -bz/(2.*pi) * y/r2                       !zx
+    const double bxy = -a * xx * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2);     // u(7) =  a * x * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xy
+    const double byy = 1. - a * yy * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2); // u(8) =  a * y * ((1.+2.*n)*x*x - (1.-2.*n)*y*y) !yy
+    const double bzy = bz/(2.*constant::pi) * xx/r2;                            // u(9) = -bz/(2.*pi) * x/r2                       !zy
+    gsl_matrix_set(jac, 0, 0, bxx);
+    gsl_matrix_set(jac, 0, 1, bxy);
+    gsl_matrix_set(jac, 0, 2, 0.);
+    gsl_matrix_set(jac, 1, 0, byx);
+    gsl_matrix_set(jac, 1, 1, byy);
+    gsl_matrix_set(jac, 1, 2, 0.);
+    gsl_matrix_set(jac, 2, 0, bzx);
+    gsl_matrix_set(jac, 2, 1, bzy);
+    gsl_matrix_set(jac, 2, 2, 1.); }
+  return GSL_SUCCESS;
+}
+
+int Internal::Love_fdf(const gsl_vector *x, void *par, gsl_vector *result_funct, gsl_matrix *jac) {
+  Love_function(x, par, result_funct);
+  Beta_function(x, par, jac);
+  return GSL_SUCCESS;
+}
+*/
+
+
+
+void Internal::newdisl(int n_a, bool sw_iter)
 {
 qWarning("newdisl");
   QVector3D rr = this->atoms->coord[n_a];// + this->cent_;
@@ -481,34 +634,94 @@ qWarning("newdisl");
 //  cout << " mil.indices   " << mil.indices[0] << "    " << mil.indices[1] << "    " << mil.indices[2] << endl;
 //  cout << " burgers_vector   " << burgers_vector.x << "    " << burgers_vector.y << "    " << burgers_vector.z << endl;
   glm::dvec3 cd = rot_tensor * to_dvec3(atoms->coord[n_a]);
-  double be=sqrt(burg_vect.x*burg_vect.x+burg_vect.y*burg_vect.y);
-  double bz = burg_vect.z;
+  be=sqrt(burg_vect.x*burg_vect.x+burg_vect.y*burg_vect.y);
+  bz = burg_vect.z;
 //  cout << " be=" << be << "     bz=" << bz << endl;
-  
   for (int i=0; i<atoms->n_atoms; i++) atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coord[i]);
 
+  if ( sw_iter ) {
 
-//  actdisl->burgers_vector.setX(burg_vect.x);
-//  actdisl->burgers_vector.setY(burg_vect.y);
-//  actdisl->burgers_vector.setZ(burg_vect.z);
-  actdisl->burgers_vector = to_QV(burg_vect);
-  qWarning ("SL_newDisl - burgers vector - (%g %g %g)",
-	    actdisl->burgers_vector.x(), 
-	    actdisl->burgers_vector.y(), 
-	    actdisl->burgers_vector.z());
-  
-  actdisl->rotation_tensor = this->rot_tensor;
-//  calc_disloc(7, ndisl);
-//  calc_disl0();
-  actdisl->cd = atoms->coord[n_a];// + matvecmult(this->rot_tensor, dislcore);
-  actdisl->i0 = n_a;
-  actdisl->dislocation_core = QVector3D(0., 0., 0.);
-  actdisl->core_name = QString("none");
+    const gsl_multiroot_fdfsolver_type *T;
+    T = gsl_multiroot_fdfsolver_hybridsj;
+    gsl_multiroot_fdfsolver *s; // = gsl_multiroot_fdfsolver_alloc(T, 3);
+    gsl_vector *x; // = gsl_vector_alloc(3);
+    size_t count;
+//  const size_t n = 3;
+//    struct params p;
+    size_t status;
+    glm::dvec3 diff;
+    double crit = 0.;
+    double crit_stop = 1.e-7;
+    int countN_R = 10;
+//  stringstream sss;
 
-  for (unsigned int i=0; i<atoms->n_atoms; i++) { 
-     mixed_u(i);
-     atoms->coord[i] += atoms->u[i];
+    p.be = be;
+    p.bz = bz;
+
+    for (int i=0; i<atoms->n_atoms; i++) {
+//    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
+      if ( i==n_a ) { cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; }
+      count = 0;
+
+      do {
+         count++;
+         p.u0x = atoms->du[i].x;
+         p.u0y = atoms->du[i].y;
+         p.u0z = atoms->du[i].z;
+         glm::dvec3 temp = atoms->coord1[i]+atoms->du[i] - cd;
+//       if ( count==1) fout << i+1 << "    " << temp.x << ", " << temp.y << ", " << temp.z << endl; 
+         if ( (temp.x*temp.x+temp.y*temp.y)<1.e-10 ) {
+           atoms->du[i] = glm::dvec3(0., 0., 0.);
+           cout << " Atom " << i << " in the center of dislocation core" << endl;
+//           n_errors++;
+           goto _END;
+         }
+         gsl_multiroot_function_fdf f = {&(::Love_function), &(::Beta_function), &(::Love_fdf), 3, &p};
+         x = gsl_vector_alloc(3);
+         gsl_vector_set(x, 0, temp.x);
+         gsl_vector_set(x, 1, temp.y);
+         gsl_vector_set(x, 2, temp.z);
+
+         s = gsl_multiroot_fdfsolver_alloc(T, 3);
+         gsl_multiroot_fdfsolver_set(s, &f, x);
+
+         status = gsl_multiroot_fdfsolver_iterate(s);
+
+         if ( status ) break;
+         diff.x = gsl_vector_get(s->f, 0);
+         diff.y = gsl_vector_get(s->f, 1);
+         diff.z = gsl_vector_get(s->f, 2);
+         atoms->du[i] -= diff;
+         status = gsl_multiroot_test_residual(s->f, crit_stop);
+      } while ( status== GSL_CONTINUE && count<countN_R );
+      crit += diff.x*diff.x + diff.y*diff.y + diff.z*diff.z;
+//    cout << " --- i = " << i << "     count = " << count << endl;
+
+      gsl_multiroot_fdfsolver_free(s);
+      gsl_vector_free(x);
+//    gsl_vector_free(s->f);
+      continue;
+   _END:
+      cout << "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << endl;
+//      n_Errors++;
+    }
+//  fout.close();
+//    cout << " --- n_a = " << n_a << "     crit = " << crit << endl;
+
+  } else {  // !sw_iter
+
+    for (int i=0; i<atoms->n_atoms; i++) {
+//    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
+      if ( i==n_a ) { cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; }
+      glm::dvec3 dist1 = atoms->coord1[i] - cd;
+      atoms->du[i] = mixed_u(i, dist1, be, bz);
+    }
   }
+
+  for (int i=0; i<atoms->n_atoms; i++) //{
+    atoms->du[i] = rot_inv*atoms->du[i];
+//    atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;} //jeżeli jest potrzebne beta
+
  qWarning("uwaga!");
   disl[ndisl++] = *actdisl;
 //  actdisl->rrr.z = Actual->cent_.z;
@@ -543,20 +756,79 @@ void Internal::calc_disloc(int nr_atom, int disl_num)
   actdisl->i0 = i0;
  qWarning("SINGLE DISL corrected coordinates = (%g %g %g),  i0=%d", 
                      actdisl->cd.x(), actdisl->cd.y(), actdisl->cd.z(), i0);
-
-  for (unsigned int i=0; i<atoms->n_atoms; i++) { 
-     mixed_u(i);
-     atoms->coord[i] += atoms->u[i];
+//  for (int i=0; i<atoms->n_atoms; i++) atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coord[i]);
+  for (int i=0; i<atoms->n_atoms; i++) {
+//    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
+//      if ( i==n_a ) { cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; }
+    atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coord[i]);
+    glm::dvec3 dist1 = atoms->coord1[i] - to_dvec3(actdisl->cd);
+    atoms->du[i] = mixed_u(i, dist1, p.be, p.bz);
   }
+
+  for (int i=0; i<atoms->n_atoms; i++) //{
+    atoms->du[i] = rot_inv*atoms->du[i];
+//    atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;} //jeżeli jest potrzebne beta
+
+ qWarning("uwaga!");
+  disl[ndisl++] = *actdisl;
+//  actdisl->rrr.z = Actual->cent_.z;
+ qWarning("NEW DISL %d,  rrr= (%g %g %g)", ndisl-1, 
+                 actdisl->rrr.x(), actdisl->rrr.y(), actdisl->rrr.z());
+
  qWarning("Mixed_u end");
 //  emit SIG_needDraw();
 }
 //---------------------------------------------------------------------
 
+glm::dvec3 Internal::mixed_u(int i, glm::dvec3 rotdist, double be, double bz)
+{
+  double nu = 0.35;
+  double rad_fact = 1.0;
+  double r2 = rotdist.x*rotdist.x + rotdist.y*rotdist.y;
+  if ( r2<1e-15 ) {
+     cout << " Atom " << i << " in the center of dislocation core" << endl;
+//     return  glm::dvec3(0.25*be, 0., 0.);} 
+     return  glm::dvec3(0., 0., 0.);} 
+  else {
+     double r = sqrt(r2);
+     double x = rotdist.x/r;
+     double y = rotdist.y/r;
+     double r02 = rad_fact*be*be; // radius of inmobile ring relative to which the atoms in the core move up
+     double ux =  be /(2.*constant::pi)*(atan2(y,x)+x*y/(2.*(1.-nu)));// - 0.5*be;
+     double uy = -be /(8.*constant::pi*(1.-nu)) * ((1.-nu-nu)*log(r2/r02) + (x+y)*(x-y));
+     return glm::dvec3(ux, uy, bz/(2.*constant::pi)*atan2(y, x));} } // mixed_u
+
+glm::dmat3 Internal::mixed_beta(int i, glm::dvec3 rotdist, double be, double bz)
+{   
+    double nu = 0.35;
+    glm::dmat3 b(0.,0.,0.,  0.,0.,0.,  0.,0.,0.);
+    double x=rotdist.x;
+    double x2=x*x;
+    double y = rotdist.y;
+    double y2=y*y;
+    double r2=x2+y2;
+    if ( r2<1.e-15 ) cout << " Atom " << i << " in the center of dislocation core" << endl;
+    else {
+       double a = be/(4. * constant::pi * (1.-nu) * r2*r2);             // a = bx/(4. * pi * (1.-n) * r2*r2)
+       double bxx = -a * y * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(4) = -a * y * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xx 
+       double byx = -a * x * ((1.-2.*nu)*x2 + (3.-2.*nu)*y2); // u(5) = -a * x * ((1.-2.*n)*x*x + (3.-2.*n)*y*y) !yx
+       double bzx = -bz/(2.*constant::pi) * y/r2;                       // u(6) = -bz/(2.*pi) * y/r2                       !zx
+       double bxy =  a * x * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(7) =  a * x * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xy
+       double byy =  a * y * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2); // u(8) =  a * y * ((1.+2.*n)*x*x - (1.-2.*n)*y*y) !yy
+       double bzy = -bz/(2.*constant::pi) * x/r2;                       // u(9) = -bz/(2.*pi) * x/r2                       !zy
+//       if ( r2>=1.*(be*be+bz*bz) )                            // on the base of ~/pawel/papers/IMCE09/beta.mac
+       b = glm::dmat3( bxx, bxy, 0.,   byx, byy, 0.,    bzx, bzy, 0. );
+    }
+    return b;
+}
+
+
+
 int Internal::atomize(QVector3D point, int nr_atom)
 {
   int i0 = -1;
   double dist = 1.e33;
+//  double nu = 0.35;
 
   if ( nr_atom>0 ) {
    for (unsigned int i=0; i<atoms->n_atoms; i++) {
@@ -607,48 +879,26 @@ void Internal::calc_disl0()
  qWarning("SINGLE DISL corrected coordinates = (%g %g %g),  i0=%d", 
                      actdisl->cd.x(), actdisl->cd.y(), actdisl->cd.z(), i0);
 // qWarning("n_atoms =%d", atoms->n_atoms);
+
+//  double be=sqrt(burg_vect.x*burg_vect.x+burg_vect.y*burg_vect.y);
+//  double bz = burg_vect.z;
+
+
   for (unsigned int i=0; i<atoms->n_atoms; i++) { 
-     mixed_u(i);
-     atoms->coord[i] += atoms->u[i];
+    atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coord[i]);
+    glm::dvec3 dist1 = atoms->coord1[i] - to_dvec3(actdisl->cd);
+    atoms->du[i] = mixed_u(i, dist1, be, bz);
   }
+
+  for (int i=0; i<atoms->n_atoms; i++) //{
+    atoms->du[i] = rot_inv*atoms->du[i];
+//    atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;} //jeżeli jest potrzebne beta
+//  }
 //  emit SIG_needDraw();
 }
 
 
 //---------------------------------------------------------------------
-void Internal::mixed_u(int i)
-{
-  double angle_fi = 180.;
-// -----------------------------------------------
-  const double nu = 0.35;
-
-  static double bx = actdisl->burgers_vector.x ();
-  static double by = actdisl->burgers_vector.y ();
-  static double bz = actdisl->burgers_vector.z ();
-
-  double x = atoms->coord[i].x() - actdisl->cd.x();
-  double y = atoms->coord[i].y() - actdisl->cd.y();
-  double r2 = x*x + y*y;
-  if ( r2<1e-33 ) {
-     qWarning(
- " ERROR: Atom in the center of dislocation core!\ni=%d, coords = (%g, %g %g), r2=%g"
-               , i, atoms->coord[i].x(), atoms->coord[i].y(), atoms->coord[i].z(), r2);
-     atoms->u[i] = QVector3D(0., 0., 0.);
-     return;
-  }
-  double be = sqrt(bx*bx + by*by);
-  double fi0 = angle_fi / 180.;
-  double fi = constant::pi * fi0;
-  double additional = be * ((function::heavyside(fi-atan2(y,x))-0.5) - 0.5*fi0);
-  double ux = 0.5*be*constant::inv_pi * (atan2(y, x) + 
-                               x*y/((2.-nu-nu)*r2)) + additional;
-  double uy = -be/(8.*constant::pi*(1.-nu)) * ((1.-nu-nu)*log(r2) + (x*x-y*y)/r2);
-
-//---------------------------------------------------
-//  u.x += c*ux - s*uy;
-//  u.y += s*ux + c*uy;
-  atoms->u[i] = QVector3D(ux, uy, bz/constant::two_pi * atan2(y, x));
-} // mixed_u 
 
 // --------------------------------------------------------------------
 
@@ -1045,6 +1295,8 @@ bool Internal::internal_miller(QString line2, int which, Int4 &mil)
 //    qWarning("miller: %d, %d, %d\n", mil[0], mil[1], mil[2]);
    return true;
 }
+
+
 
 /*
 void Internal::load( const QString &fileName )
@@ -1519,4 +1771,38 @@ glm::dmat3 mixed_beta(int i, glm::dvec3 rotdist, double be, double bz)
     }
     return b;
 }
+
+void Internal::mixed_u(int i)
+{
+  double angle_fi = 180.;
+// -----------------------------------------------
+  const double nu = 0.35;
+
+  static double bx = actdisl->burgers_vector.x ();
+  static double by = actdisl->burgers_vector.y ();
+  static double bz = actdisl->burgers_vector.z ();
+
+  double x = atoms->coord[i].x() - actdisl->cd.x();
+  double y = atoms->coord[i].y() - actdisl->cd.y();
+  double r2 = x*x + y*y;
+  if ( r2<1e-33 ) {
+     qWarning(
+ " ERROR: Atom in the center of dislocation core!\ni=%d, coords = (%g, %g %g), r2=%g"
+               , i, atoms->coord[i].x(), atoms->coord[i].y(), atoms->coord[i].z(), r2);
+     atoms->u[i] = QVector3D(0., 0., 0.);
+     return;
+  }
+  double be = sqrt(bx*bx + by*by);
+  double fi0 = angle_fi / 180.;
+  double fi = constant::pi * fi0;
+  double additional = be * ((function::heavyside(fi-atan2(y,x))-0.5) - 0.5*fi0);
+  double ux = 0.5*be*constant::inv_pi * (atan2(y, x) + 
+                               x*y/((2.-nu-nu)*r2)) + additional;
+  double uy = -be/(8.*constant::pi*(1.-nu)) * ((1.-nu-nu)*log(r2) + (x*x-y*y)/r2);
+
+//---------------------------------------------------
+//  u.x += c*ux - s*uy;
+//  u.y += s*ux + c*uy;
+  atoms->u[i] = QVector3D(ux, uy, bz/constant::two_pi * atan2(y, x));
+} // mixed_u 
 */
