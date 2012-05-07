@@ -136,7 +136,7 @@ class Internal
   int atomize(QVector3D point, int wh_at);
   void SL_singleDisl(QVector3D r);
 //  void mixed_u(int i);
-  void newdisl(int n_a, bool sw_iter);
+  void newdisl(unsigned int n_a, bool sw_iter);
   //    void mixed_u1(int disl_num, int i);
   //    void mixed_u2(int disl_num, int i);
   

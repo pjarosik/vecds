@@ -39,9 +39,11 @@ int Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct) {
   double u0x = ((struct params *) par)->u0x;
   double u0y = ((struct params *) par)->u0y;
   double u0z = ((struct params *) par)->u0z;
+
   const double distx = gsl_vector_get(x, 0);
   const double disty = gsl_vector_get(x, 1);
-  const double distz = gsl_vector_get(x, 2);
+  // const double distz = gsl_vector_get(x, 2);
+
   double r2 = distx*distx+disty*disty;
   double r = sqrt(r2);
   double xx = distx/r;
@@ -60,12 +62,15 @@ int Beta_function(const gsl_vector *x, void *par, gsl_matrix *jac) {
   double nu = 0.35;
   double be = ((struct params *) par)->be;
   double bz = ((struct params *) par)->bz;
+
   const double xx = gsl_vector_get(x, 0);
   const double yy = gsl_vector_get(x, 1);
-  const double zz = gsl_vector_get(x, 2);
+  // const double zz = gsl_vector_get(x, 2);
+
   const double y2 = yy*yy;
   const double x2 = xx*xx;
   const double r2 = x2+y2;
+
   if ( r2<1.e-15 ) {
     cout << " Atom  in the center of dislocation core" << endl;
     gsl_matrix_set(jac, 0, 0, 1.);
@@ -619,7 +624,7 @@ int Internal::Love_fdf(const gsl_vector *x, void *par, gsl_vector *result_funct,
 
 
 
-void Internal::newdisl(int n_a, bool sw_iter)
+void Internal::newdisl(unsigned int n_a, bool sw_iter)
 {
 qWarning("newdisl");
   QVector3D rr = this->atoms->coord[n_a];// + this->cent_;
@@ -634,10 +639,11 @@ qWarning("newdisl");
 //  cout << " mil.indices   " << mil.indices[0] << "    " << mil.indices[1] << "    " << mil.indices[2] << endl;
 //  cout << " burgers_vector   " << burgers_vector.x << "    " << burgers_vector.y << "    " << burgers_vector.z << endl;
   glm::dvec3 cd = rot_tensor * to_dvec3(atoms->coord[n_a]);
-  be=sqrt(burg_vect.x*burg_vect.x+burg_vect.y*burg_vect.y);
+  be = sqrt(burg_vect.x*burg_vect.x+burg_vect.y*burg_vect.y);
   bz = burg_vect.z;
 //  cout << " be=" << be << "     bz=" << bz << endl;
-  for (int i=0; i<atoms->n_atoms; i++) atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coord[i]);
+  for (unsigned int i=0; i<atoms->n_atoms; i++) 
+    atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coord[i]);
 
   if ( sw_iter ) {
 
@@ -645,35 +651,44 @@ qWarning("newdisl");
     T = gsl_multiroot_fdfsolver_hybridsj;
     gsl_multiroot_fdfsolver *s; // = gsl_multiroot_fdfsolver_alloc(T, 3);
     gsl_vector *x; // = gsl_vector_alloc(3);
-    size_t count;
-//  const size_t n = 3;
-//    struct params p;
-    size_t status;
-    glm::dvec3 diff;
-    double crit = 0.;
-    double crit_stop = 1.e-7;
-    int countN_R = 10;
-//  stringstream sss;
 
+    size_t count;
+
+                                 // The return value of
+                                 // gsl_multiroot_fdfsolver_iterate is
+                                 // an integer, and so this needs to
+                                 // be an integer too to make the two
+                                 // comparable.
+    int status = 0;
+    
+    //  const size_t n = 3;
+    //    struct params p;
+    
+    glm::dvec3 diff;
+    double crit           = 0.;
+    double crit_stop      = 1.e-7;
+    unsigned int countN_R = 10;
+    //  stringstream sss;
+    
     p.be = be;
     p.bz = bz;
 
-    for (int i=0; i<atoms->n_atoms; i++) {
-//    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
+    for (unsigned int i=0; i<atoms->n_atoms; i++) {
+      //    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
       if ( i==n_a ) { cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; }
       count = 0;
 
       do {
-         count++;
-         p.u0x = atoms->du[i].x;
-         p.u0y = atoms->du[i].y;
+	count++;
+	p.u0x = atoms->du[i].x;
+	p.u0y = atoms->du[i].y;
          p.u0z = atoms->du[i].z;
          glm::dvec3 temp = atoms->coord1[i]+atoms->du[i] - cd;
-//       if ( count==1) fout << i+1 << "    " << temp.x << ", " << temp.y << ", " << temp.z << endl; 
+	 //       if ( count==1) fout << i+1 << "    " << temp.x << ", " << temp.y << ", " << temp.z << endl; 
          if ( (temp.x*temp.x+temp.y*temp.y)<1.e-10 ) {
            atoms->du[i] = glm::dvec3(0., 0., 0.);
            cout << " Atom " << i << " in the center of dislocation core" << endl;
-//           n_errors++;
+	   //           n_errors++;
            goto _END;
          }
          gsl_multiroot_function_fdf f = {&(::Love_function), &(::Beta_function), &(::Love_fdf), 3, &p};
@@ -681,10 +696,10 @@ qWarning("newdisl");
          gsl_vector_set(x, 0, temp.x);
          gsl_vector_set(x, 1, temp.y);
          gsl_vector_set(x, 2, temp.z);
-
+	 
          s = gsl_multiroot_fdfsolver_alloc(T, 3);
          gsl_multiroot_fdfsolver_set(s, &f, x);
-
+	 
          status = gsl_multiroot_fdfsolver_iterate(s);
 
          if ( status ) break;
@@ -693,7 +708,8 @@ qWarning("newdisl");
          diff.z = gsl_vector_get(s->f, 2);
          atoms->du[i] -= diff;
          status = gsl_multiroot_test_residual(s->f, crit_stop);
-      } while ( status== GSL_CONTINUE && count<countN_R );
+      } while ( status == GSL_CONTINUE && count<countN_R );
+
       crit += diff.x*diff.x + diff.y*diff.y + diff.z*diff.z;
 //    cout << " --- i = " << i << "     count = " << count << endl;
 
@@ -710,23 +726,26 @@ qWarning("newdisl");
 
   } else {  // !sw_iter
 
-    for (int i=0; i<atoms->n_atoms; i++) {
-//    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
-      if ( i==n_a ) { cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; }
-      glm::dvec3 dist1 = atoms->coord1[i] - cd;
-      atoms->du[i] = mixed_u(i, dist1, be, bz);
-    }
+    for (unsigned int i=0; i<atoms->n_atoms; i++) 
+      {
+	//    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
+	if ( i==n_a ) { cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; }
+	glm::dvec3 dist1 = atoms->coord1[i] - cd;
+	atoms->du[i] = mixed_u(i, dist1, be, bz);
+      }
   }
-
-  for (int i=0; i<atoms->n_atoms; i++) //{
+  
+  for (unsigned int i=0; i<atoms->n_atoms; i++) 
     atoms->du[i] = rot_inv*atoms->du[i];
-//    atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;} //jeżeli jest potrzebne beta
-
- qWarning("uwaga!");
+  
+  //    atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;} //jeżeli jest potrzebne beta
+  
+  qWarning("uwaga!");
   disl[ndisl++] = *actdisl;
-//  actdisl->rrr.z = Actual->cent_.z;
- qWarning("NEW DISL %d,  rrr= (%g %g %g)", ndisl-1, 
-                 actdisl->rrr.x(), actdisl->rrr.y(), actdisl->rrr.z());
+  //  actdisl->rrr.z = Actual->cent_.z;
+  qWarning("NEW DISL %d,  rrr= (%g %g %g)", ndisl-1, 
+	   actdisl->rrr.x(), actdisl->rrr.y(), actdisl->rrr.z());
+
   return; 
 }
 
@@ -757,27 +776,30 @@ void Internal::calc_disloc(int nr_atom, int disl_num)
  qWarning("SINGLE DISL corrected coordinates = (%g %g %g),  i0=%d", 
                      actdisl->cd.x(), actdisl->cd.y(), actdisl->cd.z(), i0);
 //  for (int i=0; i<atoms->n_atoms; i++) atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coord[i]);
-  for (int i=0; i<atoms->n_atoms; i++) {
-//    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
-//      if ( i==n_a ) { cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; }
-    atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coord[i]);
-    glm::dvec3 dist1 = atoms->coord1[i] - to_dvec3(actdisl->cd);
-    atoms->du[i] = mixed_u(i, dist1, p.be, p.bz);
-  }
+  for (unsigned int i=0; i<atoms->n_atoms; i++) 
+    {
+      //    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
+      //      if ( i==n_a ) { cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; }
+      atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coord[i]);
+      glm::dvec3 dist1 = atoms->coord1[i] - to_dvec3(actdisl->cd);
+      atoms->du[i] = mixed_u(i, dist1, p.be, p.bz);
+    }
 
-  for (int i=0; i<atoms->n_atoms; i++) //{
+  for (unsigned int i=0; i<atoms->n_atoms; i++) 
     atoms->du[i] = rot_inv*atoms->du[i];
-//    atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;} //jeżeli jest potrzebne beta
 
- qWarning("uwaga!");
+  //    atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;} //jeżeli jest potrzebne beta
+  
+  qWarning("uwaga!");
   disl[ndisl++] = *actdisl;
-//  actdisl->rrr.z = Actual->cent_.z;
- qWarning("NEW DISL %d,  rrr= (%g %g %g)", ndisl-1, 
-                 actdisl->rrr.x(), actdisl->rrr.y(), actdisl->rrr.z());
-
- qWarning("Mixed_u end");
-//  emit SIG_needDraw();
+  //  actdisl->rrr.z = Actual->cent_.z;
+  qWarning("NEW DISL %d,  rrr= (%g %g %g)", ndisl-1, 
+	   actdisl->rrr.x(), actdisl->rrr.y(), actdisl->rrr.z());
+  
+  qWarning("Mixed_u end");
+  //  emit SIG_needDraw();
 }
+
 //---------------------------------------------------------------------
 
 glm::dvec3 Internal::mixed_u(int i, glm::dvec3 rotdist, double be, double bz)
@@ -884,17 +906,18 @@ void Internal::calc_disl0()
 //  double bz = burg_vect.z;
 
 
-  for (unsigned int i=0; i<atoms->n_atoms; i++) { 
-    atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coord[i]);
-    glm::dvec3 dist1 = atoms->coord1[i] - to_dvec3(actdisl->cd);
-    atoms->du[i] = mixed_u(i, dist1, be, bz);
-  }
-
-  for (int i=0; i<atoms->n_atoms; i++) //{
+  for (unsigned int i=0; i<atoms->n_atoms; i++) 
+    { 
+      atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coord[i]);
+      glm::dvec3 dist1 = atoms->coord1[i] - to_dvec3(actdisl->cd);
+      atoms->du[i] = mixed_u(i, dist1, be, bz);
+    }
+  
+  for (unsigned int i=0; i<atoms->n_atoms; i++) 
     atoms->du[i] = rot_inv*atoms->du[i];
-//    atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;} //jeżeli jest potrzebne beta
-//  }
-//  emit SIG_needDraw();
+  //    atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;} //jeżeli jest potrzebne beta
+  
+  //  emit SIG_needDraw();
 }
 
 
@@ -905,8 +928,8 @@ void Internal::calc_disl0()
 void Internal::do_atoms_rotation(Mat9d r_tens, QVector3D vec)
 {
   for (unsigned int i=0; i<this->atoms->n_atoms; i++)
-       this->atoms->coord[i] = matvecmult(r_tens, this->atoms->coord[i] - vec) + vec;
-//  find_extr_0();
+    this->atoms->coord[i] = matvecmult(r_tens, this->atoms->coord[i] - vec) + vec;
+  //  find_extr_0();
   minmax3(atoms->coord, atoms->n_atoms, a_min_, a_max_);
 }
 
@@ -1701,7 +1724,7 @@ void singledisl(int n_a) { // Liczy pole przemieszczeń od dyslokacji ze rdzenie
          diff.z = gsl_vector_get(s->f, 2);
          atoms->du[i] -= diff;
          status = gsl_multiroot_test_residual(s->f, crit_stop);
-      } while ( status== GSL_CONTINUE && count<countN_R );
+      } while ( status == GSL_CONTINUE && count<countN_R );
       crit += diff.x*diff.x + diff.y*diff.y + diff.z*diff.z;
 //    cout << " --- i = " << i << "     count = " << count << endl;
 

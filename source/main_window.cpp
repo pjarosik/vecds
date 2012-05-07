@@ -880,9 +880,10 @@ void MainWindow::SL_hexBox()
   if (!ok) 
     return;
 
+/*
   double hex_r = ans.at(0).toDouble();
   double hex_h = ans.at(1).toDouble();
-/*
+
   Actual->num_choosedAtoms = hexBox(hex_r, hex_h, Actual->cent_);
   for (int i=0; i<Actual->n_atoms; i++ ) 
          Actual->atom_show[i] = Actual->at_bool[i];

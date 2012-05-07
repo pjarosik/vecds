@@ -81,20 +81,26 @@ MainViewer::MainViewer(QWidget *parent)
 
     init_spheres(8);
 
-//    color_spectr = new QColor[12];
-    int alfa = 255;
+    //    color_spectr = new QColor[12];
+    // int alfa = 255;
     set_defaults(); 
 
     prepare_scene();
     setFont(QFont("Times", 12));
     arcb = new ArcBall();
     transformM = new double[16];
-//    thisRot = lastRot = constant::unit_matr33;
-    for (int i=1; i<15; i++) transformM[i] = 0.;
-    for (int i=0; i<16; i+=5) transformM[i] = 1.;
-//    transformM[0] = transformM[5] =transformM[10] =transformM[15] = 1.;
-// qWarning ("viewer: atoms=%d", n_atoms);
-//     m_x = m_y =0.;
+
+    //    thisRot = lastRot = constant::unit_matr33;
+
+    for (int i=1; i<15; i++) 
+      transformM[i] = 0.;
+
+    for (int i=0; i<16; i+=5) 
+      transformM[i] = 1.;
+
+    //    transformM[0] = transformM[5] =transformM[10] =transformM[15] = 1.;
+    // qWarning ("viewer: atoms=%d", n_atoms);
+    //     m_x = m_y =0.;
 }
 
 MainViewer::~MainViewer()
@@ -917,24 +923,28 @@ void MainViewer::doGLdisloc()
 
 // ---------------------------------------
 
-void MainViewer::drawBox(double v[8][3], double norm_v[8][3])
+void MainViewer::drawBox(double v[8][3]/*, double norm_v[8][3]*/)
 {
-  static GLint _faces[6][4] = {
-    {0, 1, 2, 3},
-    {3, 2, 6, 7},
-    {7, 6, 5, 4},
-    {4, 5, 1, 0},
-    {5, 6, 2, 1},
-    {7, 4, 0, 3}
-  };
-  for (int i=5; i>=0; i--) {
-     glBegin(GL_QUADS);
-//	glNormal3dv(&norm_v[i][0]);
-     glVertex3dv(&v[_faces[i][0]][0]);
-     glVertex3dv(&v[_faces[i][1]][0]);
-     glVertex3dv(&v[_faces[i][2]][0]);
-     glVertex3dv(&v[_faces[i][3]][0]);
-     glEnd();
+  static GLint _faces[6][4] = 
+    {
+      {0, 1, 2, 3},
+      {3, 2, 6, 7},
+      {7, 6, 5, 4},
+      {4, 5, 1, 0},
+      {5, 6, 2, 1},
+      {7, 4, 0, 3}
+    };
+  
+  for (int i=5; i>=0; i--) 
+    {
+      glBegin(GL_QUADS);
+      
+      //	glNormal3dv(&norm_v[i][0]);
+      glVertex3dv(&v[_faces[i][0]][0]);
+      glVertex3dv(&v[_faces[i][1]][0]);
+      glVertex3dv(&v[_faces[i][2]][0]);
+      glVertex3dv(&v[_faces[i][3]][0]);
+      glEnd();
   }
 }
 

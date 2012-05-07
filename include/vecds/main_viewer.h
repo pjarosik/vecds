@@ -122,26 +122,28 @@ private:
     void prepare_axis();
     void arrow(QVector3D orig, QVector3D vect, double fact, double sm);
     void drawBox0(float size);
-//    void drawBox(double v[8][3], double n[8][3]);
-//    void draw_nodes();
-
+    //    void drawBox(double v[8][3], double n[8][3]);
+    //    void draw_nodes();
+    
     void draw_arrows(double f);
-//    void draw_nodes();
+    //    void draw_nodes();
     void drawBackground();
-//    void colorQuad(QColor, QColor, QColor, QColor, QVector3D, QVector3D, QVector3D, QVector3D);
+    //    void colorQuad(QColor, QColor, QColor, QColor, QVector3D, QVector3D, QVector3D, QVector3D);
     void drawTexture(GLuint tex, QVector3D p1, QVector3D p2, QVector3D p3,
-                                                         QVector3D p4);
+		     QVector3D p4);
     QVector3D getOGLPos(int, int);
     QVector3D getMousePos(int, int);
-    void drawBox(double v[8][3], double norm_v[8][3]);
+    
+    void drawBox(double v[8][3]/*, double norm_v[8][3]*/);
+    
     void drawInvisBox();
     void set_v(double v[8][3], double norm_v[8][3], QVector3D p1, QVector3D p2);
-
+    
     void draw_numbers();
-//    void draw_cube_fem();
-
+    //    void draw_cube_fem();
+    
     void doGLdisloc();
-
+    
     void paintEvent();
     void getAxisAngle(const QQuaternion q, QVector3D &v, double &ang);
     void euler2matr();
