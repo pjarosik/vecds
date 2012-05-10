@@ -923,7 +923,7 @@ void MainViewer::doGLdisloc()
 
 // ---------------------------------------
 
-void MainViewer::drawBox(double v[8][3], double norm_v[8][3])
+void MainViewer::drawBox(double v[8][3])//, double norm_v[8][3])
 {
   static GLint _faces[6][4] = {
     {0, 1, 2, 3},
