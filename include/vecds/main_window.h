@@ -78,6 +78,7 @@ class MainWindow : public QMainWindow
   void SL_millerAct();
   void SL_dislocAct();
   void SL_dislAct();
+  void SL_addCoordAct();
   void SL_changeMode(int mode);
   void SL_saveAtomsAs();
   void SL_cubBox();

@@ -154,6 +154,7 @@ void MainViewer::prepare_scene()
 // qWarning(" ---------- prepare_scene_2");
 //  prepare_invbox(min_ , max_);
 //  prepare_invbox(min_ - cent_, max_ - cent_);
+  makeCurrent();
   prepare_axis();
 }
 
@@ -423,6 +424,7 @@ void MainViewer::paintGL()
      glPopMatrix();
   qWarning("VIEWER - ndisl=%d", ActualData->ndisl);
   }
+//  makeCurrent();
 //     doGLinvis();
 //     if ( doInvis ) doGLinvis();
 }
@@ -511,6 +513,7 @@ void MainViewer::draw_atoms()
      glCallList (sphereList[aki]);
      glPopMatrix();
   }
+  makeCurrent();
 }
 
 void MainViewer::draw_bonds()
@@ -538,6 +541,7 @@ void MainViewer::draw_bonds()
 
      glPopMatrix();
   }
+  makeCurrent();
 }
 
 /*
@@ -585,7 +589,8 @@ void MainViewer::draw_axis()
   glMaterialfv(GL_FRONT, GL_DIFFUSE, colorBlue);
   arrow(orig, ActualData->axeZ, 0.3, small);
   glPopMatrix();
-
+  
+  makeCurrent();
 }
 
 void MainViewer::arrow(QVector3D orig, QVector3D vect, double fact, double sm)

@@ -433,6 +433,7 @@ void Internal::read_alc_xyz(QString aname)
        this->atoms->coord[i].setX(fields.takeFirst().toDouble());// *1.e10;
        this->atoms->coord[i].setY(fields.takeFirst().toDouble());// *1.e10;
        this->atoms->coord[i].setZ(fields.takeFirst().toDouble());// *1.e10;
+       this->atoms->u[i] = QVector3D(0., 0., 0.);
     }
     minmax3(this->atoms->coord, this->atoms->n_atoms, this->a_min_, this->a_max_);
     this->atoms_loaded = aname;
@@ -446,6 +447,7 @@ void Internal::read_alc_xyz(QString aname)
 //       qWarning("bonds: %d %d", Actual->bonds1[i], Actual->bonds2[i]);
     }
 }
+
 
 
 
@@ -735,9 +737,10 @@ qWarning("newdisl");
       }
   }
   
-  for (unsigned int i=0; i<atoms->n_atoms; i++) 
+  for (unsigned int i=0; i<atoms->n_atoms; i++) {
     atoms->du[i] = rot_inv*atoms->du[i];
-  
+    atoms->u[i] += to_QV(atoms->du[i]);
+  }
   //    atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;} //jeżeli jest potrzebne beta
   
   qWarning("uwaga!");
@@ -750,6 +753,17 @@ qWarning("newdisl");
 }
 
 // ------------------------------------------------
+
+void Internal::addDisplacements()
+{
+  for (unsigned int i=0; i<atoms->n_atoms; i++) {
+     atoms->coord[i] += atoms->u[i];
+     atoms->u[i] = QVector3D(0., 0., 0.);
+  }
+//  emit SIG_needDraw();
+}
+
+
 
 void Internal::calc_disloc(int nr_atom, int disl_num)
 {

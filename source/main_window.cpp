@@ -51,10 +51,9 @@ MainWindow::MainWindow ()
   
   aname   = "none";
   iname   = "none";
-  fname   = "none";
-  resname = "none";
-  
-  //    ActualData->kindOfDisl = 0;
+//  fname   = "none";
+//  resname = "none";
+//    ActualData->kindOfDisl = 0;
   
   mview1 = new MainViewer(this);
   mview1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -248,7 +247,7 @@ void MainWindow::createDockWindows()
 
   //  QWhatsThis::enterWhatsThisMode();
   Widg_modesTab = new QTabBar;
-  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/new.png"), "0");
+  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/new.png"), "View");
   //  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/save.png"), "");
   Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/print.png"), "Rot");
   Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/undo.png"), "Add");
@@ -368,7 +367,7 @@ void MainWindow::createDockWindows()
   Lay_v_add->addWidget(Butt_disloc);
   Butt_sf = new QPushButton(tr("Dislocation by number of atom"));
   Lay_v_add->addWidget(Butt_sf);
-  Butt_qd = new QPushButton(tr("Not ready"));
+  Butt_qd = new QPushButton(tr("Add displacements"));
   Lay_v_add->addWidget(Butt_qd);
   Widg_add->setLayout(Lay_v_add);
   Lay_main0->addWidget(Widg_add);
@@ -382,6 +381,8 @@ void MainWindow::createDockWindows()
   connect(Butt_disloc, SIGNAL(clicked()), this, SLOT(SL_dislocAct()));
   
   connect(Butt_sf, SIGNAL(clicked()), this, SLOT(SL_dislAct()));
+  
+  connect(Butt_qd, SIGNAL(clicked()), this, SLOT(SL_addCoordAct()));
   
   connect(Widg_modesTab, SIGNAL(currentChanged(int)),
                                this, SLOT(SL_changeMode(int)));
@@ -691,10 +692,11 @@ void MainWindow::SL_openAtoms()
      ActualData->atoms_loaded = aname1;
      ActualData->read_alc_xyz(aname1);
      emit SIG_needDraw();
-    qWarning("sig needDraw");
+//    qWarning("sig needDraw");
   }
 //  infotxtat.sprintf("%s", aname.toAscii().data());
   InfoDisplay();
+  mview1->updateGL();
 }
 
 void MainWindow::SL_openImg()
@@ -711,6 +713,7 @@ void MainWindow::SL_openImg()
   emit SIG_prepareImg();
 //  infotxtimg.sprintf("%s", iname.toAscii().data());
   InfoDisplay();
+  mview1->updateGL();
 }
 
 void MainWindow::SL_closeImg()
@@ -771,6 +774,7 @@ void MainWindow::SL_dislocAct()
   ActualData->act_disl = s1;
   ActualData->act_core = s2;
   InfoDisplay();
+  mview1->updateGL();
 //  statusBar()->showMessage
 //  (QString("Dislocation ").append(ActualData->act_disl).append(" _ ").append(ActualData->act_core));
 }
@@ -788,7 +792,7 @@ void MainWindow::SL_dislAct()
   quest <<"Miller indices" << "number of atom";
   s1.sprintf("%s", ActualData->act_disl.toAscii().data());
 //  s2.sprintf("%s", ActualData->act_core.toAscii().data());
-  sug << s1 << QString("164__");
+  sug << s1 << QString(" ");
   QuestionForm("Disloc parameters", descr, quest, sug, ans, ok);
 //  if ( !ok ) return;
   if ( !ok ) {
@@ -807,8 +811,17 @@ void MainWindow::SL_dislAct()
   ActualData->act_disl = s1;
  qWarning("SL_dislAct -- 3");
   InfoDisplay();
+  mview1->updateGL();
 //  statusBar()->showMessage
 //  (QString("Dislocation ").append(ActualData->act_disl).append(" _ ").append(ActualData->act_core));
+}
+
+void MainWindow::SL_addCoordAct()
+{
+  ActualData->addDisplacements();
+  emit SIG_repaint();
+  mview1->updateGL();
+//  qWarning("SL_addCoordAct");
 }
 
 
