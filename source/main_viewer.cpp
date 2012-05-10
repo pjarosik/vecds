@@ -5,18 +5,18 @@
 //
 // Copyright (C) 2010 The vecds authors
 //
-// This program is free software: you can redistribute it and/or
-// modify it under the terms of the GNU General Public License as
-// published by the Free Software Foundation, either version 3 of the
+// This  program is  free  software: you  can  redistribute it  and/or
+// modify  it under the  terms of  the GNU  General Public  License as
+// published by the Free Software  Foundation, either version 3 of the
 // License, or (at your option) any later version.
 //  
 // This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// WITHOUT  ANY  WARRANTY;  without   even  the  implied  warranty  of
+// MERCHANTABILITY or  FITNESS FOR A PARTICULAR PURPOSE.   See the GNU
 // General Public License for more details.
 //
-// You should have received a copy of the GNU General Public License
-// along with this program.  If not, see
+// You should have  received a copy of the  GNU General Public License
+// along      with      this      program.       If      not,      see
 // <http://www.gnu.org/licenses/>.
 //					 
 // -------------------------------------------------------------------
@@ -46,6 +46,7 @@ GLfloat cube_mat11[] = { 0.75, 0.22, 0.22, 0.43 };
 GLfloat mat_diffuse[] = { 0.9, 0.9, 0.9, 1.0 };
 GLfloat mat_specular[] = { 0.4, 0.4, 0.4, 1.0 };
 GLfloat mat_emission[] = {0.1, 0.1, 0.1, 0.0};
+GLfloat specular_color[4] = { 0.4, 0.4, 0.4, 0.8 };
 
 GLfloat colorRed[] = {0.7, 0.1, 0.1, 1.0};
 GLfloat colorGreen[] = {0.1, 0.7, 0.1, 1.0};
@@ -81,26 +82,20 @@ MainViewer::MainViewer(QWidget *parent)
 
     init_spheres(8);
 
-    //    color_spectr = new QColor[12];
-    // int alfa = 255;
+//    color_spectr = new QColor[12];
+    int alfa = 255;
     set_defaults(); 
 
     prepare_scene();
-    setFont(QFont("Times", 12));
+//    setFont(QFont("Times", 12));
     arcb = new ArcBall();
     transformM = new double[16];
-
-    //    thisRot = lastRot = constant::unit_matr33;
-
-    for (int i=1; i<15; i++) 
-      transformM[i] = 0.;
-
-    for (int i=0; i<16; i+=5) 
-      transformM[i] = 1.;
-
-    //    transformM[0] = transformM[5] =transformM[10] =transformM[15] = 1.;
-    // qWarning ("viewer: atoms=%d", n_atoms);
-    //     m_x = m_y =0.;
+//    thisRot = lastRot = constant::unit_matr33;
+    for (int i=1; i<15; i++) transformM[i] = 0.;
+    for (int i=0; i<16; i+=5) transformM[i] = 1.;
+//    transformM[0] = transformM[5] =transformM[10] =transformM[15] = 1.;
+// qWarning ("viewer: atoms=%d", n_atoms);
+//     m_x = m_y =0.;
 }
 
 MainViewer::~MainViewer()
@@ -138,6 +133,11 @@ void MainViewer::prepare_scene()
     min_ = QVector3D(-5., -5., -5);
     max_ = QVector3D(5., 5., 5.);
     rad_scene = 10.;
+  } else {
+    min_ = ActualData->a_min_;
+    max_ = ActualData->a_max_;
+    rad_scene = qMax(qMax((max_.x()-min_.x()), (max_.y()-min_.y())), (max_.z()-min_.z()));
+  qWarning("+++++++++++++++++ min_ = %g %g %g", min_.x(), min_.y(), min_.z());
   }
   distance0 = distance = (dist0/tan(fov*constant::deg2rad))*rad_scene;
   small = 0.01 * rad_scene;
@@ -152,7 +152,7 @@ void MainViewer::prepare_scene()
   yu = max_.y() - cent_.y();
   ActualData->cent_ = cent_;
 // qWarning(" ---------- prepare_scene_2");
-  prepare_invbox(min_ , max_);
+//  prepare_invbox(min_ , max_);
 //  prepare_invbox(min_ - cent_, max_ - cent_);
   prepare_axis();
 }
@@ -205,13 +205,6 @@ void MainViewer::init_spheres( int numbOfSubdiv )
 
      gluDeleteQuadric(obj);
   }
-  cubeList = glGenLists(1);
- 
-  glNewList(cubeList, GL_COMPILE);
-  
-   drawBox0(smaller);
-  
-  glEndList();
 
 }
 
@@ -345,14 +338,15 @@ void MainViewer::resizeGL(int w, int h)
 //  glOrtho(-siz, siz, -siz*f, siz*f, 0.0, 10.*siz);
 //-----------------------------------------------------------------------------------
 
+
 void MainViewer::paintGL()
 {
-// qWarning("paintGL");
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glClearColor(bg_red, bg_green, bg_blue, 1.0);
 
   if ( ActualData->atoms_loaded=="none" && ActualData->img_loaded=="none") return;
-//  glPushMatrix();
+// qWarning("====  paintGL  ===..");
+
   glLoadIdentity();
   double ddx = 1.75 * (max_.x() - min_.x()) * d_x;
   double ddy = 1.75 * (max_.y() - min_.y()) * d_y;
@@ -370,18 +364,26 @@ void MainViewer::paintGL()
 //  glTranslated(-cent_.x, -cent_.y, -cent_.z);
 //  glTranslated(0., 0., 10.);
   glMultMatrixd(transformM);
-//   getAxisAngle(arcb->quaternion, axis, angle);
-//   glRotated(constant::rad2deg*angle, axis.x, axis.y, axis.z);
-//  glTranslated(0., 0., -10.);
-//      glPopMatrix();
-// qWarning("paintGL -- axes");
-  if ( ActualData->img_loaded!="none" ) {
+
+
+
+
+  if ( ActualData->img_loaded!="none" ) {      //drawBackground();
      glPushMatrix();
      glDisable(GL_LIGHTING);
      glEnable(GL_TEXTURE_2D);
-     drawTexture(background, QVector3D(xl, yd, 0.0), QVector3D(xl, yu, 0.0), 
-                            QVector3D(xr, yu, 0.0), QVector3D(xr, yd, 0.0));
-//     glDisable(GL_COLOR_MATERIAL);
+// qWarning("drawTexture");
+    glBindTexture(GL_TEXTURE_2D, background);
+//  glNormal3f(0.0, 0.0, 1.0);
+    glBegin(GL_QUADS);
+     glTexCoord2f(0.0, 0.0);          glVertex3d(xl, yd, 0.0);   //(pld.x(), pld.y(), pld.z());
+     glTexCoord2f(0.0, 1.0);          glVertex3f(xl, yu, 0.0);   // (plu.x(), plu.y(), plu.z());
+     glTexCoord2f(1.0, 1.0);          glVertex3f(xr, yu, 0.0);   // (pru.x(), pru.y(), pru.z());
+     glTexCoord2f(1.0, 0.0);          glVertex3f(xr, yd, 0.0);   // (prd.x(), prd.y(), prd.z());
+    glEnd();
+//     drawTexture(background, QVector3D(xl, yd, 0.0), QVector3D(xl, yu, 0.0), 
+//                            QVector3D(xr, yu, 0.0), QVector3D(xr, yd, 0.0));
+
      glDisable(GL_TEXTURE_2D);
 //     glDisable (GL_BLEND);
 //    glEnable(GL_DEPTH_TEST);
@@ -390,10 +392,14 @@ void MainViewer::paintGL()
 
      glPopMatrix();
   }
-
-
+//  if ( showU ) {
+//     showUGL();
+//     return;
+//  }
   if ( ActualData->atoms_loaded!="none" ) {
-     if ( ActualData->atoms->n_atoms>0 && ActualData->visible[0] ) {
+     if ( ActualData->atoms->n_atoms>0 ) {
+     qWarning("VIEWER - atoms->n_atoms=%d", ActualData->atoms->n_atoms);
+     qWarning("xl, xr, yu, yd -- %g %g %g %g", xl, xr, yu, yd);
         glPushMatrix();
         draw_atoms();
         glPopMatrix();
@@ -403,10 +409,8 @@ void MainViewer::paintGL()
         draw_bonds();
         glPopMatrix();
      }
-// qWarning("paintGL -- atoms");
-// qWarning("distance=%g, rad_scene=%g, n_atoms=%d", distance, rad_scene, ActualData->atoms->n_atoms);
+//     updateGL();
   }
-
   if ( ActualData->visible[5] ) {
      glPushMatrix();
      draw_axis();
@@ -419,92 +423,66 @@ void MainViewer::paintGL()
      glPopMatrix();
   qWarning("VIEWER - ndisl=%d", ActualData->ndisl);
   }
-/*
-  if ( ActualData->Mode==2 ){
-     glPushMatrix();
-     glEnable(GL_BLEND);
-     glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, invis);
-     drawInvisBox();
-     glDisable(GL_BLEND);
-     glPopMatrix();
-  }
-
-  if ( ActualData->visible[6] && ActualData->res_loaded!="none" ) {
-     glDisable(GL_LIGHTING);
-     QVector3D ld = QVector3D(ld_x, ld_y, ld_z);
-     QVector3D rd = QVector3D(rd_x, rd_y, rd_z);
-     QVector3D lu = QVector3D(lu_x, lu_y, lu_z);
-     QVector3D ru = QVector3D(ru_x, ru_y, ru_z);
-     QVector3D ld0 = ld;
-     QVector3D rd0 = rd;
-     const float f = 1./255.;
-     for (int i=0; i<12; i++) {
-        Int3 col = ActualData->set0->col_spectr[i];
-        glColor4f(f*col.i1, f*col.i2, f*col.i3, 1.0);
-
-        QVector3D l = ld + (lu - ld) * (double(i+1)/12.);
-        QVector3D r = rd + (ru - rd) * (double(i+1)/12.);
-        glBegin(GL_QUADS);
-         glVertex3d(ld0.x, ld0.y, ld0.z);
-         glVertex3d(l.x, l.y, l.z);
-         glVertex3d(r.x, r.y, r.z);
-         glVertex3d(rd0.x, rd0.y, rd0.z);
-        glEnd();
-        str1.sprintf("%d", i);
-        QVector3D ll = (ld0+l)*0.5;
-        glColor4f(0.0, 0.0, 0.0, 1.0);
-        glDisable(GL_DEPTH_TEST);
-        renderText( ll.x, ll.y, ll.z, str1);
-        glEnable(GL_DEPTH_TEST);
-        ld0 = l;
-        rd0 = r;
-     }
-     glEnable(GL_LIGHTING);
-  }
-     if ( ActualData->visible[0] ) {
-        glPushMatrix();
-        draw_faces1(0.);
-        glPopMatrix();
-     }
-
-     if ( ActualData->visible[1] ) {
-        glPushMatrix();
-        draw_faces1(ActualData->mfactor);
-        glPopMatrix();
-     }
-
-// qWarning("paintGL -- fems");
-
-//     glPushMatrix();
-//     draw_numbers();
-//     glPopMatrix();
-
-     if ( ActualData->visible[2] ) {
-        glPushMatrix();
-        glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cube_mat1);
-        draw_nod_disp(0.);
-        glPopMatrix();
-     }
-
-     if ( ActualData->visible[3] ) {
-        glPushMatrix();
-        glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cube_mat2);
-        draw_nod_disp(ActualData->mfactor);
-        glPopMatrix();
-     }
-
-  }
-
-  if ( ActualData->visible[7] ) {
-     glPushMatrix();
-     draw_arrows(ActualData->mfactor);
-     glPopMatrix();
-  }
-
-*/
-//  glPopMatrix();
+//     doGLinvis();
+//     if ( doInvis ) doGLinvis();
 }
 
+/*
+void MainViewer::showUGL()
+{
+ qWarning("--------showUGL--------------");
+  makeCurrent();
+  glLoadIdentity();
+  glTranslated(VS->d_x, VS->d_y, VS->dist);
+  glRotated(0.0625*VS->x_rot, 1.0, 0.0, 0.0);
+  glRotated(0.0625*VS->y_rot, 0.0, 1.0, 0.0);
+  glRotated(0.0625*VS->z_rot, 0.0, 0.0, 1.0);
+//  glPushMatrix();
+  for (int i=0; i<Actual->num_atoms; i++) { 
+     if ( !Actual->atom_show[i] ) continue;
+     int aki = Actual->a_kind[i];
+     int akki = akk[aki];
+     glPushMatrix();
+     Point3d trans = Actual->coord[i] - Actual->u[i] - Actual->cent_;
+     glTranslated(trans.x, trans.y, trans.z);
+//     glColor4f(atom_red[aki], atom_green[aki], atom_blue[aki], VS->at_alfa);
+     a_color[0] = atom_red[aki];
+     a_color[1] = atom_green[aki];
+     a_color[2] = atom_blue[aki];
+     a_color[3] = VS->at_alfa;
+     glMaterialfv(GL_FRONT, GL_DIFFUSE, a_color);
+     glCallList (SphereList[akki]);
+     glPopMatrix();
+  }
+//  glColor4f(grey[0], grey[1], grey[2], grey[3]);
+  grey[3] = VS->at_alfa;
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
+  for (int i=0; i<Actual->num_atoms; i++) { 
+     if ( !Actual->atom_show[i] ) continue;
+     glPushMatrix();
+
+//     Point3d temp1 = Actual->u[i];
+     double dist = Actual->u[i].norme();
+     double invnorm = 1.0 / dist;
+     Point3d temp2 = 
+             Point3d(-Actual->u[i].y*invnorm, Actual->u[i].x*invnorm, 0.0);
+     Point3d trans = Actual->coord[i] - Actual->cent_ - Actual->u[i]*0.3;
+     glTranslated(trans.x, trans.y, trans.z);
+//        glTranslated(Actual->coord[a1].x-Actual->cent_.x, Actual->coord[a1].y-Actual->cent_.y, Actual->coord[a1].z-Actual->cent_.z);
+     double ang = rad2deg*acos(Actual->u[i].z*invnorm);
+     glRotated(-ang, temp2.x, temp2.y, temp2.z);
+     GLUquadricObj *qobj = gluNewQuadric();
+     gluCylinder(qobj, 0.15, 0.15, 0.7*dist, 16, 8);
+     gluDeleteQuadric(qobj);
+     glRotated(180., temp2.x, temp2.y, temp2.z);
+     qobj = gluNewQuadric();
+     gluCylinder(qobj, 0.25, 0.0, 0.3*dist, 16, 8);
+     gluDeleteQuadric(qobj);
+
+     glPopMatrix();
+  } // for
+}
+*/
 
 //-----------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------
@@ -515,6 +493,9 @@ void MainViewer::draw_atoms()
      unsigned int aki = ActualData->atoms->type[i];
 //        qWarning("i, aki=%d, %d ", i, aki);
      QVector3D trans = ActualData->atoms->coord[i] - cent_;
+  if ( i==0 ) {
+  qWarning ("aki=%d, trans=(%g, %g, %g)", aki, trans.x(), trans.y(), trans.z());
+  }
      glPushMatrix();
      glTranslated(trans.x(), trans.y(), trans.z());
      a_color[0] = ActualData->ap->atom_red[aki];
@@ -559,10 +540,9 @@ void MainViewer::draw_bonds()
   }
 }
 
-
+/*
 void MainViewer::draw_numbers()
 {
-/*
   if ( n_nodes<=0 ) return;
 
   double delta = 0.01*rad_scene;
@@ -579,8 +559,8 @@ void MainViewer::draw_numbers()
 
      glPopMatrix();
   }
-*/
 }
+*/
 
 void MainViewer::draw_axis()
 {
@@ -768,19 +748,6 @@ void MainViewer::SL_keypress(int key)
   qWarning("slot: key = %d", key);
 }
 
-void MainViewer::drawTexture(GLuint tex, QVector3D pld, QVector3D plu, QVector3D pru, 
-                                                                 QVector3D prd)
-{
-// qWarning("drawTexture");
-  glBindTexture(GL_TEXTURE_2D, tex);
-//  glNormal3f(0.0, 0.0, 1.0);
-  glBegin(GL_QUADS);
-   glTexCoord2f(0.0, 0.0);          glVertex3d(pld.x(), pld.y(), pld.z());
-   glTexCoord2f(0.0, 1.0);          glVertex3f(plu.x(), plu.y(), plu.z());
-   glTexCoord2f(1.0, 1.0);          glVertex3f(pru.x(), pru.y(), pru.z());
-   glTexCoord2f(1.0, 0.0);          glVertex3f(prd.x(), prd.y(), prd.z());
-  glEnd();
-}
 
 void MainViewer::SL_loadImage()
 {
@@ -825,18 +792,18 @@ GLuint MainViewer::image2texture(QImage* bmp)
 }
 
 //-----------------------------------------------------------------------------------
-
+/*
 void MainViewer::initializeGL()
 {
   qWarning ("initializeGL");
    glClearColor (0.0, 0.0, 0.0, 0.0);
    glShadeModel (GL_SMOOTH);
-/*
+/
    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_specular);
    glMaterialfv(GL_FRONT, GL_SHININESS, mat_shininess);
    glEnable(GL_DEPTH_TEST);
    glDepthFunc(GL_LESS);
-*/
+/
    glLightfv(GL_LIGHT0, GL_AMBIENT, mat_ambient);
    glLightfv(GL_LIGHT0, GL_DIFFUSE, mat_diffuse);
    glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
@@ -864,6 +831,39 @@ void MainViewer::initializeGL()
 
 }
 // qWarning ("Fems - vertex");
+*/
+
+void MainViewer::initializeGL()
+{
+   GLfloat diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+//   GLfloat local_view[] = { 0.0 };
+//    glShadeModel(GL_FLAT);
+   glEnable(GL_DEPTH_TEST);
+//   glEnable(GL_COLOR_MATERIAL);
+//   glEnable(GL_CULL_FACE);
+//   glDepthFunc(GL_LESS);
+   glEnable(GL_LIGHTING);
+   glEnable(GL_LIGHT0);
+   glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+   glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
+   glEnable(GL_LIGHT1);
+   glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
+   glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+//   glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER, local_view);
+   glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 30.0);
+
+   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR,  specular_color);
+
+   glEnable (GL_BLEND);
+   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+   glEnable(GL_TEXTURE_2D);
+   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+   glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
+ qWarning(" * * *   GL Init   * * *");
+}
+
 
 QVector3D MainViewer::getOGLPos(int x, int y)
 {
@@ -923,28 +923,24 @@ void MainViewer::doGLdisloc()
 
 // ---------------------------------------
 
-void MainViewer::drawBox(double v[8][3]/*, double norm_v[8][3]*/)
+void MainViewer::drawBox(double v[8][3], double norm_v[8][3])
 {
-  static GLint _faces[6][4] = 
-    {
-      {0, 1, 2, 3},
-      {3, 2, 6, 7},
-      {7, 6, 5, 4},
-      {4, 5, 1, 0},
-      {5, 6, 2, 1},
-      {7, 4, 0, 3}
-    };
-  
-  for (int i=5; i>=0; i--) 
-    {
-      glBegin(GL_QUADS);
-      
-      //	glNormal3dv(&norm_v[i][0]);
-      glVertex3dv(&v[_faces[i][0]][0]);
-      glVertex3dv(&v[_faces[i][1]][0]);
-      glVertex3dv(&v[_faces[i][2]][0]);
-      glVertex3dv(&v[_faces[i][3]][0]);
-      glEnd();
+  static GLint _faces[6][4] = {
+    {0, 1, 2, 3},
+    {3, 2, 6, 7},
+    {7, 6, 5, 4},
+    {4, 5, 1, 0},
+    {5, 6, 2, 1},
+    {7, 4, 0, 3}
+  };
+  for (int i=5; i>=0; i--) {
+     glBegin(GL_QUADS);
+//	glNormal3dv(&norm_v[i][0]);
+     glVertex3dv(&v[_faces[i][0]][0]);
+     glVertex3dv(&v[_faces[i][1]][0]);
+     glVertex3dv(&v[_faces[i][2]][0]);
+     glVertex3dv(&v[_faces[i][3]][0]);
+     glEnd();
   }
 }
 
