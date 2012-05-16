@@ -24,13 +24,12 @@
 
 # First some definitions about the vecds project:
 TEMPLATE    = app
-VERSION     = 0.2.pre
 TARGET      = bin/vecds
 TARGET_EXT  =
 
 # Then output some information about the system we compile on:
 message ( ------------------------------------------------------- )
-message ( Application: vecds-$$VERSION)
+#message ( Application: vecds-$$VERSION)
    message ( Making: Makefile on $$_DATE_)
    message ( On: $$QMAKE_HOST.name $$QMAKE_HOST.os \
              $$QMAKE_HOST.arch $$QMAKE_HOST.version)

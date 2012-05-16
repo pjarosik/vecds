@@ -27,8 +27,8 @@
  * are some things we only want to define once (global options).
  */
 
-#define VECDS_VERSION_MAJOR = 0
-#define VECDS_VERSION_MINOR = 3
+#define VECDS_VERSION_MAJOR = 1
+#define VECDS_VERSION_MINOR = 0
 #define VECDS_VERSION_PATCH = 0
 #define VECDS_VERSION_TYPE  = dev
 #define VECDS_VERSION       = ${VECDS_VERSION_MAJOR}.${VECDS_VERSION_MINOR}.${VECDS_VERSION_PATCH}
