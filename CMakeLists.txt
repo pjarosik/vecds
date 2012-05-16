@@ -69,6 +69,29 @@ find_path (GSL_INCLUDES
 
 find_package_handle_standard_args ("GSL includes" REQUIRED_VARS GSL_INCLUDES)
 
+find_library (GSL_CBLAS_LIBRARIES
+  NAMES gslcblas
+  PATHS 
+  /usr/local/lib 
+  /usr/lib
+)
+
+find_package_handle_standard_args ("GSL C Blas includes" REQUIRED_VARS GSL_CBLAS_LIBRARIES)
+
+find_path (GSL_CBLAS_INCLUDES
+  ## Look for gsl version and math header.
+  NAMES gsl_cblas.h
+  PATHS
+  /usr/local/include/gsl
+  /usr/include/gsl
+)
+
+find_package_handle_standard_args ("GSL C Blas includes" REQUIRED_VARS GSL_CBLAS_INCLUDES)
+
+find_package (OpenGL REQUIRED)
+find_package_handle_standard_args ("OpenGL libraries" REQUIRED_VARS OPENGL_LIBRARIES)
+find_package_handle_standard_args ("OpenGL includes"  REQUIRED_VARS OPENGL_INCLUDE_DIR)
+
 ##############################################
 find_package (Qt4 REQUIRED)
 set (QT_USE_QTOPENGL TRUE)
@@ -140,7 +163,7 @@ find_library (QWTPOLAR_LIBRARIES
 
 find_package_handle_standard_args ("QwtPolar libraries" REQUIRED_VARS QWTPOLAR_LIBRARIES)
 
-find_path (QWT3D_INCLUDES
+find_path (QWTPOLAR_INCLUDES
   ## Look for qwt polar header.
   NAMES qwt_polar
   PATHS
@@ -198,6 +221,7 @@ include_directories (
   ${VECDS_INCLUDES}
   ${GLUT_INCLUDE_DIR}
   ${GSL_INCLUDES}
+  ${GSBLASL_INCLUDES}
   ${QT_INCLUDES}
   ${QWT_INCLUDES}
   ${QWT3D_INCLUDES}
@@ -218,6 +242,8 @@ add_executable (VECDS ${source})
 target_link_libraries (VECDS 
   ${GLUT_LIBRARIES} 
   ${GSL_LIBRARIES} 
+  ${GSL_CBLAS_LIBRARIES} 
+  ${OPENGL_LIBRARIES}
   ${QT_LIBRARIES} 
   ${QWT_LIBRARIES}
   ${QWT3D_LIBRARIES}
