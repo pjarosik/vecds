@@ -6,12 +6,12 @@
 
 cmake_minimum_required (VERSION 2.8)
 
-###################################################
+#######################################
 message (STATUS "Preconfiguring vecds")
-###################################################
+#######################################
 project (VECDS)
 set (VECDS_NAME               "vecds")
-set (VECDS_PACKAGE_NAME       "namespace vecds")
+set (VECDS_PACKAGE_NAME       "visualisation of crystal defects")
 set (VECDS_PACKAGE_BUGREPORT  "vecds-users@lists.sourceforge.net")
 set (VECDS_VERSION_MAJOR      "1")
 set (VECDS_VERSION_MINOR      "0")
@@ -39,16 +39,51 @@ message (STATUS "The CMake library output path is: ${LIBRARY_OUTPUT_PATH}")
 message (STATUS "The CMake module path is: ${CMAKE_MODULE_PATH}")
 message (STATUS "Found CMake: ${CMAKE_COMMAND} (found version \"${CMAKE_VERSION}\")")
 
+###############################################
+message (STATUS "Configuring compiler options")
+###############################################
+enable_language (CXX)
+if (CMAKE_COMPILER_IS_GNUCXX)
+  execute_process (COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE CXX_COMPILER_VERSION)
+  string (REGEX MATCHALL "[0-9]+" CXX_COMPILER_VERSION_COMPONENTS ${CXX_COMPILER_VERSION})
+  list (GET CXX_COMPILER_VERSION_COMPONENTS 0 CXX_COMPILER_VERSION_MAJOR)
+  list (GET CXX_COMPILER_VERSION_COMPONENTS 1 CXX_COMPILER_VERSION_MINOR)
+  list (GET CXX_COMPILER_VERSION_COMPONENTS 2 CXX_COMPILER_VERSION_TWEAK)
+  set (CXX_COMPILER_VERSION ${CXX_COMPILER_VERSION_MAJOR}.${CXX_COMPILER_VERSION_MINOR}.${CXX_COMPILER_VERSION_TWEAK})
+  message (STATUS "Found GNU compiler: ${CMAKE_CXX_COMPILER} (found version \"${CXX_COMPILER_VERSION}\")")
+endif ()
 
 ##############################################
 message (STATUS "Configuring system packages")
 ##############################################
 find_package (Curses)
-find_package (Doxygen)
-find_package (MPI)
 find_package (Perl)
 find_package (PNG)
 find_package (PythonLibs)
-find_package (Threads)
 find_package (ZLIB)
+find_package (Qt4)
 
+##############################################
+#find_package (Qwt)
+find_library (QWT_LIBRARIES
+  NAMES qwt-qt4 qwt
+  PATHS /usr/local/lib /usr/lib
+)
+
+if (QWT_LIBRARIES)
+  message (STATUS "Found qwt libraries \"${QWT_LIBRARIES}\"")
+endif ()
+
+find_path (QWT_INCLUDE_DIRS
+  NAMES qwt_plot.h
+  PATHS
+  /usr/local/include/qwt-qt4
+  /usr/local/include/qwt
+  /usr/include/qwt-qt4
+  /usr/include/qwt
+)
+
+if (QWT_INCLUDE_DIRS)
+  message (STATUS "Found qwt includes \"${QWT_INCLUDE_DIRS}\"")
+endif ()
+##############################################
