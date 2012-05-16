@@ -127,7 +127,10 @@ find_package_handle_standard_args ("Qwt3d includes"  REQUIRED_VARS QWT3D_INCLUDE
 ## Note: It is a complete mystery as to why we need to include the Qwt
 ## Polar libraries. It seems something "Extra" gets triggered in the
 ## Qwt since, without it installed, we get error messages of the type:
+##
 ## fatal error: qwt_scale_engine.h: no such file or directory
+##
+## So there...
 find_library (QWTPOLAR_LIBRARIES
   NAMES qwtpolar
   PATHS 
