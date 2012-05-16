@@ -45,7 +45,7 @@ namespace function
    * H(x)=\left\{\begin{array}{cc}0&x<0\\1&x\geq0\end{array}\right.\quad. \f]
    *
    */
-  inline const double heavyside (const double x)
+  inline double heavyside (const double x)
   {
     return (x<0.) ? 0. : 1.;
   }
@@ -60,7 +60,7 @@ namespace function
    * \f[ S(x)=\frac{1}{1+e^{-x}}\quad. \f]
    *
    */
-  inline const double sigmoid (const double x)
+  inline double sigmoid (const double x)
   {
     return (1./(1. + exp (-x)));
   }

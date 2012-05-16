@@ -225,7 +225,7 @@ inline double determinant (const Mat9d &m)
  * Return the inverse of the deteminant \f$({\rm det}\,M)^{-1}\f$ of
  * <code>this</code> matrix.
  */
-inline const double inverse_determinant (const Mat9d &m)
+inline double inverse_determinant (const Mat9d &m)
 {
   return 1./determinant (m);
 }
