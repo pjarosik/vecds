@@ -57,6 +57,7 @@ INCLUDEPATH += .
 INCLUDEPATH *= /usr/include/qwt5
 LIBS        *= -lqwt -lgsl -lgslcblas -lm
 LIBS        += -L/usr/local/lib -lGLU
+
 #INCLUDEPATH *= /usr/include/qwt-qt4
 #LIBS        *= -lqwt-qt4
 

@@ -24,6 +24,7 @@ set (VECDS_DOCS               ${VECDS_PATH}/doc)
 set (VECDS_INCLUDES           ${VECDS_PATH}/include)
 set (VECDS_LIBRARIES          ${VECDS_PATH}/lib)
 set (VECDS_SHARES             ${VECDS_PATH}/share)
+set (VECDS_BIN                ${VECDS_PATH}/bin)
 set (LIBRARY_OUTPUT_PATH      ${VECDS_LIBRARIES})
 set (CMAKE_MODULE_PATH        ${VECDS_PATH}/CMakeModules)
 set (CMAKE_INSTALL_PREFIX     ${VECDS_LIBRARIES})
@@ -42,34 +43,155 @@ message (STATUS "Found CMake: ${CMAKE_COMMAND} (found version \"${CMAKE_VERSION}
 ##############################################
 message (STATUS "Configuring system packages")
 ##############################################
-find_package (Curses)
-find_package (Perl)
-find_package (PNG)
-find_package (PythonLibs)
-find_package (ZLIB)
-find_package (Qt4)
-
-##############################################
-#find_package (Qwt)
 include (FindPackageHandleStandardArgs)
-
-find_library (QWT_LIBRARIES
-  NAMES qwt-qt4 qwt
-  PATHS /usr/local/lib /usr/lib
+find_package (Curses)
+find_package (GLUT REQUIRED)
+find_package_handle_standard_args ("GLUT libraries" REQUIRED_VARS GLUT_LIBRARIES)
+find_package_handle_standard_args ("GLUT includes"  REQUIRED_VARS GLUT_INCLUDE_DIR)
+##############################################
+#find_package (GSL)
+find_library (GSL_LIBRARIES
+  NAMES gsl
+  PATHS 
+  /usr/local/lib 
+  /usr/lib
 )
 
+find_package_handle_standard_args ("GSL includes" REQUIRED_VARS GSL_LIBRARIES)
+
+find_path (GSL_INCLUDES
+  ## Look for gsl version and math header.
+  NAMES gsl_version.h gsl_math.h
+  PATHS
+  /usr/local/include/gsl
+  /usr/include/gsl
+)
+
+find_package_handle_standard_args ("GSL includes" REQUIRED_VARS GSL_INCLUDES)
+
+##############################################
+find_package (Qt4 REQUIRED)
+set (QT_USE_QTOPENGL TRUE)
+include (${QT_USE_FILE})
+add_definitions (${QT_DEFINITIONS})
+##############################################
+#find_package (Qwt)
+
+find_library (QWT_LIBRARIES
+  NAMES qwt6 qwt5 qwt
+  PATHS 
+  /usr/local/lib 
+  /usr/lib
+) 
+
+find_package_handle_standard_args ("Qwt libraries" REQUIRED_VARS QWT_LIBRARIES)
+
 find_path (QWT_INCLUDES
+  ## Look for qwt header.
   NAMES qwt.h
   PATHS
   /usr/local/include/qwt-qt4
+  /usr/local/include/qwt6
   /usr/local/include/qwt5
   /usr/local/include/qwt
   /usr/include/qwt-qt4
+  /usr/include/qwt6
   /usr/include/qwt5
   /usr/include/qwt
-  /usr/include
 )
 
-find_package_handle_standard_args ("Qwt libraries" REQUIRED_VARS QWT_LIBRARIES)
 find_package_handle_standard_args ("Qwt includes"  REQUIRED_VARS QWT_INCLUDES)
 ##############################################
+#find_package (QwtPlot3d)
+
+find_library (QWT3D_LIBRARIES
+  NAMES qwtplot3d
+  PATHS 
+  /usr/local/lib 
+  /usr/lib
+) 
+
+find_package_handle_standard_args ("Qwt3d libraries" REQUIRED_VARS QWT3D_LIBRARIES)
+
+find_path (QWT3D_INCLUDES
+  ## Look for qwt data types.
+  NAMES qwt3d_types.h 
+  PATHS
+  /usr/local/include/qwtplot3d
+  /usr/include/qwtplot3d
+)
+
+find_package_handle_standard_args ("Qwt3d includes"  REQUIRED_VARS QWT3D_INCLUDES)
+##############################################
+
+#########################################
+message (STATUS "Configuring build type")
+#########################################
+if (CMAKE_BUILD_TYPE STREQUAL "Release")
+  ############################################
+  if (MSVC OR MSVC_IDE OR MSVC60 OR MSVC70 OR MSVC71 OR MSVC80 OR MSVC90 OR MSVC10)
+    ## Microsoft Visual Compilers go out on limb to not document their
+    ## compiler flags in an understandable way. Accordingly, if any of
+    ## those compilers show up, do nothing and hope for the best.
+    add_definitions ()
+  else ()
+    ## Random guesses...
+    add_definitions ("-march=native")
+    
+    ## Optimizations (no warnings!):
+    add_definitions ("-fdata-sections -ffunction-sections -findirect-inlining -fforce-addr -fstrict-aliasing -ftemplate-depth-128 -funroll-loops")
+    
+    if (CXX_COMPILER_FLAG_FLTO)
+      add_definitions ("-flto")
+    endif ()
+  endif ()
+  
+  ############################################
+else ()
+  if (MSVC OR MSVC_IDE OR MSVC60 OR MSVC70 OR MSVC71 OR MSVC80 OR MSVC90 OR MSVC10)
+    ## See note above...
+    add_definitions ()
+  else ()
+    ## Warnings:
+    add_definitions ("-Wextra -Wpointer-arith -Wsign-compare -Wswitch -Wwrite-strings")
+     
+    ## Optimizations:
+    add_definitions ("-ftemplate-depth-128")
+    
+    if (CXX_COMPILER_FLAG_RDYNAMIC)
+      add_definitions ("-rdynamic")
+    endif ()
+  endif ()
+endif ()
+
+################################################
+message (STATUS "Configuring build environment")
+################################################
+include_directories (
+  ${VECDS_INCLUDES}
+  ${GLUT_INCLUDE_DIR}
+  ${GSL_INCLUDES}
+  ${QT_INCLUDES}
+  ${QWT_INCLUDES}
+  ${QWT3D_INCLUDES}
+  )
+
+list (APPEND source
+  ${VECDS_PATH}/source/arcball
+  ${VECDS_PATH}/source/dialogs
+  ${VECDS_PATH}/source/help_browser
+  ${VECDS_PATH}/source/internal
+  ${VECDS_PATH}/source/main
+  ${VECDS_PATH}/source/main_viewer
+  ${VECDS_PATH}/source/main_window
+  )
+
+add_executable (VECDS ${source})
+
+target_link_libraries (VECDS 
+  ${GLUT_LIBRARIES} 
+  ${GSL_LIBRARIES} 
+  ${QT_LIBRARIES} 
+  ${QWT_LIBRARIES}
+  ${QWT3D_LIBRARIES}
+  )
