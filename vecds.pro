@@ -27,6 +27,16 @@ TEMPLATE    = app
 TARGET      = bin/vecds
 TARGET_EXT  =
 
+
+message ( ******************************************************* )
+message (  WARNING:  You are trying to build VECDS with qmake   )
+message (  WARNING:  but this is not supported. do NOT complain )
+message (  WARNING:  if things work for you. Use CMake instead. )
+message (  WARNING:                                             )
+message (  WARNING: This message and all qmake facilities will  )
+message (  WARNING: be removed before the next release.  )
+message ( ******************************************************* )
+
 # Then output some information about the system we compile on:
 message ( ------------------------------------------------------- )
 #message ( Application: vecds-$$VERSION)
