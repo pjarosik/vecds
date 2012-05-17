@@ -21,7 +21,7 @@ set (VECDS_VERSION            ${VECDS_VERSION_MAJOR}.${VECDS_VERSION_MINOR}.${VE
 set (VECDS_PACKAGE_STRING     ${VECDS_PACKAGE_NAME}\\${VECDS_VERSION})
 set (VECDS_PATH               ${CMAKE_SOURCE_DIR})
 set (VECDS_DOCS               ${VECDS_PATH}/doc)
-set (VECDS_INCLUDES           ${VECDS_PATH}/include)
+set (VECDS_INCLUDES           ${VECDS_PATH}/include/vecds)
 set (VECDS_LIBRARIES          ${VECDS_PATH}/lib)
 set (VECDS_SHARES             ${VECDS_PATH}/share)
 set (VECDS_BIN                ${VECDS_PATH}/bin)
@@ -30,7 +30,6 @@ set (CMAKE_MODULE_PATH        ${VECDS_PATH}/CMakeModules)
 set (CMAKE_INSTALL_PREFIX     ${VECDS_LIBRARIES})
 set (CMAKE_CXX_FLAGS_DEBUG    "-O0 -g -DDEBUG -Wall")
 set (CMAKE_CXX_FLAGS_RELEASE  "-O3 -DNDEBUG") 
-set (CMAKE_VERBOSE_MAKEFILE   ON)
 
 ## Debug messages...
 message (STATUS "The CMake build type is: ${CMAKE_BUILD_TYPE}")
@@ -45,9 +44,6 @@ message (STATUS "Configuring system packages")
 ##############################################
 include (FindPackageHandleStandardArgs)
 find_package (Curses)
-find_package (GLUT REQUIRED)
-find_package_handle_standard_args ("GLUT libraries" REQUIRED_VARS GLUT_LIBRARIES)
-find_package_handle_standard_args ("GLUT includes"  REQUIRED_VARS GLUT_INCLUDE_DIR)
 ##############################################
 #find_package (GSL)
 find_library (GSL_LIBRARIES
@@ -93,7 +89,8 @@ find_package_handle_standard_args ("OpenGL libraries" REQUIRED_VARS OPENGL_LIBRA
 find_package_handle_standard_args ("OpenGL includes"  REQUIRED_VARS OPENGL_INCLUDE_DIR)
 
 ##############################################
-find_package (Qt4 REQUIRED)
+find_package (Qt4 REQUIRED COMPONENTS QtCore QtOpenGL)
+set (QT_USE_QTCORE TRUE)
 set (QT_USE_QTOPENGL TRUE)
 include (${QT_USE_FILE})
 add_definitions (${QT_DEFINITIONS})
@@ -149,7 +146,8 @@ find_package_handle_standard_args ("Qwt3d includes"  REQUIRED_VARS QWT3D_INCLUDE
 ##############################################
 ## Note: It is a complete mystery as to why we need to include the Qwt
 ## Polar libraries. It seems something "Extra" gets triggered in the
-## Qwt since, without it installed, we get error messages of the type:
+## Qwt on some distributions of Linux since, without it installed, we
+## get error messages of the type:
 ##
 ## fatal error: qwt_scale_engine.h: no such file or directory
 ##
@@ -165,7 +163,7 @@ find_package_handle_standard_args ("QwtPolar libraries" REQUIRED_VARS QWTPOLAR_L
 
 find_path (QWTPOLAR_INCLUDES
   ## Look for qwt polar header.
-  NAMES qwt_polar
+  NAMES qwt_polar.h
   PATHS
   /usr/local/include/qwtpolar
   /usr/include/qwtpolar
@@ -190,10 +188,6 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     
     ## Optimizations (no warnings!):
     add_definitions ("-fdata-sections -ffunction-sections -findirect-inlining -fforce-addr -fstrict-aliasing -ftemplate-depth-128 -funroll-loops")
-    
-    if (CXX_COMPILER_FLAG_FLTO)
-      add_definitions ("-flto")
-    endif ()
   endif ()
   
   ############################################
@@ -205,21 +199,18 @@ else ()
     ## Warnings:
     add_definitions ("-Wextra -Wpointer-arith -Wsign-compare -Wswitch -Wwrite-strings")
      
-    ## Optimizations:
+    ## Optimizations (basically none):
     add_definitions ("-ftemplate-depth-128")
-    
-    if (CXX_COMPILER_FLAG_RDYNAMIC)
-      add_definitions ("-rdynamic")
-    endif ()
   endif ()
 endif ()
+
+
 
 ################################################
 message (STATUS "Configuring build environment")
 ################################################
 include_directories (
   ${VECDS_INCLUDES}
-  ${GLUT_INCLUDE_DIR}
   ${GSL_INCLUDES}
   ${GSBLASL_INCLUDES}
   ${QT_INCLUDES}
@@ -227,7 +218,7 @@ include_directories (
   ${QWT3D_INCLUDES}
   )
 
-list (APPEND source
+set (vecds_sources
   ${VECDS_PATH}/source/arcball
   ${VECDS_PATH}/source/dialogs
   ${VECDS_PATH}/source/help_browser
@@ -237,12 +228,28 @@ list (APPEND source
   ${VECDS_PATH}/source/main_window
   )
 
-add_executable (VECDS ${source})
+set (vecds_headers
+  ${VECDS_INCLUDES}/arcball.h
+  ${VECDS_INCLUDES}/dialogs.h
+  ${VECDS_INCLUDES}/help_browser.h
+  ${VECDS_INCLUDES}/internal.h
+  ##  ${VECDS_INCLUDES}/main.h
+  ${VECDS_INCLUDES}/main_viewer.h
+  ${VECDS_INCLUDES}/main_window.h
+)
+
+
+qt4_wrap_cpp (vecds_headers_moc ${vecds_headers})
+add_executable (VECDS ${vecds_sources} ${vecds_headers_moc})
+
+## We're not actually using the resources file at the moment, but
+## if/when we do, this is how we would do it:
+##
+## set (vecds_resources ${VECDS_INCLUDES}/vecds.qrc)
+## qt4_add_resources (vecds_resources_rcc ${vecds_resources})
 
 target_link_libraries (VECDS 
-  ${GLUT_LIBRARIES} 
   ${GSL_LIBRARIES} 
-  ${GSL_CBLAS_LIBRARIES} 
   ${OPENGL_LIBRARIES}
   ${QT_LIBRARIES} 
   ${QWT_LIBRARIES}
