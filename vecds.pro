@@ -25,8 +25,6 @@
 # First some definitions about the vecds project:
 TEMPLATE    = app
 TARGET      = bin/vecds
-TARGET_EXT  =
-
 
 message ( ******************************************************* )
 message (  WARNING:  You are trying to build VECDS with qmake   )
@@ -37,10 +35,7 @@ message (  WARNING: This message and all qmake facilities will  )
 message (  WARNING: be removed before the next release.  )
 message ( ******************************************************* )
 
-# Then output some information about the system we compile on:
 message ( ------------------------------------------------------- )
-#message ( Application: vecds-$$VERSION)
-   message ( Making: Makefile on $$_DATE_)
    message ( On: $$QMAKE_HOST.name $$QMAKE_HOST.os \
              $$QMAKE_HOST.arch $$QMAKE_HOST.version)
    message ( Using: $$_PRO_FILE_)   
@@ -50,29 +45,20 @@ message ( ------------------------------------------------------- )
    message ( Qt libraries in $$[QT_INSTALL_LIBS])
 
 # Shut up the compiler:
-CONFIG += silent # debug_and_release
-
-# This defines the way the documentation will be made:
-dox.target   = doc
-dox.commands = cd doc; doxygen doc.template;
-dox.depends  = FORCE
+CONFIG += silent
 
 # Additional control of the compilation process:
 QMAKE_CXXFLAGS           += -Wno-ignored-qualifiers -fno-strict-aliasing
-QMAKE_EXTRA_TARGETS      += dox
 QMAKE_DISTCLEAN          += doc/html/* doc/latex/* source/qrc_vecds.cpp
 
 # Additional includes and libraries needed to compile application:
 INCLUDEPATH += .
 INCLUDEPATH *= /usr/include/qwt5
-LIBS        *= -lqwt -lgsl -lgslcblas -lm
+
+LIBS        *= -lqwt -lgsl -lm
 LIBS        += -L/usr/local/lib -lGLU
 
-#INCLUDEPATH *= /usr/include/qwt-qt4
-#LIBS        *= -lqwt-qt4
-
-# Add functionality of Qt needed by vecds
-QT += opengl
+QT          += opengl
 
 # Location of header files and other resources needed for compilation:
 HEADERS     = $$files(include/vecds/*.h)
@@ -81,8 +67,7 @@ RESOURCES   = $$files(include/vecds/*.qrc)
 OBJECTS_DIR = lib
 MOC_DIR     = moc 
 
-# End of file
 message ( -------------------------------------------------------)
-
+# End of file
 
 
