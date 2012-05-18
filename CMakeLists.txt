@@ -13,21 +13,18 @@ project (VECDS)
 set (VECDS_NAME               "vecds")
 set (VECDS_PACKAGE_NAME       "visualisation of crystal defects")
 set (VECDS_PACKAGE_BUGREPORT  "vecds-users@lists.sourceforge.net")
-set (VECDS_VERSION_MAJOR      "1")
-set (VECDS_VERSION_MINOR      "0")
+set (VECDS_VERSION_MAJOR      "0")
+set (VECDS_VERSION_MINOR      "4")
 set (VECDS_VERSION_TWEAK      "0")
 set (VECDS_VERSION_PATCH      "dev")
 set (VECDS_VERSION            ${VECDS_VERSION_MAJOR}.${VECDS_VERSION_MINOR}.${VECDS_VERSION_TWEAK}.${VECDS_VERSION_PATCH})
 set (VECDS_PACKAGE_STRING     ${VECDS_PACKAGE_NAME}\\${VECDS_VERSION})
 set (VECDS_PATH               ${CMAKE_SOURCE_DIR})
-set (VECDS_DOCS               ${VECDS_PATH}/doc)
 set (VECDS_INCLUDES           ${VECDS_PATH}/include/vecds)
-set (VECDS_LIBRARIES          ${VECDS_PATH}/lib)
 set (VECDS_SHARES             ${VECDS_PATH}/share)
 set (VECDS_BIN                ${VECDS_PATH}/bin)
-set (LIBRARY_OUTPUT_PATH      ${VECDS_LIBRARIES})
 set (CMAKE_MODULE_PATH        ${VECDS_PATH}/CMakeModules)
-set (CMAKE_INSTALL_PREFIX     ${VECDS_LIBRARIES})
+# set (CMAKE_INSTALL_PREFIX     ${VECDS_BIN})
 set (CMAKE_CXX_FLAGS_DEBUG    "-O0 -g -DDEBUG -Wall")
 set (CMAKE_CXX_FLAGS_RELEASE  "-O3 -DNDEBUG") 
 
@@ -35,7 +32,6 @@ set (CMAKE_CXX_FLAGS_RELEASE  "-O3 -DNDEBUG")
 message (STATUS "The CMake build type is: ${CMAKE_BUILD_TYPE}")
 message (STATUS "The CMake host system is: ${CMAKE_SYSTEM_NAME} (\"${CMAKE_SYSTEM}\")")
 message (STATUS "The CMake generator identification is: ${CMAKE_GENERATOR}")
-message (STATUS "The CMake library output path is: ${LIBRARY_OUTPUT_PATH}")
 message (STATUS "The CMake module path is: ${CMAKE_MODULE_PATH}")
 message (STATUS "Found CMake: ${CMAKE_COMMAND} (found version \"${CMAKE_VERSION}\")")
 
@@ -230,30 +226,33 @@ set (vecds_sources
   ${VECDS_PATH}/source/main_window
   )
 
+## Note, header files *only* determine which files will be passed over
+## for moc generated code; thus, we do not need them all.
 set (vecds_headers
-  ${VECDS_INCLUDES}/arcball.h
+  ##  ${VECDS_INCLUDES}/arcball.h
   ${VECDS_INCLUDES}/dialogs.h
   ${VECDS_INCLUDES}/help_browser.h
-  ${VECDS_INCLUDES}/internal.h
+  ##  ${VECDS_INCLUDES}/internal.h
   ##  ${VECDS_INCLUDES}/main.h
   ${VECDS_INCLUDES}/main_viewer.h
   ${VECDS_INCLUDES}/main_window.h
 )
 
-
 qt4_wrap_cpp (vecds_headers_moc ${vecds_headers})
-add_executable (VECDS ${vecds_sources} ${vecds_headers_moc})
+add_executable (${VECDS_NAME} ${vecds_sources} ${vecds_headers_moc})
 
-## We're not actually using the resources file at the moment, but
+## We're not actually going the resources files at the moment, but
 ## if/when we do, this is how we would do it:
 ##
 ## set (vecds_resources ${VECDS_INCLUDES}/vecds.qrc)
 ## qt4_add_resources (vecds_resources_rcc ${vecds_resources})
 
-target_link_libraries (VECDS 
+target_link_libraries (${VECDS_NAME}
   ${GSL_LIBRARIES} 
   ${OPENGL_LIBRARIES}
   ${QT_LIBRARIES} 
   ${QWT_LIBRARIES}
   ${QWTPLOT3D_LIBRARIES}
   )
+
+set (EXECUTABLE_OUTPUT_PATH ${VECDS_BIN})
