@@ -124,24 +124,26 @@ find_package_handle_standard_args ("Qwt includes"  REQUIRED_VARS QWT_INCLUDES)
 ##############################################
 #find_package (QwtPlot3d)
 
-find_library (QWT3D_LIBRARIES
-  NAMES qwtplot3d
+find_library (QWTPLOT3D_LIBRARIES
+  NAMES qwtplot3d qwtplot3d-qt4
   PATHS 
   /usr/local/lib 
   /usr/lib
 ) 
 
-find_package_handle_standard_args ("Qwt3d libraries" REQUIRED_VARS QWT3D_LIBRARIES)
+find_package_handle_standard_args ("Qwt3d libraries" REQUIRED_VARS QWTPLOT3D_LIBRARIES)
 
-find_path (QWT3D_INCLUDES
+find_path (QWTPLOT3D_INCLUDES
   ## Look for qwt data types.
   NAMES qwt3d_types.h 
   PATHS
+  /usr/local/include/qwtplot3d-qt4
   /usr/local/include/qwtplot3d
+  /usr/include/qwtplot3d-qt4
   /usr/include/qwtplot3d
 )
 
-find_package_handle_standard_args ("Qwt3d includes"  REQUIRED_VARS QWT3D_INCLUDES)
+find_package_handle_standard_args ("Qwt3d includes"  REQUIRED_VARS QWTPLOT3D_INCLUDES)
 
 ##############################################
 ## Note: It is a complete mystery as to why we need to include the Qwt
@@ -153,7 +155,7 @@ find_package_handle_standard_args ("Qwt3d includes"  REQUIRED_VARS QWT3D_INCLUDE
 ##
 ## So there...
 find_library (QWTPOLAR_LIBRARIES
-  NAMES qwtpolar
+  NAMES qwtpolar 
   PATHS 
   /usr/local/lib 
   /usr/lib
@@ -215,7 +217,7 @@ include_directories (
   ${GSBLASL_INCLUDES}
   ${QT_INCLUDES}
   ${QWT_INCLUDES}
-  ${QWT3D_INCLUDES}
+  ${QWTPLOT3D_INCLUDES}
   )
 
 set (vecds_sources
@@ -253,5 +255,5 @@ target_link_libraries (VECDS
   ${OPENGL_LIBRARIES}
   ${QT_LIBRARIES} 
   ${QWT_LIBRARIES}
-  ${QWT3D_LIBRARIES}
+  ${QWTPLOT3D_LIBRARIES}
   )
