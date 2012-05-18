@@ -1,0 +1,28 @@
+
+Changes are listed in this file with the names of the authors that
+made those changes.
+
+
+v 0.4.* 2012/05/16
+------------------
+
+Configure:
+
+	** Using qmake to build vecds was always a bit simlistic. Now,
+           vecds can be configured and installed on almost any system
+           (untested) using cmake. (TDY 2012/05/18).
+
+GUI:
+
+Bug fixes:
+
+	** ???
+
+v 0.3.* 2012/05/16
+------------------
+
+Improvements:
+
+	** First official buggy release. (TDY 2012/05/16).
+
+
