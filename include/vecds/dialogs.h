@@ -23,8 +23,7 @@
 // -------------------------------------------------------------------
 
 
-#ifndef QUEST_H
-#define QUEST_H
+
 
 #include <QDialog>
 #include <QLineEdit>
@@ -34,38 +33,77 @@
 #include <QGroupBox>
 #include <QCheckBox>
 
-class QuestionForm : public QDialog
+#ifndef QUESTION_FORM_H
+#define QUESTION_FORM_H
+
+class QuestionForm 
+: 
+public QDialog
 {
   Q_OBJECT
     
     public:
-  QuestionForm(QString title, QString descr, 
-	       QStringList quest, QStringList sug, QStringList &ans, 
-	       bool &ok, 
-	       QWidget *parent = 0);
+
+                                 /* constructor */
+  QuestionForm (QString      title, 
+	        QString     &description, 
+	        QStringList &question, 
+		QStringList &suggestion, 
+		QStringList &answer, 
+		bool        &ok, 
+		QWidget     *parent = 0);
   
+                                 /* destructor */
+  ~QuestionForm ();
+
  private:
-  QLabel *lab0;
-  QLabel *lab[50];
+
+                                 /* label descriptions */
+  QLabel *description_label;
+
+                                 /* label a list of questions */
+  QLabel *question_label[50];
+
+                                 /* TODO: a list of somethings */
   QLineEdit *qEdit[50];
+
+                                 /* a pointer to the button box
+				    created by this class */
   QDialogButtonBox *buttonBox;
 };
 
+#endif
+
 // -----------------------------------------------------------------------
 
-class Questions : public QDialog
+#ifndef QUESTIONS_H
+#define QUESTIONS_H
+
+class Questions 
+: 
+public QDialog
 {
   Q_OBJECT
     
     public:
-  Questions(QString title, 
-	    QStringList quest, 
-	    bool *results, 
-	    bool &ok,
-	    QWidget *parent = 0);
+
+                                 /* constructor */
+  Questions (QString      title, 
+	     QStringList &question, 
+	     bool        *results, 
+	     bool        &ok,
+	     QWidget     *parent = 0);
+
+                                 /* destructor */
+  ~Questions ();
   
  private:
-  QCheckBox *lab[50];
+
+                                 /* a list of check boxes */
+  QCheckBox *check_box[50];
+
+                                 /* a pointer to the button box
+				    created by this class */
   QDialogButtonBox *buttonBox;
 };
 

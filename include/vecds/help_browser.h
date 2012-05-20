@@ -22,23 +22,41 @@
 //					 
 // -------------------------------------------------------------------
 
+#ifndef HELP_BROWSER_H
+#define HELP_BROWSER_H
+
+#include <QtGui>
 #include <QWidget> 
 
+                                 /* forward declarations of qt
+				    clases */
 class QPushButton;
 class QTextBrowser;
+
 class HelpBrowser : public QWidget
 {
-    Q_OBJECT 
-public: 
-    HelpBrowser(const QString &path, const QString &page,
-                                       QWidget *parent = 0);
-    static void showPage(const QString &page);
-private slots: 
-    void updateWindowTitle();
-private: 
+  Q_OBJECT 
+    
+    public: 
+
+  HelpBrowser (const QString &path, 
+	       const QString &page,
+	       QWidget       *parent = 0);
+
+  ~HelpBrowser ();
+  
+  static void show_page (const QString &page);
+  
+  private slots: 
+  
+  void updateWindowTitle ();
+  
+ private: 
+  
     QTextBrowser *textBrowser;
     QPushButton *homeButton;
     QPushButton *backButton;
     QPushButton *closeButton;
 };
 
+#endif

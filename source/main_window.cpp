@@ -675,7 +675,7 @@ void MainWindow::SL_setSliderValue(int val)
 
 void MainWindow::SL_about()
 {
-  HelpBrowser::showPage("index.html");
+  HelpBrowser::show_page ("index.html");
 }
 
 void MainWindow::SL_openAtoms()
