@@ -1,10 +1,9 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
+// Author: Jan Cholewinski, Pawel Dluzewski and Toby D. Young.
 //
-// Copyright (C) 2010 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify  it under the  terms of  the GNU  General Public  License as
@@ -26,10 +25,13 @@
 #ifndef INTERNAL_H
 #define INTERNAL_H
 
-#include <vecds/algebra.h>
-#include <vecds/additional.h>
 #include <qglobal.h>
 
+                                 // vecds headers
+#include <vecds/algebra.h>
+#include <vecds/additional.h>
+
+                                 // forward declarations
 class MaimViewer;
 class MainWindow;
 

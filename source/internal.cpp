@@ -1,9 +1,8 @@
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
+// Author: Jan Cholewinski,Pawel Dluzewski and Toby D. Young.
 //
-// Copyright (C) 2010 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -71,7 +70,7 @@ int Beta_function(const gsl_vector *x, void *par, gsl_matrix *jac) {
 
   if ( r2<1.e-15 ) 
     {
-      std::cout << " Atom  in the center of dislocation core" << endl;
+      std::cout << " Atom in the center of dislocation core" << endl;
       gsl_matrix_set (jac, 0, 0, 1.);
       gsl_matrix_set (jac, 0, 1, 0.);
       gsl_matrix_set (jac, 0, 2, 0.);
@@ -245,7 +244,7 @@ void Internal::init_structures()
 	 fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
 	 nf = fields.size();
 	 if ( nf!=4 ) qWarning("Error - Atom_data 3 line=%d", nl);
-	 actcrstr->cr_kind[i] = which_atom(fields.takeFirst());
+	 actcrstr->crystal_type[i] = which_atom (fields.takeFirst ());
 	 
 	 actcrstr->cryst[i].setX(read_fraction(fields.takeFirst()));
 	 actcrstr->cryst[i].setY(read_fraction(fields.takeFirst()));
@@ -698,26 +697,26 @@ void Internal::addDisplacements()
 void Internal::calc_disloc(int nr_atom, int disl_num)
 {
   
-  int i0 = atomize(actdisl->rrr, nr_atom);
+  int i0 = atomize (actdisl->rrr, nr_atom);
   qWarning("SINGLE DISL  num=%d - i0=%d - coordinates=(%g %g %g)", disl_num, i0,
 	   atoms->coordinates[i0].x (), 
 	   atoms->coordinates[i0].y (), 
 	   atoms->coordinates[i0].z ());
 
   if ( i0==-1 ) qWarning("Error i0 for %d dislocation\n", ndisl);
-  QVector3D dislcore;// = matvecmult(actcrstr->c2o, actdisl->dislocation_core);
+  QVector3D dislocation_core;
   
-  dislcore.setX(actdisl->dislocation_core.x()*actcrstr->c2o[0] + 
-		actdisl->dislocation_core.y()*actcrstr->c2o[1]);
+  dislocation_core.setX(actdisl->dislocation_core.x()*actcrstr->c2o[0] + 
+			actdisl->dislocation_core.y()*actcrstr->c2o[1]);
   
-  dislcore.setY(actdisl->dislocation_core.x()*actcrstr->c2o[3] + 
-		actdisl->dislocation_core.y()*actcrstr->c2o[4]);
+  dislocation_core.setY(actdisl->dislocation_core.x()*actcrstr->c2o[3] + 
+			actdisl->dislocation_core.y()*actcrstr->c2o[4]);
   
-  dislcore.setZ(actdisl->dislocation_core.x()*actcrstr->c2o[6] + 
-		actdisl->dislocation_core.y()*actcrstr->c2o[7]);
+  dislocation_core.setZ(actdisl->dislocation_core.x()*actcrstr->c2o[6] + 
+			actdisl->dislocation_core.y()*actcrstr->c2o[7]);
 
   Mat9d rt = Mat9d(this->rot_tensor);
-  actdisl->cd = atoms->coordinates[i0] + matvecmult(rt, dislcore);
+  actdisl->cd = atoms->coordinates[i0] + matvecmult(rt, dislocation_core);
   
   actdisl->i0 = i0;
   qWarning("SINGLE DISL corrected coordinates = (%g %g %g),  i0=%d", 
@@ -766,7 +765,7 @@ glm::dvec3 Internal::mixed_u(int i, glm::dvec3 rotdist, double be, double bz)
     } 
 } // mixed_u
 
-glm::dmat3 Internal::mixed_beta(int i, glm::dvec3 rotdist, double be, double bz)
+glm::dmat3 Internal::mixed_beta (int i, glm::dvec3 rotdist, double be, double bz)
 {   
   double nu = 0.35;
   glm::dmat3 b(0.,0.,0.,  0.,0.,0.,  0.,0.,0.);
@@ -781,16 +780,19 @@ glm::dmat3 Internal::mixed_beta(int i, glm::dvec3 rotdist, double be, double bz)
     }
   else 
     {
-      double a = be/(4. * constant::pi * (1.-nu) * r2*r2);             // a = bx/(4. * pi * (1.-n) * r2*r2)
+      double a = be/(4. * constant::pi * (1.-nu) * r2*r2);   // a = bx/(4. * pi * (1.-n) * r2*r2)
       double bxx = -a * y * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(4) = -a * y * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xx 
       double byx = -a * x * ((1.-2.*nu)*x2 + (3.-2.*nu)*y2); // u(5) = -a * x * ((1.-2.*n)*x*x + (3.-2.*n)*y*y) !yx
-      double bzx = -bz/(2.*constant::pi) * y/r2;                       // u(6) = -bz/(2.*pi) * y/r2                       !zx
+      double bzx = -bz/(2.*constant::pi) * y/r2;             // u(6) = -bz/(2.*pi) * y/r2                       !zx
       double bxy =  a * x * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(7) =  a * x * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xy
       double byy =  a * y * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2); // u(8) =  a * y * ((1.+2.*n)*x*x - (1.-2.*n)*y*y) !yy
-      double bzy = -bz/(2.*constant::pi) * x/r2;                       // u(9) = -bz/(2.*pi) * x/r2                       !zy
+      double bzy = -bz/(2.*constant::pi) * x/r2;             // u(9) = -bz/(2.*pi) * x/r2                       !zy
 
-      b = glm::dmat3( bxx, bxy, 0.,   byx, byy, 0.,    bzx, bzy, 0. );
+      b = glm::dmat3 (bxx, bxy, 0.,   
+		      byx, byy, 0.,    
+		      bzx, bzy, 0. );
     }
+
   return b;
 }
 
@@ -819,27 +821,31 @@ int Internal::atomize (const QVector3D    point,
 void Internal::calc_disl0()
 {
   
-  int i0 = -1;
-  double dist = 1.e33;
-  
-  // atomize
-  for (unsigned int i=0; i<atoms->n_atoms; i++) 
+  int    i0       = 0;
+  double infinity = 1.e33;
+  bool   ok       = false;
+
+  for (unsigned int i=0; i<atoms->n_atoms; ++i) 
     {
-      double dst = (actdisl->rrr - atoms->coordinates[i]).length();
-      if ( dst<dist ) 
+      double distance = (actdisl->rrr-atoms->coordinates[i]).length ();
+
+      if (distance<infinity) 
 	{
-	  dist = dst;
-	  i0 = i;
+	  infinity = distance;
+	  i0       = i;
+	  ok       = true;
 	}
     }
-  qWarning("SINGLE DISL  - i0=%d - coordinates=(%g %g %g)", i0,
-	   atoms->coordinates[i0].x (), 
-	   atoms->coordinates[i0].y (), 
-	   atoms->coordinates[i0].z ());
-  if (i0==-1) 
-    qWarning("Error i0 for %d dislocation\n", ndisl);
 
-  actdisl->cd = atoms->coordinates[i0];// + matvecmult(this->rot_tensor, dislcore);
+  if (!ok) 
+    qWarning("Error i0 for %d dislocation\n", ndisl);
+  else
+    qWarning("SINGLE DISL  - i0=%d - coordinates=(%g %g %g)", i0,
+	     atoms->coordinates[i0].x (), 
+	     atoms->coordinates[i0].y (), 
+	     atoms->coordinates[i0].z ());
+  
+  actdisl->cd = atoms->coordinates[i0];
   actdisl->i0 = i0;
   qWarning("SINGLE DISL corrected coordinates = (%g %g %g),  i0=%d", 
 	   actdisl->cd.x(), actdisl->cd.y(), actdisl->cd.z(), i0);
@@ -911,7 +917,7 @@ int Internal::lattice(int nx, int ny, int nz)
 					      double(k)+this->actcrstr->cryst[an].z());
 		  glm::dvec3 vvv = actcrstr->C2O * hic;
 		  this->atoms->coordinates[m] = QVector3D(vvv.x, vvv.y, vvv.z);
-		  this->atoms->atom_type[m++] = this->actcrstr->cr_kind[an];
+		  this->atoms->atom_type[m++] = this->actcrstr->crystal_type[an];
 		}
 	    }
 	}
@@ -942,7 +948,7 @@ int Internal::lattice2 (double sx, double sy, unsigned int nz)
 		     glm::dvec3 ccc = glm::dvec3(this->actcrstr->cryst[an].x(), this->actcrstr->cryst[an].y(), this->actcrstr->cryst[an].z());
 		     glm::dvec3 vvv = hic + actcrstr->C2O*ccc;
 		     this->atoms->coordinates[m] = QVector3D(vvv.x, vvv.y, vvv.z);
-		     this->atoms->atom_type[m++] = this->actcrstr->cr_kind[an];
+		     this->atoms->atom_type[m++] = this->actcrstr->crystal_type[an];
 		   }
 	       }
 	   }

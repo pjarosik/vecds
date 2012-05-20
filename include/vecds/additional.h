@@ -1,8 +1,8 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
+// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
+// (2012).
 //
 // Copyright (C) 2010 The vecds authors
 //
@@ -128,8 +128,14 @@ struct CrystalStructure
 {
                                  /* The structure name */
   QString structure_name;
+
+                                 /* Crystallographic lengths. */
   double a, b, c;
+
+                                 /* Crystallographic angles. */
   double alpha, beta, gamma;
+
+                                 /* TODO: WHat are these things? */
   Mat9d c2o;
   Mat9d o2c;
   glm::dmat3 C2O;
@@ -142,10 +148,13 @@ struct CrystalStructure
                                  /* The number of dislocation cores */
   unsigned int n_cores;
 
+                                 /* Type of crystal denoted by an
+				    array of unsigned integers(?) */
+  unsigned int crystal_type[20];
 
-  int cr_kind[20];
-  QVector3D cryst[20];
+                                 /* TODO: WHat are these things? */
   QString co_name[30];
+  QVector3D cryst[20];
   QVector3D core[30];
 };
 

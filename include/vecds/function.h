@@ -1,7 +1,9 @@
 
 // -------------------------------------------------------------------
 //
-// Copyright (C) 2010 The vecds authors
+// Author: Jan Cholewinski and Toby D. Young.
+//
+// Copyright (C) 2010, 2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify  it under the  terms of  the GNU  General Public  License as
@@ -26,40 +28,31 @@
 #define FUNCTION_H
 
 
-/**
- * This is a namespace that declares functions used in a variety of
- * places in this application.
- *
- * @author Toby D. Young 2010.
- *
- * @ingroup function
- */
+                                 /* This is a namespace that declares
+				    functions used in a variety of
+				    places in this application. */
 namespace function
 {
 
-  /**
-   * The heavyside step-function \f$H(x)\f$, also known as the unit
-   * stpe-function, is defined as:
-   *
-   * \f[
-   * H(x)=\left\{\begin{array}{cc}0&x<0\\1&x\geq0\end{array}\right.\quad. \f]
-   *
-   */
+                                 /* The heavyside step-function
+				    \f$H(x)\f$, also known as the unit
+				    step-function, is defined as:
+				    \f[H(x)=\left\{\begin{array}{cc}0&x<0\\1&x\geq0\end{array}\right.\quad.\f] */
   inline double heavyside (const double x)
   {
     return (x<0.) ? 0. : 1.;
   }
 
-  /**
-   * A process that exhibits a progression from small-to-large and
-   * accelerates can sometimes be mapped using a Sigmoid
-   * function. This is particuarily useful when a detailed description
-   * of the process is lacking. The Sigmoid function \f$S(x)\f$ is
-   * defined as:
-   *
-   * \f[ S(x)=\frac{1}{1+e^{-x}}\quad. \f]
-   *
-   */
+                                 /* A process that exhibits a
+				    progression from small-to-large
+				    and accelerates can sometimes be
+				    mapped using a Sigmoid
+				    function. This is particuarily
+				    useful when a detailed description
+				    of the process is lacking. The
+				    Sigmoid function \f$S(x)\f$ is
+				    defined as: \f[
+				    S(x)=\frac{1}{1+e^{-x}}\quad.\f] */
   inline double sigmoid (const double x)
   {
     return (1./(1. + exp (-x)));
