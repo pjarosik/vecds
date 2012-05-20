@@ -8,16 +8,16 @@
 //
 // This  program is  free  software: you  can  redistribute it  and/or
 // modify  it under the  terms of  the GNU  General Public  License as
-// published by the Free Software  Foundation, either version 3 of the
+// published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
 //  
 // This program is distributed in the hope that it will be useful, but
-// WITHOUT  ANY  WARRANTY;  without   even  the  implied  warranty  of
-// MERCHANTABILITY or  FITNESS FOR A PARTICULAR PURPOSE.   See the GNU
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // General Public License for more details.
 //
 // You should have  received a copy of the  GNU General Public License
-// along      with      this      program.       If      not,      see
+// along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //					 
 // -------------------------------------------------------------------
@@ -28,18 +28,19 @@
 #include <qglobal.h>
 
 #include <string>
+
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_multiroots.h>
 
-using namespace std;
 
 
-
-struct params {
+struct params 
+{
   double be;
   double bz;
   double u0x;
@@ -56,30 +57,29 @@ struct params {
 struct Atoms
 {
 
-  /**
-   * Constructor.
-   */
   Atoms ()
   {
     n_atoms = 0;
     n_bonds = 0; 
   }
 
-  /**
-   * Number of atoms.
-   */
+                                 /* Number of atoms. */
   unsigned int n_atoms; 
 
-  /**
-   * Number of bonds between atoms.
-   */
+                                 /* Number of bonds between atoms. */
   unsigned int n_bonds;
 
-  QVector3D* coord;
+                                 /* Array holding a set of coordinates */
+  QVector3D *coordinates;
+
   glm::dvec3* coord1;
   glm::dvec3* du;
+
   QVector3D* u;
-  int*   type;
+
+                                 /* An array of integers describing
+				    the atom type */
+  unsigned int*   type;
   Int2*  bonds;
 };
 
@@ -87,12 +87,8 @@ struct Atoms
 struct AtomsProperties
 {
 
-  /**
-   * Constructor.
-   */
   AtomsProperties()
-  {
-  }
+  {}
   
   float a_rad1[125]; 
   float a_rad2[125];
@@ -108,12 +104,8 @@ struct AtomsProperties
 struct Settings
 {
 
-  /**
-   * Constructor.
-   */
   Settings()
-  {
-  }
+  {}
   
   float fov;
   double mfact;
@@ -125,8 +117,6 @@ struct Settings
   Int3 colour_spectrum[12];
   
 };
-
-
 
 struct CrystalStructure
 {
@@ -146,9 +136,6 @@ struct CrystalStructure
 
 struct Dislocations
 {
-  /**
-   * Constructor.
-   */
   Dislocations ()
   {}
   
@@ -199,21 +186,3 @@ struct Dislocations
   int i0; // znaleziony punkt
 };
 #endif
-/*
-#include "prog1u.h"
-#include <algorithm>
-#include <cctype>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
-#include <string>
-#include <glm/glm.hpp>
-#include <glm/ext.hpp>
-#include <gsl/gsl_math.h>
-#include <gsl/gsl_vector.h>
-#include <gsl/gsl_matrix.h>
-#include <gsl/gsl_multiroots.h>
-
-using namespace std;
-*/

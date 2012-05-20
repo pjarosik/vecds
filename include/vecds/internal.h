@@ -23,11 +23,11 @@
 // -------------------------------------------------------------------
 
 
-#ifndef INTERNALDATA_H
-#define INTERNALDATA_H
+#ifndef INTERNAL_H
+#define INTERNAL_H
 
-#include "algebra.h"
-#include "additional.h"
+#include <vecds/algebra.h>
+#include <vecds/additional.h>
 #include <qglobal.h>
 
 class MaimViewer;
@@ -36,17 +36,19 @@ class MainWindow;
 class Internal
 {
  public:
-  Internal();
-  ~Internal();
+
+                                 // constructor
+  Internal ();
+
+                                 // destructor
+  ~Internal ();
   
+                                 // friendly clases
   friend class MainViewer;
   friend class MainWindow;
   
  private:
-  
-  /**
-   * The current directory being used.
-   */
+
   QString current_dir;
   Atoms* atoms;
   
@@ -86,17 +88,7 @@ class Internal
   int  indMiller[6], oldMiller[6];
   double fraction;
   
-//  Mat9d rot_tensor, rot_inv;
   glm::dmat3 rot_tensor, rot_inv;
-/*  
-  struct params {
-    double be;
-    double bz;
-    double u0x;
-    double u0y;
-    double u0z;
-  };
-*/
   bool visible[10];
   double mfactor;
   Settings *set0;
@@ -107,8 +99,7 @@ class Internal
   void read_img(QString iname);
   void read_settings();
   int which_atom(QString nam_a);
-  //    void invert33(const double m1[9], double m2[9]);
-  //    double det33(const double m1[9]);
+
   double read_fraction(QString line);
   int lattice(int, int, int);
   int lattice2(double, double, int);
@@ -127,27 +118,24 @@ class Internal
   void do_signes_rotation(Mat9d r_tens, QVector3D vec);
   void do_axis_rotation(Mat9d r_tens);
   
-//  int Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct);
-//  int Beta_function(const gsl_vector *x, void *par, gsl_matrix *jac);
-//  int Love_fdf(const gsl_vector *x, void *par, gsl_vector *result_funct, gsl_matrix *jac);
-  
   void calc_disloc(int nr_atom, int d_num);
   void calc_disl0();
-  int atomize(QVector3D point, int wh_at);
+
+                                 // Does something with atom numbers.
+  int atomize (const QVector3D point, 
+	       const unsigned int atom_number);
+
   void SL_singleDisl(QVector3D r);
   void addDisplacements();
   void newdisl(unsigned int n_a, bool sw_iter);
-  //    void mixed_u1(int disl_num, int i);
-  //    void mixed_u2(int disl_num, int i);
-  
+
   bool eqMiller(int m1[6], int m2[6]);
   void saveAtoms(QString sname);
 
   glm::dvec3 mixed_u(int i, glm::dvec3 rotdist, double be, double bz);
   glm::dmat3 mixed_beta(int i, glm::dvec3 rotdist, double be, double bz);
 
-
-
 };
+
 #endif 
 

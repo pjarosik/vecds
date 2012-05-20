@@ -609,14 +609,15 @@ void MainWindow::SL_genAtoms()
   int nz = answers.at(2).toInt();
 // qWarning("nx, ny, nz: %d %d %d", nx, ny, nz);
   int nmax = nx*ny*nz * ActualData->actcrstr->nchem;
-  ActualData->atoms->coord = new QVector3D[nmax];
-  ActualData->atoms->u = new QVector3D[nmax];
-  ActualData->atoms->type = new int[nmax];
-  ActualData->atoms->n_atoms = ActualData->lattice(nx, ny, nz);
- qWarning("+++++++++ n_atoms=%d", ActualData->atoms->n_atoms);
-//  ActualData->atoms->n_atoms = nmax;
+  ActualData->atoms->coordinates = new QVector3D[nmax];
+  ActualData->atoms->u           = new QVector3D[nmax];
+  ActualData->atoms->type        = new unsigned int[nmax];
+
+  ActualData->atoms->n_atoms     = ActualData->lattice(nx, ny, nz);
+  qWarning("+++++++++ n_atoms=%d", ActualData->atoms->n_atoms);
+  //  ActualData->atoms->n_atoms = nmax;
   ActualData->atoms->n_bonds = 0;
-  ActualData->minmax3(ActualData->atoms->coord, ActualData->atoms->n_atoms, ActualData->a_min_, ActualData->a_max_);
+  ActualData->minmax3(ActualData->atoms->coordinates, ActualData->atoms->n_atoms, ActualData->a_min_, ActualData->a_max_);
   ActualData->atoms_loaded = QString("neW_atoms.xyz");
 //  ActualData->INT_nn = ActualData->atoms->n_atoms;
   InfoDisplay();
@@ -647,13 +648,13 @@ void MainWindow::SL_gen1Atoms()
   int nmax = ActualData->actcrstr->nchem * nz* 
              (int(x_size/ActualData->actcrstr->a)+1) *
              (int(y_size/(ActualData->actcrstr->b*sg))+1);
-  ActualData->atoms->coord = new QVector3D[nmax];
-  ActualData->atoms->u = new QVector3D[nmax];
-  ActualData->atoms->type = new int[nmax];
+  ActualData->atoms->coordinates = new QVector3D[nmax];
+  ActualData->atoms->u           = new QVector3D[nmax];
+  ActualData->atoms->type        = new unsigned int[nmax];
 
   ActualData->atoms->n_atoms = ActualData->lattice2(x_size, y_size, nz);
   ActualData->atoms->n_bonds = 0;
-  ActualData->minmax3(ActualData->atoms->coord, ActualData->atoms->n_atoms, ActualData->a_min_, ActualData->a_max_);
+  ActualData->minmax3(ActualData->atoms->coordinates, ActualData->atoms->n_atoms, ActualData->a_min_, ActualData->a_max_);
   ActualData->atoms_loaded = QString("neW_atoms.xyz");
 //  ActualData->INT_nn = ActualData->atoms->n_atoms;
   InfoDisplay();
@@ -986,7 +987,9 @@ void MainWindow::saveAtoms(QString sname)
   for (int i=0; i<Actual->n_atoms; i++)
      out << line.sprintf("%4s %12.7f %12.7f %12.7f\n",
                    namea[Actual->type[i]].toAscii().data(),
-                   Actual->coord[i].x, Actual->coord[i].y, Actual->coord[i].z);
+                   Actual->coordinates[i].x, 
+		   Actual->coordinates[i].y, 
+		   Actual->coordinates[i].z);
 }
 
 void MainWindow::saveChoosedAtoms (QString sname)
@@ -1003,8 +1006,9 @@ void MainWindow::saveChoosedAtoms (QString sname)
   for (int i=0; i<Actual->n_atoms; i++)
      if ( Actual->at_bool[i] ) out << line.sprintf("%4s %12.7f %12.7f %12.7f\n",
                                namea[Actual->type[i]].toAscii().data(),
-                               Actual->coord[i].x, Actual->coord[i].y,
-                               Actual->coord[i].z);
+                               Actual->coordinates[i].x, 
+			       Actual->coordinates[i].y,
+                               Actual->coordinates[i].z);
 }
 */
 
