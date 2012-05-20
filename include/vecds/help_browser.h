@@ -1,19 +1,19 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
+// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
+// (2012)
 //
-// Copyright (C) 2010, 2012 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors, Toby D. Young
 //
 // This program is free software: you can redistribute it and/or
 // modify  it under the  terms of  the GNU  General Public  License as
-// published by the Free Software  Foundation, either version 3 of the
+// published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
 //  
 // This program is distributed in the hope that it will be useful, but
 // WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or  FITNESS FOR A PARTICULAR PURPOSE.   See the GNU
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // General Public License for more details.
 //
 // You should have  received a copy of the  GNU General Public License
@@ -37,6 +37,11 @@
 class QPushButton;
 class QTextBrowser;
 
+                                 /* This class represents a basic help
+				    browser. The idea here is to
+				    create a window that displays some
+				    text and maybe some figures
+				    too.  */
 class HelpBrowser 
 : 
 public QWidget
@@ -51,9 +56,12 @@ public QWidget
   
                                  /* destructor of the main class */
   ~HelpBrowser ();
-  
+
+                                 /* create data (eg. geometry, styles,
+				    etc.) for a browser window. */  
   void create_browser (const QString &page);
   
+                                 /* TODO: display a page? */  
   void show_page (const QString &page);
   
   private slots: 
@@ -62,13 +70,20 @@ public QWidget
   
  private: 
 
-  QWidget *parent_widget;
-  QString  help_path;   
+                                 /* TODO: some kind of parent
+				    widget(?) */
+  QWidget      *parent_widget;
 
+                                 /* the browser itself */
   QTextBrowser *textBrowser;
-  QPushButton *homeButton;
-  QPushButton *backButton;
-  QPushButton *closeButton;
+
+                                 /* the browser itself */
+  QString       help_path;
+
+                                 /* standard browser-type buttons */
+  QPushButton  *homeButton;
+  QPushButton  *backButton;
+  QPushButton  *closeButton;
 };
 
 #endif

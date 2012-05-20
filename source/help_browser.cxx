@@ -1,8 +1,8 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
+// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
+// (2012) 
 //
 // Copyright (C) 2010, 2012 The vecds authors
 //
@@ -35,6 +35,7 @@ HelpBrowser::HelpBrowser (QWidget *parent)
   help_path (PATH)
 {}
 
+                                 // constructor
 HelpBrowser::~HelpBrowser ()
 {}
 
@@ -54,13 +55,12 @@ HelpBrowser::create_browser (const QString &page)
   closeButton->setShortcut (tr ("Escape")); 
 
   QHBoxLayout *buttonLayout = new QHBoxLayout; 
+  buttonLayout->addStretch (); 
   buttonLayout->addWidget (homeButton); 
   buttonLayout->addWidget (backButton); 
-  buttonLayout->addStretch (); 
   buttonLayout->addWidget (closeButton); 
 
   QVBoxLayout *mainLayout = new QVBoxLayout; 
-
   mainLayout->addLayout (buttonLayout); 
   mainLayout->addWidget(textBrowser); 
 
@@ -77,12 +77,14 @@ HelpBrowser::create_browser (const QString &page)
   textBrowser->setSource (page); 
 }
 
-void HelpBrowser::updateWindowTitle () 
+void 
+HelpBrowser::updateWindowTitle () 
 { 
   setWindowTitle (tr ("Help: %1").arg (textBrowser->documentTitle ())); 
 }
 
-void HelpBrowser::show_page (const QString &page) 
+void 
+HelpBrowser::show_page (const QString &page) 
 { 
   this->create_browser (page); 
   this->resize (500, 400); 
