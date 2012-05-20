@@ -20,7 +20,7 @@ set (VECDS_VERSION_PATCH      "dev")
 set (VECDS_VERSION            ${VECDS_VERSION_MAJOR}.${VECDS_VERSION_MINOR}.${VECDS_VERSION_TWEAK}.${VECDS_VERSION_PATCH})
 set (VECDS_PACKAGE_STRING     ${VECDS_PACKAGE_NAME}\\${VECDS_VERSION})
 set (VECDS_PATH               ${CMAKE_SOURCE_DIR})
-set (VECDS_INCLUDES           ${VECDS_PATH}/include/vecds)
+set (VECDS_INCLUDES           ${VECDS_PATH}/include)
 set (VECDS_SHARES             ${VECDS_PATH}/share)
 set (VECDS_BIN                ${VECDS_PATH}/bin)
 set (CMAKE_MODULE_PATH        ${VECDS_PATH}/CMakeModules)
@@ -229,13 +229,13 @@ set (vecds_sources
 ## Note, header files *only* determine which files will be passed over
 ## for moc generated code; thus, we do not need them all.
 set (vecds_headers
-  ##  ${VECDS_INCLUDES}/arcball.h
-  ${VECDS_INCLUDES}/dialogs.h
-  ${VECDS_INCLUDES}/help_browser.h
-  ##  ${VECDS_INCLUDES}/internal.h
-  ##  ${VECDS_INCLUDES}/main.h
-  ${VECDS_INCLUDES}/main_viewer.h
-  ${VECDS_INCLUDES}/main_window.h
+  ##  ${VECDS_INCLUDES}/vecds/arcball.h
+  ${VECDS_INCLUDES}/vecds/dialogs.h
+  ${VECDS_INCLUDES}/vecds/help_browser.h
+  ##  ${VECDS_INCLUDES}/vecds/internal.h
+  ##  ${VECDS_INCLUDES}/vecds/main.h
+  ${VECDS_INCLUDES}/vecds/main_viewer.h
+  ${VECDS_INCLUDES}/vecds/main_window.h
 )
 
 qt4_wrap_cpp (vecds_headers_moc ${vecds_headers})
