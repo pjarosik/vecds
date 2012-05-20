@@ -4,7 +4,7 @@
 // Author: Jan Cholewinski and Pawel Dluzewski (2010)
 // Affiliation: Polish Academy of Sciences
 //
-// Copyright (C) 2010 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -28,9 +28,18 @@
 
 // pomocnicza klasa - przeglądarka plików pomocy (HTML)
 
-HelpBrowser::HelpBrowser (const QString &path, const QString &page, QWidget *parent)
-  : 
-  QWidget (parent) 
+                                 // constructor
+HelpBrowser::HelpBrowser (QWidget *parent)
+  :
+  parent_widget (parent),
+  help_path (PATH)
+{}
+
+HelpBrowser::~HelpBrowser ()
+{}
+
+void
+HelpBrowser::create_browser (const QString &page)
 {
   setAttribute (Qt::WA_DeleteOnClose); 
   setAttribute (Qt::WA_GroupLeader); 
@@ -45,14 +54,14 @@ HelpBrowser::HelpBrowser (const QString &path, const QString &page, QWidget *par
   closeButton->setShortcut (tr ("Escape")); 
 
   QHBoxLayout *buttonLayout = new QHBoxLayout; 
-  buttonLayout->addWidget(homeButton); 
-  buttonLayout->addWidget(backButton); 
-  buttonLayout->addStretch(); 
-  buttonLayout->addWidget(closeButton); 
+  buttonLayout->addWidget (homeButton); 
+  buttonLayout->addWidget (backButton); 
+  buttonLayout->addStretch (); 
+  buttonLayout->addWidget (closeButton); 
 
   QVBoxLayout *mainLayout = new QVBoxLayout; 
 
-  mainLayout->addLayout(buttonLayout); 
+  mainLayout->addLayout (buttonLayout); 
   mainLayout->addWidget(textBrowser); 
 
   setLayout (mainLayout); 
@@ -64,12 +73,9 @@ HelpBrowser::HelpBrowser (const QString &path, const QString &page, QWidget *par
   connect (textBrowser, SIGNAL (sourceChanged (const QUrl &)), this, SLOT (updateWindowTitle ())); 
 
                                  // path to images
-  textBrowser->setSearchPaths (QStringList() << path << ":/images"); 
+  textBrowser->setSearchPaths (QStringList() << help_path << ":/images"); 
   textBrowser->setSource (page); 
 }
-
-HelpBrowser::~HelpBrowser ()
-{}
 
 void HelpBrowser::updateWindowTitle () 
 { 
@@ -78,11 +84,9 @@ void HelpBrowser::updateWindowTitle ()
 
 void HelpBrowser::show_page (const QString &page) 
 { 
-  QString path = QApplication::applicationDirPath () + "/VECDS_internal/doc"; 
-
-  HelpBrowser *browser = new HelpBrowser (path, page); 
-  browser->resize (500, 400); 
-  browser->show (); 
+  this->create_browser (page); 
+  this->resize (500, 400); 
+  this->show (); 
 }
 
 

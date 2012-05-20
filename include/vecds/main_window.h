@@ -63,6 +63,8 @@ class MainWindow : public QMainWindow
     
     public:
   MainWindow ();
+
+
   
   private slots:
 //  void SL_setSliderValue(double);

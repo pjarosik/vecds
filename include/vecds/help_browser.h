@@ -4,7 +4,7 @@
 // Author: Jan Cholewinski and Pawel Dluzewski (2010)
 // Affiliation: Polish Academy of Sciences
 //
-// Copyright (C) 2010 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify  it under the  terms of  the GNU  General Public  License as
@@ -25,38 +25,50 @@
 #ifndef HELP_BROWSER_H
 #define HELP_BROWSER_H
 
+                                 /* first the usual set of Qt crap */
 #include <QtGui>
 #include <QWidget> 
+
+                                 /* vecds includes */
+#include <vecds/config.h>
 
                                  /* forward declarations of qt
 				    clases */
 class QPushButton;
 class QTextBrowser;
 
-class HelpBrowser : public QWidget
+class HelpBrowser 
+: 
+public QWidget
 {
   Q_OBJECT 
     
     public: 
-
-  HelpBrowser (const QString &path, 
-	       const QString &page,
-	       QWidget       *parent = 0);
-
+  
+                                 /* constructor of the main clas, just
+				    create a pointer to the parent */
+  HelpBrowser (QWidget *parent = 0);
+  
+                                 /* destructor of the main class */
   ~HelpBrowser ();
   
-  static void show_page (const QString &page);
+  void create_browser (const QString &page);
+  
+  void show_page (const QString &page);
   
   private slots: 
   
   void updateWindowTitle ();
   
  private: 
-  
-    QTextBrowser *textBrowser;
-    QPushButton *homeButton;
-    QPushButton *backButton;
-    QPushButton *closeButton;
+
+  QWidget *parent_widget;
+  QString  help_path;   
+
+  QTextBrowser *textBrowser;
+  QPushButton *homeButton;
+  QPushButton *backButton;
+  QPushButton *closeButton;
 };
 
 #endif
