@@ -100,11 +100,11 @@ class Internal
   void read_settings();
   int which_atom(QString nam_a);
 
-  double read_fraction(QString line);
-  int lattice(int, int, int);
-  int lattice2(double, double, int);
-  void minmax3(QVector3D *vec, int numb, QVector3D &vmin, QVector3D &vmax);
-  void minmax1(double *vec, int numb, double &vmin, double &vmax);
+  double read_fraction (QString line);
+  int lattice (int, int, int);
+  int lattice2 (double, double, unsigned int);
+  void minmax3 (QVector3D *vec, int numb, QVector3D &vmin, QVector3D &vmax);
+  void minmax1 (double *vec, int numb, double &vmin, double &vmax);
   
   void processMiller(int sw, QString rtext, QString rtext2="");
   bool parse_miller(QString line);

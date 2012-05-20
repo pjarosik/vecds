@@ -93,21 +93,11 @@ void MainWindow::createActions()
   //    defnewAct->setShortcut(tr("Ctrl+D"));
   defnewAct->setStatusTip(tr("defines ..."));
   connect(defnewAct, SIGNAL(triggered()), this, SLOT(SL_defineStructure()));
-  
-  //  defCoresAct = new QAction(tr("Define dislocation cores"), this);
-  //    openAct->setShortcut(tr("Ctrl+O"));
-  //  defCoresAct->setStatusTip(tr("Define dislocation cores"));
-  //  connect(defCoresAct, SIGNAL(triggered()), this, SLOT(SL_defCores()));
-  
-  //  refreshAct = new QAction(tr("Field of view"), this);
-  //  refreshAct->setStatusTip(tr("Camera angle"));
-  //  connect(refreshAct, SIGNAL(triggered()), this, SLOT(SL_refresh()));
-  
+    
   chooseAct = new QAction(tr("Choose structure"), this);
   chooseAct->setCheckable(true);
-  //    chooseAct->setShortcut(tr("Ctrl+S"));
   chooseAct->setStatusTip(tr("struct ..."));
-  connect(chooseAct, SIGNAL(triggered()), this, SLOT(SL_chooseStructure()));
+  connect (chooseAct, SIGNAL(triggered()), this, SLOT(SL_chooseStructure()));
   
   openAct = new QAction(tr("Open Atoms"), this);
   //    openAct->setShortcut(tr("Ctrl+O"));
@@ -115,13 +105,10 @@ void MainWindow::createActions()
   connect(openAct, SIGNAL(triggered()), this, SLOT(SL_openAtoms()));
   
   genAct = new QAction(tr("Generate (number of cells)"), this);
-  //  genAct = QWhatsThis::createAction(this);
+
   genAct->setText(tr("Generate (number of cells)"));
-  //    genAct->setShortcut(tr("Ctrl+N"));
   genAct->setStatusTip(tr("generate a new file"));
-  //  genAct->setWhatsThis(tr("use this button\n aaaaaaaaaaaaaaaa\n to generate a <h4>new</h4> file\n by giving number of repetitions"));
-  //  QWhatsThis::hideText();
-  connect(genAct, SIGNAL(triggered()), this, SLOT(SL_genAtoms()));
+  connect (genAct, SIGNAL(triggered()), this, SLOT(SL_genAtoms()));
   
   QString str = QString("Generate (size of the structure)");
   gen1Act = new QAction(str, this);
@@ -245,14 +232,11 @@ void MainWindow::createDockWindows()
   DWidg_dock->setAllowedAreas(Qt::LeftDockWidgetArea | 
 			      Qt::RightDockWidgetArea);
 
-  //  QWhatsThis::enterWhatsThisMode();
   Widg_modesTab = new QTabBar;
   Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/new.png"), "View");
-  //  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/save.png"), "");
   Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/print.png"), "Rot");
   Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/undo.png"), "Add");
-  //  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/camera.png"), "Bonds");
-  //  Widg_modesTab->setTabWhatsThis(0, "Movement - continous");
+
   
   DWidg_dock->setWidget(Widg_modesTab);
   addDockWidget(Qt::RightDockWidgetArea, DWidg_dock);
@@ -305,45 +289,8 @@ void MainWindow::createDockWindows()
   QLabel *Lab_dist = new QLabel(" Distance");
   Lay_v_dist->addWidget(Lab_dist);
   distSlider = createSlider(1, 180, 1, 180);
+
   Lay_v_dist->addWidget(distSlider);
-
-/*
-  QVBoxLayout *Lay_v_ThetaSlid = new QVBoxLayout;
-  QLabel *Lab_ThetaSlid = new QLabel(" Heading (theta)");
-  Lay_v_ThetaSlid->addWidget(Lab_ThetaSlid);
-  thetaSlider = createSlider(-180., 180., 45., 0.);
-  Lay_v_ThetaSlid->addWidget(thetaSlider);
-  
-  QVBoxLayout *Lay_v_PhiSlid = new QVBoxLayout; 
-  QLabel *Lab_PhiSlid = new QLabel(" Attitude (phi)");
-  Lay_v_PhiSlid->addWidget(Lab_PhiSlid);
-  phiSlider = createSlider(-90., 90., 15., 0.);
-  Lay_v_PhiSlid->addWidget(phiSlider);
-  
-  QVBoxLayout *Lay_v_PsiSlid = new QVBoxLayout;
-  QLabel *Lab_PsiSlid = new QLabel(" Bank (psi)");
-  Lay_v_PsiSlid->addWidget(Lab_PsiSlid);
-  psiSlider = createSlider(-180., 180., 45., 0.);
-  Lay_v_PsiSlid->addWidget(psiSlider);
-  
-  QVBoxLayout *Lay_v_mx = new QVBoxLayout;
-  QLabel *Lab_mx = new QLabel(" Move x");
-  Lay_v_mx->addWidget(Lab_mx);
-  mxSlider = createSlider(-1., 1., 0.25, 0.);
-  Lay_v_mx->addWidget(mxSlider);
-
-  QVBoxLayout *Lay_v_my = new QVBoxLayout;
-  QLabel *Lab_my = new QLabel(" Move y");
-  Lay_v_my->addWidget(Lab_my);
-  mySlider = createSlider(-1., 1., 0.25, 0.);
-  Lay_v_my->addWidget(mySlider);
-
-  QVBoxLayout *Lay_v_dist = new QVBoxLayout;
-  QLabel *Lab_dist = new QLabel(" Distance");
-  Lay_v_dist->addWidget(Lab_dist);
-  distSlider = createSlider(0.01, 1.0, 0.5, 1.0, true);
-  Lay_v_dist->addWidget(distSlider);
-*/
   Lay_g_3slid->addLayout(Lay_v_ThetaSlid, 0, 0);
   Lay_g_3slid->addLayout(Lay_v_PhiSlid, 1, 0);
   Lay_g_3slid->addLayout(Lay_v_PsiSlid, 2, 0);
@@ -414,31 +361,7 @@ void MainWindow::createDockWindows()
   connect(distSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_doZMovement()));
   connect(mview1, SIGNAL(SIG_zMovementChanged(int)), distSlider, SLOT(setValue(int)));
 
-/*
-  connect(phiSlider, SIGNAL(valueChanged(double)), this, SLOT(SL_setSliderValue(double)));
-  connect(phiSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_dophiRotation()));
-  connect(mview1, SIGNAL(SIG_phiRotationChanged(double)), phiSlider, SLOT(setValue(double)));
 
-  connect(thetaSlider, SIGNAL(valueChanged(double)), this, SLOT(SL_setSliderValue(double)));
-  connect(thetaSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_dothetaRotation()));
-  connect(mview1, SIGNAL(SIG_thetaRotationChanged(double)), thetaSlider, SLOT(setValue(double)));
-
-  connect(psiSlider, SIGNAL(valueChanged(double)), this, SLOT(SL_setSliderValue(double)));
-  connect(psiSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_dopsiRotation()));
-  connect(mview1, SIGNAL(SIG_psiRotationChanged(double)), psiSlider, SLOT(setValue(double)));
-
-  connect(mxSlider, SIGNAL(valueChanged(double)), this, SLOT(SL_setSliderValue(double)));
-  connect(mxSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_doXMovement()));
-  connect(mview1, SIGNAL(SIG_xMovementChanged(double)), mxSlider, SLOT(setValue(double)));
-
-  connect(mySlider, SIGNAL(valueChanged(double)), this, SLOT(SL_setSliderValue(double)));
-  connect(mySlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_doYMovement()));
-  connect(mview1, SIGNAL(SIG_yMovementChanged(double)), mySlider, SLOT(setValue(double)));
-
-  connect(distSlider, SIGNAL(valueChanged(double)), this, SLOT(SL_setSliderValue(double)));
-  connect(distSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_doZMovement()));
-  connect(mview1, SIGNAL(SIG_zMovementChanged(double)), distSlider, SLOT(setValue(double)));
-*/
 }
 
 // ====================    S L O T S    ===========================
@@ -496,19 +419,19 @@ void MainWindow::SL_chooseStructure()
 
   QStringList items;
   for (int i=0; i<ActualData->numbcrstr; i++) 
-               items << ActualData->crstr[i].struct_name;
+               items << ActualData->crstr[i].structure_name;
   bool ok;
   QString item = QInputDialog::getItem(this, "Choose structure", 
                      "structure:", items, ActualData->numbcrstr, false, &ok);
   if ( ok && !items.isEmpty() ) 
      for (int i=0; i<ActualData->numbcrstr; i++) 
-        if ( item==ActualData->crstr[i].struct_name ) {
+        if ( item==ActualData->crstr[i].structure_name ) {
            ActualData->actcrstr = &(ActualData->crstr[i]);
            infotxt0.sprintf("Structure: %s%sMiller indices: %s", 
-               ActualData->actcrstr->struct_name.toAscii().data(),
-               infsepar.toAscii().data(), 
-               toRichText(ActualData->act_mill).toAscii().data());
-
+			    ActualData->actcrstr->structure_name.toAscii().data(),
+			    infsepar.toAscii().data(), 
+			    toRichText(ActualData->act_mill).toAscii().data());
+	   
            InfoDisplay();
            return;
         }
@@ -528,61 +451,7 @@ void MainWindow::SL_defineStructure()
                   << "90.0" << "120.0"<< "4";
   QuestionForm("Atomic structure definition", descr, quest, sug, ans, ok);
   if ( !ok ) return;
-/*
-  int at_dat_num1 = at_dat_num+1;
-  Atoms[at_dat_num1].struct_name = ans.at(0);
-  Atoms[at_dat_num1].a = ans.at(1).toFloat();
-  Atoms[at_dat_num1].b = ans.at(2).toFloat();
-  Atoms[at_dat_num1].c = ans.at(3).toFloat();
-  Atoms[at_dat_num1].alpha = ans.at(4).toFloat();
-  Atoms[at_dat_num1].beta = ans.at(5).toFloat();
-  Atoms[at_dat_num1].gamma = ans.at(6).toFloat();
-  int nat = Atoms[at_dat_num1].nchem = ans.at(7).toInt();
 
-  descr.sprintf("<h5>%d atom's kind and coordinates x, y, z</h5>", nat);
-  quest.clear();
-  sug.clear();
-  ans.clear();
-  for (int i=0; i<nat; i++) {
-     aa.sprintf("<h5>Atom nr. %d</h5>", i+1);
-     quest << aa;
-     switch (i) {
-      case 0:
-       sug << "N 0.0 0.0 0.0";
-       break;
-      case 1:
-       sug << "N 2/3 1/3 1/2";
-       break;
-      case 2:
-       sug << "Ga 2/3 1/3 1/8";
-       break;
-      case 3:
-       sug << "Ga 0.0 0.0 5/8";
-       break;
-      default:
-       sug << "atom? ? ? ?";
-       break;
-     }
-  }
-  QuestionForm1("Atom's kinds and coordinates", descr, quest, sug, ans);
-  if ( !qf_ok ) return;
-  for (int i=0; i<nat; i++) {
-     fields = ans.at(i).split(QRegExp("\\s+"), QString::SkipEmptyParts);
-     if ( fields.size()!=4 ) qWarning("Error - Atom coordinates %d", i);
-     Atoms[at_dat_num1].cr_kind[i] = which_atom(fields.takeFirst());
-     Atoms[at_dat_num1].cryst[i].x = read_fraction(fields.takeFirst());
-     Atoms[at_dat_num1].cryst[i].y = read_fraction(fields.takeFirst());
-     Atoms[at_dat_num1].cryst[i].z = read_fraction(fields.takeFirst());
-  }
-  at_dat_num = num_at_dat = at_dat_num1;
-  At = Atoms[at_dat_num1];
-  structureDefined = true;
-  infotxt0.sprintf("Structure: %s%sMiller indices: %s", 
-                   At.struct_name.toAscii().data(), infsepar.toAscii().data(),
-                   toRichText(act_mill).toAscii().data());
-  InfoDisplay();
-*/
-// qWarning ("SLOT define %d", at_dat_num);
 }
 
 
@@ -608,10 +477,10 @@ void MainWindow::SL_genAtoms()
   int ny = answers.at(1).toInt();
   int nz = answers.at(2).toInt();
 // qWarning("nx, ny, nz: %d %d %d", nx, ny, nz);
-  int nmax = nx*ny*nz * ActualData->actcrstr->nchem;
+  int nmax = nx*ny*nz * ActualData->actcrstr->n_materials;
   ActualData->atoms->coordinates = new QVector3D[nmax];
   ActualData->atoms->u           = new QVector3D[nmax];
-  ActualData->atoms->type        = new unsigned int[nmax];
+  ActualData->atoms->atom_type   = new unsigned int[nmax];
 
   ActualData->atoms->n_atoms     = ActualData->lattice(nx, ny, nz);
   qWarning("+++++++++ n_atoms=%d", ActualData->atoms->n_atoms);
@@ -645,12 +514,12 @@ void MainWindow::SL_gen1Atoms()
   int nz = answers.at(2).toInt();
 
   double sg = sin(constant::deg2rad*ActualData->actcrstr->gamma);
-  int nmax = ActualData->actcrstr->nchem * nz* 
+  int nmax = ActualData->actcrstr->n_materials * nz * 
              (int(x_size/ActualData->actcrstr->a)+1) *
              (int(y_size/(ActualData->actcrstr->b*sg))+1);
   ActualData->atoms->coordinates = new QVector3D[nmax];
   ActualData->atoms->u           = new QVector3D[nmax];
-  ActualData->atoms->type        = new unsigned int[nmax];
+  ActualData->atoms->atom_type   = new unsigned int[nmax];
 
   ActualData->atoms->n_atoms = ActualData->lattice2(x_size, y_size, nz);
   ActualData->atoms->n_bonds = 0;
@@ -911,14 +780,15 @@ void MainWindow::InfoDisplay()
 {
   QString inftxt;
   infoLabel->clear();
-  infotxt0.sprintf("Structure: %s%sMiller indices: %s", 
-          ActualData->actcrstr->struct_name.toAscii().data(),
-          infsepar.toAscii().data(), toRichText(ActualData->act_mill).toAscii().data());
-  infotxtat.sprintf("<br/>Atoms loaded: %s", 
-                               ActualData->atoms_loaded.toAscii().data());
-  infotxtimg.sprintf("<br/>Image loaded: %s", 
-                               ActualData->img_loaded.toAscii().data());
+  infotxt0.sprintf ("Structure: %s%sMiller indices: %s", 
+		    ActualData->actcrstr->structure_name.toAscii ().data (),
+		    infsepar.toAscii ().data (), toRichText (ActualData->act_mill ).toAscii ().data ());
 
+  infotxtat.sprintf ("<br/>Atoms loaded: %s", 
+		     ActualData->atoms_loaded.toAscii ().data ());
+  infotxtimg.sprintf ("<br/>Image loaded: %s", 
+		      ActualData->img_loaded.toAscii ().data ());
+  
   inftxt.sprintf("%s%s%s", infotxt0.toAscii().data(), 
                            infotxtat.toAscii().data(), 
                            infotxtimg.toAscii().data());
@@ -956,59 +826,4 @@ QString MainWindow::toRichText(QString txt)
   return txt1;
 }
 
-//---------------------------------------------------------------------
-/*
-QwtSlider *MainWindow::createSlider
-                      (double from, double to, double step, double val, bool logaritmic)
-{
-  QwtSlider* slider = new QwtSlider(this, 
-                   Qt::Horizontal, QwtSlider::TopScale, QwtSlider::BgTrough);
-  if ( logaritmic ) slider->setScaleEngine(new QwtLog10ScaleEngine);
-  slider->setThumbWidth(10);
-  slider->setRange(from, to); // paging disabled
-  slider->setScale(from, to, step);
-//  slider->setScaleMaxMinor(10);
-  slider->setValue(val);
-  return slider;
-}
-
-
-void MainWindow::saveAtoms(QString sname)
-{
-  QString line;
-  QFile fil(sname);
- qWarning("file: %s, numChoosedAtoms=%d", sname.toAscii().data(), Actual->num_choosedAtoms);  
-  if (!fil.open(QIODevice::WriteOnly)) { 
-     qWarning("Cannot open for writing: %s", qPrintable(fil.errorString()));
-     return; 
-  }
-  QTextStream out(&fil);
-  out << line.sprintf("%d\n ---\n", Actual->n_atoms);
-  for (int i=0; i<Actual->n_atoms; i++)
-     out << line.sprintf("%4s %12.7f %12.7f %12.7f\n",
-                   namea[Actual->type[i]].toAscii().data(),
-                   Actual->coordinates[i].x, 
-		   Actual->coordinates[i].y, 
-		   Actual->coordinates[i].z);
-}
-
-void MainWindow::saveChoosedAtoms (QString sname)
-{
-  QString line;
-  QFile fil(sname);
- qWarning("file: %s, numChoosedAtoms=%d", sname.toAscii().data(), Actual->num_choosedAtoms);  
-  if (!fil.open(QIODevice::ReadWrite)) { 
-     qWarning("Cannot open for writing: %s", qPrintable(fil.errorString()));
-     return; 
-  }
-  QTextStream out(&fil);
-  out << line.sprintf("%d\n ---\n", Actual->num_choosedAtoms);
-  for (int i=0; i<Actual->n_atoms; i++)
-     if ( Actual->at_bool[i] ) out << line.sprintf("%4s %12.7f %12.7f %12.7f\n",
-                               namea[Actual->type[i]].toAscii().data(),
-                               Actual->coordinates[i].x, 
-			       Actual->coordinates[i].y,
-                               Actual->coordinates[i].z);
-}
-*/
 

@@ -37,8 +37,8 @@
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_multiroots.h>
 
-
-
+                                 /* TODO: The structure params does
+				    what? */
 struct params 
 {
   double be;
@@ -49,14 +49,15 @@ struct params
 };
 
 
-/**
- * The structure Atoms holds information needed to describe the
- * location and type of an atom in a matrix.
- */
 
+                                 /* The structure Atoms holds
+				    information needed to describe the
+				    location and type of an atom in a
+				    matrix. */
 struct Atoms
 {
 
+                                 /* Empty constructor. */
   Atoms ()
   {
     n_atoms = 0;
@@ -72,22 +73,26 @@ struct Atoms
                                  /* Array holding a set of coordinates */
   QVector3D *coordinates;
 
-  glm::dvec3* coord1;
-  glm::dvec3* du;
-
-  QVector3D* u;
+                                 /* TODO: WHat are these? */
+  glm::dvec3 *coord1;
+  glm::dvec3 *du;
+  QVector3D  *u;
 
                                  /* An array of integers describing
 				    the atom type */
-  unsigned int*   type;
-  Int2*  bonds;
+  unsigned int *atom_type;
+
+                                 /* An array of two-integers that
+				    describe the bonds between two
+				    atoms. */
+  Int2 *atom_bond;
 };
 
 
 struct AtomsProperties
 {
 
-  AtomsProperties()
+  AtomsProperties ()
   {}
   
   float a_rad1[125]; 
@@ -98,7 +103,6 @@ struct AtomsProperties
   float atom_blue[125];
   
   QString namea[125];
-  
 };
 
 struct Settings
@@ -111,23 +115,34 @@ struct Settings
   double mfact;
   bool vis[15];
 
-  /**
-   * Variable poining to the RGB colour spectrum.
-   */
+                                 /* Variable poining to the RGB colour
+				    spectrum. */
   Int3 colour_spectrum[12];
   
 };
 
+                                 /* A structure that dewxcribes the
+				    crystallographic make-up of a
+				    crystal system. */
 struct CrystalStructure
 {
-  QString struct_name;
+                                 /* The structure name */
+  QString structure_name;
   double a, b, c;
   double alpha, beta, gamma;
   Mat9d c2o;
   Mat9d o2c;
   glm::dmat3 C2O;
   glm::dmat3 O2C;
-  int nchem, ncores;
+
+                                 /* The number of materials / chemical
+				    species */
+  unsigned int n_materials;
+
+                                 /* The number of dislocation cores */
+  unsigned int n_cores;
+
+
   int cr_kind[20];
   QVector3D cryst[20];
   QString co_name[30];
@@ -141,47 +156,39 @@ struct Dislocations
   
   QVector3D rrr; // współrz. punktu przkazanego z viewera (Mviewer::SIG_actPoint, Mainwindow::SL_actPoint
   
-  /**
-   * Vector defining the relative coordinates of the "top" of a line
-   * dislocation.
-   */
-  QVector3D p1; // "góra"  zaznaczenia dyslokacji
+                                 /* Vector defining the relative
+				    coordinates of the "top" of a line
+				    dislocation. */
+  QVector3D p1; 
   
-  /**
-   * Vector defining the relative coordinates of the "bottom" of a
-   * line dislocation.
-   */
-  QVector3D p2; // "dół" zaznaczenia dyslokacji
+                                 /* Vector defining the relative
+				    coordinates of the "tbottom" of a
+				    line dislocation. */
+  QVector3D p2;
   
   QVector3D cd; // wpółrzędne dyslokacji brane do obliczeń /po znalezieniu punktu i0/
   
-  /**
-   * Three-dimensional vector that describes the orientation of the
-   * Burgers vector of a dislocation.
-   */
-  QVector3D burgers_vector; // wektor Burg. dla dyslokacji
+                                 /* Three-dimensional vector that
+				    describes the orientation of the
+				    Burgers vector of a
+				    dislocation. */
+  QVector3D burgers_vector;
 
-  /**
-   * Three-dimensional vector that describes the position of the core
-   * of a dislocation.
-   */
-  QVector3D dislocation_core; // współrz. rdzenia
+                                 /* Three-dimensional vector that
+				    describes the position of the core
+				    of a dislocation. */
+  QVector3D dislocation_core;
 
-  /**
-   * A \f$3\times3\f$ Cartesian rotation tensor.
-   */
-//  Mat9d rotation_tensor; // tensor obrotu dla układu z którego były odzczytane współrz. dyslokacji
-  glm::dmat3 rotation_tensor; // tensor obrotu dla układu z którego były odzczytane współrz. dyslokacji
+                                 /* A 3x3 Cartesian rotation tensor. */
+  glm::dmat3 rotation_tensor;
 
-  /**
-   * Text string that identifies a Burgers vector.
-   */
-  QString burgstr; // tekstowy zapis wektora Burgersa
+                                 /* Text string that identifies a
+				    Burgers vector. */
+  QString burgers_name;
 
-  /**
-   * Text string that identifies a dislocation core name
-   */
-  QString core_name; // tekstowy zapis nazwy rdzenia
+                                 /* Text string that identifies a
+				    dislocation core name */
+  QString core_name;
 
   int i0; // znaleziony punkt
 };

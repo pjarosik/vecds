@@ -423,7 +423,7 @@ void MainViewer::draw_atoms()
 {
   for (unsigned int i=0; i<ActualData->atoms->n_atoms; i++) 
     {
-      unsigned int aki = ActualData->atoms->type[i];
+      unsigned int aki = ActualData->atoms->atom_type[i];
       QVector3D trans = ActualData->atoms->coordinates[i] - cent_;
       if ( i==0 ) 
 	{
@@ -453,8 +453,8 @@ void MainViewer::draw_bonds()
  
  for (unsigned int i=0; i<ActualData->atoms->n_bonds; i++) 
    {
-     int a1 = ActualData->atoms->bonds[i].i1 - 1;
-     int a2 = ActualData->atoms->bonds[i].i2 - 1;
+     int a1 = ActualData->atoms->atom_bond[i].i1 - 1;
+     int a2 = ActualData->atoms->atom_bond[i].i2 - 1;
      
      glPushMatrix();
      

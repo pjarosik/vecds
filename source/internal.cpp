@@ -214,26 +214,32 @@ void Internal::init_structures()
       line = in.readLine(); ++nl;
       fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
       nf = fields.size();
-      if ( nf!=7 ) qWarning("Error - Atom_data 1 line=%d", nl);
-      actcrstr->struct_name = fields.takeFirst();
-      actcrstr->a     = fields.takeFirst().toDouble();
-      actcrstr->b     = fields.takeFirst().toDouble();
-      actcrstr->c     = fields.takeFirst().toDouble();
-      actcrstr->alpha = fields.takeFirst().toDouble();
-      actcrstr->beta  = fields.takeFirst().toDouble();
-      actcrstr->gamma = fields.takeFirst().toDouble();
+
+      if (nf!=7) 
+	{
+	  qWarning("Error - Atom_data 1 line=%d", nl);
+	}
+
+      actcrstr->structure_name = fields.takeFirst ();
+      actcrstr->a              = fields.takeFirst ().toDouble ();
+      actcrstr->b              = fields.takeFirst ().toDouble ();
+      actcrstr->c              = fields.takeFirst ().toDouble ();
+      actcrstr->alpha          = fields.takeFirst ().toDouble ();
+      actcrstr->beta           = fields.takeFirst ().toDouble ();
+      actcrstr->gamma          = fields.takeFirst ().toDouble ();
 
      line = in.readLine(); ++nl;
      fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
      nf = fields.size();
-     if ( nf!=2 ) qWarning("Error - Atom_data 2 line=%d", nl);
-     actcrstr->nchem = fields.takeFirst().toInt();
-     actcrstr->ncores = fields.takeFirst().toInt();
-     if ( actcrstr->nchem<=0 || actcrstr->ncores<=0 ) {
-        qWarning("nchem ncores");
-     }
+     if (nf!=2) 
+       {
+	 qWarning("Error - Atom_data 2 line=%d", nl);
+       }
 
-     for (int i=0; i<actcrstr->nchem; ++i) 
+     actcrstr->n_materials = fields.takeFirst ().toInt ();
+     actcrstr->n_cores     = fields.takeFirst ().toInt ();
+
+     for (unsigned int i=0; i<actcrstr->n_materials; ++i) 
        {
 	 line = in.readLine(); ++nl;
 	 fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
@@ -246,7 +252,7 @@ void Internal::init_structures()
 	 actcrstr->cryst[i].setZ(read_fraction(fields.takeFirst()));
        }
      
-    for (int i=0; i<actcrstr->ncores; ++i) 
+    for (unsigned int i=0; i<actcrstr->n_cores; ++i) 
       {
 	line = in.readLine(); ++nl;
 	fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
@@ -367,13 +373,13 @@ void Internal::read_alc_xyz(QString aname)
 
     if ( this->atoms->n_atoms>0 ) 
       {
-	delete [] this->atoms->type;
+	delete [] this->atoms->atom_type;
 	delete [] this->atoms->coordinates;
       }
 
     if ( this->atoms->n_bonds>0 ) 
       {
-	delete [] this->atoms->bonds;
+	delete [] this->atoms->atom_bond;
       }
     
     QTextStream in(&file);
@@ -383,7 +389,7 @@ void Internal::read_alc_xyz(QString aname)
 
     if ( this->atoms->n_atoms>0 ) 
       {
-	this->atoms->type        = new unsigned int[this->atoms->n_atoms];
+	this->atoms->atom_type   = new unsigned int[this->atoms->n_atoms];
 	this->atoms->coordinates = new QVector3D[this->atoms->n_atoms];
 	this->atoms->u           = new QVector3D[this->atoms->n_atoms];
 	this->atoms->coord1      = new glm::dvec3[this->atoms->n_atoms];
@@ -398,7 +404,7 @@ void Internal::read_alc_xyz(QString aname)
 	this->atoms->n_bonds = fields.takeFirst().toInt();
 	if ( this->atoms->n_bonds>0 ) 
 	  {
-	    this->atoms->bonds = new Int2[this->atoms->n_bonds];
+	    this->atoms->atom_bond = new Int2[this->atoms->n_bonds];
 	  }
       } 
     else 
@@ -417,7 +423,7 @@ void Internal::read_alc_xyz(QString aname)
       int ak = which_atom(nam_a);
       if ( ak==0 ) qWarning("unknown atom in line nr. %d in %s",
 			    i+1, aname.toAscii().data());
-      this->atoms->type[i] = ak;
+      this->atoms->atom_type[i] = ak;
       this->atoms->coordinates[i].setX (fields.takeFirst ().toDouble ());// *1.e10;
       this->atoms->coordinates[i].setY (fields.takeFirst ().toDouble ());// *1.e10;
       this->atoms->coordinates[i].setZ (fields.takeFirst ().toDouble ());// *1.e10;
@@ -432,8 +438,8 @@ void Internal::read_alc_xyz(QString aname)
 	line = in.readLine();
 	fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
 	fields.removeFirst();
-	this->atoms->bonds[i].i1 = fields.takeFirst().toInt();
-	this->atoms->bonds[i].i2 = fields.takeFirst().toInt();
+	this->atoms->atom_bond[i].i1 = fields.takeFirst().toInt();
+	this->atoms->atom_bond[i].i2 = fields.takeFirst().toInt();
       }
 }
 
@@ -481,7 +487,7 @@ void Internal::minmax1 (double *vec, int numb, double &vmin, double &vmax)
   double mxx = -1.e15;
   double mnx = 1.e15;
 
-  for (int i=0; i<numb; i++) 
+  for (int i=0; i<numb; ++i) 
     {
       double temp = vec[i];
       if ( temp>mxx ) mxx = temp;
@@ -513,25 +519,28 @@ void Internal::saveAtoms(QString sname)
   out << line.sprintf("%d\n ---\n", atoms->n_atoms);
   for (unsigned int i=0; i<atoms->n_atoms; i++)
     out << line.sprintf("%4s %12.7f %12.7f %12.7f\n",
-			ap->namea[atoms->type[i]].toAscii().data(),
+			ap->namea[atoms->atom_type[i]].toAscii ().data (),
 			atoms->coordinates[i].x (), 
 			atoms->coordinates[i].y (), 
 			atoms->coordinates[i].z ());
 }
 
 
-void Internal::SL_singleDisl(QVector3D rr)
+void Internal::SL_singleDisl (QVector3D rr)
 {
  
   rr += this->cent_;
   actdisl->rrr = rr;// + this->cent_;
-  actdisl->burgstr = this->act_disl;
-  actdisl->p1 = QVector3D(rr.x(), rr.y(), this->a_min_.z());
-  actdisl->p2 = QVector3D(rr.x(), rr.y(), this->a_max_.z());
+  actdisl->burgers_name = this->act_disl;
+  actdisl->p1 = QVector3D (rr.x(), rr.y (), this->a_min_.z ());
+  actdisl->p2 = QVector3D (rr.x(), rr.y (), this->a_max_.z ());
   qWarning("SL_singleDisl - p1, p2 - (%g %g %g) (%g %g %g)",
-	   actdisl->p1.x(), actdisl->p1.y(), actdisl->p1.z(), actdisl->p2.x(), actdisl->p2.y(), actdisl->p2.z());
+	   actdisl->p1.x (), actdisl->p1.y (), actdisl->p1.z (), 
+	   actdisl->p2.x (), actdisl->p2.y (), actdisl->p2.z ());
   
-  glm::dvec3 burg_vect = rot_tensor * actcrstr->C2O * glm::dvec3(fraction*indMiller[0], fraction*indMiller[1], fraction*indMiller[2]);
+  glm::dvec3 burg_vect = 
+    rot_tensor * actcrstr->C2O 
+    * glm::dvec3 (fraction*indMiller[0], fraction*indMiller[1], fraction*indMiller[2]);
   
   actdisl->burgers_vector = to_QV(burg_vect);
   actdisl->rotation_tensor = this->rot_tensor;
@@ -551,7 +560,7 @@ void Internal::newdisl(unsigned int n_a, bool sw_iter)
   qWarning("newdisl");
   QVector3D rr = this->atoms->coordinates[n_a];// + this->cent_;
   actdisl->rrr = rr;// + this->cent_;
-  actdisl->burgstr = this->act_disl;
+  actdisl->burgers_name = this->act_disl;
   actdisl->p1 = QVector3D(rr.x(), rr.y(), this->a_min_.z());
   actdisl->p2 = QVector3D(rr.x(), rr.y(), this->a_max_.z());
   qWarning("SL_newDisl - p1, p2 - (%g %g %g) (%g %g %g)",
@@ -797,7 +806,7 @@ int Internal::atomize (const QVector3D    point,
     {
       double distance = (point-atoms->coordinates[i]).length ();
       
-      if ((atoms->type[i]==atom_number) && (distance<infinity)) 
+      if ((atoms->atom_type[i]==atom_number) && (distance<infinity)) 
 	{
 	  infinity = distance;
 	  i0       = i;
@@ -894,7 +903,7 @@ int Internal::lattice(int nx, int ny, int nz)
 	{
 	  for (int i=0; i<nx; i++) 
 	    {
-	      for (int an=0; an<this->actcrstr->nchem; an++) 
+	      for (unsigned int an=0; an<this->actcrstr->n_materials; an++) 
 		{
 		  
 		  glm::dvec3 hic = glm::dvec3(double(i)+this->actcrstr->cryst[an].x(),
@@ -902,7 +911,7 @@ int Internal::lattice(int nx, int ny, int nz)
 					      double(k)+this->actcrstr->cryst[an].z());
 		  glm::dvec3 vvv = actcrstr->C2O * hic;
 		  this->atoms->coordinates[m] = QVector3D(vvv.x, vvv.y, vvv.z);
-		  this->atoms->type[m++]      = this->actcrstr->cr_kind[an];
+		  this->atoms->atom_type[m++] = this->actcrstr->cr_kind[an];
 		}
 	    }
 	}
@@ -910,28 +919,35 @@ int Internal::lattice(int nx, int ny, int nz)
   return m;
 }
 
-int Internal::lattice2(double sx, double sy, int nz)
+int Internal::lattice2 (double sx, double sy, unsigned int nz)
 {
-  int m = 0;
-  double sg = sin(constant::deg2rad*this->actcrstr->gamma);
-  int nx = int((sx+2.*sy*sqrt(1.-sg*sg))/this->actcrstr->a)+1;
-  int ny = int(sy/(this->actcrstr->b*sg))+1;
+  unsigned int m = 0;
+  double sg      = sin (constant::deg2rad*this->actcrstr->gamma);
 
-  for (int k=0; k<nz; k++) {
-     for (int j=0; j<ny; j++) {
-        for (int i=0; i<nx; i++) {
-           glm::dvec3 hic = actcrstr->C2O * glm::dvec3(double(i), double(j), double(k));
-           if ( hic.x>=0.&& hic.x<sx && hic.y>=0.&& hic.y<sy ) {
-              for (int an=0; an<this->actcrstr->nchem; an++) {
-                 glm::dvec3 ccc = glm::dvec3(this->actcrstr->cryst[an].x(), this->actcrstr->cryst[an].y(), this->actcrstr->cryst[an].z());
-                 glm::dvec3 vvv = hic + actcrstr->C2O*ccc;
-                 this->atoms->coordinates[m] = QVector3D(vvv.x, vvv.y, vvv.z);
-                 this->atoms->type[m++] = this->actcrstr->cr_kind[an];
-              }
-           }
-        }
-     }
-  }
+  unsigned int nx = static_cast<unsigned int>((sx+2.*sy*sqrt(1.-sg*sg))/this->actcrstr->a)+1;
+  unsigned int ny = static_cast<unsigned int>(sy/(this->actcrstr->b*sg))+1;
+
+  for (unsigned int k=0; k<nz; ++k) 
+    {
+     for (unsigned int j=0; j<ny; ++j) 
+       {
+	 for (unsigned int i=0; i<nx; ++i) 
+	   {
+	     glm::dvec3 hic = actcrstr->C2O * glm::dvec3 (double (i), double (j), double (k));
+
+	     if ((hic.x>=0.) && (hic.x<sx) && (hic.y>=0.) && (hic.y<sy)) 
+	       {
+		 for (unsigned int an=0; an<this->actcrstr->n_materials; an++) 
+		   {
+		     glm::dvec3 ccc = glm::dvec3(this->actcrstr->cryst[an].x(), this->actcrstr->cryst[an].y(), this->actcrstr->cryst[an].z());
+		     glm::dvec3 vvv = hic + actcrstr->C2O*ccc;
+		     this->atoms->coordinates[m] = QVector3D(vvv.x, vvv.y, vvv.z);
+		     this->atoms->atom_type[m++] = this->actcrstr->cr_kind[an];
+		   }
+	       }
+	   }
+       }
+    }
   return m;
 }
 
@@ -1058,9 +1074,10 @@ bool Internal::parse_core(QString line)
   if ( i_left3<0 ) 
     {
       int nd = -1;
-      for ( int i=0; i<actcrstr->ncores; i++) 
+
+      for (unsigned int i=0; i<actcrstr->n_cores; ++i) 
 	{
-	  if ( line1==actcrstr->co_name[i] ) 
+	  if (line1==actcrstr->co_name[i]) 
 	    {
 	      nd = i;
 	      this->act_core = line1;
@@ -1068,7 +1085,7 @@ bool Internal::parse_core(QString line)
 	    }
 	}
       
-      if ( !(this->act_core.isEmpty()) ) 
+      if (!(this->act_core.isEmpty())) 
 	{
 	  actdisl->dislocation_core = actcrstr->core[nd];
 	  return true;
@@ -1088,7 +1105,7 @@ bool Internal::parse_core(QString line)
       double oth_disl3 = read_fraction(list.at( 2));
       qWarning("act_core=%s  other - %g %g %g", act_core.toAscii().data(), oth_disl1, oth_disl2, oth_disl3);
 
-      for ( int ind=0; ind<this->actcrstr->ncores; ind++) 
+      for (unsigned int ind=0; ind<this->actcrstr->n_cores; ++ind) 
 	{
 	  if ( act_core==actcrstr->co_name[ind] ) 
 	    {
@@ -1098,7 +1115,7 @@ bool Internal::parse_core(QString line)
 	    }
 	} // for
 
-      int nc = ++(actcrstr->ncores);
+      int nc = ++(actcrstr->n_cores);
       actdisl->dislocation_core = actcrstr->core[nc] = QVector3D(oth_disl1, oth_disl2, oth_disl3);
       if (act_core.isEmpty()) 
 	actcrstr->co_name[nc].sprintf("core_nr_%d", nc);
