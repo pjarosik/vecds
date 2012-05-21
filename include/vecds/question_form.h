@@ -50,13 +50,32 @@ namespace vecds
       public:
 
                                  /* constructor */
-    QuestionForm (QString      title, 
-		  QString     &description, 
-		  QStringList &question, 
-		  QStringList &suggestion, 
-		  QStringList &answer, 
-		  bool        &ok, 
-		  QWidget     *parent = 0);
+    QuestionForm (QWidget *parent = 0);
+    
+                                 /* set the title of this question */
+    void set_title (QString &title);
+
+                                 /* set the question(s) for this
+				    question */
+    void set_question_list (QStringList &question);
+
+                                 /* set the suggestions(s) for this
+				    question */
+    void set_suggestion_list (QStringList &suggestions);
+
+                                 /* set the suggestions(s) for this
+				    question */
+    void set_description (QString &description);
+
+                                 /* show the question?
+				    get_the_results? */
+    void show_question (QStringList &results);
+
+                                 /* return the vaiable "check". Note:
+				    it needs to be careful, because
+				    "tru" does not necessarily mean
+				    *everything* is ok.  */
+    bool is_sane ();
   
                                  /* destructor */
     ~QuestionForm ();
@@ -75,6 +94,31 @@ namespace vecds
                                  /* a pointer to the button box
 				    created by this class */
     QDialogButtonBox *buttonBox;
+
+
+                                 /* variable holding the title of this
+				    question form */
+    QString question_title;
+
+                                 /* variable holding a list of
+				    questions of this question form */
+    QStringList question_list;
+
+                                 /* variable holding a list of
+				    suggestions of this question form */
+    QStringList suggestion_list;
+
+                                 /* variable holding the description
+				    of this question form */
+    QString question_description;
+
+                                 /* A simple bool for checking. If
+				    operations are ok, this returns
+				    true, otherwise false is
+				    retured. TODO: This needs to be
+				    done in a much more intelligent
+				    way...*/
+    bool check;
   };                             // QuestionForm
 
 }                                // namespace vecds

@@ -445,17 +445,25 @@ void MainWindow::SL_chooseStructure()
 
 void MainWindow::SL_defineStructure()
 {
-  QStringList quest, sug, ans, fields;
-  QString aa;
-  bool ok;
-  QString descr = ("<h5>a, b, c - in &Aring;<br>alpha, beta, gamma - in degrees</h5>");
-  quest << "<h6>name=</h6>" << "a=" << "b=" << "c=" << "alpha="
-                    << "beta=" << "gamma=" << "numb. of atoms";
-  sug << "B4_GaN" << "3.180" << "3.180" << "5.166" << "90.0"
-                  << "90.0" << "120.0"<< "4";
-  vecds::QuestionForm ("Atomic structure definition", descr, quest, sug, ans, ok);
-  if ( !ok ) return;
+  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
 
+  QString title       = "Atomic structure definition";
+  QString description = "<h5>a, b, c - in &Aring;<br>alpha, beta, gamma - in degrees</h5>";
+  QStringList questions;
+  QStringList suggestions;
+  QStringList answers;
+
+  questions << "<h6>name=</h6>" << "a=" << "b=" << "c=" << "alpha=" << "beta=" << "gamma=" << "numb. of atoms";
+  suggestions << "B4_GaN" << "3.180" << "3.180" << "5.166" << "90.0" << "90.0" << "120.0"<< "4";
+
+  (*this_question_form).set_title (title);
+  (*this_question_form).set_question_list (questions);
+  (*this_question_form).set_suggestion_list (suggestions);
+  (*this_question_form).set_description (description);
+  (*this_question_form).show_question (answers);
+
+  if (!(*this_question_form).is_sane ())
+    return;
 }
 
 
@@ -465,53 +473,68 @@ void MainWindow::SL_defineStructure()
 
 void MainWindow::SL_genAtoms()
 {
-  QString descr = "<h5>How many repetitions in<br>x, y, z direction</h5>";
+  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
+
+  QString title       = "nx, ny, nz";
+  QString description = "<h5>How many repetitions in<br>x, y, z direction</h5>";
   QStringList questions;
-  QStringList sugestions;
+  QStringList suggestions;
   QStringList answers;
-  bool ok;
 
   questions << "Number X" <<"Number Y" << "Number Z";
-  sugestions << "6" << "5" << "3";
+  suggestions << "6" << "5" << "3";
 
-  vecds::QuestionForm ("nx, ny, nz", descr, questions, sugestions, answers, ok);
-  if ( !ok ) return;
+  (*this_question_form).set_title (title);
+  (*this_question_form).set_question_list (questions);
+  (*this_question_form).set_suggestion_list (suggestions);
+  (*this_question_form).set_description (description);
+  (*this_question_form).show_question (answers);
 
-  int nx = answers.at(0).toInt();
-  int ny = answers.at(1).toInt();
-  int nz = answers.at(2).toInt();
-// qWarning("nx, ny, nz: %d %d %d", nx, ny, nz);
+  if (!(*this_question_form).is_sane ())
+    return;
+
+  int nx   = answers.at (0).toInt ();
+  int ny   = answers.at (1).toInt ();
+  int nz   = answers.at (2).toInt ();
   int nmax = nx*ny*nz * ActualData->actcrstr->n_materials;
+
   ActualData->atoms->coordinates = new QVector3D[nmax];
   ActualData->atoms->u           = new QVector3D[nmax];
   ActualData->atoms->atom_type   = new unsigned int[nmax];
 
   ActualData->atoms->n_atoms     = ActualData->lattice(nx, ny, nz);
   qWarning("+++++++++ n_atoms=%d", ActualData->atoms->n_atoms);
-  //  ActualData->atoms->n_atoms = nmax;
+
   ActualData->atoms->n_bonds = 0;
   ActualData->minmax3(ActualData->atoms->coordinates, ActualData->atoms->n_atoms, ActualData->a_min_, ActualData->a_max_);
   ActualData->atoms_loaded = QString("neW_atoms.xyz");
-//  ActualData->INT_nn = ActualData->atoms->n_atoms;
+
   InfoDisplay();
   emit SIG_needDraw();
-
 }
 
 
 void MainWindow::SL_gen1Atoms()
 {
-  QString descr = "<h5>Which sizes (in &Aring;) in<br>x, y direction</h5>";
+  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
+
+  QString title       = "size x, size y, size z";
+  QString description = "<h5>Which sizes (in &Aring;) in<br>x, y direction</h5>";
   QStringList questions;
-  QStringList sugestions;
+  QStringList suggestions;
   QStringList answers;
-  bool ok;
 
   questions << "Size X" <<"Size Y" << "Number Z";
-  sugestions << "50" << "50" << "3";
+  suggestions << "50" << "50" << "3";
 
-  vecds::QuestionForm("size x, size y, nz", descr, questions, sugestions, answers, ok);
-  if ( !ok ) return;
+  (*this_question_form).set_title (title);
+  (*this_question_form).set_question_list (questions);
+  (*this_question_form).set_suggestion_list (suggestions);
+  (*this_question_form).set_description (description);
+  (*this_question_form).show_question (answers);
+
+  if (!(*this_question_form).is_sane ())
+    return;
 
   double x_size = answers.at(0).toDouble();
   double y_size = answers.at(1).toDouble();
@@ -606,84 +629,100 @@ void MainWindow::SL_closeImg()
 
 void MainWindow::SL_millerAct()
 {
- qWarning("----   SL_millerAct");
-  QString descr = "<h4>Miller indices;<br>e.g. 1/3[10-10](11-20)<br>&nbsp;or&nbsp;[100](001)</h4>";
-  QStringList quest, sug, ans;
-  QString s;//, result_text;
-  bool ok;
-  s.sprintf("%s", ActualData->act_mill.toAscii().data());
-  quest << "Miller indices";
-   
-  sug << s;
+ vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
 
-  vecds::QuestionForm("Size of structure", descr, quest, sug, ans, ok);
-  if ( !ok ) return;
-  ActualData->act_mill = ans.at(0);
-//  act_mill = result_text = ans.at(0);
+  QString title       = "Size of structure";
+  QString description = "<h4>Miller indices;<br>e.g. 1/3[10-10](11-20)<br>&nbsp;or&nbsp;[100](001)</h4>";
+  QStringList questions;
+  // QStringList suggestions;
+  QStringList answers;
+
+  questions << "Miller indices";
+
+                                 // This was written without a suggestion...
+  (*this_question_form).set_title (title);
+  (*this_question_form).set_question_list (questions);
+  // (*this_question_form).set_suggestion_list (suggestions);
+  (*this_question_form).set_description (description);
+  (*this_question_form).show_question (answers);
+
+  if (!(*this_question_form).is_sane ())
+    return;
+
+  ActualData->act_mill = answers.at (0);
   ActualData->processMiller(1, ActualData->act_mill);
   InfoDisplay();
-//  statusBar()->showMessage(QString("Rotation ").append(ActualData->act_mill));
-//  emit SIG_needDraw();
+
   emit SIG_repaint();
 }
 
 void MainWindow::SL_dislocAct()
 {
-
-  QString descr = "<h4>Dislocation parameters</h4>";
   QString s1, s2;
-  QStringList quest, sug, ans;
-  bool ok;
-  qWarning("----   SL_dislocAct");
-  
   ActualData->act_core.sprintf("4");
-  quest <<"Miller indices" << "disl. core";
-  s1.sprintf("%s", ActualData->act_disl.toAscii().data());
-  s2.sprintf("%s", ActualData->act_core.toAscii().data());
-  sug << s1 << s2;
-  
-  vecds::QuestionForm ("Dislocation parameters", descr, quest, sug, ans, ok);
-  
-  if ( !ok ) 
-    {
-      qWarning ("tu");
-      return;
-    }
-  
-  s1 = ans.at(0);
-  s2 = ans.at(1);
 
-  ActualData->processMiller(2, s1, s2);
+  s1.sprintf ("%s", ActualData->act_disl.toAscii().data());
+  s2.sprintf ("%s", ActualData->act_core.toAscii().data());
+
+  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
+
+  QString title       = "Dislocation parameters";
+  QString description = "<h4>Dislocation parameters</h4>";
+  QStringList questions;
+  QStringList suggestions;
+  QStringList answers;
+
+  questions << "Size X" <<"Size Y" << "Number Z";
+  suggestions << s1 << s2;
+
+  (*this_question_form).set_title (title);
+  (*this_question_form).set_question_list (questions);
+  (*this_question_form).set_suggestion_list (suggestions);
+  (*this_question_form).set_description (description);
+  (*this_question_form).show_question (answers);
+
+  if (!(*this_question_form).is_sane ())
+    return;
+
+  s1 = answers.at (0);
+  s2 = answers.at (1);
+
+  ActualData->processMiller (2, s1, s2);
   ActualData->act_disl = s1;
   ActualData->act_core = s2;
-  InfoDisplay();
-  mview1->updateGL();
+  InfoDisplay ();
+  mview1->updateGL ();
 }
 
 void MainWindow::SL_dislAct()
 {
-//  QString title = "Dislocation parameters";
-  QString descr = "<h4>Disl0 parameters</h4>";
-  QString s1;
-  QStringList quest, sug, ans;
-  bool ok;
- qWarning("----   SL_dislocAct");
-//  ActualData->kindOfDisl = 1;
   ActualData->act_core.sprintf("none");
-  quest <<"Miller indices" << "number of atom";
+
+  QString s1;
   s1.sprintf("%s", ActualData->act_disl.toAscii().data());
 
-  sug << s1 << QString(" ");
-  vecds::QuestionForm ("Disloc parameters", descr, quest, sug, ans, ok);
+  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
 
-  if ( !ok ) 
-    {
-      qWarning("tu -");
-      return;
-    }
+  QString title       = "Dislocation parameters";
+  QString description = "<h4>Dislocation parameters</h4>";
+  QStringList questions;
+  QStringList suggestions;
+  QStringList answers;
 
-  s1 = ans.at(0);
-  int n_a = ans.at(1).toInt();
+  questions << "Miller indices" << "number of atom";
+  suggestions << s1 << QString (" ");
+
+  (*this_question_form).set_title (title);
+  (*this_question_form).set_question_list (questions);
+  (*this_question_form).set_suggestion_list (suggestions);
+  (*this_question_form).set_description (description);
+  (*this_question_form).show_question (answers);
+
+  if (!(*this_question_form).is_sane ())
+    return;
+
+  s1 = answers.at (0);
+  int n_a = answers.at (1).toInt ();
   ActualData->processMiller(1, s1, QString("none"));
   qWarning("SL_dislAct -- 1");
   
@@ -729,7 +768,7 @@ void MainWindow::SL_sett ()
 {
   vecds::Question *this_question = new vecds::Question (); 
 
-  QString title ("Visibility");
+  QString title = "Visibility";
 
   QStringList questions;
   questions << "face_0" << "face_f" 
@@ -757,49 +796,53 @@ void MainWindow::SL_mult()
 
 void MainWindow::SL_cubBox()
 {
+  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
+
+  QString title       = "Size of structure";
+  QString description = "<h4>Write sizes of structure;<br> ( in &Aring; )</h4>";
+  QStringList questions;
+  QStringList suggestions;
+  QStringList answers;
+
+  questions << "Size X" << "Size Y" << "Size Z";
+  suggestions << "20" << "20" << "20";
+
+  (*this_question_form).set_title (title);
+  (*this_question_form).set_question_list (questions);
+  (*this_question_form).set_suggestion_list (suggestions);
+  (*this_question_form).set_description (description);
+  (*this_question_form).show_question (answers);
+
+  if (!(*this_question_form).is_sane ())
+    return;
+
   QVector3D box;
-  QString descr = "<h4>Write sizes of structure;<br> ( in &Aring; )</h4>";
-  QStringList quest, sug, ans;
-  bool ok;
-  quest << "Size X" << "Size Y" << "Size Z";
-  sug << "20" << "20" << "20";
-
-  vecds::QuestionForm ("Size of structure", descr, quest, sug, ans, ok);
-
-  if (!ok) 
-    {
-      return;
-    }
-
-  box.setX(0.5 * ans.at(0).toDouble());
-  box.setY(0.5 * ans.at(1).toDouble());
-  box.setZ(0.5 * ans.at(2).toDouble());
+  box.setX (0.5 * answers.at (0).toDouble ());
+  box.setY (0.5 * answers.at (1).toDouble ());
+  box.setZ (0.5 * answers.at (2).toDouble ());
 }
 
 void MainWindow::SL_hexBox()
 {
+  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
 
-  QString descr = "<h4>Write sizes of structure;<br> ( in &Aring; )</h4>";
-  QStringList quest, sug, ans;
-  bool ok;
-  quest << "Hex radius" << "Size Z";
-  sug << "30" << "25";
+  QString title       = "Size of structure";
+  QString description = "<h4>Write sizes of structure;<br> ( in &Aring; )</h4>";
+  QStringList questions;
+  QStringList suggestions;
+  QStringList answers;
 
-  vecds::QuestionForm ("Size of structure", descr, quest, sug, ans, ok);
+  questions << "Hex radius" << "Size Z";
+  suggestions << "30" << "25";
 
-  if (!ok) 
+  (*this_question_form).set_title (title);
+  (*this_question_form).set_question_list (questions);
+  (*this_question_form).set_suggestion_list (suggestions);
+  (*this_question_form).set_description (description);
+  (*this_question_form).show_question (answers);
+
+  if (!(*this_question_form).is_sane ())
     return;
-
-/*
-  double hex_r = ans.at(0).toDouble();
-  double hex_h = ans.at(1).toDouble();
-
-  Actual->num_choosedAtoms = hexBox(hex_r, hex_h, Actual->cent_);
-  for (int i=0; i<Actual->n_atoms; i++ ) 
-         Actual->atom_show[i] = Actual->at_bool[i];
-
-  emit SIG_needDraw();
-*/
 }
 
 void MainWindow::InfoDisplay()
