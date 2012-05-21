@@ -66,7 +66,7 @@ public QWidget
   
   private slots: 
   
-  void update_window_title ();
+  void updateWindowTitle ();
   
  private: 
 

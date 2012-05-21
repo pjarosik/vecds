@@ -23,6 +23,8 @@
 // -------------------------------------------------------------------
 
 
+#include <iostream>
+
                                  // vecds includes
 #include <vecds/help_browser.h>
 
@@ -33,7 +35,7 @@
 HelpBrowser::HelpBrowser (QWidget *parent)
   :
   parent_widget (parent),
-  help_path (PATH)
+  help_path (VECDS_DOC)
 {}
 
                                  // constructor
@@ -87,7 +89,7 @@ HelpBrowser::init_window (const QString &page)
 }
 
 void 
-HelpBrowser::update_window_title () 
+HelpBrowser::updateWindowTitle () 
 { 
   setWindowTitle (tr ("Help: %1").arg (text_browser->documentTitle ())); 
 }
@@ -97,8 +99,13 @@ HelpBrowser::update_window_title ()
 void 
 HelpBrowser::show_page (const QString &page) 
 { 
+  std::cout << "Making broswer from source at: " << VECDS_DOC << std::endl;
+
   this->init_window (page); 
+  std::cout << "   Init done." << std::endl;
+
   this->resize (500, 400); 
+  std::cout << "   Resize done." << std::endl;
 
                                  // display page.
   this->show (); 

@@ -21,13 +21,16 @@
 //					 
 // -------------------------------------------------------------------
 
-//#include <QtGui>
-#include "../include/vecds/main_viewer.h"
-#include "../include/vecds/internal.h"
-#include "../include/vecds/main_window.h"
-#include "../include/vecds/help_browser.h"
-#include "../include/vecds/dialogs.h"
-#include "../include/vecds/constant.h"
+                                 // standard C/C++
+#include <cassert>
+
+                                 // vecds includes
+#include <vecds/main_viewer.h>
+#include <vecds/internal.h>
+#include <vecds/main_window.h>
+#include <vecds/help_browser.h>
+#include <vecds/dialogs.h>
+#include <vecds/constant.h>
 
 
 Internal *ActualData;
@@ -538,7 +541,6 @@ void MainWindow::SL_gen1Atoms()
 void MainWindow::SL_setSliderValue(int val)
 
 {
-// qWarning ("SLIDER Val=%g", val);
   ActualData->sliderValue = val;
   ActualData->sliderMove = true;
 }
@@ -546,6 +548,10 @@ void MainWindow::SL_setSliderValue(int val)
 void MainWindow::SL_about()
 {
   HelpBrowser about;
+
+                                 // The first help page is always
+                                 // "index.html", though this may
+                                 // change in the future.
   about.show_page ("index.html");
 }
 

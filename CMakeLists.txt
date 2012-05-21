@@ -23,7 +23,7 @@ set (VECDS_PATH               ${CMAKE_SOURCE_DIR})
 set (VECDS_INCLUDES           ${VECDS_PATH}/include)
 set (VECDS_SHARES             ${VECDS_PATH}/share)
 set (VECDS_BIN                ${VECDS_PATH}/bin)
-set (CMAKE_MODULE_PATH        ${VECDS_PATH}/CMakeModules)
+set (VECDS_DOC                ${VECDS_PATH}/doc)
 # set (CMAKE_INSTALL_PREFIX     ${VECDS_BIN})
 set (CMAKE_CXX_FLAGS_DEBUG    "-O0 -g -DDEBUG -Wall")
 set (CMAKE_CXX_FLAGS_RELEASE  "-O3 -DNDEBUG") 
@@ -207,6 +207,9 @@ endif ()
 ################################################
 message (STATUS "Configuring build environment")
 ################################################
+
+configure_file (${VECDS_INCLUDES}/vecds/config.h.in ${VECDS_INCLUDES}/vecds/config.h)
+
 include_directories (
   ${VECDS_INCLUDES}
   ${GSL_INCLUDES}

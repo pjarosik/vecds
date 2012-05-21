@@ -1,0 +1,15 @@
+// -------------------------------------------------------------------
+// Copyright 2012 vecds authors. All rights reserved.
+//
+// Author: Toby D. Young (2012).
+// -------------------------------------------------------------------
+
+#ifndef __vecds_config_h
+#define __vecds_config_h
+
+#cmakedefine VECDS_PACKAGE_NAME   "@VECDS_PACKAGE_NAME@"
+#cmakedefine VECDS_PACKAGE_STRING "@VECDS_PACKAGE_NAME@ @VECDS_VERSION@"
+
+#cmakedefine VECDS_DOC "@VECDS_DOC@"
+
+#endif                           // __vecds_config_h
