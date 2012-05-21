@@ -516,10 +516,11 @@ void MainWindow::SL_gen1Atoms()
   double y_size = answers.at(1).toDouble();
   int nz = answers.at(2).toInt();
 
-  double sg = sin(constant::deg2rad*ActualData->actcrstr->gamma);
-  int nmax = ActualData->actcrstr->n_materials * nz * 
-             (int(x_size/ActualData->actcrstr->a)+1) *
-             (int(y_size/(ActualData->actcrstr->b*sg))+1);
+  double sg = sin (vecds::constant::deg2rad*ActualData->actcrstr->gamma);
+  int nmax  = ActualData->actcrstr->n_materials * nz * 
+    (int(x_size/ActualData->actcrstr->a)+1) *
+    (int(y_size/(ActualData->actcrstr->b*sg))+1);
+
   ActualData->atoms->coordinates = new QVector3D[nmax];
   ActualData->atoms->u           = new QVector3D[nmax];
   ActualData->atoms->atom_type   = new unsigned int[nmax];

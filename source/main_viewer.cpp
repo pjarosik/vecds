@@ -1,22 +1,22 @@
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
+// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
+// (2012).
 //
-// Copyright (C) 2010 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors
 //
-// This  program is  free  software: you  can  redistribute it  and/or
-// modify  it under the  terms of  the GNU  General Public  License as
-// published by the Free Software  Foundation, either version 3 of the
+// This program is free software: you can redistribute it and/or
+// modify it under the terms of the GNU General Public License as
+// published by the Free Software Foundation, either version 3 of the
 // License, or (at your option) any later version.
 //  
 // This program is distributed in the hope that it will be useful, but
-// WITHOUT  ANY  WARRANTY;  without   even  the  implied  warranty  of
-// MERCHANTABILITY or  FITNESS FOR A PARTICULAR PURPOSE.   See the GNU
+// WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // General Public License for more details.
 //
-// You should have  received a copy of the  GNU General Public License
-// along      with      this      program.       If      not,      see
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
 //					 
 // -------------------------------------------------------------------
@@ -92,7 +92,7 @@ MainViewer::MainViewer (QWidget *parent)
   
   prepare_scene();
 
-  arcb = new ArcBall();
+  arcb       = new vecds::ArcBall();
   transformM = new double[16];
 
   for (unsigned int i=1; i<15; ++i) 
@@ -148,7 +148,7 @@ void MainViewer::prepare_scene ()
       qWarning("+++++++++++++++++ min_ = %g %g %g", min_.x(), min_.y(), min_.z());
     }
 
-  distance0 = distance = (dist0/tan(fov*constant::deg2rad))*rad_scene;
+  distance0 = distance = (dist0/tan(fov*vecds::constant::deg2rad))*rad_scene;
   small = 0.01 * rad_scene;
   smaller = 0.22 * small;
   ActualData->rad_scene = rad_scene;
@@ -262,9 +262,7 @@ void MainViewer::mouseMoveEvent(QMouseEvent *event)
 //                 arcb->startVec.x, arcb->startVec.y, arcb->startVec.z,
 //                           arcb->endVec.x, arcb->endVec.y, arcb->endVec.z);
        quat2matr(arcb->quaternion);
-       QVector3D result = quat2euler(arcb->quaternion)*constant::rad2deg;
-// qWarning("Angles = %g %g %g",
-//          constant::rad2deg*result.x, rad2deg*result.y, rad2deg*result.z);
+       QVector3D result = quat2euler(arcb->quaternion)*vecds::constant::rad2deg;
 
        if ( thetaRot!=result.x() ) {
           thetaRot = result.x();
@@ -472,8 +470,9 @@ void MainViewer::draw_bonds()
      double invnorm = 1.0 / dist;
      QVector3D temp2 = QVector3D(-temp1.y()*invnorm, temp1.x()*invnorm, 0.0);
      QVector3D trans = ActualData->atoms->coordinates[a1] - cent_;
-     glTranslated(trans.x(), trans.y(), trans.z());
-     glRotated(constant::rad2deg*acos(temp1.z()*invnorm), temp2.x(), temp2.y(), temp2.z());
+
+     glTranslated (trans.x(), trans.y(), trans.z());
+     glRotated (vecds::constant::rad2deg*acos(temp1.z()*invnorm), temp2.x(), temp2.y(), temp2.z());
      
      GLUquadricObj *qobj = gluNewQuadric();
      gluCylinder(qobj, 0.05, 0.05, dist, 16, 8);
@@ -513,12 +512,12 @@ void MainViewer::draw_axis ()
 
 void MainViewer::arrow(QVector3D orig, QVector3D vect, double fact, double sm)
 {
-  vect *= (1.0 - fact);
-  double dist1 = vect.length();
-  double dist2 = dist1 * ( fact/(1.0-fact) );
-  double invnorm = 1.0 / dist1;
+  vect           *= (1.0 - fact);
+  double dist1    = vect.length();
+  double dist2    = dist1 * ( fact/(1.0-fact) );
+  double invnorm  = 1.0 / dist1;
   QVector3D temp1 = QVector3D(-vect.y()*invnorm, vect.x()*invnorm, 0.0);
-  double ang = constant::rad2deg*acos(vect.z()*invnorm);
+  double ang      = vecds::constant::rad2deg*acos(vect.z()*invnorm);
 
   glTranslated(orig.x(), orig.y(), orig.z());
   glRotated(ang, temp1.x(), temp1.y(), temp1.z());
@@ -740,16 +739,16 @@ void MainViewer::doGLdisloc()
       qWarning("doGLdisloc  --   rrr=%g, %g, %g", ActualData->disl[i].rrr.x(), ActualData->disl[i].rrr.y(),
 	       ActualData->disl[i].rrr.z());
       glPushMatrix();
-      QVector3D p1 = ActualData->disl[i].p1 - cent_;
-      QVector3D p2 = ActualData->disl[i].p2 - cent_;
+      QVector3D p1    = ActualData->disl[i].p1 - cent_;
+      QVector3D p2    = ActualData->disl[i].p2 - cent_;
       QVector3D temp1 = p2 - p1;
-      double dist = temp1.length();
-      double invnorm = 1.0 / dist;
-      
+      double dist     = temp1.length();
+      double invnorm  = 1.0 / dist;
       QVector3D temp2 = QVector3D(-temp1.y()*invnorm, temp1.x()*invnorm, 0.0);
-      glTranslated(p1.x(), p1.y(), p1.z());
-      glRotated(constant::rad2deg*acos(temp1.z()*invnorm), temp2.x(), temp2.y(), temp2.z());
-      glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cube_mat11);
+
+      glTranslated (p1.x(), p1.y(), p1.z());
+      glRotated (vecds::constant::rad2deg*acos(temp1.z()*invnorm), temp2.x(), temp2.y(), temp2.z());
+      glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cube_mat11);
       GLUquadricObj *qobj = gluNewQuadric();
       gluCylinder(qobj, 0.15, 0.15, dist, 16, 8);
       gluDeleteQuadric(qobj);
@@ -824,12 +823,12 @@ void MainViewer::euler2matr()
 {
                                  // Assume the angles are in passed in
                                  // in radians.
-    double ch = cos (thetaRot*constant::deg2rad); // heading
-    double sh = sin (thetaRot*constant::deg2rad);
-    double ca = cos (psiRot*constant::deg2rad);   // attitude
-    double sa = sin (psiRot*constant::deg2rad);
-    double cb = cos (phiRot*constant::deg2rad);   // bank
-    double sb = sin (phiRot*constant::deg2rad);
+  double ch = cos (thetaRot*vecds::constant::deg2rad); // heading
+  double sh = sin (thetaRot*vecds::constant::deg2rad);
+  double ca = cos (psiRot  *vecds::constant::deg2rad);   // attitude
+  double sa = sin (psiRot  *vecds::constant::deg2rad);
+  double cb = cos (phiRot  *vecds::constant::deg2rad);   // bank
+  double sb = sin (phiRot  *vecds::constant::deg2rad);
 
     transformM[0]  = ch*ca;
     transformM[1]  = sh*sb - ch*sa*cb;
@@ -886,14 +885,14 @@ QVector3D MainViewer::quat2euler(QQuaternion q)
   if (test > 0.499) 
     { // singularity at north pole
       head = 2.*atan2(q.x(), q.scalar());
-      att = constant::pi_2;
+      att = vecds::constant::pi_2;
       b = 0.;
       return QVector3D(head, att, b);
     }
   if (test < -0.499) 
     { // singularity at south pole
       head = -2.*atan2(q.x(), q.scalar());
-      att = - constant::pi_2;
+      att = - vecds::constant::pi_2;
       b = 0.;
       return QVector3D(head, att, b);
     }
@@ -909,15 +908,16 @@ QVector3D MainViewer::quat2euler(QQuaternion q)
 QQuaternion MainViewer::quatfromEuler()
 {
   //   QQuaternion res;
-  double heading2  = 0.5 * constant::deg2rad * thetaRot;
-  double attitude2 = 0.5 * constant::deg2rad * psiRot;
-  double bank2     = 0.5 * constant::deg2rad * phiRot;
-  double c1 = cos(heading2);
-  double s1 = sin(heading2);
-  double c2 = cos(attitude2);
-  double s2 = sin(attitude2);
-  double c3 = cos(bank2);
-  double s3 = sin(bank2);
+  double heading2  = 0.5 * vecds::constant::deg2rad * thetaRot;
+  double attitude2 = 0.5 * vecds::constant::deg2rad * psiRot;
+  double bank2     = 0.5 * vecds::constant::deg2rad * phiRot;
+
+  double c1   = cos (heading2);
+  double s1   = sin (heading2);
+  double c2   = cos (attitude2);
+  double s2   = sin (attitude2);
+  double c3   = cos (bank2);
+  double s3   = sin (bank2);
   double c1c2 = c1*c2;
   double s1s2 = s1*s2;
   return QQuaternion(c1c2*c3 - s1s2*s3, 

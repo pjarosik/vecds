@@ -47,9 +47,11 @@ int Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct)
   double xx = distx/r;
   double yy = disty/r;
   double r02 = rad_fact*be*be; // radius of inmobile ring relative to which the atoms in the core move up
-  const double ux =  u0x - be /(2.*constant::pi)*(atan2(yy,xx)+xx*yy/(2.*(1.-nu)));// - 0.5*be;
-  const double uy = u0y + be /(8.*constant::pi*(1.-nu)) * ((1.-nu-nu)*log(r2/r02) + (xx+yy)*(xx-yy));
-  const double uz = u0z - bz/(2.*constant::pi)*atan2(yy, xx);
+
+  const double ux = u0x - be /(2.*vecds::constant::pi)*(atan2(yy,xx)+xx*yy/(2.*(1.-nu)));// - 0.5*be;
+  const double uy = u0y + be /(8.*vecds::constant::pi*(1.-nu)) * ((1.-nu-nu)*log(r2/r02) + (xx+yy)*(xx-yy));
+  const double uz = u0z - bz /(2.*vecds::constant::pi)*atan2(yy, xx);
+
   gsl_vector_set(result_funct, 0, ux);
   gsl_vector_set(result_funct, 1, uy);
   gsl_vector_set(result_funct, 2, uz);
@@ -83,13 +85,13 @@ int Beta_function(const gsl_vector *x, void *par, gsl_matrix *jac) {
     } 
   else 
     {
-      const double a = be/(4. * constant::pi * (1.-nu) * r2*r2);                  // a = bx/(4. * pi * (1.-n) * r2*r2)
+      const double a = be/(4. * vecds::constant::pi * (1.-nu) * r2*r2);                  // a = bx/(4. * pi * (1.-n) * r2*r2)
       const double bxx = 1. + a * yy * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(4) = -a * y * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xx 
       const double byx = a * xx * ((1.-2.*nu)*x2 + (3.-2.*nu)*y2);      // u(5) = -a * x * ((1.-2.*n)*x*x + (3.-2.*n)*y*y) !yx
-      const double bzx = bz/(2.*constant::pi) * yy/r2;                            // u(6) = -bz/(2.*pi) * y/r2                       !zx
+      const double bzx = bz/(2.*vecds::constant::pi) * yy/r2;                            // u(6) = -bz/(2.*pi) * y/r2                       !zx
       const double bxy = -a * xx * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2);     // u(7) =  a * x * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xy
       const double byy = 1. - a * yy * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2); // u(8) =  a * y * ((1.+2.*n)*x*x - (1.-2.*n)*y*y) !yy
-      const double bzy = bz/(2.*constant::pi) * xx/r2;                            // u(9) = -bz/(2.*pi) * x/r2                       !zy
+      const double bzy = bz/(2.*vecds::constant::pi) * xx/r2;                            // u(9) = -bz/(2.*pi) * x/r2                       !zy
       gsl_matrix_set(jac, 0, 0, bxx);
       gsl_matrix_set(jac, 0, 1, bxy);
       gsl_matrix_set(jac, 0, 2, 0.);
@@ -268,8 +270,9 @@ void Internal::init_structures()
     //    c2o3 = 0.;   //3
     //    c2o6 = 0.;   //6
 
-    double cosa6 = cos(constant::deg2rad*actcrstr->gamma);
-    double sina6 = sin(constant::deg2rad*actcrstr->gamma);
+    double cosa6 = cos (vecds::constant::deg2rad*actcrstr->gamma);
+    double sina6 = sin (vecds::constant::deg2rad*actcrstr->gamma);
+
     if ( actcrstr->gamma==90. ) 
       {
 	cosa6 = 0.;
@@ -279,8 +282,10 @@ void Internal::init_structures()
     c2o1 = actcrstr->b * cosa6; //1
     c2o4 = actcrstr->b * sina6;//4
     c2o7 = 0.;//7
-    double cosa5 = cos(constant::deg2rad*actcrstr->beta);
-    double cosa4 = cos(constant::deg2rad*actcrstr->alpha);
+
+    double cosa5 = cos (vecds::constant::deg2rad*actcrstr->beta);
+    double cosa4 = cos (vecds::constant::deg2rad*actcrstr->alpha);
+
     if ( actcrstr->alpha==90. ) cosa4 = 0.;
     if ( actcrstr->beta==90. ) cosa5 = 0.;
     c2o2 = actcrstr->c * cosa5;//2
@@ -759,9 +764,9 @@ glm::dvec3 Internal::mixed_u(int i, glm::dvec3 rotdist, double be, double bz)
       double x = rotdist.x/r;
       double y = rotdist.y/r;
       double r02 = rad_fact*be*be; // radius of inmobile ring relative to which the atoms in the core move up
-      double ux =  be /(2.*constant::pi)*(atan2(y,x)+x*y/(2.*(1.-nu)));// - 0.5*be;
-      double uy = -be /(8.*constant::pi*(1.-nu)) * ((1.-nu-nu)*log(r2/r02) + (x+y)*(x-y));
-      return glm::dvec3(ux, uy, bz/(2.*constant::pi)*atan2(y, x));
+      double ux =  be /(2.*vecds::constant::pi)*(atan2(y,x)+x*y/(2.*(1.-nu)));// - 0.5*be;
+      double uy = -be /(8.*vecds::constant::pi*(1.-nu)) * ((1.-nu-nu)*log(r2/r02) + (x+y)*(x-y));
+      return glm::dvec3(ux, uy, bz/(2.*vecds::constant::pi)*atan2(y, x));
     } 
 } // mixed_u
 
@@ -780,13 +785,13 @@ glm::dmat3 Internal::mixed_beta (int i, glm::dvec3 rotdist, double be, double bz
     }
   else 
     {
-      double a = be/(4. * constant::pi * (1.-nu) * r2*r2);   // a = bx/(4. * pi * (1.-n) * r2*r2)
+      double a   = be/(4. * vecds::constant::pi * (1.-nu) * r2*r2);   // a = bx/(4. * pi * (1.-n) * r2*r2)
       double bxx = -a * y * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(4) = -a * y * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xx 
       double byx = -a * x * ((1.-2.*nu)*x2 + (3.-2.*nu)*y2); // u(5) = -a * x * ((1.-2.*n)*x*x + (3.-2.*n)*y*y) !yx
-      double bzx = -bz/(2.*constant::pi) * y/r2;             // u(6) = -bz/(2.*pi) * y/r2                       !zx
+      double bzx = -bz/(2.*vecds::constant::pi) * y/r2;             // u(6) = -bz/(2.*pi) * y/r2                       !zx
       double bxy =  a * x * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(7) =  a * x * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xy
       double byy =  a * y * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2); // u(8) =  a * y * ((1.+2.*n)*x*x - (1.-2.*n)*y*y) !yy
-      double bzy = -bz/(2.*constant::pi) * x/r2;             // u(9) = -bz/(2.*pi) * x/r2                       !zy
+      double bzy = -bz/(2.*vecds::constant::pi) * x/r2;             // u(9) = -bz/(2.*pi) * x/r2                       !zy
 
       b = glm::dmat3 (bxx, bxy, 0.,   
 		      byx, byy, 0.,    
@@ -928,7 +933,7 @@ int Internal::lattice(int nx, int ny, int nz)
 int Internal::lattice2 (double sx, double sy, unsigned int nz)
 {
   unsigned int m = 0;
-  double sg      = sin (constant::deg2rad*this->actcrstr->gamma);
+  double sg      = sin (vecds::constant::deg2rad*this->actcrstr->gamma);
 
   unsigned int nx = static_cast<unsigned int>((sx+2.*sy*sqrt(1.-sg*sg))/this->actcrstr->a)+1;
   unsigned int ny = static_cast<unsigned int>(sy/(this->actcrstr->b*sg))+1;

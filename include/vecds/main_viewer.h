@@ -38,7 +38,7 @@
 #include <vecds/algebra.h>
 #include <vecds/mat9d.h>
 #include <vecds/additional.h>
-#include <vecds/arcball.h>
+#include <vecds/arc_ball.h>
 
                                  /* This is the class
 				    <code>MainViewer</code>. Since we
@@ -171,7 +171,11 @@ public QGLWidget
   GLdouble model_view[16];
   GLdouble projection[16];
   GLint viewport[4];
-  ArcBall *arcb;
+
+                                 // create an arc-ball  for viewing
+  vecds::ArcBall *arcb;
+
+
   QVector2D mousePt;
   QVector3D mousePos;
   double* transformM;

@@ -24,41 +24,41 @@
 
 
                                  // vecds includes
-#include <vecds/arcball.h> 
+#include <vecds/arc_ball.h> 
 
 
                                  /* Constructor. Create an empty
 				    (null) ArcBall by initialisation
 				    of certain variables. */
-ArcBall::ArcBall () 
+vecds::ArcBall::ArcBall () 
   :
-  epsilon    (1.e-8),
-  vector_begin   (QVector3D (0., 0., 0.)),
-  vector_end     (QVector3D (0., 0., 0.)),
-  mouseQuat  (QQuaternion (1., 0., 0., 0.)),
-  q_down     (QQuaternion (1., 0., 0., 0.)),
-  quaternion (QQuaternion (1., 0., 0., 0.))    
+  epsilon      (1.e-8),
+  vector_begin (QVector3D (0., 0., 0.)),
+  vector_end   (QVector3D (0., 0., 0.)),
+  mouseQuat    (QQuaternion (1., 0., 0., 0.)),
+  q_down       (QQuaternion (1., 0., 0., 0.)),
+  quaternion   (QQuaternion (1., 0., 0., 0.))    
 {}
 
-ArcBall::~ArcBall () 
+vecds::ArcBall::~ArcBall () 
 {}
 
-void ArcBall::click (const QVector2D &mouse_coordinate)
+void vecds::ArcBall::click (const QVector2D &mouse_coordinate)
 {
   this->vector_begin  = mapToSphere (mouse_coordinate);
   this->q_down    = this->quaternion;
   this->mouseQuat = QQuaternion (1., 0., 0., 0.);
 }
 
-void ArcBall::drag (const QVector2D &mouse_coordinate)
+void vecds::ArcBall::drag (const QVector2D &mouse_coordinate)
 {
   this->vector_end     = mapToSphere (mouse_coordinate);
   this->mouseQuat  = get_quaternion (this->vector_begin, this->vector_end);
   this->quaternion = this->mouseQuat * this->q_down;
 }
 
-QQuaternion ArcBall::get_quaternion (const QVector3D &vec_1, 
-				     const QVector3D &vec_2)
+QQuaternion vecds::ArcBall::get_quaternion (const QVector3D &vec_1, 
+					    const QVector3D &vec_2)
 {
   QVector3D perpendicular_vector = QVector3D::crossProduct (vec_2, vec_1);
 
@@ -77,7 +77,7 @@ QQuaternion ArcBall::get_quaternion (const QVector3D &vec_1,
 }
 
 
-QVector3D ArcBall::mapToSphere (QVector2D mouse_coordinate)
+QVector3D vecds::ArcBall::mapToSphere (QVector2D mouse_coordinate)
 {
   const double length = 
     mouse_coordinate.x ()*mouse_coordinate.x () + 
