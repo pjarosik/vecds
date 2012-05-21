@@ -221,24 +221,26 @@ include_directories (
 
 set (vecds_sources
   ${VECDS_PATH}/source/arc_ball
-  ${VECDS_PATH}/source/dialogs
   ${VECDS_PATH}/source/help_browser
   ${VECDS_PATH}/source/internal
   ${VECDS_PATH}/source/main
   ${VECDS_PATH}/source/main_viewer
   ${VECDS_PATH}/source/main_window
+  ${VECDS_PATH}/source/question
+  ${VECDS_PATH}/source/question_form
   )
 
 ## Note, header files *only* determine which files will be passed over
 ## for moc generated code; thus, we do not need them all.
 set (vecds_headers
   ##  ${VECDS_INCLUDES}/vecds/arc_ball.h
-  ${VECDS_INCLUDES}/vecds/dialogs.h
   ${VECDS_INCLUDES}/vecds/help_browser.h
   ##  ${VECDS_INCLUDES}/vecds/internal.h
   ##  ${VECDS_INCLUDES}/vecds/main.h
   ${VECDS_INCLUDES}/vecds/main_viewer.h
   ${VECDS_INCLUDES}/vecds/main_window.h
+  ${VECDS_INCLUDES}/vecds/question.h
+  ${VECDS_INCLUDES}/vecds/question_form.h
 )
 
 qt4_wrap_cpp (vecds_headers_moc ${vecds_headers})

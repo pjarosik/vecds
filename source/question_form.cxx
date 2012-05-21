@@ -32,7 +32,7 @@
 #include <QPushButton>
 
                                  // vecds includes
-#include <vecds/dialogs.h>
+#include <vecds/question_form.h>
 
 
 
@@ -137,67 +137,3 @@ vecds::QuestionForm::QuestionForm (QString      title,
 vecds::QuestionForm::~QuestionForm ()
 {}
 
-// -----------   class Questions  ----------------
-
-vecds::Questions::Questions (QString      title, 
-			     QStringList &question, 
-			     bool        *results, 
-			     bool        &ok, 
-			     QWidget     *parent) 
-  : 
-  QDialog (parent)
-{
-  ok = false;
-  const unsigned int n_questions = question.count ();
-
-                                 // set title to this title
-  setWindowTitle (title);
-
-  for (unsigned int i=0; i<n_questions; ++i)  
-    {
-      check_box[i] = new QCheckBox (question.at (i));
-      check_box[i]->setChecked (results[i]);
-    }
-  
-  buttonBox = new QDialogButtonBox;
-  buttonBox->addButton (tr ("Accept"), QDialogButtonBox::AcceptRole);
-  buttonBox->addButton (tr ("Reject"), QDialogButtonBox::RejectRole);
-
-  connect (buttonBox, SIGNAL (accepted ()), this, SLOT (accept ()));
-  connect (buttonBox, SIGNAL (rejected ()), this, SLOT (reject ()));
-
-  QVBoxLayout *layout = new QVBoxLayout;
-
-  for (unsigned int i=0; i<n_questions; ++i)
-    layout->addWidget(check_box[i]);
-
-  QVBoxLayout *mainLayout = new QVBoxLayout;
-  
-  mainLayout->addLayout (layout);
-  mainLayout->addWidget (buttonBox);
-
-  setLayout(mainLayout);
-  
-  this->exec ();
-  
-  if (this->result()==1)
-    {
-      ok = true;
-      for (unsigned int i=0; i<n_questions; ++i) 
-	results[i] = check_box[i]->isChecked ();
-    }
-  else 
-    {
-      ok = false;
-      return;
-    }
-  
-  for (unsigned int i=0; i<n_questions; ++i)
-    delete check_box[i];
-  
-  delete buttonBox;
-}
-
-                                 // destructor
-vecds::Questions::~Questions ()
-{}

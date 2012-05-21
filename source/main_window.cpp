@@ -29,7 +29,8 @@
 #include <vecds/internal.h>
 #include <vecds/main_window.h>
 #include <vecds/help_browser.h>
-#include <vecds/dialogs.h>
+#include <vecds/question.h>
+#include <vecds/question_form.h>
 #include <vecds/constant.h>
 
 
@@ -719,7 +720,7 @@ void MainWindow::SL_sett()
   bool ok;
   questions << "face_0" << "face_f" << "nodes_0" << "nodes_f" << "int.lines" << "ext_lines" << "spectrograms"
             << "arrows"  << "axis";
-  vecds::Questions ("Visibility", questions, ActualData->visible, ok);
+  vecds::Question ("Visibility", questions, ActualData->visible, ok);
   emit SIG_repaint();
 }
 

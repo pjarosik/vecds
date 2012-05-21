@@ -27,91 +27,8 @@
 #include <vecds/internal.h>
 #include <vecds/additional.h>
 #include <vecds/constant.h>
+#include <vecds/function.h>
 
-int Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct) 
-{
-  double rad_fact = 1.;
-  double nu  = 0.35;
-  double be  = ((struct params *) par)->be;
-  double bz  = ((struct params *) par)->bz;
-  double u0x = ((struct params *) par)->u0x;
-  double u0y = ((struct params *) par)->u0y;
-  double u0z = ((struct params *) par)->u0z;
-  
-  const double distx = gsl_vector_get(x, 0);
-  const double disty = gsl_vector_get(x, 1);
-
-  double r2  = distx*distx+disty*disty;
-  double r   = sqrt(r2);
-  double xx  = distx/r;
-  double yy  = disty/r;
-  double r02 = rad_fact*be*be; // radius of inmobile ring relative to which the atoms in the core move up
-
-  const double ux = u0x - be /(2.*vecds::constant::pi)*(atan2(yy,xx)+xx*yy/(2.*(1.-nu)));// - 0.5*be;
-  const double uy = u0y + be /(8.*vecds::constant::pi*(1.-nu)) * ((1.-nu-nu)*log(r2/r02) + (xx+yy)*(xx-yy));
-  const double uz = u0z - bz /(2.*vecds::constant::pi)*atan2(yy, xx);
-
-  gsl_vector_set (result_funct, 0, ux);
-  gsl_vector_set (result_funct, 1, uy);
-  gsl_vector_set (result_funct, 2, uz);
-  return GSL_SUCCESS;
-}
-
-int Beta_function(const gsl_vector *x, void *par, gsl_matrix *jac) {
-  double nu = 0.35;
-  double be = ((struct params *) par)->be;
-  double bz = ((struct params *) par)->bz;
-
-  const double xx = gsl_vector_get(x, 0);
-  const double yy = gsl_vector_get(x, 1);
-
-  const double y2 = yy*yy;
-  const double x2 = xx*xx;
-  const double r2 = x2+y2;
-
-  if ( r2<1.e-15 ) 
-    {
-      std::cout << " Atom in the center of dislocation core" << endl;
-      gsl_matrix_set (jac, 0, 0, 1.);
-      gsl_matrix_set (jac, 0, 1, 0.);
-      gsl_matrix_set (jac, 0, 2, 0.);
-      gsl_matrix_set (jac, 1, 0, 0.);
-      gsl_matrix_set (jac, 1, 1, 1.);
-      gsl_matrix_set (jac, 1, 2, 0.);
-      gsl_matrix_set (jac, 2, 0, 0.);
-      gsl_matrix_set (jac, 2, 1, 0.);
-      gsl_matrix_set (jac, 2, 2, 1.);
-    } 
-  else 
-    {
-      const double a = be/(4. * vecds::constant::pi * (1.-nu) * r2*r2);                  // a = bx/(4. * pi * (1.-n) * r2*r2)
-      const double bxx = 1. + a * yy * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(4) = -a * y * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xx 
-      const double byx = a * xx * ((1.-2.*nu)*x2 + (3.-2.*nu)*y2);      // u(5) = -a * x * ((1.-2.*n)*x*x + (3.-2.*n)*y*y) !yx
-      const double bzx = bz/(2.*vecds::constant::pi) * yy/r2;                            // u(6) = -bz/(2.*pi) * y/r2                       !zx
-      const double bxy = -a * xx * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2);     // u(7) =  a * x * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xy
-      const double byy = 1. - a * yy * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2); // u(8) =  a * y * ((1.+2.*n)*x*x - (1.-2.*n)*y*y) !yy
-      const double bzy = bz/(2.*vecds::constant::pi) * xx/r2;                            // u(9) = -bz/(2.*pi) * x/r2                       !zy
-
-      gsl_matrix_set (jac, 0, 0, bxx);
-      gsl_matrix_set (jac, 0, 1, bxy);
-      gsl_matrix_set (jac, 0, 2, 0.);
-      gsl_matrix_set (jac, 1, 0, byx);
-      gsl_matrix_set (jac, 1, 1, byy);
-      gsl_matrix_set (jac, 1, 2, 0.);
-      gsl_matrix_set (jac, 2, 0, bzx);
-      gsl_matrix_set (jac, 2, 1, bzy);
-      gsl_matrix_set (jac, 2, 2, 1.); 
-    }
-
-  return GSL_SUCCESS;
-}
-
-int Love_fdf(const gsl_vector *x, void *par, gsl_vector *result_funct, gsl_matrix *jac) 
-{
-  Love_function(x, par, result_funct);
-  Beta_function(x, par, jac);
-  return GSL_SUCCESS;
-}
 
 Internal::Internal ()
 {
@@ -625,7 +542,9 @@ void Internal::newdisl(unsigned int n_a, bool sw_iter)
 
 		  goto _END;
 		}
-	      gsl_multiroot_function_fdf f = {&(::Love_function), &(::Beta_function), &(::Love_fdf), 3, &p};
+	      gsl_multiroot_function_fdf f = {&(::vecds::function::love), 
+					      &(::vecds::function::beta), 
+					      &(::vecds::function::love_fdf), 3, &p};
 
 	      x = gsl_vector_alloc(3);
 	      gsl_vector_set(x, 0, temp.x);

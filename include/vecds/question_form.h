@@ -22,13 +22,10 @@
 //					 
 // -------------------------------------------------------------------
 
-
-
-
 #ifndef QUESTION_FORM_H
 #define QUESTION_FORM_H
 
-
+                                 // Qt includes
 #include <QDialog>
 #include <QLineEdit>
 #include <QLabel>
@@ -83,44 +80,3 @@ namespace vecds
 }                                // namespace vecds
   
 #endif
-
-// -----------------------------------------------------------------------
-
-#ifndef QUESTIONS_H
-#define QUESTIONS_H
-
-namespace vecds
-{
-
-  class Questions 
-    : 
-  public QDialog
-  {
-    Q_OBJECT
-      
-      public:
-
-                                 /* constructor */
-    Questions (QString      title, 
-	       QStringList &question, 
-	       bool        *results, 
-	       bool        &ok,
-	       QWidget     *parent = 0);
-
-                                 /* destructor */
-    ~Questions ();
-  
-  private:
-
-                                 /* a list of check boxes */
-    QCheckBox *check_box[50];
-  
-                                 /* a pointer to the button box
-				    created by this class */
-    QDialogButtonBox *buttonBox;
-  };
-
-}                                // namespace vecds
-
-#endif
-
