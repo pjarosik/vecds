@@ -33,7 +33,8 @@
 #include <QSlider>
 #include <qwt_scale_engine.h>
 //#include <qwt_color_map.h>
-#include "algebra.h"
+#include <vecds/algebra.h>
+#include <vecds/main_viewer.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -125,7 +126,7 @@ class MainWindow : public QMainWindow
   QString aname, iname, fname, resname;
   QString infotxt0, infotxtat, infotxtimg;
   
-  MainViewer *mview1;
+  vecds::MainViewer *mview1;
   
   QMenu *fileMenu;
   QMenu *defstructMenu;

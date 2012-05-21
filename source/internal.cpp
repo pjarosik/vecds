@@ -41,19 +41,19 @@ int Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct)
   const double distx = gsl_vector_get(x, 0);
   const double disty = gsl_vector_get(x, 1);
 
-  double r2 = distx*distx+disty*disty;
-  double r = sqrt(r2);
-  double xx = distx/r;
-  double yy = disty/r;
+  double r2  = distx*distx+disty*disty;
+  double r   = sqrt(r2);
+  double xx  = distx/r;
+  double yy  = disty/r;
   double r02 = rad_fact*be*be; // radius of inmobile ring relative to which the atoms in the core move up
 
   const double ux = u0x - be /(2.*vecds::constant::pi)*(atan2(yy,xx)+xx*yy/(2.*(1.-nu)));// - 0.5*be;
   const double uy = u0y + be /(8.*vecds::constant::pi*(1.-nu)) * ((1.-nu-nu)*log(r2/r02) + (xx+yy)*(xx-yy));
   const double uz = u0z - bz /(2.*vecds::constant::pi)*atan2(yy, xx);
 
-  gsl_vector_set(result_funct, 0, ux);
-  gsl_vector_set(result_funct, 1, uy);
-  gsl_vector_set(result_funct, 2, uz);
+  gsl_vector_set (result_funct, 0, ux);
+  gsl_vector_set (result_funct, 1, uy);
+  gsl_vector_set (result_funct, 2, uz);
   return GSL_SUCCESS;
 }
 
@@ -91,15 +91,16 @@ int Beta_function(const gsl_vector *x, void *par, gsl_matrix *jac) {
       const double bxy = -a * xx * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2);     // u(7) =  a * x * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xy
       const double byy = 1. - a * yy * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2); // u(8) =  a * y * ((1.+2.*n)*x*x - (1.-2.*n)*y*y) !yy
       const double bzy = bz/(2.*vecds::constant::pi) * xx/r2;                            // u(9) = -bz/(2.*pi) * x/r2                       !zy
-      gsl_matrix_set(jac, 0, 0, bxx);
-      gsl_matrix_set(jac, 0, 1, bxy);
-      gsl_matrix_set(jac, 0, 2, 0.);
-      gsl_matrix_set(jac, 1, 0, byx);
-      gsl_matrix_set(jac, 1, 1, byy);
-      gsl_matrix_set(jac, 1, 2, 0.);
-      gsl_matrix_set(jac, 2, 0, bzx);
-      gsl_matrix_set(jac, 2, 1, bzy);
-      gsl_matrix_set(jac, 2, 2, 1.); 
+
+      gsl_matrix_set (jac, 0, 0, bxx);
+      gsl_matrix_set (jac, 0, 1, bxy);
+      gsl_matrix_set (jac, 0, 2, 0.);
+      gsl_matrix_set (jac, 1, 0, byx);
+      gsl_matrix_set (jac, 1, 1, byy);
+      gsl_matrix_set (jac, 1, 2, 0.);
+      gsl_matrix_set (jac, 2, 0, bzx);
+      gsl_matrix_set (jac, 2, 1, bzy);
+      gsl_matrix_set (jac, 2, 2, 1.); 
     }
 
   return GSL_SUCCESS;

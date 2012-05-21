@@ -58,7 +58,7 @@ MainWindow::MainWindow ()
 //  resname = "none";
 //    ActualData->kindOfDisl = 0;
   
-  mview1 = new MainViewer(this);
+  mview1 = new vecds::MainViewer (this);
   mview1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
   // qWarning("mview -- 1");
   infoLabel = new QLabel(this);

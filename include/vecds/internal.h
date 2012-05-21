@@ -49,7 +49,7 @@ class Internal
   friend class MainViewer;
   friend class MainWindow;
   
- private:
+
 
   QString current_dir;
   Atoms* atoms;
@@ -93,6 +93,8 @@ class Internal
   glm::dmat3 rot_tensor, rot_inv;
   bool visible[10];
   double mfactor;
+
+
   Settings *set0;
   
   void init_atoms();

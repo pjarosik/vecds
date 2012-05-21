@@ -66,7 +66,10 @@ QColor qcol;
 //GLint viewport[4];
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
-MainViewer::MainViewer (QWidget *parent)
+
+
+
+vecds::MainViewer::MainViewer (QWidget *parent)
   : 
   QGLWidget (parent)
 {
@@ -102,7 +105,7 @@ MainViewer::MainViewer (QWidget *parent)
     transformM[i] = 1.;
 }
 
-MainViewer::~MainViewer ()
+vecds::MainViewer::~MainViewer ()
 {
   makeCurrent ();
 
@@ -113,25 +116,25 @@ MainViewer::~MainViewer ()
     glDeleteLists (sphereList[i], 1);
 }
 
-QSize MainViewer::minimumSizeHint () const
+QSize vecds::MainViewer::minimumSizeHint () const
 {
   return QSize (300, 225);
 }
 
-QSize MainViewer::sizeHint() const
+QSize vecds::MainViewer::sizeHint() const
 {
   return QSize (800, 600);
 }
 
 //-----------------------------------------------------------------------------------
 
-void MainViewer::set_defaults ()
+void vecds::MainViewer::set_defaults ()
 {
   this->dist0 = -1.8;
   this->fov   = ActualData->set0->fov;
 }
 
-void MainViewer::prepare_scene ()
+void vecds::MainViewer::prepare_scene ()
 {
   if ( ActualData->atoms_loaded=="none" ) 
     {
@@ -165,8 +168,8 @@ void MainViewer::prepare_scene ()
   prepare_axis();
 }
 
-void MainViewer::prepare_invbox (const QVector3D xmin, 
-				 const QVector3D xmax)
+void vecds::MainViewer::prepare_invbox (const QVector3D xmin, 
+					const QVector3D xmax)
 {
   double x1 = xmin.x ();
   double x2 = xmax.x ();
@@ -184,7 +187,7 @@ void MainViewer::prepare_invbox (const QVector3D xmin,
   ActualData->invbox[7] = QVector3D (x2, y2, z1);
 }
 
-void MainViewer::prepare_axis ()
+void vecds::MainViewer::prepare_axis ()
 {
   double length = 0.1 * rad_scene;
 
@@ -195,7 +198,7 @@ void MainViewer::prepare_axis ()
 
 // ------------------------------------------------------------
 
-void MainViewer::init_spheres( int numbOfSubdiv )
+void vecds::MainViewer::init_spheres( int numbOfSubdiv )
 { 
 // qWarning ("init_spheres");
   for (int i=0; i<125; i++ ) {
@@ -220,114 +223,128 @@ void MainViewer::init_spheres( int numbOfSubdiv )
 
 //-----------------------------------------------------------------------------------
 
-void MainViewer::mousePressEvent(QMouseEvent *event)
+void vecds::MainViewer::mousePressEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
     mousePt = normalizeMouse(lastPos);
 
-    if ( ActualData->Mode==2 ) {
-       QVector3D res = getOGLPos(event->x(), event->y());
-       if (event->buttons() & Qt::LeftButton) {
-// qWarning("res: %g %g %g", res.x, res.y, res.z);
-          emit SIG_actPoint(res);
-          updateGL();
-       }
-       if (event->buttons() & Qt::RightButton) {
-          emit SIG_actPosition(res);
-// qWarning("mviewer:res: %g %g %g", res.x, res.y, res.z);
-//          updateGL();
-       } 
-    } else {
-       if (event->buttons() & Qt::LeftButton) {
-          mousePos = getMousePos(event->x(), event->y());
-          arcb->click(mousePt);//Update Start Vector And Prepare For Dragging
-// qWarning("<--------  startVec = (%g %g %g)", arcb->startVec.x, arcb->startVec.y, arcb->startVec.z);
-//  qWarning(" Mouse = (%g %g %g)", mousePos.x, mousePos.y, mousePos.z);
-       }// else {
-//          arcb->quaternion = Quat(0., 0., 0., 1.);
-//          quat2matr(arcb->quaternion);
-//       }
-    }
-//    thisRot = lastRot;
+    if ( ActualData->Mode==2 ) 
+      {
+	QVector3D res = getOGLPos(event->x(), event->y());
+	if (event->buttons() & Qt::LeftButton) 
+	  {
+	    emit SIG_actPoint(res);
+	    updateGL();
+	  }
+	if (event->buttons() & Qt::RightButton) 
+	  {
+	    emit SIG_actPosition(res);
+	  } 
+      } 
+    else 
+      {
+	if (event->buttons() & Qt::LeftButton) 
+	  {
+	    mousePos = getMousePos(event->x(), event->y());
+
+                                 // Update start vector and prepare
+                                 // For dragging
+	    arcb->click (mousePt);
+	  }
+      }
 
 }
 
-void MainViewer::mouseMoveEvent(QMouseEvent *event)
+void vecds::MainViewer::mouseMoveEvent(QMouseEvent *event)
 {
     lastPos = event->pos();
     mousePt = normalizeMouse(lastPos);
-    if (event->buttons() & Qt::LeftButton) {
-       arcb->drag(mousePt);
-// qWarning("--------> endVec = (%g %g %g)",
-//                 arcb->startVec.x, arcb->startVec.y, arcb->startVec.z,
-//                           arcb->endVec.x, arcb->endVec.y, arcb->endVec.z);
-       quat2matr(arcb->quaternion);
-       QVector3D result = quat2euler(arcb->quaternion)*vecds::constant::rad2deg;
+    if (event->buttons() & Qt::LeftButton) 
+      {
+	arcb->drag(mousePt);
+	
+	quat2matr(arcb->quaternion);
+	QVector3D result = quat2euler(arcb->quaternion)*vecds::constant::rad2deg;
+	
+	if ( thetaRot!=result.x() ) 
+	  {
+	    thetaRot = result.x();
+	    if ( thetaRot<-180. ) thetaRot += 360.;
+	    if ( thetaRot>180. ) thetaRot -= 360.;
+	    emit SIG_thetaRotationChanged(int(thetaRot));
+	  }
+	if ( phiRot!=result.z() ) 
+	  {
+	    phiRot = result.z();
+	    if ( phiRot<-90. ) phiRot += 180.;
+	    if ( phiRot>90. ) phiRot -= 180.;
+	    emit SIG_phiRotationChanged(int(phiRot));
+	  }
+	if ( psiRot!=result.y() ) 
+	  {
+	    psiRot = result.y();
+	    if ( psiRot<-180. ) psiRot += 180.;
+	    if ( psiRot>180. ) psiRot -= 180.;
+	    emit SIG_psiRotationChanged(int(psiRot));
+	  }
 
-       if ( thetaRot!=result.x() ) {
-          thetaRot = result.x();
-          if ( thetaRot<-180. ) thetaRot += 360.;
-          if ( thetaRot>180. ) thetaRot -= 360.;
-          emit SIG_thetaRotationChanged(int(thetaRot));
-       }
-       if ( phiRot!=result.z() ) {
-          phiRot = result.z();
-          if ( phiRot<-90. ) phiRot += 180.;
-          if ( phiRot>90. ) phiRot -= 180.;
-          emit SIG_phiRotationChanged(int(phiRot));
-       }
-       if ( psiRot!=result.y() ) {
-          psiRot = result.y();
-          if ( psiRot<-180. ) psiRot += 180.;
-          if ( psiRot>180. ) psiRot -= 180.;
-          emit SIG_psiRotationChanged(int(psiRot));
-       }
-// qWarning("Angles = %g %g %g", thetaRot, phiRot, psiRot);
        updateGL();
-//        }
-    } else if ( event->buttons() & Qt::RightButton && ActualData->Mode!=2 ) {
-       int mmx = event->x() - lastPos.x();
-       int mmy = event->y() - lastPos.y();
-       if ( mmx!=0 ) {
-           d_x += 0.002*mmx;
-           emit SIG_xMovementChanged(int(100*d_x));
-           updateGL();
-       }
-       if ( mmy!=0 ) {
-           d_y -= 0.002*mmy;
-           emit SIG_yMovementChanged(int(100*d_y));
-           updateGL();
-       }
-    }
+
+      } 
+    else if (event->buttons() & Qt::RightButton && ActualData->Mode!=2) 
+      {
+	int mmx = event->x() - lastPos.x();
+	int mmy = event->y() - lastPos.y();
+
+	if ( mmx!=0 ) 
+	  {
+	    d_x += 0.002*mmx;
+	    emit SIG_xMovementChanged(int(100*d_x));
+	    updateGL();
+	  }
+	if ( mmy!=0 ) 
+	  {
+	    d_y -= 0.002*mmy;
+	    emit SIG_yMovementChanged(int(100*d_y));
+	    updateGL();
+	  }
+      }
 }
 
-void MainViewer::wheelEvent(QWheelEvent *event)
+void vecds::MainViewer::wheelEvent(QWheelEvent *event)
 {
-   if ( event->delta()<0 )  distance *= 0.99;
-   else                     distance *= 1.01;
-   if ( distance<distance0 ) {
+  if (event->delta()<0)  
+    distance *= 0.99;
+  else                     
+    distance *= 1.01;
+
+  if (distance<distance0) 
+    {
       distance = distance0;
       return;
-   }
-   emit SIG_zMovementChanged(int(180*distance/distance0));
-   updateGL();
+    }
+
+  emit SIG_zMovementChanged(int(180*distance/distance0));
+  updateGL();
 }
 
-QVector2D MainViewer::normalizeMouse(QPoint qp)
+QVector2D vecds::MainViewer::normalizeMouse(QPoint qp)
 {
-   QVector2D res = QVector2D(arcb->invWidth * (double(qp.x()) - 0.5*screenW),
-                             arcb->invHeight * (0.5*screenH - double(qp.y())));
-
-   return res;
+  QVector2D res = QVector2D(arcb->invWidth * (double(qp.x()) - 0.5*screenW),
+			    arcb->invHeight * (0.5*screenH - double(qp.y())));
+  
+  return res;
 }
 
 //-----------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------
 
-void MainViewer::resizeGL(int w, int h)
+void vecds::MainViewer::resizeGL(int w, int h)
 {
-// qWarning("resizeGL");
-  if ( w==0 ) h = 1;  // prevent divide by 0 error when minimised
+                                 // prevent divide by 0 error when minimised
+  if (w==0) 
+    h = 1;
+  
   glViewport(0, 0, w, h);
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -339,41 +356,36 @@ void MainViewer::resizeGL(int w, int h)
   this->screenH = double(h);
 
   arcb->set_bounds (w, h);
-//  qWarning("arcb->set_bounds:  resizeGL");
+
 }
-//  gluPerspective(VS->fov, float(w)/h, 0.01, 3000);
-//  glOrtho(zoom*xl, zoom*xr, zoom*yd, zoom*yu, zoom*zn, zoom*zf);
-//  glOrtho(-siz, siz, -siz*f, siz*f, 0.0, 10.*siz);
 //-----------------------------------------------------------------------------------
 
 
-void MainViewer::paintGL()
+void vecds::MainViewer::paintGL()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   glClearColor(bg_red, bg_green, bg_blue, 1.0);
 
-  if ( ActualData->atoms_loaded=="none" && ActualData->img_loaded=="none") return;
-// qWarning("====  paintGL  ===..");
+  if ((ActualData->atoms_loaded=="none") && (ActualData->img_loaded=="none")) 
+    return;
 
   glLoadIdentity();
   double ddx = 1.75 * (max_.x() - min_.x()) * d_x;
   double ddy = 1.75 * (max_.y() - min_.y()) * d_y;
-  
 
   glGetDoublev (GL_MODELVIEW_MATRIX, model_view);
   glGetDoublev (GL_PROJECTION_MATRIX, projection);
   glGetIntegerv (GL_VIEWPORT, viewport);
   glTranslated (ddx, ddy, distance);
+
   glMultMatrixd (transformM);
 
-
-
-  if ( ActualData->img_loaded!="none" ) 
-    {      //drawBackground();
+  if (ActualData->img_loaded!="none") 
+    {      
       glPushMatrix();
       glDisable(GL_LIGHTING);
       glEnable(GL_TEXTURE_2D);
-
+      
       glBindTexture(GL_TEXTURE_2D, background);
       
       glBegin(GL_QUADS);
@@ -382,15 +394,15 @@ void MainViewer::paintGL()
       glTexCoord2f(1.0, 1.0);          glVertex3f(xr, yu, 0.0);   // (pru.x(), pru.y(), pru.z());
       glTexCoord2f(1.0, 0.0);          glVertex3f(xr, yd, 0.0);   // (prd.x(), prd.y(), prd.z());
       glEnd();
-
+      
       glDisable(GL_TEXTURE_2D);
-
+      
       glClear(GL_DEPTH_BUFFER_BIT);
       glEnable(GL_LIGHTING);
       
       glPopMatrix();
     }
-
+  
   if ( ActualData->atoms_loaded!="none" ) 
     {
       if ( ActualData->atoms->n_atoms>0 ) 
@@ -426,7 +438,7 @@ void MainViewer::paintGL()
 //-----------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------
 
-void MainViewer::draw_atoms()
+void vecds::MainViewer::draw_atoms ()
 {
   for (unsigned int i=0; i<ActualData->atoms->n_atoms; i++) 
     {
@@ -453,38 +465,38 @@ void MainViewer::draw_atoms()
   makeCurrent();
 }
 
-void MainViewer::draw_bonds()
+void vecds::MainViewer::draw_bonds ()
 {
- glMaterialfv(GL_FRONT, GL_AMBIENT, grey);
- glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, grey);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
  
- for (unsigned int i=0; i<ActualData->atoms->n_bonds; i++) 
-   {
-     int a1 = ActualData->atoms->atom_bond[i].i1 - 1;
-     int a2 = ActualData->atoms->atom_bond[i].i2 - 1;
-     
-     glPushMatrix();
-     
-     QVector3D temp1 = ActualData->atoms->coordinates[a2] - ActualData->atoms->coordinates[a1];
-     double dist = temp1.length();
-     double invnorm = 1.0 / dist;
-     QVector3D temp2 = QVector3D(-temp1.y()*invnorm, temp1.x()*invnorm, 0.0);
-     QVector3D trans = ActualData->atoms->coordinates[a1] - cent_;
-
-     glTranslated (trans.x(), trans.y(), trans.z());
-     glRotated (vecds::constant::rad2deg*acos(temp1.z()*invnorm), temp2.x(), temp2.y(), temp2.z());
-     
-     GLUquadricObj *qobj = gluNewQuadric();
-     gluCylinder(qobj, 0.05, 0.05, dist, 16, 8);
-     gluDeleteQuadric(qobj);
-     
-     glPopMatrix();
-   }
- makeCurrent();
+  for (unsigned int i=0; i<ActualData->atoms->n_bonds; i++) 
+    {
+      int a1 = ActualData->atoms->atom_bond[i].i1 - 1;
+      int a2 = ActualData->atoms->atom_bond[i].i2 - 1;
+      
+      glPushMatrix();
+      
+      QVector3D temp1 = ActualData->atoms->coordinates[a2] - ActualData->atoms->coordinates[a1];
+      double dist = temp1.length();
+      double invnorm = 1.0 / dist;
+      QVector3D temp2 = QVector3D(-temp1.y()*invnorm, temp1.x()*invnorm, 0.0);
+      QVector3D trans = ActualData->atoms->coordinates[a1] - cent_;
+      
+      glTranslated (trans.x(), trans.y(), trans.z());
+      glRotated (vecds::constant::rad2deg*acos(temp1.z()*invnorm), temp2.x(), temp2.y(), temp2.z());
+      
+      GLUquadricObj *qobj = gluNewQuadric();
+      gluCylinder(qobj, 0.05, 0.05, dist, 16, 8);
+      gluDeleteQuadric(qobj);
+      
+      glPopMatrix();
+    }
+  makeCurrent();
 }
 
 
-void MainViewer::draw_axis ()
+void vecds::MainViewer::draw_axis ()
 {
   const double fact = 1.0666;
   QVector3D orig = QVector3D(fact*(min_.x()-cent_.x()), fact*(min_.y()-cent_.y()), fact*(max_.z()-cent_.z()));
@@ -510,7 +522,7 @@ void MainViewer::draw_axis ()
   makeCurrent();
 }
 
-void MainViewer::arrow(QVector3D orig, QVector3D vect, double fact, double sm)
+void vecds::MainViewer::arrow (QVector3D orig, QVector3D vect, double fact, double sm)
 {
   vect           *= (1.0 - fact);
   double dist1    = vect.length();
@@ -530,10 +542,10 @@ void MainViewer::arrow(QVector3D orig, QVector3D vect, double fact, double sm)
   gluDeleteQuadric(qobj);
 }
 
-void MainViewer::SL_dothetaRotation()
+void vecds::MainViewer::SL_dothetaRotation ()
 {
   double angl;
-  if ( ActualData->sliderMove ) 
+  if (ActualData->sliderMove) 
     {
       angl = double(ActualData->sliderValue);
       if ( angl<-180. ) angl += 360.;
@@ -546,10 +558,10 @@ void MainViewer::SL_dothetaRotation()
     }
 }
 
-void MainViewer::SL_dophiRotation()
+void vecds::MainViewer::SL_dophiRotation ()
 {
   double angl;
-  if ( ActualData->sliderMove ) 
+  if (ActualData->sliderMove) 
     {
       angl = ActualData->sliderValue;
       if ( angl<-90. ) angl += 180.;
@@ -562,10 +574,10 @@ void MainViewer::SL_dophiRotation()
     }
 }
 
-void MainViewer::SL_dopsiRotation()
+void vecds::MainViewer::SL_dopsiRotation ()
 {
   double angl;
-  if ( ActualData->sliderMove ) 
+  if (ActualData->sliderMove) 
     {
       angl = ActualData->sliderValue;
       if ( angl<-180. ) angl += 360.;
@@ -578,9 +590,9 @@ void MainViewer::SL_dopsiRotation()
     }
 }
 
-void MainViewer::SL_doXMovement()
+void vecds::MainViewer::SL_doXMovement ()
 {
-  if ( ActualData->sliderMove ) 
+  if (ActualData->sliderMove) 
     {
       d_x = 0.01*double(ActualData->sliderValue);
       ActualData->sliderMove = false;
@@ -589,7 +601,7 @@ void MainViewer::SL_doXMovement()
   qWarning("...X move - %g", d_x);
 }
 
-void MainViewer::SL_doYMovement()
+void vecds::MainViewer::SL_doYMovement ()
 {
   if ( ActualData->sliderMove ) 
     {
@@ -599,43 +611,44 @@ void MainViewer::SL_doYMovement()
     }
 }
 
-void MainViewer::SL_doZMovement()
+void vecds::MainViewer::SL_doZMovement ()
 {
-  if ( ActualData->sliderMove ) {
-    d_0 = double(ActualData->sliderValue)/180.;
-     ActualData->sliderMove = false;
-     distance = d_0 * distance0;
-     updateGL();
-  }
+  if ( ActualData->sliderMove ) 
+    {
+      d_0 = double(ActualData->sliderValue)/180.;
+      ActualData->sliderMove = false;
+      distance = d_0 * distance0;
+      updateGL();
+    }
 }
 
-void MainViewer::SL_needDraw()
+void vecds::MainViewer::SL_needDraw ()
 {
   qWarning("slot needDraw");
   prepare_scene();
   paintGL();
 }
 
-void MainViewer::SL_repaint()
+void vecds::MainViewer::SL_repaint ()
 {
   paintGL();
 }
 
-void MainViewer::SL_keypress(int key)
+void vecds::MainViewer::SL_keypress (int key)
 {
   qWarning("slot: key = %d", key);
 }
 
 
-void MainViewer::SL_loadImage()
+void vecds::MainViewer::SL_loadImage ()
 {
   background = Pixmap2texture(&ActualData->img);
 }
 
-GLuint MainViewer::Pixmap2texture(QPixmap *pixmap)
+GLuint vecds::MainViewer::Pixmap2texture (QPixmap *pixmap)
 {
   GLuint tex;
-  // 1E-3 needed. Just try with width=128 and see !
+
   int width0 = pixmap->width();
   int height0 = pixmap->height();
   int newWidth  = 1<<(int)(1+log(width0 -1+1E-3) / log(2.0));
@@ -650,7 +663,7 @@ GLuint MainViewer::Pixmap2texture(QPixmap *pixmap)
 }
 
 
-GLuint MainViewer::image2texture(QImage* bmp)
+GLuint vecds::MainViewer::image2texture (QImage* bmp)
 {
   GLuint tex;
   // 1E-3 needed. Just try with width=128 and see !
@@ -658,7 +671,7 @@ GLuint MainViewer::image2texture(QImage* bmp)
   int height0   = bmp->height();
   int newWidth  = 1<<(int)(1+log(width0 -1+1E-3) / log(2.0));
   int newHeight = 1<<(int)(1+log(height0-1+1E-3) / log(2.0));
-
+  
   if ( ( width0!=newWidth ) || ( height0!=newHeight ) ) 
     {
       qWarning("Image size set to %dx%d pixels", newWidth, newHeight);
@@ -672,35 +685,35 @@ GLuint MainViewer::image2texture(QImage* bmp)
 
 //-----------------------------------------------------------------------------------
 
-void MainViewer::initializeGL()
+void vecds::MainViewer::initializeGL ()
 {
-   GLfloat diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-
-   glEnable(GL_DEPTH_TEST);
-   glEnable(GL_LIGHTING);
-   glEnable(GL_LIGHT0);
-
-   glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-   glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
-   glEnable(GL_LIGHT1);
-   glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
-   glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
-   //   glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER, local_view);
-   glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 30.0);
-   glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR,  specular_color);
-   
-   glEnable (GL_BLEND);
-   glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-   
-   glEnable(GL_TEXTURE_2D);
-   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-   glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
-   qWarning(" * * *   GL Init   * * *");
+  GLfloat diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+  
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+  glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
+  glEnable(GL_LIGHT1);
+  glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
+  glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
+  //   glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER, local_view);
+  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 30.0);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR,  specular_color);
+  
+  glEnable (GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  
+  glEnable(GL_TEXTURE_2D);
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+  glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
+  qWarning(" * * *   GL Init   * * *");
 }
 
 
-QVector3D MainViewer::getOGLPos(int x, int y)
+QVector3D vecds::MainViewer::getOGLPos (int x, int y)
 {
   GLfloat winX, winY, winZ;
   GLdouble posX, posY, posZ;
@@ -714,15 +727,15 @@ QVector3D MainViewer::getOGLPos(int x, int y)
   return QVector3D(posX, posY, posZ);
 }
 
-QVector3D MainViewer::getMousePos(int x, int y)
+QVector3D vecds::MainViewer::getMousePos (int x, int y)
 {
   GLfloat winX, winY, winZ;
   GLdouble posX, posY, posZ;
   winX = float(x);
   winY = float(viewport[3]) - float(y);
-
+  
   winZ = 1.;
-
+  
   gluUnProject( winX, winY, winZ, model_view, projection, viewport,
 		&posX, &posY, &posZ);
   
@@ -731,10 +744,10 @@ QVector3D MainViewer::getMousePos(int x, int y)
   return QVector3D(posX, posY, posZ);
 }
 
-void MainViewer::doGLdisloc()
+void vecds::MainViewer::doGLdisloc ()
 {
   if ( ActualData->ndisl<=0 ) return;
-  for (int i=0; i<ActualData->ndisl; i++) 
+  for (int i=0; i<ActualData->ndisl; ++i) 
     { 
       qWarning("doGLdisloc  --   rrr=%g, %g, %g", ActualData->disl[i].rrr.x(), ActualData->disl[i].rrr.y(),
 	       ActualData->disl[i].rrr.z());
@@ -745,7 +758,7 @@ void MainViewer::doGLdisloc()
       double dist     = temp1.length();
       double invnorm  = 1.0 / dist;
       QVector3D temp2 = QVector3D(-temp1.y()*invnorm, temp1.x()*invnorm, 0.0);
-
+      
       glTranslated (p1.x(), p1.y(), p1.z());
       glRotated (vecds::constant::rad2deg*acos(temp1.z()*invnorm), temp2.x(), temp2.y(), temp2.z());
       glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cube_mat11);
@@ -758,17 +771,18 @@ void MainViewer::doGLdisloc()
 
 // ---------------------------------------
 
-void MainViewer::drawBox(double v[8][3])//, double norm_v[8][3])
+void vecds::MainViewer::drawBox(double v[8][3])//, double norm_v[8][3])
 {
-  static GLint _faces[6][4] = {
-    {0, 1, 2, 3},
-    {3, 2, 6, 7},
-    {7, 6, 5, 4},
-    {4, 5, 1, 0},
-    {5, 6, 2, 1},
-    {7, 4, 0, 3}
-  };
-
+  static GLint _faces[6][4] = 
+    {
+      {0, 1, 2, 3},
+      {3, 2, 6, 7},
+      {7, 6, 5, 4},
+      {4, 5, 1, 0},
+      {5, 6, 2, 1},
+      {7, 4, 0, 3}
+    };
+  
   for (int i=5; i>=0; --i) 
     {
       glBegin(GL_QUADS);
@@ -780,46 +794,51 @@ void MainViewer::drawBox(double v[8][3])//, double norm_v[8][3])
     }
 }
 
-void MainViewer::drawBox0(float size)
+void vecds::MainViewer::drawBox0(float size)
 {
-   static GLfloat n[6][3] = {
-                {-1.0, 0.0, 0.0},
-		{0.0, 1.0, 0.0},
-		{1.0, 0.0, 0.0},
-		{0.0, -1.0, 0.0},
-		{0.0, 0.0, 1.0},
-		{0.0, 0.0, -1.0}
-   };
-   static GLint _faces[6][4] = {
-		{0, 1, 2, 3},
-		{3, 2, 6, 7},
-		{7, 6, 5, 4},
-		{4, 5, 1, 0},
-		{5, 6, 2, 1},
-		{7, 4, 0, 3}
-   };
+   static GLfloat n[6][3] = 
+     {
+       {-1.0,  0.0,  0.0},
+       { 0.0,  1.0,  0.0},
+       { 1.0,  0.0,  0.0},
+       { 0.0, -1.0,  0.0},
+       { 0.0,  0.0,  1.0},
+       { 0.0,  0.0, -1.0}
+     };
+
+   static GLint _faces[6][4] = 
+     {
+       {0, 1, 2, 3},
+       {3, 2, 6, 7},
+       {7, 6, 5, 4},
+       {4, 5, 1, 0},
+       {5, 6, 2, 1},
+       {7, 4, 0, 3}
+     };
+
    GLfloat v[8][3];
    GLint i;
-
-	v[0][0] = v[1][0] = v[2][0] = v[3][0] = -size / 2;
-	v[4][0] = v[5][0] = v[6][0] = v[7][0] = size / 2;
-	v[0][1] = v[1][1] = v[4][1] = v[5][1] = -size / 2;
-	v[2][1] = v[3][1] = v[6][1] = v[7][1] = size / 2;
-	v[0][2] = v[3][2] = v[4][2] = v[7][2] = -size / 2;
-	v[1][2] = v[2][2] = v[5][2] = v[6][2] = size / 2;
-
-   for (i = 5; i >= 0; i--) {
-	glBegin(GL_QUADS);
-	glNormal3fv(&n[i][0]);
-	glVertex3fv(&v[_faces[i][0]][0]);
-	glVertex3fv(&v[_faces[i][1]][0]);
-	glVertex3fv(&v[_faces[i][2]][0]);
-	glVertex3fv(&v[_faces[i][3]][0]);
-	glEnd();
-   }
+   
+   v[0][0] = v[1][0] = v[2][0] = v[3][0] = -size / 2;
+   v[4][0] = v[5][0] = v[6][0] = v[7][0] =  size / 2;
+   v[0][1] = v[1][1] = v[4][1] = v[5][1] = -size / 2;
+   v[2][1] = v[3][1] = v[6][1] = v[7][1] =  size / 2;
+   v[0][2] = v[3][2] = v[4][2] = v[7][2] = -size / 2;
+   v[1][2] = v[2][2] = v[5][2] = v[6][2] =  size / 2;
+   
+   for (i = 5; i >= 0; i--) 
+     {
+       glBegin(GL_QUADS);
+       glNormal3fv(&n[i][0]);
+       glVertex3fv(&v[_faces[i][0]][0]);
+       glVertex3fv(&v[_faces[i][1]][0]);
+       glVertex3fv(&v[_faces[i][2]][0]);
+       glVertex3fv(&v[_faces[i][3]][0]);
+       glEnd();
+     }
 }
 
-void MainViewer::euler2matr()
+void vecds::MainViewer::euler2matr ()
 {
                                  // Assume the angles are in passed in
                                  // in radians.
@@ -848,7 +867,7 @@ void MainViewer::euler2matr()
     transformM[15] = 1.;
 }
 
-void MainViewer::quat2matr(QQuaternion q)
+void vecds::MainViewer::quat2matr (QQuaternion q)
 {
   double sqw = q.scalar()*q.scalar();
   double sqx = q.x()*q.x();
@@ -878,7 +897,7 @@ void MainViewer::quat2matr(QQuaternion q)
 }
 
 
-QVector3D MainViewer::quat2euler(QQuaternion q)
+QVector3D vecds::MainViewer::quat2euler (QQuaternion q)
 {
   double head, att, b;
   double test = q.x()*q.y() + q.z()*q.scalar();
@@ -905,13 +924,13 @@ QVector3D MainViewer::quat2euler(QQuaternion q)
   return QVector3D(head, att, b);
 }
 
-QQuaternion MainViewer::quatfromEuler()
+QQuaternion vecds::MainViewer::quatfromEuler ()
 {
   //   QQuaternion res;
   double heading2  = 0.5 * vecds::constant::deg2rad * thetaRot;
   double attitude2 = 0.5 * vecds::constant::deg2rad * psiRot;
   double bank2     = 0.5 * vecds::constant::deg2rad * phiRot;
-
+  
   double c1   = cos (heading2);
   double s1   = sin (heading2);
   double c2   = cos (attitude2);
@@ -924,7 +943,7 @@ QQuaternion MainViewer::quatfromEuler()
 		     c1c2*s3 + s1s2*c3, s1*c2*c3 + c1*s2*s3, c1*s2*c3 - s1*c2*s3);
 }
 
-void MainViewer::getAxisAngle(const QQuaternion q, QVector3D &v, double &ang)
+void vecds::MainViewer::getAxisAngle (const QQuaternion q, QVector3D &v, double &ang)
 {
   double temp_angle = acos(q.scalar());
   double scale = sqrt(q.x()*q.x() + q.y()*q.y() + q.z()*q.z());
