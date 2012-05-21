@@ -1,37 +1,34 @@
 To compile vecds:
-$ cd vecds
-$ qmake
+
+$ cd CMakeBuild
+$ cmake ..
 $ make
 
 To run vecds:
+
 $ cd bin
 $ ./vecds
 
-The data structure of vecds is:
+The structure of vecds is:
 
 vecds --- 
          |
-          --- bin (binaries)
+          --- bin 
          |
-          --- common (common configuration files)
+          --- doc 
          |
-          --- data (vecds data)
-         |   |
-         |    --- atoms (atomic coordinates)
-         |   |
-         |    --- images (images)
-         |   |
-         |    --- internal (???)
+          --- include --- vecds
          |
-          --- doc (documentation)
-         |
-          --- include (include files)
-         |   |
-         |    --- vecds (headers for vecds)
-         |
-          --- lib (objects and libraries)
-         |
-          --- moc (qmake things)
+          --- share
+         |      |
+         |       --- vecds --- examples
+         |                         |
+         |                          --- crystal_structure
+         |                         |
+         |                          --- molecular structure
+         |                         |
+         |                          --- finite_element_grids 
          |
           --- source (source files)
 
+For further information, see the documenttion.
