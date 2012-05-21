@@ -7,9 +7,11 @@
 #ifndef __vecds_config_h
 #define __vecds_config_h
 
-#cmakedefine VECDS_PACKAGE_NAME   "@VECDS_PACKAGE_NAME@"
-#cmakedefine VECDS_PACKAGE_STRING "@VECDS_PACKAGE_NAME@ @VECDS_VERSION@"
+#cmakedefine VECDS_NAME               "@VECDS_NAME@"
+#cmakedefine VECDS_VERSION            "@VECDS_VERSION@"
+#cmakedefine VECDS_PACKAGE_NAME       "@VECDS_PACKAGE_NAME@"
+#cmakedefine VECDS_PACKAGE_BUGREPORT  "@VECDS_PACKAGE_BUGREPORT@"
 
-#cmakedefine VECDS_DOC "@VECDS_DOC@"
+#cmakedefine VECDS_DOC                "@VECDS_DOC@"
 
 #endif                           // __vecds_config_h
