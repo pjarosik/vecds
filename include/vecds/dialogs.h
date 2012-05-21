@@ -36,42 +36,47 @@
 #ifndef QUESTION_FORM_H
 #define QUESTION_FORM_H
 
-class QuestionForm 
-: 
-public QDialog
+namespace vecds
 {
-  Q_OBJECT
-    
-    public:
+
+  class QuestionForm 
+    : 
+  public QDialog
+  {
+    Q_OBJECT
+      
+      public:
 
                                  /* constructor */
-  QuestionForm (QString      title, 
-	        QString     &description, 
-	        QStringList &question, 
-		QStringList &suggestion, 
-		QStringList &answer, 
-		bool        &ok, 
-		QWidget     *parent = 0);
+    QuestionForm (QString      title, 
+		  QString     &description, 
+		  QStringList &question, 
+		  QStringList &suggestion, 
+		  QStringList &answer, 
+		  bool        &ok, 
+		  QWidget     *parent = 0);
   
                                  /* destructor */
-  ~QuestionForm ();
+    ~QuestionForm ();
 
- private:
+  private:
 
                                  /* label descriptions */
-  QLabel *description_label;
+    QLabel *description_label;
 
                                  /* label a list of questions */
-  QLabel *question_label[50];
+    QLabel *question_label[50];
 
                                  /* TODO: a list of somethings */
-  QLineEdit *qEdit[50];
-
+    QLineEdit *qEdit[50];
+  
                                  /* a pointer to the button box
 				    created by this class */
-  QDialogButtonBox *buttonBox;
-};
+    QDialogButtonBox *buttonBox;
+  };                             // QuestionForm
 
+}                                // namespace vecds
+  
 #endif
 
 // -----------------------------------------------------------------------
@@ -79,32 +84,38 @@ public QDialog
 #ifndef QUESTIONS_H
 #define QUESTIONS_H
 
-class Questions 
-: 
-public QDialog
+namespace vecds
 {
-  Q_OBJECT
-    
-    public:
+
+  class Questions 
+    : 
+  public QDialog
+  {
+    Q_OBJECT
+      
+      public:
 
                                  /* constructor */
-  Questions (QString      title, 
-	     QStringList &question, 
-	     bool        *results, 
-	     bool        &ok,
-	     QWidget     *parent = 0);
+    Questions (QString      title, 
+	       QStringList &question, 
+	       bool        *results, 
+	       bool        &ok,
+	       QWidget     *parent = 0);
 
                                  /* destructor */
-  ~Questions ();
+    ~Questions ();
   
- private:
+  private:
 
                                  /* a list of check boxes */
-  QCheckBox *check_box[50];
-
+    QCheckBox *check_box[50];
+  
                                  /* a pointer to the button box
 				    created by this class */
-  QDialogButtonBox *buttonBox;
-};
+    QDialogButtonBox *buttonBox;
+  };
+
+}                                // namespace vecds
 
 #endif
+

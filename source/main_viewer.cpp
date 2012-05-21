@@ -22,13 +22,15 @@
 // -------------------------------------------------------------------
 
 
+                                 // Qt includes
 #include <QtGui>
 #include <QtOpenGL>
 #include <GL/glut.h>
-#include "../include/vecds/main_viewer.h"
-#include "../include/vecds/internal.h"
-#include "../include/vecds/constant.h"
 
+                                 // vecds includes
+#include <vecds/main_viewer.h>
+#include <vecds/internal.h>
+#include <vecds/constant.h>
 
 extern Internal *ActualData;
 QString str1;
@@ -64,127 +66,134 @@ QColor qcol;
 //GLint viewport[4];
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
-MainViewer::MainViewer(QWidget *parent)
-    : QGLWidget(parent)
+MainViewer::MainViewer (QWidget *parent)
+  : 
+  QGLWidget (parent)
 {
-    makeCurrent();
-    this->phiRot = this->thetaRot = this->psiRot = 0.;
-    this->d_x = this->d_y = 0.;
-    this->d_0 = 180.;
+  makeCurrent();
 
-    this->n_atoms = this->n_bonds = 0;
-    this->bg_red = 0.99;
-    this->bg_green = 0.99;
-    this->bg_blue = 1.0;
-    this->VIEW_rad_fact = 0.25;
-    this->VIEW_whichRadius = 1;
-    this->mousePos = QVector3D(0., 0., 0.);
+  this->phiRot           = 0.;
+  this->thetaRot         = 0.;
+  this->psiRot           = 0.;
+  this->d_x              = this->d_y = 0.;
+  this->d_0              = 180.;
+  this->n_atoms          = this->n_bonds = 0;
+  this->bg_red           = 0.99;
+  this->bg_green         = 0.99;
+  this->bg_blue          = 1.0;
+  this->VIEW_rad_fact    = 0.25;
+  this->VIEW_whichRadius = 1;
+  this->mousePos         = QVector3D(0., 0., 0.);
+  
+  init_spheres(8);
 
-    init_spheres(8);
+  int alfa = 255;
+  set_defaults(); 
+  
+  prepare_scene();
 
-//    color_spectr = new QColor[12];
-    int alfa = 255;
-    set_defaults(); 
+  arcb = new ArcBall();
+  transformM = new double[16];
 
-    prepare_scene();
-//    setFont(QFont("Times", 12));
-    arcb = new ArcBall();
-    transformM = new double[16];
-//    thisRot = lastRot = constant::unit_matr33;
-    for (int i=1; i<15; i++) transformM[i] = 0.;
-    for (int i=0; i<16; i+=5) transformM[i] = 1.;
-//    transformM[0] = transformM[5] =transformM[10] =transformM[15] = 1.;
-// qWarning ("viewer: atoms=%d", n_atoms);
-//     m_x = m_y =0.;
+  for (unsigned int i=1; i<15; ++i) 
+    transformM[i] = 0.;
+
+  for (unsigned int i=0; i<16; i+=5) 
+    transformM[i] = 1.;
 }
 
-MainViewer::~MainViewer()
+MainViewer::~MainViewer ()
 {
-    makeCurrent();
-    for (int i=0; i<125; i++) glDeleteLists(sphereList[i], 1);
+  makeCurrent ();
+
+                                 // Delete lists to free up some
+                                 // memory. TODO: Document the *magic*
+                                 // number 125.
+  for (unsigned int i=0; i<125; ++i) 
+    glDeleteLists (sphereList[i], 1);
 }
 
-QSize MainViewer::minimumSizeHint() const
+QSize MainViewer::minimumSizeHint () const
 {
-    return QSize(300, 225);
+  return QSize (300, 225);
 }
 
 QSize MainViewer::sizeHint() const
 {
-    return QSize(800, 600);
+  return QSize (800, 600);
 }
 
 //-----------------------------------------------------------------------------------
 
-void MainViewer::set_defaults()
+void MainViewer::set_defaults ()
 {
-//  distance = -5.0;
   this->dist0 = -1.8;
-  this->fov = ActualData->set0->fov;
+  this->fov   = ActualData->set0->fov;
 }
 
-
-
-void MainViewer::prepare_scene()
+void MainViewer::prepare_scene ()
 {
-//  calculate_size();
-  if ( ActualData->atoms_loaded=="none" ) {
-    qWarning("******** none atoms, none fems *********");
-    min_ = QVector3D(-5., -5., -5);
-    max_ = QVector3D(5., 5., 5.);
-    rad_scene = 10.;
-  } else {
-    min_ = ActualData->a_min_;
-    max_ = ActualData->a_max_;
-    rad_scene = qMax(qMax((max_.x()-min_.x()), (max_.y()-min_.y())), (max_.z()-min_.z()));
-  qWarning("+++++++++++++++++ min_ = %g %g %g", min_.x(), min_.y(), min_.z());
-  }
+  if ( ActualData->atoms_loaded=="none" ) 
+    {
+      qWarning("******** none atoms, none fems *********");
+      min_ = QVector3D(-5., -5., -5);
+      max_ = QVector3D(5., 5., 5.);
+      rad_scene = 10.;
+    } 
+  else 
+    {
+      min_ = ActualData->a_min_;
+      max_ = ActualData->a_max_;
+      rad_scene = qMax(qMax((max_.x()-min_.x()), (max_.y()-min_.y())), (max_.z()-min_.z()));
+      qWarning("+++++++++++++++++ min_ = %g %g %g", min_.x(), min_.y(), min_.z());
+    }
+
   distance0 = distance = (dist0/tan(fov*constant::deg2rad))*rad_scene;
   small = 0.01 * rad_scene;
   smaller = 0.22 * small;
   ActualData->rad_scene = rad_scene;
   ActualData->min_ = min_;
   ActualData->max_ = max_;
-
+  
   xl = min_.x() - cent_.x();
   xr = max_.x() - cent_.x();
   yd = min_.y() - cent_.y();
   yu = max_.y() - cent_.y();
   ActualData->cent_ = cent_;
-// qWarning(" ---------- prepare_scene_2");
-//  prepare_invbox(min_ , max_);
-//  prepare_invbox(min_ - cent_, max_ - cent_);
+
   makeCurrent();
   prepare_axis();
 }
 
-void MainViewer::prepare_invbox(QVector3D xmin, QVector3D xmax)
+void MainViewer::prepare_invbox (const QVector3D xmin, 
+				 const QVector3D xmax)
 {
-// qWarning ("prepare_invbox");
-  double x1 = xmin.x();
-  double x2 = xmax.x();
-  double y1 = xmin.y();
-  double y2 = xmax.y();
-  double z1 = xmin.z();
-  double z2 = xmax.z();
-  ActualData->invbox[0] = xmin;//QVector3D(x1, y1, z1);
-  ActualData->invbox[1] = QVector3D(x1, y1, z2);
-  ActualData->invbox[2] = QVector3D(x1, y2, z2);
-  ActualData->invbox[3] = QVector3D(x1, y2, z1);
-  ActualData->invbox[4] = QVector3D(x2, y1, z1);
-  ActualData->invbox[5] = QVector3D(x2, y1, z2);
-  ActualData->invbox[6] = xmax;//QVector3D(x2, y2, z2);
-  ActualData->invbox[7] = QVector3D(x2, y2, z1);
+  double x1 = xmin.x ();
+  double x2 = xmax.x ();
+  double y1 = xmin.y ();
+  double y2 = xmax.y ();
+  double z1 = xmin.z ();
+  double z2 = xmax.z ();
+  ActualData->invbox[0] = xmin;
+  ActualData->invbox[1] = QVector3D (x1, y1, z2);
+  ActualData->invbox[2] = QVector3D (x1, y2, z2);
+  ActualData->invbox[3] = QVector3D (x1, y2, z1);
+  ActualData->invbox[4] = QVector3D (x2, y1, z1);
+  ActualData->invbox[5] = QVector3D (x2, y1, z2);
+  ActualData->invbox[6] = xmax;
+  ActualData->invbox[7] = QVector3D (x2, y2, z1);
 }
 
-void MainViewer::prepare_axis()
+void MainViewer::prepare_axis ()
 {
-// qWarning ("prepare_axis");
-  double ll = 0.1 * rad_scene;
-  ActualData->axeX = QVector3D(ll, 0.0, 0.0);
-  ActualData->axeY = QVector3D(0.0, ll, 0.0);
-  ActualData->axeZ = QVector3D(0.0, 0.0, ll);
+  double length = 0.1 * rad_scene;
+
+  ActualData->axeX = QVector3D (length, 0.0, 0.0);
+  ActualData->axeY = QVector3D (0.0, length, 0.0);
+  ActualData->axeZ = QVector3D (0.0, 0.0, length);
 }
+
+// ------------------------------------------------------------
 
 void MainViewer::init_spheres( int numbOfSubdiv )
 { 

@@ -452,7 +452,7 @@ void MainWindow::SL_defineStructure()
                     << "beta=" << "gamma=" << "numb. of atoms";
   sug << "B4_GaN" << "3.180" << "3.180" << "5.166" << "90.0"
                   << "90.0" << "120.0"<< "4";
-  QuestionForm("Atomic structure definition", descr, quest, sug, ans, ok);
+  vecds::QuestionForm ("Atomic structure definition", descr, quest, sug, ans, ok);
   if ( !ok ) return;
 
 }
@@ -473,7 +473,7 @@ void MainWindow::SL_genAtoms()
   questions << "Number X" <<"Number Y" << "Number Z";
   sugestions << "6" << "5" << "3";
 
-  QuestionForm("nx, ny, nz", descr, questions, sugestions, answers, ok);
+  vecds::QuestionForm ("nx, ny, nz", descr, questions, sugestions, answers, ok);
   if ( !ok ) return;
 
   int nx = answers.at(0).toInt();
@@ -509,7 +509,7 @@ void MainWindow::SL_gen1Atoms()
   questions << "Size X" <<"Size Y" << "Number Z";
   sugestions << "50" << "50" << "3";
 
-  QuestionForm("size x, size y, nz", descr, questions, sugestions, answers, ok);
+  vecds::QuestionForm("size x, size y, nz", descr, questions, sugestions, answers, ok);
   if ( !ok ) return;
 
   double x_size = answers.at(0).toDouble();
@@ -614,7 +614,7 @@ void MainWindow::SL_millerAct()
    
   sug << s;
 
-  QuestionForm("Size of structure", descr, quest, sug, ans, ok);
+  vecds::QuestionForm("Size of structure", descr, quest, sug, ans, ok);
   if ( !ok ) return;
   ActualData->act_mill = ans.at(0);
 //  act_mill = result_text = ans.at(0);
@@ -627,35 +627,35 @@ void MainWindow::SL_millerAct()
 
 void MainWindow::SL_dislocAct()
 {
-//  QString title = "Dislocation parameters";
+
   QString descr = "<h4>Dislocation parameters</h4>";
   QString s1, s2;
   QStringList quest, sug, ans;
   bool ok;
- qWarning("----   SL_dislocAct");
+  qWarning("----   SL_dislocAct");
   
-//  ActualData->kindOfDisl = 0;
-
   ActualData->act_core.sprintf("4");
   quest <<"Miller indices" << "disl. core";
   s1.sprintf("%s", ActualData->act_disl.toAscii().data());
   s2.sprintf("%s", ActualData->act_core.toAscii().data());
   sug << s1 << s2;
-  QuestionForm("Dislocation parameters", descr, quest, sug, ans, ok);
-  if ( !ok ) {
-  qWarning("tu");
-    return;
-}
+  
+  vecds::QuestionForm ("Dislocation parameters", descr, quest, sug, ans, ok);
+  
+  if ( !ok ) 
+    {
+      qWarning ("tu");
+      return;
+    }
+  
   s1 = ans.at(0);
   s2 = ans.at(1);
-//  dialogDislWindow(title, prompt, act_disl, act_core);
+
   ActualData->processMiller(2, s1, s2);
   ActualData->act_disl = s1;
   ActualData->act_core = s2;
   InfoDisplay();
   mview1->updateGL();
-//  statusBar()->showMessage
-//  (QString("Dislocation ").append(ActualData->act_disl).append(" _ ").append(ActualData->act_core));
 }
 
 void MainWindow::SL_dislAct()
@@ -670,29 +670,27 @@ void MainWindow::SL_dislAct()
   ActualData->act_core.sprintf("none");
   quest <<"Miller indices" << "number of atom";
   s1.sprintf("%s", ActualData->act_disl.toAscii().data());
-//  s2.sprintf("%s", ActualData->act_core.toAscii().data());
+
   sug << s1 << QString(" ");
-  QuestionForm("Disloc parameters", descr, quest, sug, ans, ok);
-//  if ( !ok ) return;
-  if ( !ok ) {
-  qWarning("tu -");
-    return;
-}
+  vecds::QuestionForm ("Disloc parameters", descr, quest, sug, ans, ok);
+
+  if ( !ok ) 
+    {
+      qWarning("tu -");
+      return;
+    }
 
   s1 = ans.at(0);
   int n_a = ans.at(1).toInt();
-//  dialogDislWindow(title, prompt, act_disl, act_core);
   ActualData->processMiller(1, s1, QString("none"));
- qWarning("SL_dislAct -- 1");
- 
+  qWarning("SL_dislAct -- 1");
+  
   ActualData->newdisl(n_a, true);
- qWarning("SL_dislAct -- 2");
+  qWarning("SL_dislAct -- 2");
   ActualData->act_disl = s1;
- qWarning("SL_dislAct -- 3");
+  qWarning("SL_dislAct -- 3");
   InfoDisplay();
   mview1->updateGL();
-//  statusBar()->showMessage
-//  (QString("Dislocation ").append(ActualData->act_disl).append(" _ ").append(ActualData->act_core));
 }
 
 void MainWindow::SL_addCoordAct()
@@ -720,7 +718,7 @@ void MainWindow::SL_sett()
   bool ok;
   questions << "face_0" << "face_f" << "nodes_0" << "nodes_f" << "int.lines" << "ext_lines" << "spectrograms"
             << "arrows"  << "axis";
-  Questions("Visibility", questions, ActualData->visible, ok);
+  vecds::Questions ("Visibility", questions, ActualData->visible, ok);
   emit SIG_repaint();
 }
 
@@ -744,18 +742,16 @@ void MainWindow::SL_cubBox()
   quest << "Size X" << "Size Y" << "Size Z";
   sug << "20" << "20" << "20";
 
-  QuestionForm("Size of structure", descr, quest, sug, ans, ok);
-  if ( !ok ) return;
+  vecds::QuestionForm ("Size of structure", descr, quest, sug, ans, ok);
+
+  if (!ok) 
+    {
+      return;
+    }
 
   box.setX(0.5 * ans.at(0).toDouble());
   box.setY(0.5 * ans.at(1).toDouble());
   box.setZ(0.5 * ans.at(2).toDouble());
-/*
-  Actual->num_choosedAtoms = cubBox(box, Actual->cent_);
-  for (int i=0; i<Actual->n_atoms; i++ )
-     Actual->atom_show[i] = Actual->at_bool[i];
-  emit SIG_needDraw();
-*/
 }
 
 void MainWindow::SL_hexBox()
@@ -767,7 +763,7 @@ void MainWindow::SL_hexBox()
   quest << "Hex radius" << "Size Z";
   sug << "30" << "25";
 
-  QuestionForm ("Size of structure", descr, quest, sug, ans, ok);
+  vecds::QuestionForm ("Size of structure", descr, quest, sug, ans, ok);
 
   if (!ok) 
     return;

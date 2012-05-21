@@ -36,16 +36,17 @@
 #include <vecds/main_window.h>
 
 
-// Pomocnicza klasa - okienka dialogowe
+                                 // Pomocnicza klasa - okienka
+                                 // dialogowe
 
                                  // Class Question forms.
-QuestionForm::QuestionForm (QString      title, 
-			    QString     &description, 
-			    QStringList &question, 
-			    QStringList &suggestion, 
-			    QStringList &answer, 
-			    bool        &ok, 
-			    QWidget     *parent)
+vecds::QuestionForm::QuestionForm (QString      title, 
+				   QString     &description, 
+				   QStringList &question, 
+				   QStringList &suggestion, 
+				   QStringList &answer, 
+				   bool        &ok, 
+				   QWidget     *parent)
   : 
   QDialog (parent)
 {
@@ -133,16 +134,16 @@ QuestionForm::QuestionForm (QString      title,
 }
 
                                  // destructor
-QuestionForm::~QuestionForm ()
+vecds::QuestionForm::~QuestionForm ()
 {}
 
 // -----------   class Questions  ----------------
 
-Questions::Questions (QString      title, 
-		      QStringList &question, 
-		      bool        *results, 
-		      bool        &ok, 
-		      QWidget     *parent) 
+vecds::Questions::Questions (QString      title, 
+			     QStringList &question, 
+			     bool        *results, 
+			     bool        &ok, 
+			     QWidget     *parent) 
   : 
   QDialog (parent)
 {
@@ -198,5 +199,5 @@ Questions::Questions (QString      title,
 }
 
                                  // destructor
-Questions::~Questions ()
+vecds::Questions::~Questions ()
 {}
