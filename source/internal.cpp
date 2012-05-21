@@ -27,7 +27,6 @@
 #include <vecds/internal.h>
 #include <vecds/additional.h>
 #include <vecds/constant.h>
-#include <vecds/function.h>
 
 int Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct) 
 {
@@ -205,7 +204,7 @@ void Internal::init_structures()
   line = in.readLine();
   fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts); 
   
-  this->numbcrstr = fields.takeFirst().toInt();
+  this->numbcrstr = fields.takeFirst ().toInt ();
   int nl = 1;
   int index = 0;
   double c2o0, c2o1, c2o2, c2o4, c2o5, c2o7, c2o8;
@@ -345,7 +344,7 @@ void Internal::read_settings()
       if ( count==2 ) 
 	{
 	  if ( nf!=8 ) qWarning("Settings - line 3 - error!");
-	  for (int i=0; i<8; i++) this->set0->vis[i] = (fields.takeFirst().toInt()==0)? false : true;
+	  for (int i=0; i<8; i++) this->set0->vis[i] = (fields.takeFirst ().toInt ()==0)? false : true;
 	  goto endloop;
 	}
 
@@ -353,7 +352,7 @@ void Internal::read_settings()
      g = fields.takeFirst().toInt();
      b = fields.takeFirst().toInt();
 
-     this->set0->colour_spectrum[count-3] = Int3(r, g, b);
+     this->set0->colour_spectrum[count-3] = vecds::Int3 (r, g, b);
     endloop:
      ++count;
     }
@@ -408,7 +407,7 @@ void Internal::read_alc_xyz(QString aname)
 	this->atoms->n_bonds = fields.takeFirst().toInt();
 	if ( this->atoms->n_bonds>0 ) 
 	  {
-	    this->atoms->atom_bond = new Int2[this->atoms->n_bonds];
+	    this->atoms->atom_bond = new vecds::Int2[this->atoms->n_bonds];
 	  }
       } 
     else 
@@ -1024,7 +1023,7 @@ void Internal::compute_rotation_tensor()
 
 bool Internal::parse_miller (QString line)
 { 
-  Int4 mil;
+  vecds::Int4 mil;
   QString line1, line_a;
   line1 = line.trimmed().simplified();
   this->act_mill = line1;
@@ -1136,7 +1135,7 @@ bool Internal::parse_core(QString line)
   return true;
 }
 
-bool Internal::internal_miller(QString line2, int which, Int4 &mil)
+bool Internal::internal_miller(QString line2, int which, vecds::Int4 &mil)
 {
   int numbmill;
   QStringList fields;

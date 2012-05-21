@@ -28,20 +28,23 @@
 #define FUNCTION_H
 
 
+namespace vecds
+{
+
                                  /* This is a namespace that declares
 				    functions used in a variety of
 				    places in this application. */
-namespace function
-{
+  namespace function
+  {
 
                                  /* The heavyside step-function
 				    \f$H(x)\f$, also known as the unit
 				    step-function, is defined as:
 				    \f[H(x)=\left\{\begin{array}{cc}0&x<0\\1&x\geq0\end{array}\right.\quad.\f] */
-  inline double heavyside (const double x)
-  {
-    return (x<0.) ? 0. : 1.;
-  }
+    inline double heavyside (const double x)
+    {
+      return (x<0.) ? 0. : 1.;
+    }
 
                                  /* A process that exhibits a
 				    progression from small-to-large
@@ -53,10 +56,13 @@ namespace function
 				    Sigmoid function \f$S(x)\f$ is
 				    defined as: \f[
 				    S(x)=\frac{1}{1+e^{-x}}\quad.\f] */
-  inline double sigmoid (const double x)
-  {
-    return (1./(1. + exp (-x)));
-  }
-}
+    inline double sigmoid (const double x)
+    {
+      return (1./(1. + exp (-x)));
+    }
+
+  }                              // namespace function
+
+}                                // namespace vecds
 
 #endif

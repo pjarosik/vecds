@@ -62,10 +62,10 @@ class Internal
   
   QString img_loaded;
   QString atoms_loaded;
-  
   QString act_disl;
   QString act_core;
   QString act_mill;
+
   double be, bz;
   bool choice;
   
@@ -111,7 +111,7 @@ class Internal
   void processMiller(int sw, QString rtext, QString rtext2="");
   bool parse_miller(QString line);
   bool parse_core(QString line);
-  bool internal_miller(QString line2, int which, Int4 &mil);
+  bool internal_miller(QString line2, int which, vecds::Int4 &mil);
   
   void compute_rotation_tensor();
   

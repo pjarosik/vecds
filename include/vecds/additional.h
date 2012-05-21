@@ -85,7 +85,7 @@ struct Atoms
                                  /* An array of two-integers that
 				    describe the bonds between two
 				    atoms. */
-  Int2 *atom_bond;
+  vecds::Int2 *atom_bond;
 };
 
 
@@ -117,7 +117,7 @@ struct Settings
 
                                  /* Variable poining to the RGB colour
 				    spectrum. */
-  Int3 colour_spectrum[12];
+  vecds::Int3 colour_spectrum[12];
   
 };
 

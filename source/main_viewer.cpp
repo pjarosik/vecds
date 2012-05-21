@@ -360,11 +360,11 @@ void MainViewer::paintGL()
   double ddy = 1.75 * (max_.y() - min_.y()) * d_y;
   
 
-  glGetDoublev(GL_MODELVIEW_MATRIX, model_view);
-  glGetDoublev(GL_PROJECTION_MATRIX, projection);
-  glGetIntegerv(GL_VIEWPORT, viewport);
-  glTranslated(ddx, ddy, distance);
-  glMultMatrixd(transformM);
+  glGetDoublev (GL_MODELVIEW_MATRIX, model_view);
+  glGetDoublev (GL_PROJECTION_MATRIX, projection);
+  glGetIntegerv (GL_VIEWPORT, viewport);
+  glTranslated (ddx, ddy, distance);
+  glMultMatrixd (transformM);
 
 
 

@@ -155,7 +155,7 @@ public QGLWidget
 
   QVector3D* coord;
   int* a_kind;
-  Int2* bonds;
+  vecds::Int2* bonds;
   QVector3D min_, max_, a_min_, a_max__;
   
   GLuint textures[100];
