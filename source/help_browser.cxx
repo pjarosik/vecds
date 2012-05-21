@@ -32,20 +32,20 @@
                                  // plików pomocy (HTML).
 
                                  // constructor
-HelpBrowser::HelpBrowser (QWidget *parent)
+vecds::HelpBrowser::HelpBrowser (QWidget *parent)
   :
   parent_widget (parent),
   help_path (VECDS_DOC)
 {}
 
                                  // constructor
-HelpBrowser::~HelpBrowser ()
+vecds::HelpBrowser::~HelpBrowser ()
 {}
 
                                  // initialise a "help browser" window
                                  // where documentation can be shown.
 void
-HelpBrowser::init_window (const QString &page)
+vecds::HelpBrowser::init_window (const QString &page)
 {
   setAttribute (Qt::WA_DeleteOnClose); 
   setAttribute (Qt::WA_GroupLeader); 
@@ -89,7 +89,7 @@ HelpBrowser::init_window (const QString &page)
 }
 
 void 
-HelpBrowser::updateWindowTitle () 
+vecds::HelpBrowser::updateWindowTitle () 
 { 
   setWindowTitle (tr ("Help: %1").arg (text_browser->documentTitle ())); 
 }
@@ -97,7 +97,7 @@ HelpBrowser::updateWindowTitle ()
                                  // the procedure used to show a page
                                  // in a window.
 void 
-HelpBrowser::show_page (const QString &page) 
+vecds::HelpBrowser::show_page (const QString &page) 
 { 
   std::cout << "Making broswer from source at: " << VECDS_DOC << std::endl;
 

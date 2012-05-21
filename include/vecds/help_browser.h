@@ -37,54 +37,59 @@
 class QPushButton;
 class QTextBrowser;
 
+namespace vecds
+{
+
                                  /* This class represents a basic help
 				    browser. The idea here is to
 				    create a window that displays some
 				    text and maybe some figures
 				    too.  */
-class HelpBrowser 
-: 
-public QWidget
-{
-  Q_OBJECT 
-    
-    public: 
+  class HelpBrowser 
+    : 
+  public QWidget
+  {
+    Q_OBJECT 
+      
+      public: 
   
                                  /* constructor of the main clas, just
 				    create a pointer to the parent */
-  HelpBrowser (QWidget *parent = 0);
+    HelpBrowser (QWidget *parent = 0);
   
                                  /* destructor of the main class */
-  ~HelpBrowser ();
+    ~HelpBrowser ();
 
                                  /* create data (eg. geometry, styles,
 				    etc.) for a browser window. */  
-  void init_window (const QString &page);
+    void init_window (const QString &page);
   
                                  /* TODO: display a page? */  
-  void show_page (const QString &page);
+    void show_page (const QString &page);
   
-  private slots: 
+    private slots: 
+    
+    void updateWindowTitle ();
   
-  void updateWindowTitle ();
-  
- private: 
+  private: 
 
                                  /* TODO: some kind of parent
 				    widget(?) */
-  QWidget      *parent_widget;
+    QWidget      *parent_widget;
 
                                  /* the browser itself */
-  QTextBrowser *text_browser;
+    QTextBrowser *text_browser;
 
                                  /* string denoting path to the help
 				    documentation */
-  QString       help_path;
+    QString       help_path;
 
                                  /* standard browser-type buttons */
-  QPushButton  *home_button;
-  QPushButton  *back_button;
-  QPushButton  *close_button;
-};
+    QPushButton  *home_button;
+    QPushButton  *back_button;
+    QPushButton  *close_button;
+  };                             /* HelpBrowser */
+
+}                                /* namespace vecds */
 
 #endif

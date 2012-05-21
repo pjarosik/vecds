@@ -537,28 +537,30 @@ void MainWindow::SL_gen1Atoms()
 //----------------------------------------------------------
 //----------------------------------------------------------
 
-//void MainWindow::SL_setSliderValue(double val)
-void MainWindow::SL_setSliderValue(int val)
+
+void MainWindow::SL_setSliderValue (int val)
 
 {
   ActualData->sliderValue = val;
-  ActualData->sliderMove = true;
+  ActualData->sliderMove  = true;
 }
 
-void MainWindow::SL_about()
+                                 // Display the "about page" for vecds.
+void MainWindow::SL_about ()
 {
-  HelpBrowser about;
+                                 // Create a help browser.
+  vecds::HelpBrowser *about = new vecds::HelpBrowser (); 
 
                                  // The first help page is always
                                  // "index.html", though this may
                                  // change in the future.
-  about.show_page ("index.html");
+  (*about).show_page ("index.html");
 }
 
 void MainWindow::SL_openAtoms()
 {
   QString current_dir1 = ActualData->current_dir;
- qWarning("SL_openAtoms");//, current_dir1.toAscii().data() );
+  qWarning("SL_openAtoms");//, current_dir1.toAscii().data() );
   QString aname1 = QFileDialog::getOpenFileName(this, "Select atoms", 
                 current_dir1.append("/data/atoms"), "Molecules (*.xyz *.alc)");
   if ( aname1.isEmpty()  || aname1==ActualData->atoms_loaded ) return;
