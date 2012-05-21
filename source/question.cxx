@@ -1,10 +1,10 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
+// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
+// (2012).
 //
-// Copyright (C) 2010 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -38,26 +38,53 @@
 
                                  // Pomocnicza klasa - okienka
                                  // dialogowe
-vecds::Question::Question (QString      title, 
-			   QStringList &question, 
-			   bool        *results, 
-			   bool        &ok, 
-			   QWidget     *parent) 
+                                 // 
+                                 // The constructor sets up a
+                                 // completely empty and unchecked box
+                                 // which can be drawn later.
+vecds::Question::Question (QWidget *parent) 
   : 
-  QDialog (parent)
+  question_title ("Unknown title"),
+  question_list  ("Unknown question"),
+  check          (false),
+  QDialog        (parent)
+{}
+
+
+                                 // destructor
+vecds::Question::~Question ()
+{}
+
+
+                                 // TODO: this is probably badly
+                                 // named, but I can't think of what
+                                 // else to call it. (TDY)
+void
+vecds::Question::show_question (bool *results)
 {
-  ok = false;
-  const unsigned int n_questions = question.count ();
+                                 // set this to false
+  this->check = false;
+
+                                 // get the number of questions we
+                                 // have to deal with
+  const unsigned int n_questions = this->question_list.count ();
+
+                                 // to make sense, at least one
+                                 // question must exist
+  assert (n_questions!=0);
 
                                  // set title to this title
-  setWindowTitle (title);
+  setWindowTitle (this->question_title);
 
+                                 // put all questions into their own
+                                 // little check box
   for (unsigned int i=0; i<n_questions; ++i)  
     {
-      check_box[i] = new QCheckBox (question.at (i));
+      check_box[i] = new QCheckBox (this->question_list.at (i));
       check_box[i]->setChecked (results[i]);
     }
   
+                                 // accept and reject buttons
   buttonBox = new QDialogButtonBox;
   buttonBox->addButton (tr ("Accept"), QDialogButtonBox::AcceptRole);
   buttonBox->addButton (tr ("Reject"), QDialogButtonBox::RejectRole);
@@ -65,29 +92,33 @@ vecds::Question::Question (QString      title,
   connect (buttonBox, SIGNAL (accepted ()), this, SLOT (accept ()));
   connect (buttonBox, SIGNAL (rejected ()), this, SLOT (reject ()));
 
-  QVBoxLayout *layout = new QVBoxLayout;
+                                 // set up the layout for the local
+                                 // components (check_boxes) and the
+                                 // main layout.
+  QVBoxLayout *local_layout = new QVBoxLayout;
+  QVBoxLayout *main_layout  = new QVBoxLayout;
 
   for (unsigned int i=0; i<n_questions; ++i)
-    layout->addWidget(check_box[i]);
-
-  QVBoxLayout *mainLayout = new QVBoxLayout;
+    local_layout->addWidget (check_box[i]);
   
-  mainLayout->addLayout (layout);
-  mainLayout->addWidget (buttonBox);
+  main_layout->addLayout (local_layout);
+  main_layout->addWidget (buttonBox);
 
-  setLayout(mainLayout);
+                                 // fix the layout as it is.
+  setLayout (main_layout);
   
+                                 // execute (something)
   this->exec ();
   
-  if (this->result()==1)
+  if (this->result ()==1)
     {
-      ok = true;
       for (unsigned int i=0; i<n_questions; ++i) 
 	results[i] = check_box[i]->isChecked ();
+      this->check = true;
     }
   else 
     {
-      ok = false;
+      this->check = false;
       return;
     }
   
@@ -97,6 +128,23 @@ vecds::Question::Question (QString      title,
   delete buttonBox;
 }
 
-                                 // destructor
-vecds::Question::~Question ()
-{}
+                                 // set title of this question
+void
+vecds::Question::set_title (QString &title) 
+{
+  this->question_title = title;
+}
+
+                                 // set question of this question
+void
+vecds::Question::set_question_list (QStringList &questions) 
+{
+  this->question_list = questions;
+}
+
+                                 // return the value of "check"
+bool 
+vecds::Question::is_sane () 
+{
+  return this->check;
+}

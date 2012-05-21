@@ -39,15 +39,27 @@ namespace vecds
       public:
 
                                  /* constructor */
-    Question (QString      title, 
-	       QStringList &question, 
-	       bool        *results, 
-	       bool        &ok,
-	       QWidget     *parent = 0);
+    Question (QWidget     *parent = 0);
 
                                  /* destructor */
     ~Question ();
     
+                                 /* set the title of this question */
+    void set_title (QString &title);
+
+                                 /* set the question(s) for this
+				    question */
+    void set_question_list (QStringList &question);
+
+                                 /* show the question? */
+    void show_question (bool *results);
+
+                                 /* return the vaiable "check". Note:
+				    it needs to be careful, because
+				    "tru" does not necessarily mean
+				    *everything* is ok.  */
+    bool is_sane ();
+
   private:
 
                                  /* a list of check boxes */
@@ -56,6 +68,22 @@ namespace vecds
                                  /* a pointer to the button box
 				    created by this class */
     QDialogButtonBox *buttonBox;
+
+                                 /* variable holding the title of this
+				    question */
+    QString question_title;
+
+                                 /* variable holding a list of
+				    questions of this question */
+    QStringList question_list;
+
+                                 /* A simple bool for checking. If
+				    operations are ok, this returns
+				    true, otherwise false is
+				    retured. TODO: This needs to be
+				    done in a much more intelligent
+				    way...*/
+    bool check;
   };
 
 }                                // namespace vecds

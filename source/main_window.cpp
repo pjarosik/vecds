@@ -706,21 +706,41 @@ void MainWindow::SL_addCoordAct()
 
 void MainWindow::SL_changeMode(int mode)
 {
-  if ( mode!=ActualData->Mode ) {
- qWarning("+++++           MODE = %d", mode);
-     ActualData->Mode = mode;
-  }
-  if ( ActualData->Mode==2 ) mview1->setCursor(Qt::CrossCursor);
-  else  mview1->setCursor(Qt::ArrowCursor);
+  if ( mode!=ActualData->Mode ) 
+    {
+      qWarning("+++++           MODE = %d", mode);
+      ActualData->Mode = mode;
+    }
+
+  if (ActualData->Mode==2) 
+    {
+      mview1->setCursor(Qt::CrossCursor);
+    }
+  else  
+    {
+      mview1->setCursor(Qt::ArrowCursor);
+    }
 }
 
-void MainWindow::SL_sett()
+                                 // TODO: If we knew what this did, we
+                                 // could hack the Question class much
+                                 // better!
+void MainWindow::SL_sett ()
 {
+  vecds::Question *this_question = new vecds::Question (); 
+
+  QString title ("Visibility");
+
   QStringList questions;
-  bool ok;
-  questions << "face_0" << "face_f" << "nodes_0" << "nodes_f" << "int.lines" << "ext_lines" << "spectrograms"
-            << "arrows"  << "axis";
-  vecds::Question ("Visibility", questions, ActualData->visible, ok);
+  questions << "face_0" << "face_f" 
+   	    << "nodes_0" << "nodes_f" 
+   	    << "int.lines" << "ext_lines" 
+   	    << "spectrograms" << "arrows"  << "axis";
+  
+  (*this_question).set_title (title);
+  (*this_question).set_question_list (questions);
+  (*this_question).show_question (ActualData->visible);
+
   emit SIG_repaint();
 }
 
