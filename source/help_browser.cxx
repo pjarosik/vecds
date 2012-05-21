@@ -26,7 +26,8 @@
                                  // vecds includes
 #include <vecds/help_browser.h>
 
-// pomocnicza klasa - przeglądarka plików pomocy (HTML)
+                                 // pomocnicza klasa - przeglądarka
+                                 // plików pomocy (HTML).
 
                                  // constructor
 HelpBrowser::HelpBrowser (QWidget *parent)
@@ -39,55 +40,67 @@ HelpBrowser::HelpBrowser (QWidget *parent)
 HelpBrowser::~HelpBrowser ()
 {}
 
+                                 // initialise a "help browser" window
+                                 // where documentation can be shown.
 void
-HelpBrowser::create_browser (const QString &page)
+HelpBrowser::init_window (const QString &page)
 {
   setAttribute (Qt::WA_DeleteOnClose); 
   setAttribute (Qt::WA_GroupLeader); 
 
                                  // create a help browser and
                                  // navigation buttons.
-  textBrowser = new QTextBrowser; 
-  homeButton  = new QPushButton (tr ("&Home")); 
-  backButton  = new QPushButton (tr ("&Back")); 
-  closeButton = new QPushButton (tr ("Close")); 
+  text_browser = new QTextBrowser; 
+  home_button  = new QPushButton (tr ("&Home")); 
+  back_button  = new QPushButton (tr ("&Back")); 
+  close_button = new QPushButton (tr ("Close")); 
 
-  closeButton->setShortcut (tr ("Escape")); 
+                                 // pseudonom for close is escape.
+  close_button->setShortcut (tr ("Escape")); 
 
-  QHBoxLayout *buttonLayout = new QHBoxLayout; 
-  buttonLayout->addStretch (); 
-  buttonLayout->addWidget (homeButton); 
-  buttonLayout->addWidget (backButton); 
-  buttonLayout->addWidget (closeButton); 
+                                 // fix button layout (horizontal).
+  QHBoxLayout *button_layout = new QHBoxLayout; 
+  button_layout->addStretch (); 
+  button_layout->addWidget (home_button); 
+  button_layout->addWidget (back_button); 
+  button_layout->addWidget (close_button); 
 
-  QVBoxLayout *mainLayout = new QVBoxLayout; 
-  mainLayout->addLayout (buttonLayout); 
-  mainLayout->addWidget(textBrowser); 
+                                 // fix button layout (vertical).
+  QVBoxLayout *main_layout = new QVBoxLayout; 
+  main_layout->addLayout (button_layout); 
+  main_layout->addWidget(text_browser); 
 
-  setLayout (mainLayout); 
+                                 // assign layout specified above.
+  setLayout (main_layout); 
 
-  connect (homeButton,  SIGNAL (clicked ()), textBrowser, SLOT (home ())); 
-  connect (backButton,  SIGNAL (clicked ()), textBrowser, SLOT (backward ())); 
+                                 // signals and slots giving actions
+                                 // to buttons.
+  connect (home_button,  SIGNAL (clicked ()), text_browser, SLOT (home ())); 
+  connect (back_button,  SIGNAL (clicked ()), text_browser, SLOT (backward ())); 
 
-  connect (closeButton, SIGNAL (clicked ()),                   this, SLOT (close ())); 
-  connect (textBrowser, SIGNAL (sourceChanged (const QUrl &)), this, SLOT (updateWindowTitle ())); 
+  connect (close_button, SIGNAL (clicked ()),                   this, SLOT (close ())); 
+  connect (text_browser, SIGNAL (sourceChanged (const QUrl &)), this, SLOT (updateWindowTitle ())); 
 
                                  // path to images
-  textBrowser->setSearchPaths (QStringList() << help_path << ":/images"); 
-  textBrowser->setSource (page); 
+  text_browser->setSearchPaths (QStringList() << help_path << ":/images"); 
+  text_browser->setSource (page); 
 }
 
 void 
-HelpBrowser::updateWindowTitle () 
+HelpBrowser::update_window_title () 
 { 
-  setWindowTitle (tr ("Help: %1").arg (textBrowser->documentTitle ())); 
+  setWindowTitle (tr ("Help: %1").arg (text_browser->documentTitle ())); 
 }
 
+                                 // the procedure used to show a page
+                                 // in a window.
 void 
 HelpBrowser::show_page (const QString &page) 
 { 
-  this->create_browser (page); 
+  this->init_window (page); 
   this->resize (500, 400); 
+
+                                 // display page.
   this->show (); 
 }
 

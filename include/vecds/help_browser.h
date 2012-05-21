@@ -59,14 +59,14 @@ public QWidget
 
                                  /* create data (eg. geometry, styles,
 				    etc.) for a browser window. */  
-  void create_browser (const QString &page);
+  void init_window (const QString &page);
   
                                  /* TODO: display a page? */  
   void show_page (const QString &page);
   
   private slots: 
   
-  void updateWindowTitle ();
+  void update_window_title ();
   
  private: 
 
@@ -75,15 +75,16 @@ public QWidget
   QWidget      *parent_widget;
 
                                  /* the browser itself */
-  QTextBrowser *textBrowser;
+  QTextBrowser *text_browser;
 
-                                 /* the browser itself */
+                                 /* string denoting path to the help
+				    documentation */
   QString       help_path;
 
                                  /* standard browser-type buttons */
-  QPushButton  *homeButton;
-  QPushButton  *backButton;
-  QPushButton  *closeButton;
+  QPushButton  *home_button;
+  QPushButton  *back_button;
+  QPushButton  *close_button;
 };
 
 #endif
