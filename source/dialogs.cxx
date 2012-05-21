@@ -22,7 +22,7 @@
 //					 
 // -------------------------------------------------------------------
 
-
+                                 // Qt includes
 #include <QString>
 #include <QStringList>
 #include <QFormLayout>
@@ -33,7 +33,7 @@
 
                                  // vecds includes
 #include <vecds/dialogs.h>
-#include <vecds/main_window.h>
+
 
 
                                  // Pomocnicza klasa - okienka

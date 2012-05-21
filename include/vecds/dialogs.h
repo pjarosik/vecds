@@ -25,6 +25,10 @@
 
 
 
+#ifndef QUESTION_FORM_H
+#define QUESTION_FORM_H
+
+
 #include <QDialog>
 #include <QLineEdit>
 #include <QLabel>
@@ -33,8 +37,9 @@
 #include <QGroupBox>
 #include <QCheckBox>
 
-#ifndef QUESTION_FORM_H
-#define QUESTION_FORM_H
+
+                                 // vecds includes
+#include <vecds/main_window.h>
 
 namespace vecds
 {
