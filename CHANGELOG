@@ -12,16 +12,24 @@ Improvements:
            simplistic. Now, vecds can be configured and installed on
            almost any system (untested) using cmake. (TDY 2012/05/18).
 
+	** The data structure tree has been destroyed and replaced
+           with share/examples directory. Examples are now universally
+           available to users. (TDY 2012/05/21).
+
 GUI:
 
-	** TODO: The help browser never actually worked due to
-           built-in directory structure. (TDY ????/??/??).
+	** The help browser never actually worked due to built-in
+           directory structure. This part of vecds has been greatly
+           improved. (TDY 2012/05/21).
 
 Bug fixes:
 
 	** The help browser was abusing memory by creating multiple
            copies of itself and not destroying them. This has been
            fixed. (TDY 2012/05/20).
+
+	** Several vecds classes were missing explicit destructors,
+           this has mostly been fixed. (2012/05/21).
 
 v 0.3.* 2012/05/16
 ------------------
