@@ -36,12 +36,12 @@ Internal::Internal ()
   path (VECDS_INTERNALS)
 {
   // Create a bunch of internals:
-  this->ap       = new AtomsProperties();
+  this->ap       = new AtomsProperties ();
   this->actcrstr = new CrystalStructure ();
   this->crstr    = new CrystalStructure[10];
-  this->set0     = new Settings(); 
-  this->atoms    = new Atoms();
-  this->actdisl  = new Dislocations();
+  this->set0     = new Settings (); 
+  this->atoms    = new Atoms ();
+  this->actdisl  = new Dislocations ();
   this->disl     = new Dislocations[100];
   
   // Then do something here...
@@ -52,12 +52,13 @@ Internal::Internal ()
   this->current_dir = QDir::currentPath();
   this->current_dir.replace(QString("/bin"), QString(""));
   
-  init_atoms();
-  init_structures();
-  read_settings();
+  init_atoms ();
+  init_structures ();
+  read_settings ();
   
   for (int i=0; i<8; i++) 
     this->visible[i] = set0->vis[i];
+
   this->mfactor = set0->mfact;
   
                                  // Make the rotation and it's inverse
@@ -69,6 +70,8 @@ Internal::Internal ()
   this->Mode       = 0;
   this->choice     = false;
   this->ndisl      = 0;
+
+  std::cout << "class Internal: successfully initialized." << std::endl;
 }
 
 Internal::~Internal ()
@@ -104,7 +107,8 @@ void Internal::init_atoms ()
       
       ++i;
     }
-  qWarning("+++++++++++++++  ATOMS INITIALIZED  +++++++++++++++++++");
+  std::cout << "class Internal: atoms successfully initialized." << std::endl;
+  // qWarning("+++++++++++++++  ATOMS INITIALIZED  +++++++++++++++++++");
 }
 
 void Internal::init_structures()
@@ -228,19 +232,21 @@ void Internal::init_structures()
 
   if ( index!=numbcrstr ) qWarning("Error - Atom_data - number of lines");
   actcrstr = &crstr[0];
-  
-  qWarning("============== init structures O.K.");
+
+  std::cout << "class Internal: crystal structures successfully initialized." << std::endl;  
+  // qWarning("============== init structures O.K.");
 }
 
 void Internal::read_settings()
 {
 
-  QFile file (path.append("/settings.set0"));
-  
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    qWarning("===== ERROR    file 'settings.set0' not found");
-    return;
-  }
+  QFile file (path.append ("/settings.set0"));
+
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
+    {
+      qWarning("ERROR    file 'settings.set0' not found");
+      //      return;
+    }
   
   QTextStream in(&file);
   int count = 0;
@@ -278,7 +284,8 @@ void Internal::read_settings()
     endloop:
      ++count;
     }
-  qWarning("Settings :   count=%d", count);  
+  std::cout << "class Internal: " << count << " settings were initialized." << std::endl;  
+  // qWarning("Settings :   count=%d", count);  
 }
 
 
@@ -1009,7 +1016,7 @@ bool Internal::parse_miller (QString line)
     return true;
 }
 
-bool Internal::parse_core(QString line)
+bool Internal::parse_core (QString line)
 { 
   QString line1;
   line1 = line.trimmed().simplified();

@@ -32,12 +32,12 @@
 				    of certain variables. */
 vecds::ArcBall::ArcBall () 
   :
-  epsilon      (1.e-8),
   vector_begin (QVector3D (0., 0., 0.)),
   vector_end   (QVector3D (0., 0., 0.)),
-  mouseQuat    (QQuaternion (1., 0., 0., 0.)),
+  quaternion   (QQuaternion (1., 0., 0., 0.)),
   q_down       (QQuaternion (1., 0., 0., 0.)),
-  quaternion   (QQuaternion (1., 0., 0., 0.))    
+  mouseQuat    (QQuaternion (1., 0., 0., 0.)),
+  epsilon      (1.e-8)
 {}
 
 vecds::ArcBall::~ArcBall () 

@@ -97,6 +97,9 @@ vecds::MainViewer::MainViewer (QWidget *parent)
   prepare_scene();
 
   arcb       = new vecds::ArcBall();
+
+  qWarning ("Got here without vomiting!");
+
   transformM = new double[16];
 
   for (unsigned int i=1; i<15; ++i) 
@@ -137,27 +140,28 @@ void vecds::MainViewer::set_defaults ()
 
 void vecds::MainViewer::prepare_scene ()
 {
-  if ( ActualData->atoms_loaded=="none" ) 
+  if (ActualData->atoms_loaded=="none") 
     {
       qWarning("******** none atoms, none fems *********");
-      min_ = QVector3D(-5., -5., -5);
-      max_ = QVector3D(5., 5., 5.);
+      min_ = QVector3D (-5., -5., -5);
+      max_ = QVector3D (5., 5., 5.);
       rad_scene = 10.;
     } 
   else 
     {
       min_ = ActualData->a_min_;
       max_ = ActualData->a_max_;
-      rad_scene = qMax(qMax((max_.x()-min_.x()), (max_.y()-min_.y())), (max_.z()-min_.z()));
+      rad_scene = qMax (qMax ((max_.x ()-min_.x ()), (max_.y ()-min_.y ())), (max_.z ()-min_.z ()));
       qWarning("+++++++++++++++++ min_ = %g %g %g", min_.x(), min_.y(), min_.z());
     }
 
-  distance0 = distance = (dist0/tan(fov*vecds::constant::deg2rad))*rad_scene;
-  small = 0.01 * rad_scene;
-  smaller = 0.22 * small;
+  distance0 = distance = (dist0/tan (fov*vecds::constant::deg2rad))*rad_scene;
+
+  small     = 0.01 * rad_scene;
+  smaller   = 0.22 * small;
   ActualData->rad_scene = rad_scene;
-  ActualData->min_ = min_;
-  ActualData->max_ = max_;
+  ActualData->min_      = min_;
+  ActualData->max_      = max_;
   
   xl = min_.x() - cent_.x();
   xr = max_.x() - cent_.x();
@@ -167,6 +171,8 @@ void vecds::MainViewer::prepare_scene ()
 
   makeCurrent();
   prepare_axis();
+
+  std::cout << "class MainViewer (prepare_scene): successfully initialized the scene." << std::endl;
 }
 
 void vecds::MainViewer::prepare_invbox (const QVector3D xmin, 
@@ -627,6 +633,7 @@ void vecds::MainViewer::SL_needDraw ()
 {
   qWarning("slot needDraw");
   prepare_scene();
+
   paintGL();
 }
 

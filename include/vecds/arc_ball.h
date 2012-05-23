@@ -78,6 +78,11 @@ namespace vecds
                                  /* Return this quaternion. */
     QQuaternion get_quaternion (const QVector3D &vec_1, 
 				const QVector3D &vec_2);
+
+    QVector3D 
+      vector_begin,
+      vector_end;
+
   
     QQuaternion 
       quaternion,
@@ -87,11 +92,7 @@ namespace vecds
     double 
       invHeight, 
       invWidth;
-    
-    QVector3D 
-      vector_begin,
-      vector_end;
-    
+        
     double epsilon;
 
                                  // Inline and other functions

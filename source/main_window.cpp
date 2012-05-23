@@ -715,12 +715,12 @@ void MainWindow::SL_dislocAct()
   mview1->updateGL ();
 }
 
-void MainWindow::SL_dislAct()
+void MainWindow::SL_dislAct ()
 {
   ActualData->act_core.sprintf("none");
 
   QString s1;
-  s1.sprintf("%s", ActualData->act_disl.toAscii().data());
+  s1.sprintf ("%s", ActualData->act_disl.toAscii().data());
 
   vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
 
