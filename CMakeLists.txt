@@ -25,10 +25,10 @@ set (VECDS_PATH               ${CMAKE_SOURCE_DIR})
 ## Surface structure
 set (VECDS_BIN                ${VECDS_PATH}/bin)
 set (VECDS_INCLUDES           ${VECDS_PATH}/include)
-set (VECDS_SCRIPTS            ${VECDS_PATH}/scripts)
 set (VECDS_SHARES             ${VECDS_PATH}/share)
 ## Deep structure
 set (VECDS_DOCS               ${VECDS_SHARES}/vecds/doc)
+set (VECDS_SCRIPTS            ${VECDS_SHARES}/vecds/scripts)
 # set (CMAKE_INSTALL_PREFIX     ${VECDS_BIN})
 set (CMAKE_CXX_FLAGS_DEBUG    "-O0 -g -DDEBUG -Wall")
 set (CMAKE_CXX_FLAGS_RELEASE  "-O3 -DNDEBUG") 
