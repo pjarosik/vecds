@@ -148,14 +148,16 @@ namespace vecds
     void quat2matr(QQuaternion q);
     QVector3D quat2euler(QQuaternion q);
     QQuaternion quatfromEuler();
+
+                                 /* number of atoms in this
+				    context. */
+    unsigned int n_atoms;
     
                                  /* number of bonds in this
 				    context. */ 
     unsigned int n_bonds;
   
-                                 /* number of atoms in this
-				    context. */
-    unsigned int n_atoms;
+
     
     QVector3D* coord;
     int* a_kind;
@@ -179,12 +181,21 @@ namespace vecds
                                  // create an arc-ball for viewing
     vecds::ArcBall *arcball;
 
+                                 /* rotation angles (rangle) related
+				    to: banking */
+    double rangle_phi;
+
+                                 /* to: heading */
+    double rangle_theta;
+
+                                 /* to: altitude */
+    double rangle_psi; 
 
     QVector2D mousePt;
     QVector3D mousePos;
     double* transformM;
-    double phiRot, thetaRot, psiRot, d_x, d_y, d_0;
-    double angle;
+    double d_x, d_y, d_0;
+
     QVector3D axis;
     double xl, xr, yd, yu;
     GLuint Pixmap2texture(QPixmap *pix);

@@ -70,21 +70,23 @@ QColor qcol;
 
 vecds::MainViewer::MainViewer (QWidget *parent)
   : 
-  QGLWidget (parent)
+  QGLWidget (parent),
+                                 // initial conditions (none)
+  n_atoms   (0),
+  n_bonds   (0),
+                                 // background colours
+  bg_red    (0.99),
+  bg_green  (0.99),
+  bg_blue   (0.99)
 {
   makeCurrent ();
 
-  this->phiRot           = 0.;
-  this->thetaRot         = 0.;
-  this->psiRot           = 0.;
+  this->rangle_phi       = 0.;
+  this->rangle_theta     = 0.;
+  this->rangle_psi       = 0.;
   this->d_x              = 0.;
   this->d_y              = 0.;
   this->d_0              = 180.;
-  this->n_atoms          = 0;
-  this->n_bonds          = 0;
-  this->bg_red           = 0.99;
-  this->bg_green         = 0.99;
-  this->bg_blue          = 1.0;
   this->VIEW_rad_fact    = 0.25;
   this->VIEW_whichRadius = 1;
   this->mousePos         = QVector3D (0., 0., 0.);
@@ -273,30 +275,43 @@ void vecds::MainViewer::mouseMoveEvent(QMouseEvent *event)
 	quat2matr (arcball->quaternion);
 	QVector3D result = quat2euler (arcball->quaternion)*vecds::constant::rad2deg;
 	
-	if ( thetaRot!=result.x() ) 
+	if (rangle_theta!=result.x ()) 
 	  {
-	    thetaRot = result.x();
-	    if ( thetaRot<-180. ) thetaRot += 360.;
-	    if ( thetaRot>180. ) thetaRot -= 360.;
-	    emit SIG_thetaRotationChanged(int(thetaRot));
+	    rangle_theta = result.x ();
+
+	    if (rangle_theta<-180.) 
+	      rangle_theta += 360.;
+
+	    if (rangle_theta>180.) 
+	      rangle_theta -= 360.;
+
+	    emit SIG_thetaRotationChanged (int (rangle_theta));
 	  }
-	if ( phiRot!=result.z() ) 
+	if (rangle_phi!=result.z ()) 
 	  {
-	    phiRot = result.z();
-	    if ( phiRot<-90. ) phiRot += 180.;
-	    if ( phiRot>90. ) phiRot -= 180.;
-	    emit SIG_phiRotationChanged(int(phiRot));
+	    rangle_phi = result.z ();
+
+	    if (rangle_phi<-90.) 
+	      rangle_phi += 180.;
+
+	    if (rangle_phi>90.) 
+	      rangle_phi -= 180.;
+
+	    emit SIG_phiRotationChanged (int (rangle_phi));
 	  }
-	if ( psiRot!=result.y() ) 
+	if (rangle_psi!=result.y ()) 
 	  {
-	    psiRot = result.y();
-	    if ( psiRot<-180. ) psiRot += 180.;
-	    if ( psiRot>180. ) psiRot -= 180.;
-	    emit SIG_psiRotationChanged(int(psiRot));
+	    rangle_psi = result.y ();
+
+	    if (rangle_psi<-180.) 
+	      rangle_psi += 180.;
+	    if (rangle_psi>180.) 
+	      rangle_psi -= 180.;
+
+	    emit SIG_psiRotationChanged (int (rangle_psi));
 	  }
 
        updateGL();
-
       } 
     else if (event->buttons() & Qt::RightButton && ActualData->Mode!=2) 
       {
@@ -551,49 +566,62 @@ void vecds::MainViewer::arrow (QVector3D orig, QVector3D vect, double fact, doub
 
 void vecds::MainViewer::SL_dothetaRotation ()
 {
-  double angl;
   if (ActualData->sliderMove) 
     {
-      angl = double(ActualData->sliderValue);
-      if ( angl<-180. ) angl += 360.;
-      if ( angl>180. ) angl -= 360.;
-      thetaRot = double(angl);
+      double angle = double (ActualData->sliderValue);
+
+      if (angle<-180.) 
+	angle += 360.;
+
+      if (angle>180.) 
+	angle -= 360.;
+
+      rangle_theta           = double (angle);
       ActualData->sliderMove = false;
-      euler2matr();
-      arcball->quaternion = quatfromEuler();
-      updateGL();
+      euler2matr ();
+      arcball->quaternion    = quatfromEuler ();
+      updateGL ();
     }
 }
 
 void vecds::MainViewer::SL_dophiRotation ()
 {
-  double angl;
   if (ActualData->sliderMove) 
     {
-      angl = ActualData->sliderValue;
-      if ( angl<-90. ) angl += 180.;
-      if ( angl>90. ) angl -= 180.;
-      phiRot = angl;
+      double angle = ActualData->sliderValue;
+
+      if (angle<-90.) 
+	angle += 180.;
+
+      if (angle>90.) 
+	angle -= 180.;
+
+      rangle_phi             = angle;
       ActualData->sliderMove = false;
-      euler2matr();
-      arcball->quaternion = quatfromEuler();
-      updateGL();
+      euler2matr ();
+      arcball->quaternion    = quatfromEuler ();
+      updateGL ();
     }
 }
 
 void vecds::MainViewer::SL_dopsiRotation ()
 {
-  double angl;
+
   if (ActualData->sliderMove) 
     {
-      angl = ActualData->sliderValue;
-      if ( angl<-180. ) angl += 360.;
-      if ( angl>180. ) angl -= 360.;
-      psiRot = double(angl);
+      double angle = ActualData->sliderValue;
+
+      if (angle<-180.) 
+	angle += 360.;
+
+      if (angle>180.) 
+	angle -= 360.;
+
+      rangle_psi             = double (angle);
       ActualData->sliderMove = false;
-      euler2matr();
-      arcball->quaternion = quatfromEuler();
-      updateGL();
+      euler2matr ();
+      arcball->quaternion    = quatfromEuler ();
+      updateGL ();
     }
 }
 
@@ -850,12 +878,12 @@ void vecds::MainViewer::euler2matr ()
 {
                                  // Assume the angles are in passed in
                                  // in radians.
-  double ch = cos (thetaRot*vecds::constant::deg2rad); // heading
-  double sh = sin (thetaRot*vecds::constant::deg2rad);
-  double ca = cos (psiRot  *vecds::constant::deg2rad);   // attitude
-  double sa = sin (psiRot  *vecds::constant::deg2rad);
-  double cb = cos (phiRot  *vecds::constant::deg2rad);   // bank
-  double sb = sin (phiRot  *vecds::constant::deg2rad);
+  double ch = cos (vecds::constant::deg2rad * rangle_theta); // heading
+  double sh = sin (vecds::constant::deg2rad * rangle_theta);
+  double ca = cos (vecds::constant::deg2rad * rangle_psi);   // altitude
+  double sa = sin (vecds::constant::deg2rad * rangle_psi);
+  double cb = cos (vecds::constant::deg2rad * rangle_phi);   // bank
+  double sb = sin (vecds::constant::deg2rad * rangle_phi);
 
     transformM[0]  = ch*ca;
     transformM[1]  = sh*sb - ch*sa*cb;
@@ -935,9 +963,9 @@ QVector3D vecds::MainViewer::quat2euler (QQuaternion q)
 QQuaternion vecds::MainViewer::quatfromEuler ()
 {
   //   QQuaternion res;
-  double heading2  = 0.5 * vecds::constant::deg2rad * thetaRot;
-  double attitude2 = 0.5 * vecds::constant::deg2rad * psiRot;
-  double bank2     = 0.5 * vecds::constant::deg2rad * phiRot;
+  double heading2  = 0.5 * vecds::constant::deg2rad * rangle_theta;
+  double attitude2 = 0.5 * vecds::constant::deg2rad * rangle_psi;
+  double bank2     = 0.5 * vecds::constant::deg2rad * rangle_phi;
   
   double c1   = cos (heading2);
   double s1   = sin (heading2);
