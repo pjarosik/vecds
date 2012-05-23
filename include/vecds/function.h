@@ -74,8 +74,8 @@ namespace vecds
       const double u0y      = ((struct params *) par)->u0y;
       const double u0z      = ((struct params *) par)->u0z;
       
-      const double x_distance = gsl_vector_get(x, 0);
-      const double y_distance = gsl_vector_get(x, 1);
+      const double x_distance = gsl_vector_get (x, 0);
+      const double y_distance = gsl_vector_get (x, 1);
       const double r2         = x_distance*x_distance + y_distance*y_distance;
       const double r          = sqrt (r2);
       const double xx         = x_distance/r;

@@ -453,7 +453,6 @@ void Internal::saveAtoms(QString sname)
 
 void Internal::SL_singleDisl (QVector3D rr)
 {
- 
   rr += this->cent_;
   actdisl->rrr = rr;// + this->cent_;
   actdisl->burgers_name = this->act_disl;
@@ -476,11 +475,10 @@ void Internal::SL_singleDisl (QVector3D rr)
   
   qWarning("SINGLE DISL %d,  rrr= (%g %g %g)", ndisl-1, 
 	   actdisl->rrr.x(), actdisl->rrr.y(), actdisl->rrr.z());
-  return; 
 }
 
 
-void Internal::newdisl(unsigned int n_a, bool sw_iter)
+void Internal::newdisl (unsigned int n_a, bool sw_iter)
 {
   qWarning("newdisl");
   QVector3D rr = this->atoms->coordinates[n_a];// + this->cent_;
@@ -492,21 +490,21 @@ void Internal::newdisl(unsigned int n_a, bool sw_iter)
 	   actdisl->p1.x(), actdisl->p1.y(), actdisl->p1.z(), actdisl->p2.x(), actdisl->p2.y(), actdisl->p2.z());
   
   glm::dvec3 burg_vect = rot_tensor * actcrstr->C2O * glm::dvec3(fraction*indMiller[0], fraction*indMiller[1], fraction*indMiller[2]);
-  glm::dvec3 cd = rot_tensor * to_dvec3(atoms->coordinates[n_a]);
+  glm::dvec3 cd        = rot_tensor * to_dvec3 (atoms->coordinates[n_a]);
   
-  be = sqrt(burg_vect.x*burg_vect.x+burg_vect.y*burg_vect.y);
+  be = sqrt (burg_vect.x*burg_vect.x+burg_vect.y*burg_vect.y);
   bz = burg_vect.z;
 
   for (unsigned int i=0; i<atoms->n_atoms; i++) 
-    atoms->coordinates_glm[i] = rot_tensor * to_dvec3(atoms->coordinates[i]);
+    atoms->coordinates_glm[i] = rot_tensor * to_dvec3 (atoms->coordinates[i]);
   
   if ( sw_iter ) 
     {
       
       const gsl_multiroot_fdfsolver_type *T;
       T = gsl_multiroot_fdfsolver_hybridsj;
-      gsl_multiroot_fdfsolver *s; // = gsl_multiroot_fdfsolver_alloc(T, 3);
-      gsl_vector *x; // = gsl_vector_alloc(3);
+      gsl_multiroot_fdfsolver *s;
+      gsl_vector *x;
       
       size_t count;
       
@@ -527,8 +525,11 @@ void Internal::newdisl(unsigned int n_a, bool sw_iter)
       
       for (unsigned int i=0; i<atoms->n_atoms; i++) 
 	{
-	  //    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
-	  if ( i==n_a ) { std::cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; }
+
+	  if (i==n_a) 
+	    { 
+	      std::cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; 
+	    }
 	  count = 0;
 	  
 	  do 
@@ -549,16 +550,18 @@ void Internal::newdisl(unsigned int n_a, bool sw_iter)
 	      gsl_multiroot_function_fdf f = {&(::vecds::function::love), 
 					      &(::vecds::function::beta), 
 					      &(::vecds::function::love_fdf), 3, &p};
+	      
+	      x = gsl_vector_alloc (3);
 
-	      x = gsl_vector_alloc(3);
 	      gsl_vector_set(x, 0, temp.x);
 	      gsl_vector_set(x, 1, temp.y);
 	      gsl_vector_set(x, 2, temp.z);
 	      
-	      s = gsl_multiroot_fdfsolver_alloc(T, 3);
-	      gsl_multiroot_fdfsolver_set(s, &f, x);
+	      s = gsl_multiroot_fdfsolver_alloc (T, 3);
+
+	      gsl_multiroot_fdfsolver_set (s, &f, x);
 	      
-	      status = gsl_multiroot_fdfsolver_iterate(s);
+	      status = gsl_multiroot_fdfsolver_iterate (s);
 	      
 	      if (status) 
 		break;
@@ -566,19 +569,21 @@ void Internal::newdisl(unsigned int n_a, bool sw_iter)
 	      diff.x = gsl_vector_get(s->f, 0);
 	      diff.y = gsl_vector_get(s->f, 1);
 	      diff.z = gsl_vector_get(s->f, 2);
+
 	      atoms->du[i] -= diff;
+
 	      status = gsl_multiroot_test_residual(s->f, crit_stop);
-	    } while ( status == GSL_CONTINUE && count<countN_R );
+
+	    } while ((status == GSL_CONTINUE) && (count<countN_R));
 
 	  crit += diff.x*diff.x + diff.y*diff.y + diff.z*diff.z;
 
-	  gsl_multiroot_fdfsolver_free(s);
-	  gsl_vector_free(x);
+	  gsl_multiroot_fdfsolver_free (s);
+	  gsl_vector_free (x);
 
 	  continue;
 	_END:
 	  std::cout << "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << endl;
-
 	}
 
     } 
@@ -600,29 +605,29 @@ void Internal::newdisl(unsigned int n_a, bool sw_iter)
       atoms->u[i] += to_QV(atoms->du[i]);
     }
   
-  qWarning("uwaga!");
+  qWarning ("uwaga!");
   disl[ndisl++] = *actdisl;
 
-  qWarning("NEW DISL %d,  rrr= (%g %g %g)", ndisl-1, 
-	   actdisl->rrr.x(), actdisl->rrr.y(), actdisl->rrr.z());
+  qWarning ("NEW DISL %d,  rrr= (%g %g %g)", ndisl-1, 
+	    actdisl->rrr.x (), actdisl->rrr.y (), actdisl->rrr.z ());
   
-  return; 
 }
 
 // ------------------------------------------------
 
-void Internal::addDisplacements()
+void Internal::addDisplacements ()
 {
   for (unsigned int i=0; i<atoms->n_atoms; ++i) 
     {
       atoms->coordinates[i] += atoms->u[i];
-      atoms->u[i] = QVector3D(0., 0., 0.);
+      atoms->u[i] = QVector3D (0., 0., 0.);
     }
 }
 
 
 
-void Internal::calc_disloc(int nr_atom, int disl_num)
+void Internal::calc_disloc (int nr_atom, 
+			    int disl_num)
 {
   
   int i0 = atomize (actdisl->rrr, nr_atom);
@@ -631,7 +636,9 @@ void Internal::calc_disloc(int nr_atom, int disl_num)
 	   atoms->coordinates[i0].y (), 
 	   atoms->coordinates[i0].z ());
 
-  if ( i0==-1 ) qWarning("Error i0 for %d dislocation\n", ndisl);
+  if (i0==-1) 
+    qWarning("Error i0 for %d dislocation\n", ndisl);
+
   QVector3D dislocation_core;
   
   dislocation_core.setX(actdisl->dislocation_core.x()*actcrstr->c2o[0] + 
@@ -714,12 +721,12 @@ glm::dmat3 Internal::mixed_beta (int i, glm::dvec3 rotdist, double be, double bz
   else 
     {
       double a   = be/(4. * vecds::constant::pi * (1.-nu) * r2*r2);   // a = bx/(4. * pi * (1.-n) * r2*r2)
-      double bxx = -a * y * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(4) = -a * y * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xx 
-      double byx = -a * x * ((1.-2.*nu)*x2 + (3.-2.*nu)*y2); // u(5) = -a * x * ((1.-2.*n)*x*x + (3.-2.*n)*y*y) !yx
-      double bzx = -bz/(2.*vecds::constant::pi) * y/r2;             // u(6) = -bz/(2.*pi) * y/r2                       !zx
-      double bxy =  a * x * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(7) =  a * x * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xy
-      double byy =  a * y * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2); // u(8) =  a * y * ((1.+2.*n)*x*x - (1.-2.*n)*y*y) !yy
-      double bzy = -bz/(2.*vecds::constant::pi) * x/r2;             // u(9) = -bz/(2.*pi) * x/r2                       !zy
+      double bxx = -a * y * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2);          // u(4) = -a * y * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xx 
+      double byx = -a * x * ((1.-2.*nu)*x2 + (3.-2.*nu)*y2);          // u(5) = -a * x * ((1.-2.*n)*x*x + (3.-2.*n)*y*y) !yx
+      double bzx = -bz/(2.*vecds::constant::pi) * y/r2;               // u(6) = -bz/(2.*pi) * y/r2                       !zx
+      double bxy =  a * x * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2);          // u(7) =  a * x * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xy
+      double byy =  a * y * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2);          // u(8) =  a * y * ((1.+2.*n)*x*x - (1.-2.*n)*y*y) !yy
+      double bzy = -bz/(2.*vecds::constant::pi) * x/r2;               // u(9) = -bz/(2.*pi) * x/r2                       !zy
 
       b = glm::dmat3 (bxx, bxy, 0.,   
 		      byx, byy, 0.,    
@@ -751,7 +758,7 @@ int Internal::atomize (const QVector3D    point,
   return i0;
 }
 
-void Internal::calc_disl0()
+void Internal::calc_disl0 ()
 {
   
   int    i0       = 0;
