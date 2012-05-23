@@ -314,11 +314,11 @@ void Internal::read_alc_xyz(QString aname)
 
     if ( this->atoms->n_atoms>0 ) 
       {
-	this->atoms->atom_type   = new unsigned int[this->atoms->n_atoms];
-	this->atoms->coordinates = new QVector3D[this->atoms->n_atoms];
-	this->atoms->u           = new QVector3D[this->atoms->n_atoms];
-	this->atoms->coord1      = new glm::dvec3[this->atoms->n_atoms];
-	this->atoms->du          = new glm::dvec3[this->atoms->n_atoms];
+	this->atoms->atom_type       = new unsigned int[this->atoms->n_atoms];
+	this->atoms->coordinates     = new QVector3D[this->atoms->n_atoms];
+	this->atoms->u               = new QVector3D[this->atoms->n_atoms];
+	this->atoms->coordinates_glm = new glm::dvec3[this->atoms->n_atoms];
+	this->atoms->du              = new glm::dvec3[this->atoms->n_atoms];
       }
 
     bool alc_ = aname.contains(".alc");
@@ -498,7 +498,7 @@ void Internal::newdisl(unsigned int n_a, bool sw_iter)
   bz = burg_vect.z;
 
   for (unsigned int i=0; i<atoms->n_atoms; i++) 
-    atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coordinates[i]);
+    atoms->coordinates_glm[i] = rot_tensor * to_dvec3(atoms->coordinates[i]);
   
   if ( sw_iter ) 
     {
@@ -537,7 +537,7 @@ void Internal::newdisl(unsigned int n_a, bool sw_iter)
 	      p.u0x = atoms->du[i].x;
 	      p.u0y = atoms->du[i].y;
 	      p.u0z = atoms->du[i].z;
-	      glm::dvec3 temp = atoms->coord1[i]+atoms->du[i] - cd;
+	      glm::dvec3 temp = atoms->coordinates_glm[i]+atoms->du[i] - cd;
 
 	      if ( (temp.x*temp.x+temp.y*temp.y)<1.e-10 ) 
 		{
@@ -589,7 +589,7 @@ void Internal::newdisl(unsigned int n_a, bool sw_iter)
 	{
 	  //    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
 	  if ( i==n_a ) { std::cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; }
-	  glm::dvec3 dist1 = atoms->coord1[i] - cd;
+	  glm::dvec3 dist1 = atoms->coordinates_glm[i] - cd;
 	  atoms->du[i] = mixed_u(i, dist1, be, bz);
 	}
     }
@@ -652,8 +652,8 @@ void Internal::calc_disloc(int nr_atom, int disl_num)
 
   for (unsigned int i=0; i<atoms->n_atoms; ++i) 
     {
-      atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coordinates[i]);
-      glm::dvec3 dist1 = atoms->coord1[i] - to_dvec3(actdisl->cd);
+      atoms->coordinates_glm[i] = rot_tensor * to_dvec3(atoms->coordinates[i]);
+      glm::dvec3 dist1 = atoms->coordinates_glm[i] - to_dvec3(actdisl->cd);
       atoms->du[i] = mixed_u(i, dist1, p.be, p.bz);
     }
   
@@ -785,9 +785,9 @@ void Internal::calc_disl0()
 
   for (unsigned int i=0; i<atoms->n_atoms; ++i) 
     { 
-      atoms->coord1[i] = rot_tensor * to_dvec3(atoms->coordinates[i]);
-      glm::dvec3 dist1 = atoms->coord1[i] - to_dvec3(actdisl->cd);
-      atoms->du[i] = mixed_u(i, dist1, be, bz);
+      atoms->coordinates_glm[i] = rot_tensor * to_dvec3 (atoms->coordinates[i]);
+      glm::dvec3 dist1          = atoms->coordinates_glm[i] - to_dvec3(actdisl->cd);
+      atoms->du[i]              = mixed_u (i, dist1, be, bz);
     }
   
   for (unsigned int i=0; i<atoms->n_atoms; ++i) 

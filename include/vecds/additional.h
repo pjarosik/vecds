@@ -73,8 +73,12 @@ struct Atoms
                                  /* Array holding a set of coordinates */
   QVector3D *coordinates;
 
+                                 /* Same as above, but a glm
+				    copy. This is a particuarily
+				    stupid name for this! */
+  glm::dvec3 *coordinates_glm;
+
                                  /* TODO: WHat are these? */
-  glm::dvec3 *coord1;
   glm::dvec3 *du;
   QVector3D  *u;
 
