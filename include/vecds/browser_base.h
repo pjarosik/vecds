@@ -61,7 +61,7 @@ namespace vecds
     BrowserBase (QWidget *parent = 0);
   
                                  /* destructor of the main class */
-    ~BrowserBase ();
+    virtual ~BrowserBase ();
   
   private: 
 

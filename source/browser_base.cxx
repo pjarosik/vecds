@@ -38,6 +38,6 @@ vecds::BrowserBase::BrowserBase (QWidget *parent)
   path (VECDS_DOCS)
 {}
 
-                                 // constructor
+                                 // destructor
 vecds::BrowserBase::~BrowserBase ()
 {}

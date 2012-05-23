@@ -33,7 +33,7 @@
 
                                  // vecds includes
 #include <vecds/question.h>
-
+#include <vecds/dialog_base.h>
 
 
                                  // Pomocnicza klasa - okienka
@@ -44,10 +44,7 @@
                                  // which can be drawn later.
 vecds::Question::Question (QWidget *parent) 
   : 
-  QDialog        (parent),
-  check          (false),
-  question_title ("Unknown title"),
-  question_list  ("Unknown question")
+  DialogBase (parent)
 {}
 
 
@@ -74,7 +71,7 @@ vecds::Question::show_question (bool *results)
   assert (n_questions!=0);
 
                                  // set title to this title
-  setWindowTitle (this->question_title);
+  setWindowTitle (this->dialog_title);
 
                                  // put all questions into their own
                                  // little check box
@@ -128,19 +125,6 @@ vecds::Question::show_question (bool *results)
   delete buttonBox;
 }
 
-                                 // set title of this question
-void
-vecds::Question::set_title (QString &title) 
-{
-  this->question_title = title;
-}
-
-                                 // set question of this question
-void
-vecds::Question::set_question_list (QStringList &questions) 
-{
-  this->question_list = questions;
-}
 
                                  // return the value of "check"
 bool 

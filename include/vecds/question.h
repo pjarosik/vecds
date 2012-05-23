@@ -26,6 +26,7 @@
 #ifndef QUESTION_H
 #define QUESTION_H
 
+#include <vecds/dialog_base.h>
 #include <vecds/question_form.h>
 
 namespace vecds
@@ -33,7 +34,7 @@ namespace vecds
 
   class Question
     : 
-  public QDialog
+  public DialogBase
   {
     Q_OBJECT
       
@@ -44,13 +45,6 @@ namespace vecds
 
                                  /* destructor */
     ~Question ();
-    
-                                 /* set the title of this question */
-    void set_title (QString &title);
-
-                                 /* set the question(s) for this
-				    question */
-    void set_question_list (QStringList &question);
 
                                  /* show the question? */
     void show_question (bool *results);
@@ -78,14 +72,6 @@ namespace vecds
 				    done in a much more intelligent
 				    way...*/
     bool check;
-
-                                 /* variable holding the title of this
-				    question */
-    QString question_title;
-
-                                 /* variable holding a list of
-				    questions of this question */
-    QStringList question_list;
 
   };
 

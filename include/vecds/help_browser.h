@@ -30,6 +30,7 @@
 #include <QWidget> 
 
                                  /* vecds includes */
+#include <vecds/browser_base.h>
 #include <vecds/config.h>
 
                                  /* forward declarations of qt
@@ -47,7 +48,7 @@ namespace vecds
 				    too.  */
   class HelpBrowser 
     : 
-  public QWidget
+  protected BrowserBase
   {
     Q_OBJECT 
       
@@ -58,7 +59,7 @@ namespace vecds
     HelpBrowser (QWidget *parent = 0);
   
                                  /* destructor of the main class */
-    ~HelpBrowser ();
+    virtual ~HelpBrowser ();
 
                                  /* create data (eg. geometry, styles,
 				    etc.) for a browser window. */  

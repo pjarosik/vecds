@@ -34,6 +34,7 @@
 
                                  // vecds includes
 #include <vecds/question_form.h>
+#include <vecds/dialog_base.h>
 
 
 
@@ -43,11 +44,7 @@
                                  // Constructor.
 vecds::QuestionForm::QuestionForm (QWidget *parent)
   : 
-  QDialog         (parent),
-  check           (false),
-  question_title  ("Unknown title"),
-  question_list   ("No questions"),
-  suggestion_list ("No suggestions")
+  DialogBase (parent)
 {}
 
 
@@ -70,14 +67,14 @@ vecds::QuestionForm::show_question (QStringList &answer)
   const unsigned int n_questions = this->question_list.count ();
 
                                  // set title to this title
-  setWindowTitle (this->question_title);
+  setWindowTitle (this->dialog_title);
 
                                  // set description if none is
                                  // available, set the style of the
                                  // description too.
-  if (!this->question_description.isEmpty ()) 
+  if (!this->dialog_description.isEmpty ()) 
     {
-      description_label = new QLabel (this->question_description);
+      description_label = new QLabel (this->dialog_description);
 
       description_label->setFrameStyle (QFrame::NoFrame);
       description_label->setTextFormat (Qt::RichText);
@@ -110,7 +107,7 @@ vecds::QuestionForm::show_question (QStringList &answer)
 
   QVBoxLayout *mainLayout = new QVBoxLayout;
 
-  if (!this->question_description.isEmpty()) 
+  if (!this->dialog_description.isEmpty()) 
     mainLayout->addWidget (description_label);
 
   mainLayout->addLayout (layout);
@@ -134,7 +131,7 @@ vecds::QuestionForm::show_question (QStringList &answer)
       return;
     }
   
-  if (!this->question_description.isEmpty ()) 
+  if (!this->dialog_description.isEmpty ()) 
     delete description_label;
 
   for (unsigned int i=0; i<n_questions; ++i)      
@@ -147,34 +144,6 @@ vecds::QuestionForm::show_question (QStringList &answer)
   delete buttonBox;
 }
 
-
-                                 // set title of this question
-void
-vecds::QuestionForm::set_title (QString &title) 
-{
-  this->question_title = title;
-}
-
-                                 // set question of this question
-void
-vecds::QuestionForm::set_question_list (QStringList &questions) 
-{
-  this->question_list = questions;
-}
-
-                                 // set suggestions of this question
-void
-vecds::QuestionForm::set_suggestion_list (QStringList &suggestions) 
-{
-  this->suggestion_list = suggestions;
-}
-
-                                 // set description of this question
-void
-vecds::QuestionForm::set_description (QString &description) 
-{
-  this->question_description = description;
-}
 
                                  // return the value of "check"
 bool 

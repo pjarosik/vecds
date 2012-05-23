@@ -34,11 +34,12 @@
                                  // constructor
 vecds::HelpBrowser::HelpBrowser (QWidget *parent)
   :
-  parent_widget (parent),
-  help_path (VECDS_DOCS)
+  BrowserBase (parent)
+  // parent_widget (parent),
+  // help_path (VECDS_DOCS)
 {}
 
-                                 // constructor
+                                 // destructor
 vecds::HelpBrowser::~HelpBrowser ()
 {}
 
@@ -53,8 +54,6 @@ vecds::HelpBrowser::init_window (const QString &page)
                                  // create a help browser and
                                  // navigation buttons.
   text_browser = new QTextBrowser; 
-  // home_button  = new QPushButton (tr ("&Home")); 
-  // back_button  = new QPushButton (tr ("&Back")); 
   close_button = new QPushButton (tr ("Close")); 
 
                                  // pseudonom for close is escape.
@@ -63,8 +62,6 @@ vecds::HelpBrowser::init_window (const QString &page)
                                  // fix button layout (horizontal).
   QHBoxLayout *button_layout = new QHBoxLayout; 
   button_layout->addStretch (); 
-  // button_layout->addWidget (home_button); 
-  // button_layout->addWidget (back_button); 
   button_layout->addWidget (close_button); 
 
                                  // fix button layout (vertical).

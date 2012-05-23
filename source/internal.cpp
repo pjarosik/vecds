@@ -545,10 +545,10 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
       
       for (unsigned int i=0; i<atoms->n_atoms; i++) 
 	{
-
 	  if (i==n_a) 
 	    { 
-	      std::cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; 
+	      std::cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  
+	      // continue; 
 	    }
 	  count = 0;
 	  
@@ -560,13 +560,14 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
 	      p.u0z = atoms->du[i].z;
 	      glm::dvec3 temp = atoms->coordinates_glm[i]+atoms->du[i] - cd;
 
-	      if ( (temp.x*temp.x+temp.y*temp.y)<1.e-10 ) 
+	      if ((temp.x*temp.x+temp.y*temp.y)<1.e-10) 
 		{
 		  atoms->du[i] = glm::dvec3(0., 0., 0.);
 		  std::cout << " Atom " << i << " in the center of dislocation core" << endl;
 
 		  goto _END;
 		}
+
 	      gsl_multiroot_function_fdf f = {&(::vecds::function::love), 
 					      &(::vecds::function::beta), 
 					      &(::vecds::function::love_fdf), 3, &p};
@@ -603,6 +604,7 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
 
 	  continue;
 	_END:
+
 	  std::cout << "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << endl;
 	}
 
