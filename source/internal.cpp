@@ -28,6 +28,7 @@
 #include <vecds/additional.h>
 #include <vecds/constant.h>
 #include <vecds/function.h>
+#include <vecds/config.h>
 
 
 Internal::Internal ()
@@ -75,9 +76,9 @@ void Internal::init_atoms ()
 {
   int i = 0;
 
-  QString cd0 = this->current_dir;
+  QString cd0 = VECDS_INTERNALS;//this->current_dir;
 
-  QFile file (cd0.append("/data/atoms.babel"));
+  QFile file (cd0.append("/atoms.babel"));
 
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
     {
@@ -111,8 +112,9 @@ void Internal::init_structures()
   QString line;
   QStringList fields;
   int nf;
-  QString cd0=this->current_dir;
-  QFile file(cd0.append("/data/structures.definitions"));
+
+  QString cd0 = VECDS_INTERNALS;
+  QFile file(cd0.append("/structures.definitions"));
   
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     qWarning("Error - no structures.definitions!");
@@ -231,8 +233,8 @@ void Internal::init_structures()
 
 void Internal::read_settings()
 {
-  QString cd0=this->current_dir;
-  QFile file(cd0.append("/data/settings.set0"));
+  QString cd0 = VECDS_INTERNALS;
+  QFile file(cd0.append("/settings.set0"));
   
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     qWarning("===== ERROR    file 'settings.set0' not found");
