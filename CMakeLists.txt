@@ -10,6 +10,7 @@ cmake_minimum_required (VERSION 2.8)
 message (STATUS "Preconfiguring vecds")
 #######################################
 project (VECDS)
+## Project definitions
 set (VECDS_NAME               "vecds")
 set (VECDS_PACKAGE_NAME       "visualisation of crystal defects")
 set (VECDS_PACKAGE_BUGREPORT  "vecds-users@lists.sourceforge.net")
@@ -19,13 +20,15 @@ set (VECDS_VERSION_TWEAK      "1")
 set (VECDS_VERSION_PATCH      "dev")
 set (VECDS_VERSION            ${VECDS_VERSION_MAJOR}.${VECDS_VERSION_MINOR}.${VECDS_VERSION_TWEAK}.${VECDS_VERSION_PATCH})
 set (VECDS_PACKAGE_STRING     ${VECDS_PACKAGE_NAME}\\${VECDS_VERSION})
+## Base structure
 set (VECDS_PATH               ${CMAKE_SOURCE_DIR})
 ## Surface structure
-set (VECDS_INCLUDES           ${VECDS_PATH}/include)
-set (VECDS_SHARES             ${VECDS_PATH}/share)
 set (VECDS_BIN                ${VECDS_PATH}/bin)
+set (VECDS_INCLUDES           ${VECDS_PATH}/include)
+set (VECDS_SCRIPTS            ${VECDS_PATH}/scripts)
+set (VECDS_SHARES             ${VECDS_PATH}/share)
 ## Deep structure
-set (VECDS_DOC                ${VECDS_SHARES}/vecds/doc)
+set (VECDS_DOCS               ${VECDS_SHARES}/vecds/doc)
 # set (CMAKE_INSTALL_PREFIX     ${VECDS_BIN})
 set (CMAKE_CXX_FLAGS_DEBUG    "-O0 -g -DDEBUG -Wall")
 set (CMAKE_CXX_FLAGS_RELEASE  "-O3 -DNDEBUG") 
@@ -41,9 +44,11 @@ message (STATUS "Found CMake: ${CMAKE_COMMAND} (found version \"${CMAKE_VERSION}
 message (STATUS "Configuring system packages")
 ##############################################
 include (FindPackageHandleStandardArgs)
+find_package (Doxygen)
 find_package (Curses)
 ##############################################
 #find_package (GSL)
+
 find_library (GSL_LIBRARIES
   NAMES gsl
   PATHS 
@@ -210,7 +215,12 @@ endif ()
 message (STATUS "Configuring build environment")
 ################################################
 
-configure_file (${VECDS_INCLUDES}/vecds/config.h.in ${VECDS_INCLUDES}/vecds/config.h)
+## Create a config.h file (-DHAVE_CONFIG_H)
+configure_file (${VECDS_INCLUDES}/vecds/config.h.in  ${VECDS_INCLUDES}/vecds/config.h)
+
+## Create a doxygen template file for producing user manual
+## documentation (-DHAVE_DOXYGEN)
+configure_file (${VECDS_SCRIPTS}/doxygen.template.in ${VECDS_SCRIPTS}/doxygen.template)
 
 include_directories (
   ${VECDS_INCLUDES}
@@ -261,5 +271,18 @@ target_link_libraries (${VECDS_NAME}
   ${QWT_LIBRARIES}
   ${QWTPLOT3D_LIBRARIES}
   )
+
+## Dcoumentation via doxygen.
+if (DOXYGEN_FOUND)
+  add_custom_target (doc
+    ${DOXYGEN}
+    ${VECDS_SCRIPTS}/doxygen.template
+    DEPENDS ${VECDS_SCRIPTS}
+    DEPENDS ${VECDS_SCRIPTS}/doxygen.template
+    DEPENDS ${VECDS_DOCS}
+    )
+else ()
+  message (STATUS "Doxygen not found - documentation will not be built")
+endif ()
 
 set (EXECUTABLE_OUTPUT_PATH ${VECDS_BIN})

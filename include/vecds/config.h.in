@@ -12,6 +12,6 @@
 #cmakedefine VECDS_PACKAGE_NAME       "@VECDS_PACKAGE_NAME@"
 #cmakedefine VECDS_PACKAGE_BUGREPORT  "@VECDS_PACKAGE_BUGREPORT@"
 
-#cmakedefine VECDS_DOC                "@VECDS_DOC@"
+#cmakedefine VECDS_DOCS               "@VECDS_DOCS@"
 
 #endif                           // __vecds_config_h
