@@ -176,8 +176,8 @@ namespace vecds
     GLdouble projection[16];
     GLint viewport[4];
     
-                                 // create an arc-ball  for viewing
-    vecds::ArcBall *arcb;
+                                 // create an arc-ball for viewing
+    vecds::ArcBall *arcball;
 
 
     QVector2D mousePt;

@@ -42,21 +42,19 @@ GLfloat colorA[] = { 0.8, 0.8, 0.2, 0.7 };
 
 GLfloat light0_position[] = { 1000.0, 1000.0, 1000.0, 0.0 };
 GLfloat light1_position[] = { 1000.0, -1000.0, -1000.0, 0.0 };
-GLfloat cube_mat[] = { 0.3, 0.3, 0.3, 0.2 };
-GLfloat cube_mat0[] = { 0.57, 0.57, 0.585, 0.22 };
-GLfloat cube_mat1[] = { 0.22, 0.75, 0.22, 0.43 };
-GLfloat cube_mat11[] = { 0.75, 0.22, 0.22, 0.43 };
-GLfloat mat_diffuse[] = { 0.9, 0.9, 0.9, 1.0 };
-GLfloat mat_specular[] = { 0.4, 0.4, 0.4, 1.0 };
-GLfloat mat_emission[] = {0.1, 0.1, 0.1, 0.0};
+GLfloat cube_mat[]        = { 0.3, 0.3, 0.3, 0.2 };
+GLfloat cube_mat0[]       = { 0.57, 0.57, 0.585, 0.22 };
+GLfloat cube_mat1[]       = { 0.22, 0.75, 0.22, 0.43 };
+GLfloat cube_mat11[]      = { 0.75, 0.22, 0.22, 0.43 };
+GLfloat mat_diffuse[]     = { 0.9, 0.9, 0.9, 1.0 };
+GLfloat mat_specular[]    = { 0.4, 0.4, 0.4, 1.0 };
+GLfloat mat_emission[]    = {0.1, 0.1, 0.1, 0.0};
 GLfloat specular_color[4] = { 0.4, 0.4, 0.4, 0.8 };
-
-GLfloat colorRed[] = {0.7, 0.1, 0.1, 1.0};
-GLfloat colorGreen[] = {0.1, 0.7, 0.1, 1.0};
-GLfloat colorBlue[] = {0.1, 0.1, 0.7, 1.0};
+GLfloat colorRed[]        = {0.7, 0.1, 0.1, 1.0};
+GLfloat colorGreen[]      = {0.1, 0.7, 0.1, 1.0};
+GLfloat colorBlue[]       = {0.1, 0.1, 0.7, 1.0};
 
 GLfloat mat_shininess[] = { 10.0 };
-
 GLfloat signesAdd[] = {0.9, 0.9, 0.9, 0.7};
 GLfloat disloc_sign[4];// = { 0.7, 0.1, 0.1, 0.4 };
 
@@ -74,32 +72,30 @@ vecds::MainViewer::MainViewer (QWidget *parent)
   : 
   QGLWidget (parent)
 {
-  makeCurrent();
+  makeCurrent ();
 
   this->phiRot           = 0.;
   this->thetaRot         = 0.;
   this->psiRot           = 0.;
-  this->d_x              = this->d_y = 0.;
+  this->d_x              = 0.;
+  this->d_y              = 0.;
   this->d_0              = 180.;
-  this->n_atoms          = this->n_bonds = 0;
+  this->n_atoms          = 0;
+  this->n_bonds          = 0;
   this->bg_red           = 0.99;
   this->bg_green         = 0.99;
   this->bg_blue          = 1.0;
   this->VIEW_rad_fact    = 0.25;
   this->VIEW_whichRadius = 1;
-  this->mousePos         = QVector3D(0., 0., 0.);
+  this->mousePos         = QVector3D (0., 0., 0.);
   
-  init_spheres(8);
+  init_spheres (8);
 
-  // int alfa = 255;
-  set_defaults(); 
+  set_defaults (); 
   
-  prepare_scene();
+  prepare_scene ();
 
-  arcb       = new vecds::ArcBall();
-
-  qWarning ("Got here without vomiting!");
-
+  arcball    = new vecds::ArcBall ();
   transformM = new double[16];
 
   for (unsigned int i=1; i<15; ++i) 
@@ -107,6 +103,10 @@ vecds::MainViewer::MainViewer (QWidget *parent)
 
   for (unsigned int i=0; i<16; i+=5) 
     transformM[i] = 1.;
+
+#ifdef DEBUG
+  std::cout << "class MainViewer: successfully initialized." << std::endl;
+#endif
 }
 
 vecds::MainViewer::~MainViewer ()
@@ -256,7 +256,7 @@ void vecds::MainViewer::mousePressEvent(QMouseEvent *event)
 
                                  // Update start vector and prepare
                                  // For dragging
-	    arcb->click (mousePt);
+	    arcball->click (mousePt);
 	  }
       }
 
@@ -268,10 +268,10 @@ void vecds::MainViewer::mouseMoveEvent(QMouseEvent *event)
     mousePt = normalizeMouse(lastPos);
     if (event->buttons() & Qt::LeftButton) 
       {
-	arcb->drag(mousePt);
+	arcball->drag(mousePt);
 	
-	quat2matr(arcb->quaternion);
-	QVector3D result = quat2euler(arcb->quaternion)*vecds::constant::rad2deg;
+	quat2matr (arcball->quaternion);
+	QVector3D result = quat2euler (arcball->quaternion)*vecds::constant::rad2deg;
 	
 	if ( thetaRot!=result.x() ) 
 	  {
@@ -337,8 +337,8 @@ void vecds::MainViewer::wheelEvent(QWheelEvent *event)
 
 QVector2D vecds::MainViewer::normalizeMouse(QPoint qp)
 {
-  QVector2D res = QVector2D(arcb->invWidth * (double(qp.x()) - 0.5*screenW),
-			    arcb->invHeight * (0.5*screenH - double(qp.y())));
+  QVector2D res = QVector2D (arcball->invWidth * (double(qp.x()) - 0.5*screenW),
+			     arcball->invHeight * (0.5*screenH - double(qp.y())));
   
   return res;
 }
@@ -362,7 +362,7 @@ void vecds::MainViewer::resizeGL(int w, int h)
   this->screenW = double(w);
   this->screenH = double(h);
 
-  arcb->set_bounds (w, h);
+  arcball->set_bounds (w, h);
 
 }
 //-----------------------------------------------------------------------------------
@@ -560,7 +560,7 @@ void vecds::MainViewer::SL_dothetaRotation ()
       thetaRot = double(angl);
       ActualData->sliderMove = false;
       euler2matr();
-      arcb->quaternion = quatfromEuler();
+      arcball->quaternion = quatfromEuler();
       updateGL();
     }
 }
@@ -576,7 +576,7 @@ void vecds::MainViewer::SL_dophiRotation ()
       phiRot = angl;
       ActualData->sliderMove = false;
       euler2matr();
-      arcb->quaternion = quatfromEuler();
+      arcball->quaternion = quatfromEuler();
       updateGL();
     }
 }
@@ -592,7 +592,7 @@ void vecds::MainViewer::SL_dopsiRotation ()
       psiRot = double(angl);
       ActualData->sliderMove = false;
       euler2matr();
-      arcb->quaternion = quatfromEuler();
+      arcball->quaternion = quatfromEuler();
       updateGL();
     }
 }

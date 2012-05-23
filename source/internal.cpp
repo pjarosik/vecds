@@ -51,10 +51,16 @@ Internal::Internal ()
   
   this->current_dir = QDir::currentPath();
   this->current_dir.replace(QString("/bin"), QString(""));
-  
+
+                                 // First read in the settings.
+  read_settings ();  
+
+                                 // Then initialise atoms and
+                                 // structures from babel and the
+                                 // structure template respectively.
   init_atoms ();
   init_structures ();
-  read_settings ();
+
   
   for (int i=0; i<8; i++) 
     this->visible[i] = set0->vis[i];
@@ -71,7 +77,9 @@ Internal::Internal ()
   this->choice     = false;
   this->ndisl      = 0;
 
-  std::cout << "class Internal: successfully initialized." << std::endl;
+#ifdef DEBUG
+  std::cout << "class Internal (constructor): successfully initialized." << std::endl;
+#endif
 }
 
 Internal::~Internal ()
@@ -81,7 +89,7 @@ void Internal::init_atoms ()
 {
   int i = 0;
 
-  QFile file (path.append("/atoms.babel"));
+  QFile file (path + "/atoms.babel");
 
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
     {
@@ -107,7 +115,10 @@ void Internal::init_atoms ()
       
       ++i;
     }
-  std::cout << "class Internal: atoms successfully initialized." << std::endl;
+
+#ifdef DEBUG
+  std::cout << "class Internal (init_atoms): atoms successfully initialized." << std::endl;
+#endif
   // qWarning("+++++++++++++++  ATOMS INITIALIZED  +++++++++++++++++++");
 }
 
@@ -118,7 +129,7 @@ void Internal::init_structures()
   int nf;
 
 
-  QFile file (path.append ("/crystal_structure.template"));
+  QFile file (path + "/crystal_structure.template");
   
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
     {
@@ -233,14 +244,16 @@ void Internal::init_structures()
   if ( index!=numbcrstr ) qWarning("Error - Atom_data - number of lines");
   actcrstr = &crstr[0];
 
-  std::cout << "class Internal: crystal structures successfully initialized." << std::endl;  
+#ifdef DEBUG
+  std::cout << "class Internal (init_structures): crystal structures successfully initialized." << std::endl;  
+#endif
   // qWarning("============== init structures O.K.");
 }
 
 void Internal::read_settings()
 {
 
-  QFile file (path.append ("/settings.set0"));
+  QFile file (path + "/settings.set0");
 
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
     {
