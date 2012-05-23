@@ -45,6 +45,10 @@ message (STATUS "Configuring system packages")
 ##############################################
 include (FindPackageHandleStandardArgs)
 find_package (Doxygen)
+if (DOXYGEN_FOUND)
+  add_definitions ("-DHAVE_DOXYGEN_H") 
+endif ()
+
 find_package (Curses)
 ##############################################
 #find_package (GSL)
@@ -233,6 +237,7 @@ include_directories (
 
 set (vecds_sources
   ${VECDS_PATH}/source/arc_ball
+  ${VECDS_PATH}/source/doc_browser
   ${VECDS_PATH}/source/help_browser
   ${VECDS_PATH}/source/internal
   ${VECDS_PATH}/source/main
@@ -246,6 +251,7 @@ set (vecds_sources
 ## for moc generated code; thus, we do not need them all.
 set (vecds_headers
   ##  ${VECDS_INCLUDES}/vecds/arc_ball.h
+  ${VECDS_INCLUDES}/vecds/doc_browser.h
   ${VECDS_INCLUDES}/vecds/help_browser.h
   ##  ${VECDS_INCLUDES}/vecds/internal.h
   ##  ${VECDS_INCLUDES}/vecds/main.h

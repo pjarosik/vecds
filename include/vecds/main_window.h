@@ -1,10 +1,10 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
+// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
+// (2012).
 //
-// Copyright (C) 2010 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors
 //
 // This  program is  free  software: you  can  redistribute it  and/or
 // modify  it under the  terms of  the GNU  General Public  License as
@@ -26,13 +26,13 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
-//#include <QWidget>
+
 #include <QtGui>
 #include <QMainWindow>
-//#include <qwt_slider.h>
 #include <QSlider>
+
 #include <qwt_scale_engine.h>
-//#include <qwt_color_map.h>
+
 #include <vecds/algebra.h>
 #include <vecds/main_viewer.h>
 
@@ -54,6 +54,7 @@ class QVector3D;
 QT_END_NAMESPACE
 
 class MainViewer;
+class DocBrowser;
 class HelpBrowser;
 class Questionform;
 class ArcBall;
@@ -77,7 +78,17 @@ class MainWindow : public QMainWindow
   void SL_gen1Atoms();
   void SL_openImg();
   void SL_closeImg();
-  void SL_about();
+
+                                 /* These are help pages that open in
+				  * a new window.
+				  *
+				  * First, the "about vecds" page */
+  void SL_about ();
+
+                                 /* and second, the "documentation of
+				    vecds" page */
+  void SL_documentation ();
+
   void SL_millerAct();
   void SL_dislocAct();
   void SL_dislAct();
@@ -102,6 +113,14 @@ class MainWindow : public QMainWindow
   //    void SIG_actPointChanged(QVector3D);
   //    void SIG_updateSpheres();
  private:
+
+                                 /* Actions that do things */
+  QAction *aboutAct;
+  QAction *documentationAct;
+  QAction *aboutQtAct;
+
+
+
   void InfoDisplay();
   //    void deleteActions();
   void saveAtoms(QString);
@@ -153,8 +172,7 @@ class MainWindow : public QMainWindow
   QAction *openimgAct;
   QAction *closeimgAct;
   QAction *transpAct;
-  QAction *aboutAct;
-  QAction *aboutQtAct;
+
   QAction *settAct;
   QAction *multAct;
   

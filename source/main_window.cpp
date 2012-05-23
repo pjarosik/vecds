@@ -1,9 +1,9 @@
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
+// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
+// (2012).
 //
-// Copyright (C) 2010 The vecds authors
+// Copyright (C) 2010,2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -29,6 +29,7 @@
 #include <vecds/internal.h>
 #include <vecds/main_window.h>
 #include <vecds/help_browser.h>
+#include <vecds/doc_browser.h>
 #include <vecds/question.h>
 #include <vecds/question_form.h>
 #include <vecds/constant.h>
@@ -159,9 +160,13 @@ void MainWindow::createActions()
   aboutAct = new QAction (tr ("About"), this);
   aboutAct->setStatusTip (tr ("Show vecds' about box"));
   connect (aboutAct, SIGNAL (triggered ()), this, SLOT (SL_about ()));
+                                 // Add an "documentation" box.
+  aboutAct = new QAction (tr ("Documentation"), this);
+  aboutAct->setStatusTip (tr ("Show vecds' documentation box"));
+  connect (aboutAct, SIGNAL (triggered ()), this, SLOT (SL_about ()));
   
   aboutQtAct = new QAction(tr("About Qt"), this);
-  aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
+  aboutQtAct->setStatusTip(tr("Show Qt library's About box"));
   connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
   
   //------------------------------------------------------------------
@@ -216,12 +221,16 @@ void MainWindow::createMenus()
   settMenu->addAction(settAct);
   settMenu->addSeparator();
   settMenu->addAction(multAct);
-  
-  helpMenu = menuBar()->addMenu(tr("Help"));
-  helpMenu->addAction(aboutAct);
-  helpMenu->addSeparator();
-  helpMenu->addAction(aboutQtAct);
-  qWarning("mainw - createMenus O.K.");
+
+                                 // This part all deals with help that
+                                 // is available for the user.
+  helpMenu = menuBar ()->addMenu (tr ("Help"));
+  helpMenu->addAction (aboutAct);
+  helpMenu = menuBar ()->addMenu (tr ("Documentation"));
+  helpMenu->addAction (documentationAct);
+
+  helpMenu->addSeparator ();
+  helpMenu->addAction (aboutQtAct);
 }
 
 void MainWindow::createStatusBar()
@@ -580,6 +589,18 @@ void MainWindow::SL_about ()
                                  // The first help page is always
                                  // "about.html".
   (*about).show_page ("about.html");
+}
+
+                                 // Display the "documentation page"
+                                 // for vecds.
+void MainWindow::SL_documentation ()
+{
+                                 // Create a documentation browser.
+  vecds::DocBrowser *documentation = new vecds::DocBrowser (); 
+
+                                 // The first documentation page is
+                                 // always "documentation.html".
+  (*documentation).show_page ("documentation.html");
 }
 
 void MainWindow::SL_openAtoms()

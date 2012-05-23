@@ -77,7 +77,8 @@ void Internal::init_atoms ()
 
   QString cd0 = this->current_dir;
 
-  QFile file (cd0.append("/data/internal/data/atoms.babel"));
+  QFile file (cd0.append("/data/atoms.babel"));
+
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
     {
       qWarning("atoms.babel not found");
@@ -111,11 +112,11 @@ void Internal::init_structures()
   QStringList fields;
   int nf;
   QString cd0=this->current_dir;
-  QFile file(cd0.append("/data/internal/data/structures.definitions"));
+  QFile file(cd0.append("/data/structures.definitions"));
   
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     qWarning("Error - no structures.definitions!");
-     return;
+    return;
   }
   
   QTextStream in(&file);
@@ -231,7 +232,7 @@ void Internal::init_structures()
 void Internal::read_settings()
 {
   QString cd0=this->current_dir;
-  QFile file(cd0.append("/data/internal/data/settings.set0"));
+  QFile file(cd0.append("/data/settings.set0"));
   
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     qWarning("===== ERROR    file 'settings.set0' not found");
