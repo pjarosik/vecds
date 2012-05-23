@@ -155,9 +155,10 @@ void MainWindow::createActions()
   multAct->setStatusTip(tr("mult. factor"));
   connect(multAct, SIGNAL(triggered()), this, SLOT(SL_mult()));
   
-  aboutAct = new QAction(tr("About"), this);
-  aboutAct->setStatusTip(tr("Show the application's About box"));
-  connect(aboutAct, SIGNAL(triggered()), this, SLOT(SL_about()));
+                                 // Add an "about" box.
+  aboutAct = new QAction (tr ("About"), this);
+  aboutAct->setStatusTip (tr ("Show vecds' about box"));
+  connect (aboutAct, SIGNAL (triggered ()), this, SLOT (SL_about ()));
   
   aboutQtAct = new QAction(tr("About Qt"), this);
   aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
@@ -577,9 +578,8 @@ void MainWindow::SL_about ()
   vecds::HelpBrowser *about = new vecds::HelpBrowser (); 
 
                                  // The first help page is always
-                                 // "index.html", though this may
-                                 // change in the future.
-  (*about).show_page ("index.html");
+                                 // "about.html".
+  (*about).show_page ("about.html");
 }
 
 void MainWindow::SL_openAtoms()

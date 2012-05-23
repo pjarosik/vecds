@@ -20,10 +20,12 @@ set (VECDS_VERSION_PATCH      "dev")
 set (VECDS_VERSION            ${VECDS_VERSION_MAJOR}.${VECDS_VERSION_MINOR}.${VECDS_VERSION_TWEAK}.${VECDS_VERSION_PATCH})
 set (VECDS_PACKAGE_STRING     ${VECDS_PACKAGE_NAME}\\${VECDS_VERSION})
 set (VECDS_PATH               ${CMAKE_SOURCE_DIR})
+## Surface structure
 set (VECDS_INCLUDES           ${VECDS_PATH}/include)
 set (VECDS_SHARES             ${VECDS_PATH}/share)
 set (VECDS_BIN                ${VECDS_PATH}/bin)
-set (VECDS_DOC                ${VECDS_PATH}/doc)
+## Deep structure
+set (VECDS_DOC                ${VECDS_SHARES}/vecds/doc)
 # set (CMAKE_INSTALL_PREFIX     ${VECDS_BIN})
 set (CMAKE_CXX_FLAGS_DEBUG    "-O0 -g -DDEBUG -Wall")
 set (CMAKE_CXX_FLAGS_RELEASE  "-O3 -DNDEBUG") 

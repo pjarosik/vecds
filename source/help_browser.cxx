@@ -53,8 +53,8 @@ vecds::HelpBrowser::init_window (const QString &page)
                                  // create a help browser and
                                  // navigation buttons.
   text_browser = new QTextBrowser; 
-  home_button  = new QPushButton (tr ("&Home")); 
-  back_button  = new QPushButton (tr ("&Back")); 
+  // home_button  = new QPushButton (tr ("&Home")); 
+  // back_button  = new QPushButton (tr ("&Back")); 
   close_button = new QPushButton (tr ("Close")); 
 
                                  // pseudonom for close is escape.
@@ -63,8 +63,8 @@ vecds::HelpBrowser::init_window (const QString &page)
                                  // fix button layout (horizontal).
   QHBoxLayout *button_layout = new QHBoxLayout; 
   button_layout->addStretch (); 
-  button_layout->addWidget (home_button); 
-  button_layout->addWidget (back_button); 
+  // button_layout->addWidget (home_button); 
+  // button_layout->addWidget (back_button); 
   button_layout->addWidget (close_button); 
 
                                  // fix button layout (vertical).
@@ -77,8 +77,8 @@ vecds::HelpBrowser::init_window (const QString &page)
 
                                  // signals and slots giving actions
                                  // to buttons.
-  connect (home_button,  SIGNAL (clicked ()), text_browser, SLOT (home ())); 
-  connect (back_button,  SIGNAL (clicked ()), text_browser, SLOT (backward ())); 
+  // connect (home_button,  SIGNAL (clicked ()), text_browser, SLOT (home ())); 
+  // connect (back_button,  SIGNAL (clicked ()), text_browser, SLOT (backward ())); 
 
   connect (close_button, SIGNAL (clicked ()),                   this, SLOT (close ())); 
   connect (text_browser, SIGNAL (sourceChanged (const QUrl &)), this, SLOT (updateWindowTitle ())); 
