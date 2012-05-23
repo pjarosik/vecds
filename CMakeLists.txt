@@ -237,6 +237,7 @@ include_directories (
 
 set (vecds_sources
   ${VECDS_PATH}/source/arc_ball
+  ${VECDS_PATH}/source/browser_base
   ${VECDS_PATH}/source/doc_browser
   ${VECDS_PATH}/source/help_browser
   ${VECDS_PATH}/source/internal
@@ -250,11 +251,11 @@ set (vecds_sources
 ## Note, header files *only* determine which files will be passed over
 ## for moc generated code; thus, we do not need them all.
 set (vecds_headers
-  ##  ${VECDS_INCLUDES}/vecds/arc_ball.h
+  ${VECDS_INCLUDES}/vecds/arc_ball.h
+  ${VECDS_INCLUDES}/vecds/browser_base.h
   ${VECDS_INCLUDES}/vecds/doc_browser.h
   ${VECDS_INCLUDES}/vecds/help_browser.h
-  ##  ${VECDS_INCLUDES}/vecds/internal.h
-  ##  ${VECDS_INCLUDES}/vecds/main.h
+  ${VECDS_INCLUDES}/vecds/internal.h
   ${VECDS_INCLUDES}/vecds/main_viewer.h
   ${VECDS_INCLUDES}/vecds/main_window.h
   ${VECDS_INCLUDES}/vecds/question.h
