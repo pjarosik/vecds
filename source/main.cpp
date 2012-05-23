@@ -1,7 +1,11 @@
 
 // -------------------------------------------------------------------
 //
-// Copyright (C) 2010 The vecds authors
+// Author:
+//    Jan Cholewinski 2010, 2011.
+//    Toby D. Young 2012.
+//
+// Copyright (C) 2010, 2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -20,41 +24,59 @@
 // -------------------------------------------------------------------
 	
 
-// These are Qt headers:	 
+                                 // These are Qt headers.
 #include <QApplication>
 #include <QGLFormat>
 
-// These are vecds headers:
-#include "../include/vecds/main_window.h"
+                                 // vecds headers.
+#include <vecds/main_window.h>
 
 
-// This is the main code that wraps everything into an application.
+                                 // This is the main code that wraps
+                                 // everything into an application.
 int main (int argc, char *argv[])
-{
-  
-  // Error check for OpenGl. If this does not exist throw a
-  // warning/exception:
-  
-  // if (!QGLFormat::hasOpenGL ()) 
-  //   {
-  //     qWarning ("This system does not support OpenGL.");
-  //     qWarning ("You should install OpenGL libraries");
-  
-  //     return -1;
-  //   }
-  // QGL::setPreferredPaintEngine (QPaintEngine::OpenGL);
-  
-  
-  // Invoke a Qt application context:
+{  
+
+                                 // Invoke a Qt application context
   QApplication app (argc, argv);
+
+                                 // try to go ahead with the
+                                 // application.
+  try
+    {
   
-  // Invoke the graphical context for the main window of the
-  // application:
-  MainWindow window;
+                                 // Invoke the graphical context for
+                                 // the main window of the
+                                 // application.
+      MainWindow window;
   
-  // Display that context on screen:
-  window.show ();
-  
-  // Return value:
+                                 // Display that context on screen.
+      window.show ();
+    }
+
+                                 // try to catch known errors.
+  catch (std::exception &exc)
+    {
+      std::cerr << std::endl << std::endl
+                << std::endl;
+      std::cerr << "Exception on processing: " << std::endl
+                << exc.what () << std::endl
+                << std::endl;
+
+      return 1;
+    }
+
+                                 // and unknown errors.
+  catch (...)
+    {
+      std::cerr << std::endl << std::endl
+                << std::endl;
+      std::cerr << "Unknown exception!" << std::endl
+                << std::endl;
+      return 1;
+    }
+
+                                 // Return value.
   return app.exec ();
+
 }
