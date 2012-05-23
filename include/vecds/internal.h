@@ -25,11 +25,13 @@
 #ifndef INTERNAL_H
 #define INTERNAL_H
 
+
 #include <qglobal.h>
 
                                  // vecds headers
 #include <vecds/algebra.h>
 #include <vecds/additional.h>
+#include <vecds/config.h>
 
                                  // forward declarations
 class MaimViewer;
@@ -125,7 +127,7 @@ class Internal
   void calc_disloc(int nr_atom, int d_num);
   void calc_disl0();
 
-                                 // Does something with atom numbers.
+                                /* Does something with atom numbers. */
   int atomize (const QVector3D point, 
 	       const unsigned int atom_number);
 
@@ -138,6 +140,14 @@ class Internal
 
   glm::dvec3 mixed_u(int i, glm::dvec3 rotdist, double be, double bz);
   glm::dmat3 mixed_beta(int i, glm::dvec3 rotdist, double be, double bz);
+
+ private:
+
+                                 /* This is the path to internal files
+				    needed by vecds to run
+				    correctly. */
+  QString path; 
+
 
 };
 

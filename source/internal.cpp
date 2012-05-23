@@ -32,6 +32,8 @@
 
 
 Internal::Internal ()
+  :
+  path (VECDS_INTERNALS)
 {
   // Create a bunch of internals:
   this->ap       = new AtomsProperties();
@@ -76,13 +78,11 @@ void Internal::init_atoms ()
 {
   int i = 0;
 
-  QString cd0 = VECDS_INTERNALS;//this->current_dir;
-
-  QFile file (cd0.append("/atoms.babel"));
+  QFile file (path.append("/atoms.babel"));
 
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
     {
-      qWarning("atoms.babel not found");
+      qWarning ("atoms.babel not found");
       return;
     }
   
@@ -113,13 +113,14 @@ void Internal::init_structures()
   QStringList fields;
   int nf;
 
-  QString cd0 = VECDS_INTERNALS;
-  QFile file(cd0.append("/structures.definitions"));
+
+  QFile file (path.append ("/crystal_structure.template"));
   
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    qWarning("Error - no structures.definitions!");
-    return;
-  }
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
+    {
+      qWarning("Error - no crystal structure definitions!");
+      return;
+    }
   
   QTextStream in(&file);
   line = in.readLine();
@@ -233,8 +234,8 @@ void Internal::init_structures()
 
 void Internal::read_settings()
 {
-  QString cd0 = VECDS_INTERNALS;
-  QFile file(cd0.append("/settings.set0"));
+
+  QFile file (path.append("/settings.set0"));
   
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
     qWarning("===== ERROR    file 'settings.set0' not found");
@@ -694,14 +695,19 @@ glm::dvec3 Internal::mixed_u(int i, glm::dvec3 rotdist, double be, double bz)
 
 glm::dmat3 Internal::mixed_beta (int i, glm::dvec3 rotdist, double be, double bz)
 {   
+
+  glm::dmat3 b(0., 0., 0.,  
+	       0., 0., 0.,  
+	       0., 0., 0.);
+
   double nu = 0.35;
-  glm::dmat3 b(0.,0.,0.,  0.,0.,0.,  0.,0.,0.);
-  double x=rotdist.x;
-  double x2=x*x;
-  double y = rotdist.y;
-  double y2=y*y;
-  double r2=x2+y2;
-  if ( r2<1.e-15 ) 
+  double x  = rotdist.x;
+  double x2 = x*x;
+  double y  = rotdist.y;
+  double y2 = y*y;
+  double r2 = x2+y2;
+
+  if (r2<1.e-15) 
     {
       std::cout << " Atom " << i << " in the center of dislocation core" << endl;
     }
