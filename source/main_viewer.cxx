@@ -1,7 +1,8 @@
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
-// (2012).
+// Author: 
+//    Jan Cholewinski and Pawel Dluzewski 2010, 
+//    Toby D. Young 2012.
 //
 // Copyright (C) 2010, 2012 The vecds authors
 //
@@ -90,7 +91,7 @@ vecds::MainViewer::MainViewer (QWidget *parent)
   
   init_spheres(8);
 
-  int alfa = 255;
+  // int alfa = 255;
   set_defaults(); 
   
   prepare_scene();

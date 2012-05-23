@@ -44,10 +44,10 @@
                                  // which can be drawn later.
 vecds::Question::Question (QWidget *parent) 
   : 
-  question_title ("Unknown title"),
-  question_list  ("Unknown question"),
+  QDialog        (parent),
   check          (false),
-  QDialog        (parent)
+  question_title ("Unknown title"),
+  question_list  ("Unknown question")
 {}
 
 
