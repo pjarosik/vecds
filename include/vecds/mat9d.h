@@ -28,110 +28,93 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
-/**
- * Structure and algebraic operations for the \f$3\times 3\f$ matrix
- * <code>Mat9d</code>. The matrix elements of a <code>Mat9d</code>
- * object \f$M\f$ are written in "vector" form: 
- *
- * \f[ M=\left[\begin{array}{ccc} m_1 & m_2 & m_3 \\ m_4 & m_5 & m_6
- \\ m_7 & m_8 & m_9 \end{array}\right]\quad.\f]
- * 
- * @note Some of these functions are marked as inline. 
- *
- * @author Jan Cholewinski, Toby D. Young 2010
- */
-
-inline glm::dvec3 to_dvec3(QVector3D x)
-{ return glm::dvec3(x.x(), x.y(), x.z()); }
-
-
-inline QVector3D to_QV(glm::dvec3 x)
-{ return QVector3D(x.x, x.y, x.z); }
-
-
+                                 /* Structure and algebraic operations
+				    for the \f$3\times 3\f$ matrix
+				    <code>Mat9d</code>. The matrix
+				    elements of a <code>Mat9d</code>
+				    object \f$M\f$ are written in
+				    "vector" form: \f[
+				    M=\left[\begin{array}{ccc} m_1 &
+				    m_2 & m_3 \\ m_4 & m_5 & m_6 \\
+				    m_7 & m_8 & m_9
+				    \end{array}\right]\quad.\f] */
 struct Mat9d
 {
-  /**
-   * Actual values of the matrix elements of <code>Mat9d</code>. See
-   * cleas documentation for more details.
-   */
+                                 /* Actual values of the matrix
+				    elements of
+				    <code>Mat9d</code>. See cleas
+				    documentation for more details. */
   double m1, m2, m3, m4, m5, m6, m7, m8, m9;
   
-  /**
-   * Constructor. Allocates memory for a \f$3\times3\f$ matrix
-   * <code>Mat9d</code> initialized with all elements equal to zero.
-   */
+                                 /* Constructor. Allocates memory for
+				    a \f$3\times3\f$ matrix
+				    <code>Mat9d</code> initialized
+				    with all elements equal to
+				    zero. */
   Mat9d () 
-  : m1(0), m2(0), m3(0), 
-    m4(0), m5(0), m6(0), 
-    m7(0), m8(0), m9(0)
+  : 
+  m1(0), m2(0), m3(0), m4(0), m5(0), m6(0), m7(0), m8(0), m9(0)
   {}
   
-  /**
-   * Constructor. Allocates memory for a \f$3\times3\f$ matrix
-   * <code>Mat9d</code> initialized with user defined elements
-   * \f$m_i\,\forall m\in\{1,...,9\}\f$.
-   */
+                                /* Constructor. Allocates memory for a
+				   \f$3\times3\f$ matrix
+				   <code>Mat9d</code> initialized with
+				   user defined elements
+				   \f$m_i\,\forall
+				   m\in\{1,...,9\}\f$. */
   Mat9d (const double m_1, const double m_2, const double m_3, 
 	 const double m_4, const double m_5, const double m_6, 
 	 const double m_7, const double m_8, const double m_9) 
-  : m1(m_1), m2(m_2), m3(m_3), 
-    m4(m_4), m5(m_5), m6(m_6), 
-    m7(m_7), m8(m_8), m9(m_9)
+  : 
+  m1(m_1), m2(m_2), m3(m_3), m4(m_4), m5(m_5), m6(m_6), m7(m_7), m8(m_8), m9(m_9)
   {}
   
-  /**
-   * Constructor. Allocates memory for a \f$3\times3\f$ matrix
-   * <code>Mat9d</code> initialized with user defined glm::dmat3
-   */
+                                /* Constructor. Allocates memory for a
+				   \f$3\times3\f$ matrix
+				   <code>Mat9d</code> initialized with
+				   user defined glm::dmat3. */
   Mat9d (const glm::dmat3 gm)
-  : m1(gm[0][0]), m2(gm[0][1]), m3(gm[0][2]), 
-    m4(gm[1][0]), m5(gm[1][1]), m6(gm[1][2]), 
-    m7(gm[2][0]), m8(gm[2][1]), m9(gm[2][2])
+  : 
+  m1(gm[0][0]), m2(gm[0][1]), m3(gm[0][2]), m4(gm[1][0]), m5(gm[1][1]), m6(gm[1][2]), m7(gm[2][0]), m8(gm[2][1]), m9(gm[2][2])
   {}
   
-
-  /**
-   * Matrix-matrix addition. Add matrix \f$p\f$ to <code>this</code>
-   * matrix.
-   */
+                                /* Matrix-matrix addition. Add matrix
+				   \f$p\f$ to <code>this</code>
+				   matrix. */
   Mat9d operator+ (const Mat9d &p) const
   {
     return Mat9d (*this) += p;
   }
   
-  /**
-   * Matrix-matrix subtraction. Subtract matrix \f$p\f$ from
-   * <code>this</code> matrix.
-   */
+                                /* Matrix-matrix subtraction. Subtract
+				   matrix \f$p\f$ from
+				   <code>this</code> matrix. */
   Mat9d operator- (const Mat9d &p) const
   {
     return Mat9d (*this) -= p;
   }
   
-  /**
-   * Scalar-matrix subtraction \f$M\cdot a\f$. Multiply
-   * <code>this</code> matrix by the scalar quantity \f$a\f$.
-   */
+                                /* Scalar-matrix subtraction \f$M\cdot
+				   a\f$. Multiply <code>this</code>
+				   matrix by the scalar quantity
+				   \f$a\f$. */
   Mat9d operator* (const double a) const
   {
     return Mat9d (*this) *= a;
   }
 
-  /**
-   * Return the trace of <code>this</code> matrix by summing over the
-   * diagonal elements of <code>this</code> matrix, ie. \f${\rm
-   * Tr}M\f$.
-   */
+                                /* Return the trace of
+				   <code>this</code> matrix by summing
+				   over the diagonal elements of
+				   <code>this</code> matrix,
+				   ie. \f${\rm Tr}M\f$. */
   double trace () const
   {
     return 
       m1 + m5 + m9;
   }
 
-  /**
-   * Inline matrix addition.
-   */
+                                /* Inline matrix addition. */
   Mat9d &operator+= (const Mat9d &p)
   {
     m1 += p.m1;
@@ -147,9 +130,7 @@ struct Mat9d
     return *this;
   }
   
-  /**
-   * Inline matrix subtraction.
-   */
+                                /* Inline matrix subtraction. */
   Mat9d &operator-= (const Mat9d &p)
   {
     m1 -= p.m1;
@@ -165,10 +146,10 @@ struct Mat9d
     return *this;
   }
   
-  /**
-   * Matrix multiplication operator. Multiply <code>this</code> matrix
-   * by the constant \f$a\f$.
-   */
+                                 /* Matrix multiplication
+				    operator. Multiply
+				    <code>this</code> matrix by the
+				    constant \f$a\f$. */
   Mat9d &operator*= (const double a)
   {
     m1 *= a;
@@ -184,21 +165,19 @@ struct Mat9d
     return *this;
   }
   
-  /** 
-   * Read/write access to the <code>index</code>th-component of
-   * <code>this</code> matrix.
-   */
-  double &operator[](const unsigned int index) 
+                                 /* Read/write access to the
+				    <code>index</code>th-component of
+				    <code>this</code> matrix. */
+  double &operator[] (const unsigned int index) 
   {
     Q_ASSERT(index < 9);
     return (&m1)[index];
   }
 
-  /** 
-   * Read only access to the <code>index</code>th-component of
-   * <code>this</code> matrix.
-   */  
-  const double &operator[](const unsigned int index) const 
+                                 /* Read only access to the
+				    <code>index</code>th-component of
+				    <code>this</code> matrix. */  
+  const double &operator[] (const unsigned int index) const 
   {
     Q_ASSERT(index < 9);
     return (&m1)[index];
@@ -206,10 +185,9 @@ struct Mat9d
   
 };
 
-/**
- * Return the determinant \f${\rm det}\,M\f$ of <code>this</code>
- * matrix.
- */
+                                 /* Return the determinant \f${\rm
+				    det}\,M\f$ of <code>this</code>
+				    matrix. */
 inline double determinant (const Mat9d &m)
 {
   return 
@@ -221,19 +199,18 @@ inline double determinant (const Mat9d &m)
     m.m2*m.m4*m.m9;
 }
 
-/**
- * Return the inverse of the deteminant \f$({\rm det}\,M)^{-1}\f$ of
- * <code>this</code> matrix.
- */
+                                 /* Return the inverse of the
+				    deteminant \f$({\rm
+				    det}\,M)^{-1}\f$ of
+				    <code>this</code> matrix. */
 inline double inverse_determinant (const Mat9d &m)
 {
   return 1./determinant (m);
 }
 
-/**
- * Return the inverse \f${\rm inv}\,M=M^{-1}\f$ of <code>this</code>
- * matrix.
- */
+                                 /* Return the inverse \f${\rm
+				    inv}\,M=M^{-1}\f$ of
+				    <code>this</code> matrix. */
 inline Mat9d invert (const Mat9d &m)
 {
   double invdet = inverse_determinant (m);
@@ -251,9 +228,8 @@ inline Mat9d invert (const Mat9d &m)
   return Mat9d (m1, m2, m3, m4, m5, m6, m7, m8, m9);
 }
 
-/**
- * Return the transpose of an <code>Mat9d</code> object.
- */
+                                 /* Return the transpose of an
+				    <code>Mat9d</code> object. */
 inline Mat9d transpose (const Mat9d &m)
 {
   return Mat9d (m.m1, m.m4, m.m7, 
@@ -261,12 +237,11 @@ inline Mat9d transpose (const Mat9d &m)
 		m.m3, m.m6, m.m9);
 }
 
-/**
- * Return the matrix multiplication of matrice <code>m1</code> and
- * <code>m2</code>.
- */
-inline Mat9d matmult(const Mat9d &m1, 
-		     const Mat9d &m2)
+                                 /* Return the matrix multiplication
+				    of matrice <code>m1</code> and
+				    <code>m2</code>. */
+inline Mat9d matmult (const Mat9d &m1, 
+		      const Mat9d &m2)
 {
   Mat9d mat;
   
@@ -280,14 +255,29 @@ inline Mat9d matmult(const Mat9d &m1,
   return mat;
 }
 
-/**
- * Return the vector multiplication of matrice <code>rotmat</code> and
- * vector<code>point</code>.
- */
+                                 /* Return the vector multiplication
+				    of matrice <code>rotmat</code> and
+				    vector<code>point</code>. */
 inline QVector3D matvecmult(const Mat9d &mat, const QVector3D &v)
 {
    return QVector3D(v.x()*mat.m1 + v.y()*mat.m2 + v.z()*mat.m3, 
                     v.x()*mat.m4 + v.y()*mat.m5 + v.z()*mat.m6,
                     v.x()*mat.m7 + v.y()*mat.m8 + v.z()*mat.m9);
 }
+
+
+inline glm::dvec3 to_dvec3 (QVector3D x)
+{ 
+  return glm::dvec3 (x.x (), x.y (), x.z ()); 
+}
+
+
+inline QVector3D to_QV (glm::dvec3 x)
+{ 
+  return QVector3D (x.x, x.y, x.z); 
+}
+
+
+
+
 #endif
