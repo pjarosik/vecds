@@ -1,8 +1,9 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
-// (2012).
+// Author: 
+//    Jan Cholewinski and Pawel Dluzewski 2010.
+//    Toby D. Young 2012.
 //
 // Copyright (C) 2010, 2012 The vecds authors
 //
@@ -42,11 +43,11 @@
                                  // Constructor.
 vecds::QuestionForm::QuestionForm (QWidget *parent)
   : 
+  QDialog         (parent),
+  check           (false),
   question_title  ("Unknown title"),
   question_list   ("No questions"),
-  suggestion_list ("No suggestions"),
-  check           (false),
-  QDialog         (parent)
+  suggestion_list ("No suggestions")
 {}
 
 

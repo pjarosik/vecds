@@ -1,8 +1,9 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
+// Author: 
+//    Jan Cholewinski and Pawel Dluzewski 2010.
+//    Toby D. Young 2012.
 //
 // Copyright (C) 2010 The vecds authors
 //
@@ -95,6 +96,14 @@ namespace vecds
 				    created by this class */
     QDialogButtonBox *buttonBox;
 
+                                 /* A simple bool for checking. If
+				    operations are ok, this returns
+				    true, otherwise false is
+				    retured. TODO: This needs to be
+				    done in a much more intelligent
+				    way...*/
+    bool check;
+
 
                                  /* variable holding the title of this
 				    question form */
@@ -112,13 +121,6 @@ namespace vecds
 				    of this question form */
     QString question_description;
 
-                                 /* A simple bool for checking. If
-				    operations are ok, this returns
-				    true, otherwise false is
-				    retured. TODO: This needs to be
-				    done in a much more intelligent
-				    way...*/
-    bool check;
   };                             // QuestionForm
 
 }                                // namespace vecds
