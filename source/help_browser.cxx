@@ -35,7 +35,7 @@
 vecds::HelpBrowser::HelpBrowser (QWidget *parent)
   :
   parent_widget (parent),
-  help_path (VECDS_DOC)
+  help_path (VECDS_DOCS)
 {}
 
                                  // constructor
@@ -99,8 +99,6 @@ vecds::HelpBrowser::updateWindowTitle ()
 void 
 vecds::HelpBrowser::show_page (const QString &page) 
 { 
-  std::cout << "Making broswer from source at: " << VECDS_DOC << std::endl;
-
   this->init_window (page); 
   std::cout << "   Init done." << std::endl;
 
