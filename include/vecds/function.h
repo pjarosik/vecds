@@ -22,6 +22,7 @@
 // -------------------------------------------------------------------
 
 
+#include <cassert>
 #include <math.h>
 
 #ifndef FUNCTION_H
