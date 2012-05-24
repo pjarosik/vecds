@@ -175,16 +175,16 @@ void MainWindow::createActions()
   multAct = new QAction(tr("Mult. factor"), this);
   multAct->setStatusTip(tr("mult. factor"));
   connect(multAct, SIGNAL(triggered()), this, SLOT(SL_mult()));
+
+                                 // Add a "documentation" box.
+  docAct = new QAction (tr ("Documentation"), this);
+  docAct->setStatusTip (tr ("Show vecds' documentation box"));
+  connect (docAct, SIGNAL (triggered ()), this, SLOT (SL_documentation ()));
   
                                  // Add an "about" box.
   aboutAct = new QAction (tr ("About"), this);
   aboutAct->setStatusTip (tr ("Show vecds' about box"));
   connect (aboutAct, SIGNAL (triggered ()), this, SLOT (SL_about ()));
-
-                                 // Add a "documentation" box.
-  // documentationAct = new QAction (tr ("Documentation"), this);
-  // documentationAct->setStatusTip (tr ("Show vecds' documentation box"));
-  // connect (documentationAct, SIGNAL (triggered ()), this, SLOT (SL_documentation ()));
   
   aboutQtAct = new QAction(tr("About Qt"), this);
   aboutQtAct->setStatusTip(tr("Show Qt library's About box"));
@@ -239,16 +239,16 @@ void MainWindow::createMenus()
   settMenu->addSeparator ();
   settMenu->addAction (multAct);
 
+                                 // This cause a segmentation fault
+                                 // somehow... really it should deal
+                                 // with documentation pages.
+  docMenu = menuBar ()->addMenu (tr ("Documentation"));
+  docMenu->addAction (docAct);
+
                                  // This part all deals with help that
                                  // is available for the user.
   helpMenu = menuBar ()->addMenu (tr ("Help"));
   helpMenu->addAction (aboutAct);
-
-                                 // This cause a segmentation fault
-                                 // somehow... really it should deal
-                                 // with documentation pages.
-  // helpMenu = menuBar ()->addMenu (tr ("Documentation"));
-  // helpMenu->addAction (documentationAct);
 
   helpMenu->addSeparator ();
   helpMenu->addAction (aboutQtAct);

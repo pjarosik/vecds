@@ -544,6 +544,12 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
       
       for (unsigned int i=0; i<atoms->n_atoms; i++) 
 	{
+	  if (i==n_a)
+	    {
+	      qWarning ("Error for \"%d\"", n_a);
+	      continue;
+	    }
+
 	  count = 0;
 	  
 	  do 
@@ -608,6 +614,12 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
       
       for (unsigned int i=0; i<atoms->n_atoms; i++) 
 	{
+	  if (i==n_a)
+	    {
+	      qWarning ("Error for \"%d\"", n_a);
+	      continue;
+	    }
+
 	  glm::dvec3 dist1 = atoms->coordinates_glm[i] - cd;
 	  atoms->du[i] = mixed_u(i, dist1, be, bz);
 	}

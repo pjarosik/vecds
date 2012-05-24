@@ -124,7 +124,7 @@ public QMainWindow
 
                                  /* Actions that do things */
   QAction *aboutAct;
-  QAction *documentationAct;
+  QAction *docAct;
   QAction *aboutQtAct;
 
                                  /* Register if a key is pressed */
@@ -162,9 +162,8 @@ public QMainWindow
   QMenu *boxMenu;
   QMenu *viewMenu;
   QMenu *settMenu;
-  //    QMenu *showMenu;
+  QMenu *docMenu;
   QMenu *helpMenu;
-  //    QMenu *setMenu; 
   
   QAction *MillerAct;
   QAction *saveAsAct;

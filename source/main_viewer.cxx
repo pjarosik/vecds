@@ -215,7 +215,7 @@ void vecds::MainViewer::paintGL ()
 
   if ((ActualData->atoms_loaded=="none") && (ActualData->img_loaded=="none")) 
     {
-      qWarning ("Holy shit this should not happen!");
+      qWarning ("No atoms loaded, no images loaded - i tyle");
       return;
     }
 
