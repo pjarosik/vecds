@@ -93,16 +93,28 @@ namespace vecds
     void SIG_actPosition(QVector3D res);
     
   protected:
-    
-    void initializeGL();
-    void paintGL();
-    void resizeGL(int width, int height);
+ 
+                                 /* These functions are reimplemented
+				    from Qt's virtual functin
+				    block. In general, they asre
+				    called in this order: */
+    void initializeGL ();
+    void resizeGL (int width, int height);
+    void paintGL ();
+
+                                 /* These functions are reimplemented
+				    from Qt's virtual function
+				    library. They deal with mouse
+				    clicks and other movements. */
+    void mousePressEvent (QMouseEvent *event);
+    void mouseMoveEvent (QMouseEvent *event);
+
+                                 /* vecds functions. */
     void draw_atoms();
     void draw_bonds();
     void draw_axis();
-    
-    void mousePressEvent(QMouseEvent *event);
-    void mouseMoveEvent(QMouseEvent *event);
+ 
+
     
   private:
     

@@ -132,6 +132,172 @@ QSize vecds::MainViewer::sizeHint() const
   return QSize (800, 600);
 }
 
+// ----- START REIMPLEMENTED FROM QT -----
+
+                                 // This function redefines a virtual
+                                 // in Qt. This initialises the GL.
+void vecds::MainViewer::initializeGL ()
+{
+  GLfloat diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+  
+  glEnable (GL_DEPTH_TEST);
+  glEnable (GL_LIGHTING);
+  glEnable (GL_LIGHT0);
+  
+  glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuse);
+  glLightfv (GL_LIGHT0, GL_POSITION, light0_position);
+  glEnable (GL_LIGHT1);
+  glLightfv (GL_LIGHT1, GL_DIFFUSE, diffuse);
+  glLightfv (GL_LIGHT1, GL_POSITION, light1_position);
+  glMaterialf (GL_FRONT_AND_BACK, GL_SHININESS, 30.0);
+  glMaterialfv (GL_FRONT_AND_BACK, GL_SPECULAR,  specular_color);
+  
+  glEnable (GL_BLEND);
+  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  
+  glEnable (GL_TEXTURE_2D);
+  glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameterf (GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glHint (GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+  qWarning ("class MainViewer: GL successfully initialized");
+}
+
+                                 // This function redefines a virtual
+                                 // in Qt. It is generally alled
+                                 // *after* initializeGL and simply
+                                 // resizes the window.
+void vecds::MainViewer::resizeGL (int width, int height)
+{
+
+  qWarning ("class MainViewer (resizeGL): Resizing GL");
+
+                                 // prevent divide by 0 error when
+                                 // window is minimised
+  if (width==0)
+    {
+      height = 1;
+    }
+  
+  glViewport (0, 0, width, height);
+
+  glMatrixMode (GL_PROJECTION);
+  glLoadIdentity ();
+  gluPerspective (fov, (float (width/height)), 0.1, 50000);
+
+  glMatrixMode (GL_MODELVIEW);
+  glLoadIdentity ();
+
+                                 // Set screen widths itd
+  this->screenW = double (width);
+  this->screenH = double (height);
+
+                                 // Set arc ball rolling...
+  qWarning ("class MainViewer (resizeGL): Setting up an arcball");
+  arcball->set_bounds (width, height);
+
+  qWarning ("class MainViewer (resizeGL): Resizing GL all done");
+}
+
+                                 // This function redefines a virtual
+                                 // in Qt. It is generally alled
+                                 // *after* initializeGL and after
+                                 // resizeGL, and does some kind of
+                                 // painting job.
+void vecds::MainViewer::paintGL ()
+{
+  qWarning ("class MainViewer (paintGL): Starting to paint");
+
+  glClear (GL_COLOR_BUFFER_BIT | 
+	   GL_DEPTH_BUFFER_BIT);
+
+  glClearColor (bg_red, bg_green, bg_blue, 1.0);
+
+  if ((ActualData->atoms_loaded=="none") && (ActualData->img_loaded=="none")) 
+    {
+      qWarning ("Holy shit this should not happen!");
+      return;
+    }
+
+  glLoadIdentity();
+  double ddx = 1.75 * (max_.x() - min_.x()) * d_x;
+  double ddy = 1.75 * (max_.y() - min_.y()) * d_y;
+
+  glGetDoublev (GL_MODELVIEW_MATRIX, model_view);
+  glGetDoublev (GL_PROJECTION_MATRIX, projection);
+  glGetIntegerv (GL_VIEWPORT, viewport);
+  glTranslated (ddx, ddy, distance);
+
+  glMultMatrixd (transformM);
+
+  if (ActualData->img_loaded!="none") 
+    {      
+      glPushMatrix();
+      glDisable(GL_LIGHTING);
+      glEnable(GL_TEXTURE_2D);
+      
+      glBindTexture(GL_TEXTURE_2D, background);
+      
+      glBegin(GL_QUADS);
+      glTexCoord2f(0.0, 0.0);          glVertex3d(xl, yd, 0.0);   //(pld.x(), pld.y(), pld.z());
+      glTexCoord2f(0.0, 1.0);          glVertex3f(xl, yu, 0.0);   // (plu.x(), plu.y(), plu.z());
+      glTexCoord2f(1.0, 1.0);          glVertex3f(xr, yu, 0.0);   // (pru.x(), pru.y(), pru.z());
+      glTexCoord2f(1.0, 0.0);          glVertex3f(xr, yd, 0.0);   // (prd.x(), prd.y(), prd.z());
+      glEnd();
+      
+      glDisable(GL_TEXTURE_2D);
+      
+      glClear(GL_DEPTH_BUFFER_BIT);
+      glEnable(GL_LIGHTING);
+      
+      glPopMatrix();
+    }
+  
+  if ( ActualData->atoms_loaded!="none" ) 
+    {
+      if ( ActualData->atoms->n_atoms>0 ) 
+	{
+	  qWarning("VIEWER - atoms->n_atoms=%d", ActualData->atoms->n_atoms);
+	  qWarning("xl, xr, yu, yd -- %g %g %g %g", xl, xr, yu, yd);
+	  glPushMatrix();
+	  draw_atoms();
+	  glPopMatrix();
+	}
+      if ( ActualData->atoms->n_bonds>0 && ActualData->visible[1] ) 
+	{
+	  glPushMatrix();
+	  draw_bonds();
+	  glPopMatrix();
+	}
+    }
+  if ( ActualData->visible[5] ) 
+    {
+      glPushMatrix();
+      draw_axis();
+      glPopMatrix();
+    }
+  
+  if ( ActualData->ndisl>0 )
+    {
+      glPushMatrix();
+      doGLdisloc();
+      glPopMatrix();
+      qWarning("VIEWER - ndisl=%d", ActualData->ndisl);
+    }
+
+  qWarning ("class MainViewer (paintGL): Successfully finished painting");
+}
+
+// ----- END REIMPLEMENTED FROM QT -----
+
+
+
+
+
+
+
+
+
 //-----------------------------------------------------------------------------------
 
 void vecds::MainViewer::set_defaults ()
@@ -359,104 +525,6 @@ QVector2D vecds::MainViewer::normalizeMouse(QPoint qp)
 }
 
 //-----------------------------------------------------------------------------------
-//-----------------------------------------------------------------------------------
-
-void vecds::MainViewer::resizeGL(int w, int h)
-{
-                                 // prevent divide by 0 error when minimised
-  if (w==0) 
-    h = 1;
-  
-  glViewport(0, 0, w, h);
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  gluPerspective(fov, (float)w/h, 0.1, 50000);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-
-  this->screenW = double(w);
-  this->screenH = double(h);
-
-  arcball->set_bounds (w, h);
-
-}
-//-----------------------------------------------------------------------------------
-
-
-void vecds::MainViewer::paintGL()
-{
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-  glClearColor(bg_red, bg_green, bg_blue, 1.0);
-
-  if ((ActualData->atoms_loaded=="none") && (ActualData->img_loaded=="none")) 
-    return;
-
-  glLoadIdentity();
-  double ddx = 1.75 * (max_.x() - min_.x()) * d_x;
-  double ddy = 1.75 * (max_.y() - min_.y()) * d_y;
-
-  glGetDoublev (GL_MODELVIEW_MATRIX, model_view);
-  glGetDoublev (GL_PROJECTION_MATRIX, projection);
-  glGetIntegerv (GL_VIEWPORT, viewport);
-  glTranslated (ddx, ddy, distance);
-
-  glMultMatrixd (transformM);
-
-  if (ActualData->img_loaded!="none") 
-    {      
-      glPushMatrix();
-      glDisable(GL_LIGHTING);
-      glEnable(GL_TEXTURE_2D);
-      
-      glBindTexture(GL_TEXTURE_2D, background);
-      
-      glBegin(GL_QUADS);
-      glTexCoord2f(0.0, 0.0);          glVertex3d(xl, yd, 0.0);   //(pld.x(), pld.y(), pld.z());
-      glTexCoord2f(0.0, 1.0);          glVertex3f(xl, yu, 0.0);   // (plu.x(), plu.y(), plu.z());
-      glTexCoord2f(1.0, 1.0);          glVertex3f(xr, yu, 0.0);   // (pru.x(), pru.y(), pru.z());
-      glTexCoord2f(1.0, 0.0);          glVertex3f(xr, yd, 0.0);   // (prd.x(), prd.y(), prd.z());
-      glEnd();
-      
-      glDisable(GL_TEXTURE_2D);
-      
-      glClear(GL_DEPTH_BUFFER_BIT);
-      glEnable(GL_LIGHTING);
-      
-      glPopMatrix();
-    }
-  
-  if ( ActualData->atoms_loaded!="none" ) 
-    {
-      if ( ActualData->atoms->n_atoms>0 ) 
-	{
-	  qWarning("VIEWER - atoms->n_atoms=%d", ActualData->atoms->n_atoms);
-	  qWarning("xl, xr, yu, yd -- %g %g %g %g", xl, xr, yu, yd);
-	  glPushMatrix();
-	  draw_atoms();
-	  glPopMatrix();
-	}
-      if ( ActualData->atoms->n_bonds>0 && ActualData->visible[1] ) 
-	{
-	  glPushMatrix();
-	  draw_bonds();
-	  glPopMatrix();
-	}
-    }
-  if ( ActualData->visible[5] ) 
-    {
-      glPushMatrix();
-      draw_axis();
-      glPopMatrix();
-    }
-  
-  if ( ActualData->ndisl>0 )
-    {
-      glPushMatrix();
-      doGLdisloc();
-      glPopMatrix();
-      qWarning("VIEWER - ndisl=%d", ActualData->ndisl);
-    }
-}
 //-----------------------------------------------------------------------------------
 //-----------------------------------------------------------------------------------
 
@@ -721,33 +789,6 @@ GLuint vecds::MainViewer::image2texture (QImage* bmp)
 
 //-----------------------------------------------------------------------------------
 
-void vecds::MainViewer::initializeGL ()
-{
-  GLfloat diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-  
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
-  
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-  glLightfv(GL_LIGHT0, GL_POSITION, light0_position);
-  glEnable(GL_LIGHT1);
-  glLightfv(GL_LIGHT1, GL_DIFFUSE, diffuse);
-  glLightfv(GL_LIGHT1, GL_POSITION, light1_position);
-  //   glLightModelfv(GL_LIGHT_MODEL_LOCAL_VIEWER, local_view);
-  glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, 30.0);
-  glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR,  specular_color);
-  
-  glEnable (GL_BLEND);
-  glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  
-  glEnable(GL_TEXTURE_2D);
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-  glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-  glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
-
-  qWarning ("class MainViewer: GL successfully initialized");
-}
 
 
 QVector3D vecds::MainViewer::getOGLPos (int x, int y)

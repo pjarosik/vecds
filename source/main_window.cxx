@@ -84,15 +84,20 @@ MainWindow::MainWindow ()
   qWarning ("   Creating status bar...");
   createStatusBar();
 
-  //---------------------------
+  qWarning ("   Dealing with the main layout...");
   LAY_g_MainLayout = new QGridLayout;
-  LAY_g_MainLayout->setMargin(3);
-  LAY_g_MainLayout->addWidget(infoLabel, 0, 0);
-  LAY_g_MainLayout->addWidget(mview1, 1, 0);
-  Widg_widget0->setLayout(LAY_g_MainLayout);
+
+  LAY_g_MainLayout->setMargin (3);
+  LAY_g_MainLayout->addWidget (infoLabel, 0, 0);
+  LAY_g_MainLayout->addWidget (mview1, 1, 0);
+
+  Widg_widget0->setLayout (LAY_g_MainLayout);
   Widg_modesTab->setCurrentIndex(0);
-  // qWarning("mview -- 5");
-  InfoDisplay();
+
+  qWarning ("   Calling display information...");
+  InfoDisplay ();
+
+  qWarning ("class MainWindow: Successfully initialized");
 }
 
 void MainWindow::createActions()
@@ -172,9 +177,9 @@ void MainWindow::createActions()
   connect (aboutAct, SIGNAL (triggered ()), this, SLOT (SL_about ()));
 
                                  // Add a "documentation" box.
-  // documentationAct = new QAction (tr ("Documentation"), this);
-  // documentationAct->setStatusTip (tr ("Show vecds' documentation box"));
-  // connect (aboutAct, SIGNAL (triggered ()), this, SLOT (SL_about ()));
+  documentationAct = new QAction (tr ("Documentation"), this);
+  documentationAct->setStatusTip (tr ("Show vecds' documentation box"));
+  connect (documentationAct, SIGNAL (triggered ()), this, SLOT (SL_documentation ()));
   
   aboutQtAct = new QAction(tr("About Qt"), this);
   aboutQtAct->setStatusTip(tr("Show Qt library's About box"));
@@ -240,8 +245,8 @@ void MainWindow::createMenus()
                                  // This cause a segmentation fault
                                  // somehow... really it should deal
                                  // with documentation pages.
-  // helpMenu = menuBar ()->addMenu (tr ("Documentation"));
-  // helpMenu->addAction (documentationAct);
+  helpMenu = menuBar ()->addMenu (tr ("Documentation"));
+  helpMenu->addAction (documentationAct);
 
   helpMenu->addSeparator ();
   helpMenu->addAction (aboutQtAct);
