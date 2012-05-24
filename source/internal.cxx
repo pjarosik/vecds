@@ -78,7 +78,7 @@ Internal::Internal ()
   this->ndisl      = 0;
 
 #ifdef DEBUG
-  std::cout << "class Internal (constructor): successfully initialized." << std::endl;
+  qWarning ("class Internal (constructor): successfully initialized.");
 #endif
 }
 
@@ -117,7 +117,7 @@ void Internal::init_atoms ()
     }
 
 #ifdef DEBUG
-  std::cout << "class Internal (init_atoms): atoms successfully initialized." << std::endl;
+  qWarning ("class Internal (init_atoms): atoms successfully initialized");
 #endif
   // qWarning("+++++++++++++++  ATOMS INITIALIZED  +++++++++++++++++++");
 }
@@ -245,7 +245,7 @@ void Internal::init_structures()
   actcrstr = &crstr[0];
 
 #ifdef DEBUG
-  std::cout << "class Internal (init_structures): crystal structures successfully initialized." << std::endl;  
+  qWarning ("class Internal (init_structures): crystal structures successfully initialized.");  
 #endif
   // qWarning("============== init structures O.K.");
 }
@@ -297,8 +297,7 @@ void Internal::read_settings()
     endloop:
      ++count;
     }
-  std::cout << "class Internal: " << count << " settings were initialized." << std::endl;  
-  // qWarning("Settings :   count=%d", count);  
+  qWarning ("class Internal: \"%d\" settings were initialized.", count);
 }
 
 
@@ -545,11 +544,6 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
       
       for (unsigned int i=0; i<atoms->n_atoms; i++) 
 	{
-	  if (i==n_a) 
-	    { 
-	      std::cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  
-	      // continue; 
-	    }
 	  count = 0;
 	  
 	  do 
@@ -559,63 +553,61 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
 	      p.u0y = atoms->du[i].y;
 	      p.u0z = atoms->du[i].z;
 	      glm::dvec3 temp = atoms->coordinates_glm[i]+atoms->du[i] - cd;
-
+	      
 	      if ((temp.x*temp.x+temp.y*temp.y)<1.e-10) 
 		{
 		  atoms->du[i] = glm::dvec3(0., 0., 0.);
-		  std::cout << " Atom " << i << " in the center of dislocation core" << endl;
-
+		  qWarning (" Atom \"%d\" in the center of dislocation core.", i);
+		  
 		  goto _END;
 		}
-
+	      
 	      gsl_multiroot_function_fdf f = {&(::vecds::function::love), 
 					      &(::vecds::function::beta), 
 					      &(::vecds::function::love_fdf), 3, &p};
 	      
 	      x = gsl_vector_alloc (3);
-
+	      
 	      gsl_vector_set(x, 0, temp.x);
 	      gsl_vector_set(x, 1, temp.y);
 	      gsl_vector_set(x, 2, temp.z);
 	      
 	      s = gsl_multiroot_fdfsolver_alloc (T, 3);
-
+	      
 	      gsl_multiroot_fdfsolver_set (s, &f, x);
 	      
 	      status = gsl_multiroot_fdfsolver_iterate (s);
 	      
 	      if (status) 
 		break;
-
+	      
 	      diff.x = gsl_vector_get(s->f, 0);
 	      diff.y = gsl_vector_get(s->f, 1);
 	      diff.z = gsl_vector_get(s->f, 2);
-
+	      
 	      atoms->du[i] -= diff;
-
+	      
 	      status = gsl_multiroot_test_residual(s->f, crit_stop);
-
+	      
 	    } while ((status == GSL_CONTINUE) && (count<countN_R));
-
+	  
 	  crit += diff.x*diff.x + diff.y*diff.y + diff.z*diff.z;
-
+	  
 	  gsl_multiroot_fdfsolver_free (s);
 	  gsl_vector_free (x);
-
+	  
 	  continue;
 	_END:
 
-	  std::cout << "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << endl;
+	  qWarning ();	  
 	}
-
+      
     } 
   else 
     {  // !sw_iter
       
       for (unsigned int i=0; i<atoms->n_atoms; i++) 
 	{
-	  //    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
-	  if ( i==n_a ) { std::cout<< "Error for n_a=" << n_a << "   i=" << i << endl;  continue; }
 	  glm::dvec3 dist1 = atoms->coordinates_glm[i] - cd;
 	  atoms->du[i] = mixed_u(i, dist1, be, bz);
 	}
@@ -707,7 +699,7 @@ glm::dvec3 Internal::mixed_u(int i, glm::dvec3 rotdist, double be, double bz)
   double r2 = rotdist.x*rotdist.x + rotdist.y*rotdist.y;
   if ( r2<1e-15 ) 
     {
-      std::cout << " Atom " << i << " in the center of dislocation core" << endl;
+      qWarning (" Atom \"%d\" is in the center of dislocation core", i);
 
       return  glm::dvec3(0., 0., 0.);} 
   else 
@@ -738,7 +730,7 @@ glm::dmat3 Internal::mixed_beta (int i, glm::dvec3 rotdist, double be, double bz
 
   if (r2<1.e-15) 
     {
-      std::cout << " Atom " << i << " in the center of dislocation core" << endl;
+      qWarning (" Atom \"%d\" is in the center of dislocation core", i);
     }
   else 
     {

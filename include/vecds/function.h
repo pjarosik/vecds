@@ -116,7 +116,7 @@ namespace vecds
       
       if (r2<1.e-15) 
 	{
-	  std::cout << " Atom in the center of dislocation core" << endl;
+	  qWarning ("Atom in the center of dislocation core");
 
 	  gsl_matrix_set (jac, 0, 0, 1.);
 	  gsl_matrix_set (jac, 0, 1, 0.);
