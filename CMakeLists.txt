@@ -35,7 +35,8 @@ set (VECDS_INTERNALS          ${VECDS_SHARES}/vecds/internals)
 set (CMAKE_CXX_FLAGS_DEBUG    "-O0 -g -DDEBUG -Wall")
 set (CMAKE_CXX_FLAGS_RELEASE  "-O3 -DNDEBUG")  
 if (CMAKE_BUILD_TYPE STREQUAL "")
-  set (CMAKE_BUILD_TYPE "Unknown")
+  ##  set (CMAKE_BUILD_TYPE "Unknown")
+  set (CMAKE_BUILD_TYPE "Debug")
 endif ()
 
 ## Debug messages...
