@@ -58,7 +58,7 @@ namespace vecds
       public:
                                  /* constructor */
 
-    MainViewer(QWidget *parent = 0);
+    MainViewer (QWidget *parent = 0);
 
                                  /* destructor */
     ~MainViewer();

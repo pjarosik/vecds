@@ -116,21 +116,28 @@ public QMainWindow
 
  private:
 
+                                 /* This is the main viewer for
+				    vecds. Probably, we only ever want
+				    one of these, so lets give it a
+				    simple name to rememeber. */
+  vecds::MainViewer *vecds_main_viewer;
+
                                  /* Actions that do things */
   QAction *aboutAct;
   QAction *documentationAct;
   QAction *aboutQtAct;
 
+                                 /* Register if a key is pressed */
+  void keyPressEvent (QKeyEvent *key_event);
 
+  void InfoDisplay ();
+  void saveAtoms (QString);
+  void saveChoosedAtoms (QString);
 
-  void InfoDisplay();
-  //    void deleteActions();
-  void saveAtoms(QString);
-  void saveChoosedAtoms(QString);
-  //    void deleteActions();
-//  QwtSlider *createSlider(double from, double to, double step, double val, bool logaritmic=false);
   QSlider *createSlider(int from, int to, int step, int val);
-  void keyPressEvent(QKeyEvent *keyEv);
+
+
+
   void createActions();
   void createMenus();
   void createStatusBar();
@@ -147,7 +154,7 @@ public QMainWindow
   QString aname, iname, fname, resname;
   QString infotxt0, infotxtat, infotxtimg;
   
-  vecds::MainViewer *mview1;
+
   
   QMenu *fileMenu;
   QMenu *defstructMenu;

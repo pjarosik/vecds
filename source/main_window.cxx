@@ -63,10 +63,10 @@ MainWindow::MainWindow ()
   iname   = "none";
 
                                  // Create the main viewer.
-  mview1 = new vecds::MainViewer (this);
+  vecds_main_viewer = new vecds::MainViewer (this);
 
                                  // Size policies?
-  mview1->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding);
+  vecds_main_viewer->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding);
 
   qWarning ("   Setting up info labels...");
   infoLabel = new QLabel (this);
@@ -89,7 +89,7 @@ MainWindow::MainWindow ()
 
   LAY_g_MainLayout->setMargin (3);
   LAY_g_MainLayout->addWidget (infoLabel, 0, 0);
-  LAY_g_MainLayout->addWidget (mview1, 1, 0);
+  LAY_g_MainLayout->addWidget (vecds_main_viewer, 1, 0);
 
   Widg_widget0->setLayout (LAY_g_MainLayout);
   Widg_modesTab->setCurrentIndex(0);
@@ -190,18 +190,15 @@ void MainWindow::createActions()
   aboutQtAct->setStatusTip(tr("Show Qt library's About box"));
   connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
   
-  //------------------------------------------------------------------
-  connect(this, SIGNAL(SIG_prepareImg()), mview1, SLOT(SL_loadImage()));
+                                 // Make signals and slots to enable
+                                 // actions on the main viewer.
+  connect (this, SIGNAL (SIG_prepareImg ()),  vecds_main_viewer, SLOT (SL_loadImage ()));
+  connect (this, SIGNAL (SIG_needDraw ()),    vecds_main_viewer, SLOT (SL_needDraw ()));
+  connect (this, SIGNAL (SIG_repaint ()),     vecds_main_viewer, SLOT (SL_repaint ()));
+  connect (this, SIGNAL (SIG_keypress (int)), vecds_main_viewer, SLOT (SL_keypress (int)));
   
-  connect(this, SIGNAL(SIG_needDraw()), mview1, SLOT(SL_needDraw()));
-  
-  connect(this, SIGNAL(SIG_repaint()), mview1, SLOT(SL_repaint()));
-  
-  connect(this, SIGNAL(SIG_keypress(int)), mview1, SLOT(SL_keypress(int)));
-  
-  connect(mview1, SIGNAL(SIG_actPoint(QVector3D)), this, SLOT(SL_actPoint(QVector3D)));
-  
-  connect(mview1, SIGNAL(SIG_actPosition(QVector3D)), this, SLOT(SL_actPosition(QVector3D)));
+  connect (vecds_main_viewer, SIGNAL (SIG_actPoint (QVector3D)),    this, SLOT (SL_actPoint (QVector3D)));
+  connect (vecds_main_viewer, SIGNAL (SIG_actPosition (QVector3D)), this, SLOT (SL_actPosition (QVector3D)));
 }
 
 
@@ -376,28 +373,28 @@ void MainWindow::createDockWindows ()
                              Lay_main0, SLOT(setCurrentIndex(int)));
 
   connect(phiSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
-  connect(phiSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_dophiRotation()));
-  connect(mview1, SIGNAL(SIG_phiRotationChanged(int)), phiSlider, SLOT(setValue(int)));
+  connect(phiSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_dophiRotation()));
+  connect(vecds_main_viewer, SIGNAL(SIG_phiRotationChanged(int)), phiSlider, SLOT(setValue(int)));
 
   connect(thetaSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
-  connect(thetaSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_dothetaRotation()));
-  connect(mview1, SIGNAL(SIG_thetaRotationChanged(int)), thetaSlider, SLOT(setValue(int)));
+  connect(thetaSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_dothetaRotation()));
+  connect(vecds_main_viewer, SIGNAL(SIG_thetaRotationChanged(int)), thetaSlider, SLOT(setValue(int)));
 
   connect(psiSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
-  connect(psiSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_dopsiRotation()));
-  connect(mview1, SIGNAL(SIG_psiRotationChanged(int)), psiSlider, SLOT(setValue(int)));
+  connect(psiSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_dopsiRotation()));
+  connect(vecds_main_viewer, SIGNAL(SIG_psiRotationChanged(int)), psiSlider, SLOT(setValue(int)));
 
   connect(mxSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
-  connect(mxSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_doXMovement()));
-  connect(mview1, SIGNAL(SIG_xMovementChanged(int)), mxSlider, SLOT(setValue(int)));
+  connect(mxSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_doXMovement()));
+  connect(vecds_main_viewer, SIGNAL(SIG_xMovementChanged(int)), mxSlider, SLOT(setValue(int)));
 
   connect(mySlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
-  connect(mySlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_doYMovement()));
-  connect(mview1, SIGNAL(SIG_yMovementChanged(int)), mySlider, SLOT(setValue(int)));
+  connect(mySlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_doYMovement()));
+  connect(vecds_main_viewer, SIGNAL(SIG_yMovementChanged(int)), mySlider, SLOT(setValue(int)));
 
   connect(distSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
-  connect(distSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_doZMovement()));
-  connect(mview1, SIGNAL(SIG_zMovementChanged(int)), distSlider, SLOT(setValue(int)));
+  connect(distSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_doZMovement()));
+  connect(vecds_main_viewer, SIGNAL(SIG_zMovementChanged(int)), distSlider, SLOT(setValue(int)));
 
 
 }
@@ -423,8 +420,8 @@ void MainWindow::SL_actPoint(QVector3D res)
   QString str1;
 // qWarning("SL_actPoint");
   ActualData->actPoint = res;
-  int ix = mview1->lastPos.x();
-  int iy = mview1->lastPos.y();
+  int ix = vecds_main_viewer->lastPos.x();
+  int iy = vecds_main_viewer->lastPos.y();
   str1.sprintf("act point coordinates: ix=%d, iy=%d, x=%g, y=%g, z=%g",
                                                ix, iy, res.x(), res.y(), res.z());
   statusBar()->showMessage(str1);
@@ -441,8 +438,8 @@ void MainWindow::SL_actPosition(QVector3D res)
   QString str1;
   ActualData->actPoint = res;
   int i0 = ActualData->atomize(res, 0);
-  int ix = mview1->lastPos.x();
-  int iy = mview1->lastPos.y();
+  int ix = vecds_main_viewer->lastPos.x();
+  int iy = vecds_main_viewer->lastPos.y();
   
   str1.sprintf("position: ix=%d, iy=%d, x=%g, y=%g, z=%g, i0=%d",
                                        ix, iy, res.x(), res.y(), res.z(), i0);
@@ -645,7 +642,7 @@ void MainWindow::SL_openAtoms()
   }
 //  infotxtat.sprintf("%s", aname.toAscii().data());
   InfoDisplay();
-  mview1->updateGL();
+  vecds_main_viewer->updateGL();
 }
 
 void MainWindow::SL_openImg()
@@ -662,7 +659,7 @@ void MainWindow::SL_openImg()
   emit SIG_prepareImg();
 //  infotxtimg.sprintf("%s", iname.toAscii().data());
   InfoDisplay();
-  mview1->updateGL();
+  vecds_main_viewer->updateGL();
 }
 
 void MainWindow::SL_closeImg()
@@ -736,7 +733,7 @@ void MainWindow::SL_dislocAct()
   ActualData->act_disl = s1;
   ActualData->act_core = s2;
   InfoDisplay ();
-  mview1->updateGL ();
+  vecds_main_viewer->updateGL ();
 }
 
 void MainWindow::SL_dislAct ()
@@ -776,14 +773,14 @@ void MainWindow::SL_dislAct ()
   ActualData->act_disl = s1;
   qWarning("SL_dislAct -- 3");
   InfoDisplay();
-  mview1->updateGL();
+  vecds_main_viewer->updateGL();
 }
 
 void MainWindow::SL_addCoordAct()
 {
   ActualData->addDisplacements();
   emit SIG_repaint();
-  mview1->updateGL();
+  vecds_main_viewer->updateGL();
 //  qWarning("SL_addCoordAct");
 }
 
@@ -798,11 +795,11 @@ void MainWindow::SL_changeMode(int mode)
 
   if (ActualData->Mode==2) 
     {
-      mview1->setCursor(Qt::CrossCursor);
+      vecds_main_viewer->setCursor(Qt::CrossCursor);
     }
   else  
     {
-      mview1->setCursor(Qt::ArrowCursor);
+      vecds_main_viewer->setCursor(Qt::ArrowCursor);
     }
 }
 
@@ -910,14 +907,21 @@ void MainWindow::InfoDisplay()
    infoLabel->setText(inftxt);
 }
 
-
+                                 // Register a key event
 void MainWindow::keyPressEvent(QKeyEvent *keyEv)
 {
-  int k = keyEv->key();
-  emit SIG_keypress(k);
-  qWarning("--------key=%d", k);
-  if ( mview1->isActiveWindow() ) qWarning("____________ 1");
-  else                      qWarning("____________ 2");
+  const int k = keyEv->key ();
+  emit SIG_keypress (k);
+
+#ifdef DEBUG
+  qWarning("class MainWindow: Key pressed was \"%d\"", k);
+
+  if (vecds_main_viewer->isActiveWindow ()) 
+    qWarning ("class MainWindow: vecds_main_viewer is now the active window");
+
+  else                      
+    qWarning ("class MainWindow: vecds_main_viewer is not the active window");
+#endif
 }
 
 QSlider *MainWindow::createSlider

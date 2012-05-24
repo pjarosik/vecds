@@ -40,41 +40,13 @@ int main (int argc, char *argv[])
                                  // Invoke a Qt application context
   QApplication app (argc, argv);
 
-                                 // try to go ahead with the
-                                 // application.
-  try
-    {
-  
                                  // Invoke the graphical context for
                                  // the main window of the
                                  // application.
-      MainWindow window;
+  MainWindow window;
   
                                  // Display that context on screen.
-      window.show ();
-    }
-
-                                 // try to catch known errors.
-  catch (std::exception &exc)
-    {
-      std::cerr << std::endl << std::endl
-                << std::endl;
-      std::cerr << "Exception on processing: " << std::endl
-                << exc.what () << std::endl
-                << std::endl;
-
-      return 1;
-    }
-
-                                 // and unknown errors.
-  catch (...)
-    {
-      std::cerr << std::endl << std::endl
-                << std::endl;
-      std::cerr << "Unknown exception!" << std::endl
-                << std::endl;
-      return 1;
-    }
+  window.show ();
 
                                  // Return value.
   return app.exec ();
