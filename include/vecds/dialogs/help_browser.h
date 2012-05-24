@@ -22,14 +22,15 @@
 //					 
 // -------------------------------------------------------------------
 
-#ifndef DOC_BROWSER_H
-#define DOC_BROWSER_H
+#ifndef HELP_BROWSER_H
+#define HELP_BROWSER_H
 
-                                 /* Qt includes */
+                                 /* first the usual set of Qt crap */
 #include <QtGui>
 #include <QWidget> 
 
                                  /* vecds includes */
+#include <vecds/dialogs/monolog_base.h>
 #include <vecds/config.h>
 
                                  /* forward declarations of qt
@@ -40,18 +41,14 @@ class QTextBrowser;
 namespace vecds
 {
 
-                                 /* This class represents a basic
-				    documentation browser. The idea
-				    here is to create a window that
-				    displays some text and maybe some
-				    figures too. This is almost
-				    identical to the HelpBrowser
-				    class, so we should think about
-				    adding virtual classes to the
-				    browser section of the code. */
-  class DocBrowser 
+                                 /* This class represents a basic help
+				    browser. The idea here is to
+				    create a window that displays some
+				    text and maybe some figures
+				    too.  */
+  class HelpBrowser 
     : 
-  public QWidget
+  protected MonologBase
   {
     Q_OBJECT 
       
@@ -59,10 +56,10 @@ namespace vecds
   
                                  /* constructor of the main clas, just
 				    create a pointer to the parent */
-    DocBrowser (QWidget *parent = 0);
+    HelpBrowser (QWidget *parent = 0);
   
                                  /* destructor of the main class */
-    ~DocBrowser ();
+    virtual ~HelpBrowser ();
 
                                  /* create data (eg. geometry, styles,
 				    etc.) for a browser window. */  
@@ -84,15 +81,15 @@ namespace vecds
                                  /* the browser itself */
     QTextBrowser *text_browser;
 
-                                 /* string denoting path to the
+                                 /* string denoting path to the help
 				    documentation */
-    QString       doc_path;
+    QString       help_path;
 
                                  /* standard browser-type buttons */
     QPushButton  *home_button;
     QPushButton  *back_button;
     QPushButton  *close_button;
-  };                             /* DocBrowser */
+  };                             /* HelpBrowser */
 
 }                                /* namespace vecds */
 

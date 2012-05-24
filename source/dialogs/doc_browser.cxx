@@ -26,7 +26,7 @@
 #include <iostream>
 
                                  // vecds includes
-#include <vecds/doc_browser.h>
+#include <vecds/dialogs/doc_browser.h>
 
                                  // pomocnicza klasa - przeglądarka
                                  // plików pomocy (HTML).
@@ -34,8 +34,9 @@
                                  // constructor
 vecds::DocBrowser::DocBrowser (QWidget *parent)
   :
-  parent_widget (parent),
-  doc_path (VECDS_DOCS)
+  MonologBase (parent)
+  // parent_widget (parent),
+  // doc_path (VECDS_DOCS)
 {}
 
                                  // constructor

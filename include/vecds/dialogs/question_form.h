@@ -23,20 +23,20 @@
 //					 
 // -------------------------------------------------------------------
 
-#ifndef QUESTION_H
-#define QUESTION_H
+#ifndef QUESTION_FORM_H
+#define QUESTION_FORM_H
 
                                  /* Qt includes */
-#include <QCheckBox>
+#include <QtGui>
 
-                                 /* Class Question inherets from
-				    DialogBase. */
-#include <vecds/dialog_base.h>
+                                 /* vecds includes */
+#include <vecds/dialogs/dialog_base.h>
+
 
 namespace vecds
 {
 
-  class Question
+  class QuestionForm 
     : 
   public DialogBase
   {
@@ -45,22 +45,29 @@ namespace vecds
       public:
 
                                  /* constructor */
-    Question (QWidget *parent = 0);
-
+    QuestionForm (QWidget *parent = 0);
+  
                                  /* destructor */
-    ~Question ();
+    ~QuestionForm ();
 
-                                 /* show the question? */
-    void show_question (bool *results);
+
+                                 /* show the question?
+				    get_the_results? */
+    void show_question (QStringList &results);
 
   private:
 
-                                 /* a list of check boxes */
-    QCheckBox *check_box[50];
+                                 /* label descriptions */
+    QLabel *description_label;
 
-  };                             /* Question */
+                                 /* label a list of questions */
+    QLabel *question_label[50];
+
+                                 /* TODO: a list of somethings */
+    QLineEdit *qEdit[50];
+
+  };                             /* QuestionForm */
 
 }                                /* namespace vecds */
-
+  
 #endif
-

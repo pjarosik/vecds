@@ -1,10 +1,10 @@
 
 // -------------------------------------------------------------------
 //
-// Author: 
-//    Toby D. Young 2012.
+// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
+// (2012)
 //
-// Copyright (C) 2012 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors, Toby D. Young
 //
 // This program is free software: you can redistribute it and/or
 // modify  it under the  terms of  the GNU  General Public  License as
@@ -22,15 +22,15 @@
 //					 
 // -------------------------------------------------------------------
 
-#ifndef BROWSER_BASE_H
-#define BROWSER_BASE_H
+#ifndef DOC_BROWSER_H
+#define DOC_BROWSER_H
 
-                                 /* first the usual set of Qt crap */
+                                 /* Qt includes */
 #include <QtGui>
 #include <QWidget> 
 
                                  /* vecds includes */
-#include <vecds/config.h>
+#include <vecds/dialogs/monolog_base.h>
 
                                  /* forward declarations of qt
 				    clases */
@@ -41,16 +41,18 @@ namespace vecds
 {
 
                                  /* This class represents a basic
-				    browser base from which other
-				    browser classes can be
-				    constructed. The idea here is to
-				    create a window that displays some
-				    text and maybe some figures too
-				    based (mostly) on html input
-				    files.  */
-  class BrowserBase 
+				    documentation browser. The idea
+				    here is to create a window that
+				    displays some text and maybe some
+				    figures too. This is almost
+				    identical to the HelpBrowser
+				    class, so we should think about
+				    adding virtual classes to the
+				    browser section of the code. */
+  class DocBrowser 
     : 
-  public QWidget
+  public MonologBase
+  /* public QWidget */
   {
     Q_OBJECT 
       
@@ -58,10 +60,21 @@ namespace vecds
   
                                  /* constructor of the main clas, just
 				    create a pointer to the parent */
-    BrowserBase (QWidget *parent = 0);
+    DocBrowser (QWidget *parent = 0);
   
                                  /* destructor of the main class */
-    virtual ~BrowserBase ();
+    ~DocBrowser ();
+
+                                 /* create data (eg. geometry, styles,
+				    etc.) for a browser window. */  
+    void init_window (const QString &page);
+  
+                                 /* TODO: display a page? */  
+    void show_page (const QString &page);
+  
+    private slots: 
+    
+    void updateWindowTitle ();
   
   private: 
 
@@ -72,12 +85,15 @@ namespace vecds
                                  /* the browser itself */
     QTextBrowser *text_browser;
 
-                                 /* string denoting a generic path */
-    QString       path;
+                                 /* string denoting path to the
+				    documentation */
+    QString       doc_path;
 
                                  /* standard browser-type buttons */
+    QPushButton  *home_button;
+    QPushButton  *back_button;
     QPushButton  *close_button;
-  };                             /* BrowserBase */
+  };                             /* DocBrowser */
 
 }                                /* namespace vecds */
 

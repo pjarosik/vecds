@@ -24,7 +24,7 @@
 // -------------------------------------------------------------------
 
                                  // vecds includes
-#include <vecds/question.h>
+#include <vecds/dialogs/question.h>
 
 
                                  // Pomocnicza klasa - okienka

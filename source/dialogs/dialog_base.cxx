@@ -25,7 +25,7 @@
 
 
                                  // vecds includes
-#include <vecds/dialog_base.h>
+#include <vecds/dialogs/dialog_base.h>
 
 
 

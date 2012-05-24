@@ -242,32 +242,35 @@ include_directories (
   )
 
 set (vecds_sources
+  ${VECDS_PATH}/source/dialogs/monolog_base
+  ${VECDS_PATH}/source/dialogs/dialog_base
+  ${VECDS_PATH}/source/dialogs/doc_browser
+  ${VECDS_PATH}/source/dialogs/help_browser
+  ${VECDS_PATH}/source/dialogs/question
+  ${VECDS_PATH}/source/dialogs/question_form
+  ##
   ${VECDS_PATH}/source/arc_ball
-  ${VECDS_PATH}/source/browser_base
-  ${VECDS_PATH}/source/dialog_base
-  ${VECDS_PATH}/source/doc_browser
-  ${VECDS_PATH}/source/help_browser
   ${VECDS_PATH}/source/internal
   ${VECDS_PATH}/source/main
   ${VECDS_PATH}/source/main_viewer
   ${VECDS_PATH}/source/main_window
-  ${VECDS_PATH}/source/question
-  ${VECDS_PATH}/source/question_form
   )
 
 ## Note, header files *only* determine which files will be passed over
-## for moc generated code; thus, we do not need them all.
+## for moc generated code; thus, we do not need them all (especially,
+## we should never need "main.*")
 set (vecds_headers
+  ${VECDS_INCLUDES}/vecds/dialogs/monolog_base.h
+  ${VECDS_INCLUDES}/vecds/dialogs/dialog_base.h
+  ${VECDS_INCLUDES}/vecds/dialogs/doc_browser.h
+  ${VECDS_INCLUDES}/vecds/dialogs/help_browser.h
+  ${VECDS_INCLUDES}/vecds/dialogs/question.h
+  ${VECDS_INCLUDES}/vecds/dialogs/question_form.h
+  ##
   ${VECDS_INCLUDES}/vecds/arc_ball.h
-  ${VECDS_INCLUDES}/vecds/browser_base.h
-  ${VECDS_INCLUDES}/vecds/dialog_base.h
-  ${VECDS_INCLUDES}/vecds/doc_browser.h
-  ${VECDS_INCLUDES}/vecds/help_browser.h
   ${VECDS_INCLUDES}/vecds/internal.h
   ${VECDS_INCLUDES}/vecds/main_viewer.h
   ${VECDS_INCLUDES}/vecds/main_window.h
-  ${VECDS_INCLUDES}/vecds/question.h
-  ${VECDS_INCLUDES}/vecds/question_form.h
 )
 
 qt4_wrap_cpp (vecds_headers_moc ${vecds_headers})

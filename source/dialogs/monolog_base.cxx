@@ -22,22 +22,19 @@
 //					 
 // -------------------------------------------------------------------
 
-
+                                 /* C, C++ includes */
 #include <iostream>
 
-                                 // vecds includes
-#include <vecds/browser_base.h>
+                                 /* vecds includes */
+#include <vecds/dialogs/monolog_base.h>
 
-                                 // pomocnicza klasa - przeglądarka
-                                 // plików pomocy (HTML).
-
-                                 // constructor
-vecds::BrowserBase::BrowserBase (QWidget *parent)
+                                 /* constructor */
+vecds::MonologBase::MonologBase (QWidget *parent)
   :
   parent_widget (parent),
   path (VECDS_DOCS)
 {}
 
-                                 // destructor
-vecds::BrowserBase::~BrowserBase ()
+                                 /* destructor */
+vecds::MonologBase::~MonologBase ()
 {}

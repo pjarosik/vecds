@@ -1,10 +1,10 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
-// (2012)
+// Author: 
+//    Toby D. Young 2012.
 //
-// Copyright (C) 2010, 2012 The vecds authors, Toby D. Young
+// Copyright (C) 2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify  it under the  terms of  the GNU  General Public  License as
@@ -22,15 +22,14 @@
 //					 
 // -------------------------------------------------------------------
 
-#ifndef HELP_BROWSER_H
-#define HELP_BROWSER_H
+#ifndef MONOLOG_BASE_H
+#define MONOLOG_BASE_H
 
                                  /* first the usual set of Qt crap */
 #include <QtGui>
 #include <QWidget> 
 
                                  /* vecds includes */
-#include <vecds/browser_base.h>
 #include <vecds/config.h>
 
                                  /* forward declarations of qt
@@ -41,14 +40,19 @@ class QTextBrowser;
 namespace vecds
 {
 
-                                 /* This class represents a basic help
-				    browser. The idea here is to
-				    create a window that displays some
-				    text and maybe some figures
-				    too.  */
-  class HelpBrowser 
+                                 /* This class represents a basic
+				    monolog base from which browser
+				    classes can be constructed. The
+				    idea here is to create a window
+				    that displays some text and maybe
+				    some figures too based (mostly) on
+				    html input files. No interaction
+				    is required or wanted, and
+				    therefore this is all very simple
+				    (ie. it is a monolog). */
+  class MonologBase 
     : 
-  protected BrowserBase
+  public QWidget
   {
     Q_OBJECT 
       
@@ -56,21 +60,10 @@ namespace vecds
   
                                  /* constructor of the main clas, just
 				    create a pointer to the parent */
-    HelpBrowser (QWidget *parent = 0);
+    MonologBase (QWidget *parent = 0);
   
                                  /* destructor of the main class */
-    virtual ~HelpBrowser ();
-
-                                 /* create data (eg. geometry, styles,
-				    etc.) for a browser window. */  
-    void init_window (const QString &page);
-  
-                                 /* TODO: display a page? */  
-    void show_page (const QString &page);
-  
-    private slots: 
-    
-    void updateWindowTitle ();
+    virtual ~MonologBase ();
   
   private: 
 
@@ -81,15 +74,14 @@ namespace vecds
                                  /* the browser itself */
     QTextBrowser *text_browser;
 
-                                 /* string denoting path to the help
-				    documentation */
-    QString       help_path;
+                                 /* string denoting a generic path */
+    QString       path;
 
-                                 /* standard browser-type buttons */
-    QPushButton  *home_button;
-    QPushButton  *back_button;
+                                 /* standard browser-type button,
+				    other browsers may need more. */
     QPushButton  *close_button;
-  };                             /* HelpBrowser */
+
+  };                             /* MonologBase */
 
 }                                /* namespace vecds */
 

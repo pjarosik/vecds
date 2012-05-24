@@ -25,13 +25,14 @@
 #include <cassert>
 
                                  // vecds includes
+#include <vecds/dialogs/help_browser.h>
+#include <vecds/dialogs/doc_browser.h>
+#include <vecds/dialogs/question.h>
+#include <vecds/dialogs/question_form.h>
+
 #include <vecds/main_viewer.h>
 #include <vecds/internal.h>
 #include <vecds/main_window.h>
-#include <vecds/help_browser.h>
-#include <vecds/doc_browser.h>
-#include <vecds/question.h>
-#include <vecds/question_form.h>
 #include <vecds/constant.h>
 
 

@@ -25,10 +25,7 @@
 
 
                                  // vecds includes
-#include <vecds/question_form.h>
-#include <vecds/dialog_base.h>
-
-
+#include <vecds/dialogs/question_form.h>
 
                                  // Pomocnicza klasa - okienka
                                  // dialogowe
