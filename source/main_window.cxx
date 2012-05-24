@@ -46,8 +46,12 @@ QString infsepar = " .......... ";
 MainWindow::MainWindow ()
 {
   Widg_widget0 = new QWidget;
-  setCentralWidget(Widg_widget0);
-  setWindowTitle("Visual Editor of Crystal Defects");
+
+  setCentralWidget (Widg_widget0);
+
+                                 // Set this window title to the
+                                 // VECDS_PACKAGE_NAME
+  setWindowTitle (VECDS_PACKAGE_NAME);
   
   ActualData = new Internal;
   
@@ -57,24 +61,29 @@ MainWindow::MainWindow ()
   
   aname   = "none";
   iname   = "none";
-//  fname   = "none";
-//  resname = "none";
-//    ActualData->kindOfDisl = 0;
-  
+
+                                 // Create the main viewer.
   mview1 = new vecds::MainViewer (this);
-  mview1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  // qWarning("mview -- 1");
-  infoLabel = new QLabel(this);
-  infoLabel->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
-  infoLabel->setTextFormat(Qt::RichText);
-  // qWarning("mview -- 2");
+
+                                 // Size policies?
+  mview1->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+  qWarning ("   Setting up info labels...");
+  infoLabel = new QLabel (this);
+  infoLabel->setFrameStyle (QFrame::StyledPanel | 
+			    QFrame::Sunken);
+
+  infoLabel->setTextFormat (Qt::RichText);
+
+  qWarning ("   Assigning actions...");
   createActions();
-  // qWarning("mview -- 3");
-  createMenus();
-  //    createToolBars();
-  createDockWindows();
-  // qWarning("mview -- 4");
+  qWarning ("   Creating menus...");
+  createMenus ();
+  qWarning ("   Creating docks...");
+  createDockWindows ();
+  qWarning ("   Creating status bar...");
   createStatusBar();
+
   //---------------------------
   LAY_g_MainLayout = new QGridLayout;
   LAY_g_MainLayout->setMargin(3);
@@ -161,10 +170,11 @@ void MainWindow::createActions()
   aboutAct = new QAction (tr ("About"), this);
   aboutAct->setStatusTip (tr ("Show vecds' about box"));
   connect (aboutAct, SIGNAL (triggered ()), this, SLOT (SL_about ()));
-                                 // Add an "documentation" box.
-  aboutAct = new QAction (tr ("Documentation"), this);
-  aboutAct->setStatusTip (tr ("Show vecds' documentation box"));
-  connect (aboutAct, SIGNAL (triggered ()), this, SLOT (SL_about ()));
+
+                                 // Add a "documentation" box.
+  // documentationAct = new QAction (tr ("Documentation"), this);
+  // documentationAct->setStatusTip (tr ("Show vecds' documentation box"));
+  // connect (aboutAct, SIGNAL (triggered ()), this, SLOT (SL_about ()));
   
   aboutQtAct = new QAction(tr("About Qt"), this);
   aboutQtAct->setStatusTip(tr("Show Qt library's About box"));
@@ -187,48 +197,51 @@ void MainWindow::createActions()
 
 void MainWindow::createMenus()
 {
-  menuBar()->clear();
-  // qWarning("mainw - createMenus -- 0");
-  fileMenu = menuBar()->addMenu(tr("File"));
+  menuBar ()->clear ();
+
+  fileMenu = menuBar()->addMenu (tr ("File"));
   
-  defstructMenu = fileMenu->addMenu("Structure definition");
-  defstructMenu->addAction(chooseAct);
-  defstructMenu->addSeparator();
-  defstructMenu->addAction(defnewAct);
-  fileMenu->addSeparator();
+  defstructMenu = fileMenu->addMenu ("Structure definition");
+  defstructMenu->addAction (chooseAct);
+  defstructMenu->addSeparator ();
+  defstructMenu->addAction (defnewAct);
+  fileMenu->addSeparator ();
   
-  fileMenu->addAction(openAct);
-  fileMenu->addSeparator();
+  fileMenu->addAction (openAct);
+  fileMenu->addSeparator ();
   
-  genMenu = fileMenu->addMenu("Generation");
-  genMenu->addAction(genAct);
-  genMenu->addSeparator();
-  genMenu->addAction(gen1Act);
-  fileMenu->addSeparator();
-  fileMenu->addAction(openimgAct);
-  fileMenu->addSeparator();
-  fileMenu->addAction(closeimgAct);
-  fileMenu->addSeparator();
-  fileMenu->addAction(saveAsAct);
-  fileMenu->addSeparator();
-  boxMenu = fileMenu->addMenu("Box");
-  boxMenu->addAction(cubBoxAct);
-  boxMenu->addSeparator();
-  boxMenu->addAction(hexBoxAct);
+  genMenu = fileMenu->addMenu ("Generation");
+  genMenu->addAction (genAct);
+  genMenu->addSeparator ();
+  genMenu->addAction (gen1Act);
+  fileMenu->addSeparator ();
+  fileMenu->addAction (openimgAct);
+  fileMenu->addSeparator ();
+  fileMenu->addAction (closeimgAct);
+  fileMenu->addSeparator ();
+  fileMenu->addAction (saveAsAct);
+  fileMenu->addSeparator ();
+  boxMenu = fileMenu->addMenu ("Box");
+  boxMenu->addAction (cubBoxAct);
+  boxMenu->addSeparator ();
+  boxMenu->addAction (hexBoxAct);
   
-  viewMenu = menuBar()->addMenu(tr("View"));
-  
-  settMenu = menuBar()->addMenu(tr("Settings"));
-  settMenu->addAction(settAct);
-  settMenu->addSeparator();
-  settMenu->addAction(multAct);
+  viewMenu = menuBar ()->addMenu (tr ("View"));
+  settMenu = menuBar ()->addMenu (tr ("Settings"));
+  settMenu->addAction (settAct);
+  settMenu->addSeparator ();
+  settMenu->addAction (multAct);
 
                                  // This part all deals with help that
                                  // is available for the user.
   helpMenu = menuBar ()->addMenu (tr ("Help"));
   helpMenu->addAction (aboutAct);
-  helpMenu = menuBar ()->addMenu (tr ("Documentation"));
-  helpMenu->addAction (documentationAct);
+
+                                 // This cause a segmentation fault
+                                 // somehow... really it should deal
+                                 // with documentation pages.
+  // helpMenu = menuBar ()->addMenu (tr ("Documentation"));
+  // helpMenu->addAction (documentationAct);
 
   helpMenu->addSeparator ();
   helpMenu->addAction (aboutQtAct);
@@ -240,17 +253,17 @@ void MainWindow::createStatusBar()
   statusBar()->clearMessage();
 }
 
-void MainWindow::createDockWindows()
+void MainWindow::createDockWindows ()
 {
-  qWarning("mainw - createDockWindows");
-  DWidg_dock = new QDockWidget(tr("MODES"), this);
+  qWarning ("class MainWindow: creating dock windows");
+  DWidg_dock = new QDockWidget(tr ("MODES"), this);
   DWidg_dock->setAllowedAreas(Qt::LeftDockWidgetArea | 
 			      Qt::RightDockWidgetArea);
 
   Widg_modesTab = new QTabBar;
-  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/new.png"), "View");
-  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/print.png"), "Rot");
-  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/undo.png"), "Add");
+  Widg_modesTab->addTab (QIcon (":VECDS_internal/icons/new.png"),   "View");
+  Widg_modesTab->addTab (QIcon (":VECDS_internal/icons/print.png"), "Rot");
+  Widg_modesTab->addTab (QIcon (":VECDS_internal/icons/undo.png"),  "Add");
 
   
   DWidg_dock->setWidget(Widg_modesTab);

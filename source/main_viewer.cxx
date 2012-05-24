@@ -745,7 +745,8 @@ void vecds::MainViewer::initializeGL ()
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
   glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
   glHint( GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST );
-  qWarning(" * * *   GL Init   * * *");
+
+  qWarning ("class MainViewer: GL successfully initialized");
 }
 
 

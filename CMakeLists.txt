@@ -12,7 +12,7 @@ message (STATUS "Preconfiguring vecds")
 project (VECDS)
 ## Project definitions
 set (VECDS_NAME               "vecds")
-set (VECDS_PACKAGE_NAME       "visualisation of crystal defects")
+set (VECDS_PACKAGE_NAME       "Visualisation of Crystal Defects")
 set (VECDS_PACKAGE_BUGREPORT  "vecds-users@lists.sourceforge.net")
 set (VECDS_VERSION_MAJOR      "0")
 set (VECDS_VERSION_MINOR      "4")
