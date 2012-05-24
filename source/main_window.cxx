@@ -100,6 +100,11 @@ MainWindow::MainWindow ()
   qWarning ("class MainWindow: Successfully initialized");
 }
 
+MainWindow::~MainWindow ()
+{
+  qWarning ("class MainWindow:~MainWindow. Destructor called");
+}
+
 void MainWindow::createActions()
 {
   defnewAct = new QAction(tr("Define new structure"), this);

@@ -59,25 +59,29 @@ class HelpBrowser;
 class Questionform;
 class ArcBall;
 
-class MainWindow : public QMainWindow
+class MainWindow 
+: 
+public QMainWindow
 {
   Q_OBJECT
     
     public:
   MainWindow ();
 
+  ~MainWindow ();
+
 
   
   private slots:
-//  void SL_setSliderValue(double);
-  void SL_setSliderValue(int);
-  void SL_defineStructure();
-  void SL_chooseStructure();
-  void SL_openAtoms();
-  void SL_genAtoms();
-  void SL_gen1Atoms();
-  void SL_openImg();
-  void SL_closeImg();
+
+  void SL_setSliderValue (int);
+  void SL_defineStructure ();
+  void SL_chooseStructure ();
+  void SL_openAtoms ();
+  void SL_genAtoms ();
+  void SL_gen1Atoms ();
+  void SL_openImg ();
+  void SL_closeImg ();
 
                                  /* These are help pages that open in
 				  * a new window.
@@ -89,29 +93,27 @@ class MainWindow : public QMainWindow
 				    vecds" page */
   void SL_documentation ();
 
-  void SL_millerAct();
-  void SL_dislocAct();
-  void SL_dislAct();
-  void SL_addCoordAct();
-  void SL_changeMode(int mode);
-  void SL_saveAtomsAs();
-  void SL_cubBox();
-  void SL_hexBox();
-  //    void SL_bondsAct();
-  //    void SL_showBonds(QVector3D);
-  void SL_actPoint(QVector3D);
-  void SL_actPosition(QVector3D);
-  void SL_sett();
-  void SL_mult();
+  void SL_millerAct ();
+  void SL_dislocAct ();
+  void SL_dislAct ();
+  void SL_addCoordAct ();
+  void SL_changeMode (int mode);
+  void SL_saveAtomsAs ();
+  void SL_cubBox ();
+  void SL_hexBox ();
+  void SL_actPoint (QVector3D);
+  void SL_actPosition (QVector3D);
+  void SL_sett ();
+  void SL_mult ();
   
  signals:
-  void SIG_prepareImg();
-  void SIG_needDraw();
-  void SIG_repaint();
-  void SIG_keypress(int);
-  void SIG_actPoint(QVector3D);
-  //    void SIG_actPointChanged(QVector3D);
-  //    void SIG_updateSpheres();
+
+  void SIG_prepareImg ();
+  void SIG_needDraw ();
+  void SIG_repaint ();
+  void SIG_keypress (int);
+  void SIG_actPoint (QVector3D);
+
  private:
 
                                  /* Actions that do things */
