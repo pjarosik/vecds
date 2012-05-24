@@ -27,15 +27,18 @@
 #define DIALOG_BASE_H
 
                                  // Qt includes
+#include <cassert>
+
+                                 // Qt includes
 #include <QDialog>
 #include <QString>
 #include <QStringList>
 #include <QDialogButtonBox>
- /* #include <QFormLayout>  */
-/* #include <QGroupBox> */
-/* #include <QVBoxLayout> */
-/* #include <QLabel> */
-/* #include <QPushButton>  */
+#include <QFormLayout>
+#include <QGroupBox>
+#include <QVBoxLayout>
+#include <QLabel>
+#include <QPushButton>
 
 namespace vecds
 {

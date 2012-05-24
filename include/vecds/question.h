@@ -26,8 +26,8 @@
 #ifndef QUESTION_H
 #define QUESTION_H
 
-                                 /* vecds includes */
-#include <vecds/question_form.h>
+                                 /* Qt includes */
+#include <QCheckBox>
 
                                  /* Class Question inherets from
 				    DialogBase. */
@@ -58,9 +58,9 @@ namespace vecds
                                  /* a list of check boxes */
     QCheckBox *check_box[50];
 
-  };
+  };                             /* Question */
 
-}                                // namespace vecds
+}                                /* namespace vecds */
 
 #endif
 

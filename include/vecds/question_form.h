@@ -26,19 +26,12 @@
 #ifndef QUESTION_FORM_H
 #define QUESTION_FORM_H
 
-                                 // Qt includes
-#include <QDialog>
-#include <QLineEdit>
-#include <QLabel>
-#include <QDialogButtonBox>
-#include <QRadioButton>
-#include <QGroupBox>
-#include <QCheckBox>
+                                 /* Qt includes */
+#include <QtGui>
 
-
-                                 // vecds includes
+                                 /* vecds includes */
 #include <vecds/dialog_base.h>
-#include <vecds/main_window.h>
+
 
 namespace vecds
 {
@@ -73,8 +66,8 @@ namespace vecds
                                  /* TODO: a list of somethings */
     QLineEdit *qEdit[50];
 
-  };                             // QuestionForm
+  };                             /* QuestionForm */
 
-}                                // namespace vecds
+}                                /* namespace vecds */
   
 #endif

@@ -23,14 +23,6 @@
 //					 
 // -------------------------------------------------------------------
 
-                                 // Qt includes
-#include <QString>
-#include <QStringList>
-#include <QFormLayout>
-#include <QGroupBox>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QPushButton>
 
                                  // vecds includes
 #include <vecds/question_form.h>
@@ -47,12 +39,9 @@ vecds::QuestionForm::QuestionForm (QWidget *parent)
   DialogBase (parent)
 {}
 
-
                                  // destructor
 vecds::QuestionForm::~QuestionForm ()
 {}
-
-
 
 void
 vecds::QuestionForm::show_question (QStringList &answer)

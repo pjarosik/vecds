@@ -1,8 +1,9 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
-// (2012).
+// Author: 
+//    Jan Cholewinski and Pawel Dluzewski 2010.
+//    Toby D. Young 2012.
 //
 // Copyright (C) 2010, 2012 The vecds authors
 //
@@ -22,18 +23,8 @@
 //					 
 // -------------------------------------------------------------------
 
-                                 // Qt includes
-#include <QString>
-#include <QStringList>
-#include <QFormLayout>
-#include <QGroupBox>
-#include <QVBoxLayout>
-#include <QLabel>
-#include <QPushButton>
-
                                  // vecds includes
 #include <vecds/question.h>
-#include <vecds/dialog_base.h>
 
 
                                  // Pomocnicza klasa - okienka
