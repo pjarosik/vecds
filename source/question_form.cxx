@@ -92,13 +92,13 @@ vecds::QuestionForm::show_question (QStringList &answer)
     }
   
                                  // create a button box.
-  buttonBox = new QDialogButtonBox;
-  buttonBox->addButton (tr ("Accept"), QDialogButtonBox::AcceptRole);
-  buttonBox->addButton (tr ("Reject"), QDialogButtonBox::RejectRole);
+  button_box = new QDialogButtonBox;
+  button_box->addButton (tr ("Accept"), QDialogButtonBox::AcceptRole);
+  button_box->addButton (tr ("Reject"), QDialogButtonBox::RejectRole);
 
                                  // signal/slots for user interaction.
-  connect (buttonBox, SIGNAL (accepted ()), this, SLOT (accept ()));
-  connect (buttonBox, SIGNAL (rejected ()), this, SLOT (reject ()));
+  connect (button_box, SIGNAL (accepted ()), this, SLOT (accept ()));
+  connect (button_box, SIGNAL (rejected ()), this, SLOT (reject ()));
   
   QFormLayout *layout = new QFormLayout;
 
@@ -111,7 +111,7 @@ vecds::QuestionForm::show_question (QStringList &answer)
     mainLayout->addWidget (description_label);
 
   mainLayout->addLayout (layout);
-  mainLayout->addWidget (buttonBox);
+  mainLayout->addWidget (button_box);
 
   setLayout (mainLayout);
   
@@ -141,14 +141,6 @@ vecds::QuestionForm::show_question (QStringList &answer)
       delete question_label[i];
     }
 
-  delete buttonBox;
-}
-
-
-                                 // return the value of "check"
-bool 
-vecds::QuestionForm::is_sane () 
-{
-  return this->check;
+  delete button_box;
 }
 

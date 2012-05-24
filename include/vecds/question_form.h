@@ -53,19 +53,14 @@ namespace vecds
 
                                  /* constructor */
     QuestionForm (QWidget *parent = 0);
+  
+                                 /* destructor */
+    ~QuestionForm ();
+
 
                                  /* show the question?
 				    get_the_results? */
     void show_question (QStringList &results);
-
-                                 /* return the vaiable "check". Note:
-				    it needs to be careful, because
-				    "tru" does not necessarily mean
-				    *everything* is ok.  */
-    bool is_sane ();
-  
-                                 /* destructor */
-    ~QuestionForm ();
 
   private:
 
@@ -77,20 +72,6 @@ namespace vecds
 
                                  /* TODO: a list of somethings */
     QLineEdit *qEdit[50];
-  
-                                 /* a pointer to the button box
-				    created by this class */
-    QDialogButtonBox *buttonBox;
-
-                                 /* A simple bool for checking. If
-				    operations are ok, this returns
-				    true, otherwise false is
-				    retured. TODO: This needs to be
-				    done in a much more intelligent
-				    way...*/
-    bool check;
-
-
 
   };                             // QuestionForm
 

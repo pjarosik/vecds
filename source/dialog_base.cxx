@@ -75,3 +75,10 @@ vecds::DialogBase::set_suggestion_list (QStringList &suggestions)
 {
   this->suggestion_list = suggestions;
 }
+
+                                 // return the value of "check"
+bool 
+vecds::DialogBase::is_sane () 
+{
+  return this->check;
+}

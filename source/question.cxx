@@ -82,12 +82,12 @@ vecds::Question::show_question (bool *results)
     }
   
                                  // accept and reject buttons
-  buttonBox = new QDialogButtonBox;
-  buttonBox->addButton (tr ("Accept"), QDialogButtonBox::AcceptRole);
-  buttonBox->addButton (tr ("Reject"), QDialogButtonBox::RejectRole);
+  button_box = new QDialogButtonBox;
+  button_box->addButton (tr ("Accept"), QDialogButtonBox::AcceptRole);
+  button_box->addButton (tr ("Reject"), QDialogButtonBox::RejectRole);
 
-  connect (buttonBox, SIGNAL (accepted ()), this, SLOT (accept ()));
-  connect (buttonBox, SIGNAL (rejected ()), this, SLOT (reject ()));
+  connect (button_box, SIGNAL (accepted ()), this, SLOT (accept ()));
+  connect (button_box, SIGNAL (rejected ()), this, SLOT (reject ()));
 
                                  // set up the layout for the local
                                  // components (check_boxes) and the
@@ -99,7 +99,7 @@ vecds::Question::show_question (bool *results)
     local_layout->addWidget (check_box[i]);
   
   main_layout->addLayout (local_layout);
-  main_layout->addWidget (buttonBox);
+  main_layout->addWidget (button_box);
 
                                  // fix the layout as it is.
   setLayout (main_layout);
@@ -122,13 +122,8 @@ vecds::Question::show_question (bool *results)
   for (unsigned int i=0; i<n_questions; ++i)
     delete check_box[i];
   
-  delete buttonBox;
+  delete button_box;
 }
 
 
-                                 // return the value of "check"
-bool 
-vecds::Question::is_sane () 
-{
-  return this->check;
-}
+

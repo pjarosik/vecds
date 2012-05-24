@@ -30,11 +30,12 @@
 #include <QDialog>
 #include <QString>
 #include <QStringList>
-/* #include <QFormLayout> */
+#include <QDialogButtonBox>
+ /* #include <QFormLayout>  */
 /* #include <QGroupBox> */
 /* #include <QVBoxLayout> */
 /* #include <QLabel> */
-/* #include <QPushButton> */
+/* #include <QPushButton>  */
 
 namespace vecds
 {
@@ -77,6 +78,19 @@ namespace vecds
 				    suggestions of this dialog */
     QStringList suggestion_list;
 
+  
+                                 /* a pointer to the button box
+				    created by this class */
+    QDialogButtonBox *button_box;
+
+                                 /* A simple bool for checking. If
+				    operations are ok, this returns
+				    true, otherwise false is
+				    retured. TODO: This needs to be
+				    done in a much more intelligent
+				    way...*/
+    bool check;
+
   public:
 
                                  /* set the title of this question */
@@ -93,6 +107,13 @@ namespace vecds
                                  /* set the suggestions(s) for this
 				    dialog */
     virtual void set_suggestion_list (QStringList &suggestions);
+
+
+                                 /* return the vaiable "check". Note:
+				    it needs to be careful, because
+				    "tru" does not necessarily mean
+				    *everything* is ok.  */
+    virtual bool is_sane ();
 
   };
 

@@ -26,8 +26,12 @@
 #ifndef QUESTION_H
 #define QUESTION_H
 
-#include <vecds/dialog_base.h>
+                                 /* vecds includes */
 #include <vecds/question_form.h>
+
+                                 /* Class Question inherets from
+				    DialogBase. */
+#include <vecds/dialog_base.h>
 
 namespace vecds
 {
@@ -41,7 +45,7 @@ namespace vecds
       public:
 
                                  /* constructor */
-    Question (QWidget     *parent = 0);
+    Question (QWidget *parent = 0);
 
                                  /* destructor */
     ~Question ();
@@ -49,29 +53,10 @@ namespace vecds
                                  /* show the question? */
     void show_question (bool *results);
 
-                                 /* return the vaiable "check". Note:
-				    it needs to be careful, because
-				    "tru" does not necessarily mean
-				    *everything* is ok.  */
-    bool is_sane ();
-
   private:
 
                                  /* a list of check boxes */
     QCheckBox *check_box[50];
-  
-                                 /* a pointer to the button box
-				    created by this class */
-    QDialogButtonBox *buttonBox;
-
-
-                                 /* A simple bool for checking. If
-				    operations are ok, this returns
-				    true, otherwise false is
-				    retured. TODO: This needs to be
-				    done in a much more intelligent
-				    way...*/
-    bool check;
 
   };
 
