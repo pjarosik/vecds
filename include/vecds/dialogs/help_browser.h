@@ -81,10 +81,6 @@ namespace vecds
                                  /* the browser itself */
     QTextBrowser *text_browser;
 
-                                 /* string denoting path to the help
-				    documentation */
-    QString       help_path;
-
                                  /* standard browser-type buttons */
     QPushButton  *home_button;
     QPushButton  *back_button;

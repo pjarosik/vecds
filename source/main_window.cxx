@@ -182,9 +182,9 @@ void MainWindow::createActions()
   connect (aboutAct, SIGNAL (triggered ()), this, SLOT (SL_about ()));
 
                                  // Add a "documentation" box.
-  documentationAct = new QAction (tr ("Documentation"), this);
-  documentationAct->setStatusTip (tr ("Show vecds' documentation box"));
-  connect (documentationAct, SIGNAL (triggered ()), this, SLOT (SL_documentation ()));
+  // documentationAct = new QAction (tr ("Documentation"), this);
+  // documentationAct->setStatusTip (tr ("Show vecds' documentation box"));
+  // connect (documentationAct, SIGNAL (triggered ()), this, SLOT (SL_documentation ()));
   
   aboutQtAct = new QAction(tr("About Qt"), this);
   aboutQtAct->setStatusTip(tr("Show Qt library's About box"));
@@ -247,8 +247,8 @@ void MainWindow::createMenus()
                                  // This cause a segmentation fault
                                  // somehow... really it should deal
                                  // with documentation pages.
-  helpMenu = menuBar ()->addMenu (tr ("Documentation"));
-  helpMenu->addAction (documentationAct);
+  // helpMenu = menuBar ()->addMenu (tr ("Documentation"));
+  // helpMenu->addAction (documentationAct);
 
   helpMenu->addSeparator ();
   helpMenu->addAction (aboutQtAct);

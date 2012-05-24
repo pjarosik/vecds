@@ -65,7 +65,7 @@ namespace vecds
                                  /* destructor of the main class */
     virtual ~MonologBase ();
   
-  private: 
+  protected: 
 
                                  /* TODO: some kind of parent
 				    widget(?) */

@@ -35,8 +35,6 @@
 vecds::HelpBrowser::HelpBrowser (QWidget *parent)
   :
   MonologBase (parent)
-  // parent_widget (parent),
-  // help_path (VECDS_DOCS)
 {}
 
                                  // destructor
@@ -81,7 +79,7 @@ vecds::HelpBrowser::init_window (const QString &page)
   connect (text_browser, SIGNAL (sourceChanged (const QUrl &)), this, SLOT (updateWindowTitle ())); 
 
                                  // path to images
-  text_browser->setSearchPaths (QStringList() << help_path << ":/images"); 
+  text_browser->setSearchPaths (QStringList() << path << ":/images"); 
   text_browser->setSource (page); 
 }
 
