@@ -48,7 +48,7 @@ namespace vecds
 				    too.  */
   class HelpBrowser 
     : 
-  protected MonologBase
+  public MonologBase
   {
     Q_OBJECT 
       
@@ -65,9 +65,6 @@ namespace vecds
 				    etc.) for a browser window. */  
     void init_window (const QString &page);
   
-                                 /* TODO: display a page? */  
-    void show_page (const QString &page);
-  
     private slots: 
     
     void updateWindowTitle ();
@@ -81,10 +78,7 @@ namespace vecds
                                  /* the browser itself */
     QTextBrowser *text_browser;
 
-                                 /* standard browser-type buttons */
-    QPushButton  *home_button;
-    QPushButton  *back_button;
-    QPushButton  *close_button;
+
   };                             /* HelpBrowser */
 
 }                                /* namespace vecds */

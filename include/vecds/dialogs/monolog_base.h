@@ -25,6 +25,10 @@
 #ifndef MONOLOG_BASE_H
 #define MONOLOG_BASE_H
 
+                                 /* standard C, C++ */
+#include <cassert>
+
+
                                  /* first the usual set of Qt crap */
 #include <QtGui>
 #include <QWidget> 
@@ -77,9 +81,22 @@ namespace vecds
                                  /* string denoting a generic path */
     QString       path;
 
-                                 /* standard browser-type button,
-				    other browsers may need more. */
+                                 /* standard browser-type buttons that
+				    are typical when monologs are
+				    going on */
+    QPushButton  *home_button;
+    QPushButton  *back_button;
     QPushButton  *close_button;
+
+  public:
+
+                                 /* create data (eg. geometry, styles,
+				    etc.) for a browser window. */  
+    virtual void init_window (const QString &page);
+
+                                 /* Display a page */  
+    virtual void show_page (const QString &page);
+
 
   };                             /* MonologBase */
 

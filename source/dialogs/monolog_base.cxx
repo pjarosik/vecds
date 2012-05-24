@@ -28,13 +28,37 @@
                                  /* vecds includes */
 #include <vecds/dialogs/monolog_base.h>
 
-                                 /* constructor */
+                                 // constructor
 vecds::MonologBase::MonologBase (QWidget *parent)
   :
   parent_widget (parent),
   path (VECDS_DOCS)
 {}
 
-                                 /* destructor */
+                                 // destructor
 vecds::MonologBase::~MonologBase ()
 {}
+
+                                 // initialise a "doc browser" window,
+                                 // except we can not do that in a
+                                 // virtual function of this kind. So
+                                 // just throw an error.
+void
+vecds::MonologBase::init_window (const QString &/*page*/)
+{
+  qWarning ("class MonologBase: Fatal error, pure virtual function called");
+  assert (false);
+}
+
+                                 // the procedure used to show a page
+                                 // in a window.
+void
+vecds::MonologBase::show_page (const QString &page) 
+{ 
+  this->init_window (page); 
+  this->resize (500, 400); 
+
+                                 // display page.
+  this->show (); 
+}
+

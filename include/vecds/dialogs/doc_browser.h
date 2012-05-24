@@ -52,7 +52,6 @@ namespace vecds
   class DocBrowser 
     : 
   public MonologBase
-  /* public QWidget */
   {
     Q_OBJECT 
       
@@ -69,9 +68,7 @@ namespace vecds
 				    etc.) for a browser window. */  
     void init_window (const QString &page);
   
-                                 /* TODO: display a page? */  
-    void show_page (const QString &page);
-  
+
     private slots: 
     
     void updateWindowTitle ();
@@ -89,10 +86,6 @@ namespace vecds
 				    documentation */
     QString       doc_path;
 
-                                 /* standard browser-type buttons */
-    QPushButton  *home_button;
-    QPushButton  *back_button;
-    QPushButton  *close_button;
   };                             /* DocBrowser */
 
 }                                /* namespace vecds */

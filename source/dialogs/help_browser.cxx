@@ -52,10 +52,10 @@ vecds::HelpBrowser::init_window (const QString &page)
                                  // create a help browser and
                                  // navigation buttons.
   text_browser = new QTextBrowser; 
-  close_button = new QPushButton (tr ("Close")); 
+  this->close_button = new QPushButton (tr ("Close")); 
 
                                  // pseudonom for close is escape.
-  close_button->setShortcut (tr ("Escape")); 
+  this->close_button->setShortcut (tr ("Escape")); 
 
                                  // fix button layout (horizontal).
   QHBoxLayout *button_layout = new QHBoxLayout; 
@@ -75,7 +75,7 @@ vecds::HelpBrowser::init_window (const QString &page)
   // connect (home_button,  SIGNAL (clicked ()), text_browser, SLOT (home ())); 
   // connect (back_button,  SIGNAL (clicked ()), text_browser, SLOT (backward ())); 
 
-  connect (close_button, SIGNAL (clicked ()),                   this, SLOT (close ())); 
+  connect (this->close_button, SIGNAL (clicked ()),                   this, SLOT (close ())); 
   connect (text_browser, SIGNAL (sourceChanged (const QUrl &)), this, SLOT (updateWindowTitle ())); 
 
                                  // path to images
@@ -89,19 +89,6 @@ vecds::HelpBrowser::updateWindowTitle ()
   setWindowTitle (tr ("Help: %1").arg (text_browser->documentTitle ())); 
 }
 
-                                 // the procedure used to show a page
-                                 // in a window.
-void 
-vecds::HelpBrowser::show_page (const QString &page) 
-{ 
-  this->init_window (page); 
-  std::cout << "   Init done." << std::endl;
 
-  this->resize (500, 400); 
-  std::cout << "   Resize done." << std::endl;
-
-                                 // display page.
-  this->show (); 
-}
 
 
