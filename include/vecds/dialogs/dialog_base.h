@@ -40,6 +40,9 @@
 #include <QLabel>
 #include <QPushButton>
 
+                                 // vecds includes
+#include <vecds/dialogs/dialog_base.h>
+
 namespace vecds
 {
                                  /* Dialogs, questions forms, and so

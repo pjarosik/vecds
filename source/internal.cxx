@@ -25,10 +25,6 @@
 #include <vecds/main_viewer.h>
 #include <vecds/main_window.h>
 #include <vecds/internal.h>
-#include <vecds/additional.h>
-#include <vecds/constant.h>
-#include <vecds/function.h>
-#include <vecds/config.h>
 
 
 Internal::Internal ()

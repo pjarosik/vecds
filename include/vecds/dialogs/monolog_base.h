@@ -34,7 +34,7 @@
 #include <QWidget> 
 
                                  /* vecds includes */
-#include <vecds/config.h>
+#include <vecds/base/config.h>
 
                                  /* forward declarations of qt
 				    clases */

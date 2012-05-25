@@ -31,7 +31,6 @@
 
                                  /* vecds includes */
 #include <vecds/dialogs/monolog_base.h>
-#include <vecds/config.h>
 
                                  /* forward declarations of qt
 				    clases */

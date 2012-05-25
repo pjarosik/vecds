@@ -227,7 +227,7 @@ message (STATUS "Configuring build environment")
 ################################################
 
 ## Create a config.h file (-DHAVE_CONFIG_H)
-configure_file (${VECDS_INCLUDES}/vecds/config.h.in  ${VECDS_INCLUDES}/vecds/config.h)
+configure_file (${VECDS_INCLUDES}/vecds/base/config.h.in  ${VECDS_INCLUDES}/vecds/base/config.h)
 
 ## Create a doxygen template file for producing user manual
 ## documentation (-DHAVE_DOXYGEN)

@@ -29,9 +29,12 @@
 #include <qglobal.h>
 
                                  // vecds headers
-#include <vecds/algebra.h>
+#include <vecds/base/config.h>
+
 #include <vecds/additional.h>
-#include <vecds/config.h>
+#include <vecds/algebra.h>
+#include <vecds/constant.h>
+#include <vecds/function.h>
 
                                  // forward declarations
 class MaimViewer;
