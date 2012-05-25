@@ -634,7 +634,7 @@ void MainWindow::SL_gen1Atoms()
 //----------------------------------------------------------
 
 
-void MainWindow::SL_setSliderValue (int val)
+void MainWindow::SL_setSliderValue (double val)
 
 {
   ActualData->sliderValue = val;
@@ -984,13 +984,13 @@ QString MainWindow::toRichText(QString txt)
   return txt1;
 }
 
-QwtSlider *Mainwindow::createSlider
+QwtSlider *MainWindow::createSlider
                       (double from, double to, double step, double val, bool logaritmic)
 {
   QwtSlider* slider = new QwtSlider(this, 
-                   Qt::Horizontal, QwtSlider::TopScale, QwtSlider::BgTrough);
+                   Qt::Horizontal, QwtSlider::TopScale, QwtSlider::Trough);
   if ( logaritmic ) slider->setScaleEngine(new QwtLog10ScaleEngine);
-  slider->setThumbWidth(10);
+  slider->setBorderWidth(10);
   slider->setRange(from, to); // paging disabled
   slider->setScale(from, to, step);
 //  slider->setScaleMaxMinor(10);

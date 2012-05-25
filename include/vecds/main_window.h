@@ -29,7 +29,7 @@
 
 #include <QtGui>
 #include <QMainWindow>
-#include <qwt_slider>
+#include <qwt_slider.h>
 #include <qwt_scale_engine.h>
 
 #include <vecds/algebra.h>
