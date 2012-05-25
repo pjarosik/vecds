@@ -124,14 +124,14 @@ find_path (QWT_INCLUDES
   ## Look for qwt header.
   NAMES qwt.h
   PATHS
-  /usr/local/include/qwt-qt4
-  /usr/local/include/qwt6
-  /usr/local/include/qwt5
   /usr/local/include/qwt
-  /usr/include/qwt-qt4
+  /usr/local/include/qwt6
+  /usr/local/include/qwt5 
+  /usr/local/include/qwt-qt4
+  /usr/include/qwt
   /usr/include/qwt6
   /usr/include/qwt5
-  /usr/include/qwt
+  /usr/include/qwt-qt4
 )
 
 find_package_handle_standard_args ("Qwt includes"  REQUIRED_VARS QWT_INCLUDES)
