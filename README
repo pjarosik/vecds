@@ -4,31 +4,13 @@ $ cd CMakeBuild
 $ cmake ..
 $ make
 
+Note, by default vecds will compile in debug mode. To change that to
+release (optimized) mode, try:
+
+$ cmake -DCMAKE_BUILD_TYPE=Release ..
+
 To run vecds:
 
 $ cd bin
 $ ./vecds
 
-The structure of vecds is:
-
-vecds --- 
-         |
-          --- bin 
-         |
-          --- doc 
-         |
-          --- include --- vecds
-         |
-          --- share
-         |      |
-         |       --- vecds --- examples
-         |                         |
-         |                          --- crystal_structure
-         |                         |
-         |                          --- molecular structure
-         |                         |
-         |                          --- finite_element_grids 
-         |
-          --- source (source files)
-
-For further information, see the documenttion.
