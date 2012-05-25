@@ -29,8 +29,7 @@
 
 #include <QtGui>
 #include <QMainWindow>
-#include <QSlider>
-
+#include <qwt_slider>
 #include <qwt_scale_engine.h>
 
 #include <vecds/algebra.h>
@@ -39,8 +38,8 @@
 QT_BEGIN_NAMESPACE
 
 class QAction;
-//class QwtSlider;
-class QSlider;
+class QwtSlider;
+//class QSlider;
 class QLabel;
 class QMenu;
 class QString;
@@ -74,7 +73,7 @@ public QMainWindow
   
   private slots:
 
-  void SL_setSliderValue (int);
+  void SL_setSliderValue (double);
   void SL_defineStructure ();
   void SL_chooseStructure ();
   void SL_openAtoms ();
@@ -134,9 +133,8 @@ public QMainWindow
   void saveAtoms (QString);
   void saveChoosedAtoms (QString);
 
-  QSlider *createSlider(int from, int to, int step, int val);
-
-
+//  QSlider *createSlider(int from, int to, int step, int val);
+  QwtSlider *createSlider(double from, double to, double step, double val, bool logaritmic=false);
 
   void createActions();
   void createMenus();
@@ -185,21 +183,21 @@ public QMainWindow
   QAction *multAct;
   
   QLabel *infoLabel;
-/*
+
   QwtSlider *phiSlider;
   QwtSlider *thetaSlider;
   QwtSlider *psiSlider;
   QwtSlider *mxSlider;
   QwtSlider *mySlider;
   QwtSlider *distSlider;
-*/
+/*
   QSlider *phiSlider;
   QSlider *thetaSlider;
   QSlider *psiSlider;
   QSlider *mxSlider;
   QSlider *mySlider;
   QSlider *distSlider;
-
+*/
   QPushButton *Butt_rotMiller;
   QPushButton *Butt_disloc;
   QPushButton *Butt_sf;

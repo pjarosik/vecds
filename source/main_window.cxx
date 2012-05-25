@@ -290,22 +290,22 @@ void MainWindow::createDockWindows ()
   QVBoxLayout *Lay_v_ThetaSlid = new QVBoxLayout;
   QLabel *Lab_ThetaSlid = new QLabel(" Heading (theta)");
   Lay_v_ThetaSlid->addWidget(Lab_ThetaSlid);
-//  thetaSlider = createSlider(-180., 180., 45., 0.);
-  thetaSlider = createSlider(-180, 180, 1, 0.);
+  thetaSlider = createSlider(-180., 180., 45., 0.);
+//  thetaSlider = createSlider(-180, 180, 1, 0.);
   Lay_v_ThetaSlid->addWidget(thetaSlider);
   
   QVBoxLayout *Lay_v_PhiSlid = new QVBoxLayout; 
   QLabel *Lab_PhiSlid = new QLabel(" Attitude (phi)");
   Lay_v_PhiSlid->addWidget(Lab_PhiSlid);
-//  phiSlider = createSlider(-90., 90., 15., 0.);
-  phiSlider = createSlider(-90, 90, 1, 0);
+  phiSlider = createSlider(-90., 90., 15., 0.);
+//  phiSlider = createSlider(-90, 90, 1, 0);
   Lay_v_PhiSlid->addWidget(phiSlider);
   
   QVBoxLayout *Lay_v_PsiSlid = new QVBoxLayout;
   QLabel *Lab_PsiSlid = new QLabel(" Bank (psi)");
   Lay_v_PsiSlid->addWidget(Lab_PsiSlid);
-//  psiSlider = createSlider(-180., 180., 45., 0.);
-  psiSlider = createSlider(-180, 180, 1, 0);
+  psiSlider = createSlider(-180., 180., 45., 0.);
+//  psiSlider = createSlider(-180, 180, 1, 0);
   Lay_v_PsiSlid->addWidget(psiSlider);
   
   QVBoxLayout *Lay_v_mx = new QVBoxLayout;
@@ -324,6 +324,46 @@ void MainWindow::createDockWindows ()
   QLabel *Lab_dist = new QLabel(" Distance");
   Lay_v_dist->addWidget(Lab_dist);
   distSlider = createSlider(1, 180, 1, 180);
+  
+  
+/*
+  QVBoxLayout *Lay_v_XSlid = new QVBoxLayout; 
+  QLabel *Lab_XSlid = new QLabel(" Rotation X");
+  Lay_v_XSlid->addWidget(Lab_XSlid);
+  xSlider = createSlider(0., 360., 45., 0.);
+  Lay_v_XSlid->addWidget(xSlider);
+
+  QVBoxLayout *Lay_v_YSlid = new QVBoxLayout;
+  QLabel *Lab_YSlid = new QLabel(" Rotation Y");
+  Lay_v_YSlid->addWidget(Lab_YSlid);
+  ySlider = createSlider(0., 360., 45., 0.);
+  Lay_v_YSlid->addWidget(ySlider);
+
+  QVBoxLayout *Lay_v_ZSlid = new QVBoxLayout;
+  QLabel *Lab_ZSlid = new QLabel(" Rotation Z");
+  Lay_v_ZSlid->addWidget(Lab_ZSlid);
+  zSlider = createSlider(0., 360., 45., 0.);
+  Lay_v_ZSlid->addWidget(zSlider);
+
+  QVBoxLayout *Lay_v_mx = new QVBoxLayout;
+  QLabel *Lab_mx = new QLabel(" Move x");
+  Lay_v_mx->addWidget(Lab_mx);
+  mxSlider = createSlider(-1., 1., 0.25, 0.);
+  Lay_v_mx->addWidget(mxSlider);
+
+  QVBoxLayout *Lay_v_my = new QVBoxLayout;
+  QLabel *Lab_my = new QLabel(" Move y");
+  Lay_v_my->addWidget(Lab_my);
+  mySlider = createSlider(-1., 1., 0.25, 0.);
+  Lay_v_my->addWidget(mySlider);
+
+  QVBoxLayout *Lay_v_dist = new QVBoxLayout;
+  QLabel *Lab_dist = new QLabel(" Distance");
+  Lay_v_dist->addWidget(Lab_dist);
+  distSlider = createSlider(0.01, 1.0, 0.5, 1.0, true);
+  Lay_v_dist->addWidget(distSlider);
+*/
+ 
 
   Lay_v_dist->addWidget(distSlider);
   Lay_g_3slid->addLayout(Lay_v_ThetaSlid, 0, 0);
@@ -923,7 +963,7 @@ void MainWindow::keyPressEvent(QKeyEvent *keyEv)
     qWarning ("class MainWindow: vecds_main_viewer is not the active window");
 #endif
 }
-
+/*
 QSlider *MainWindow::createSlider
                       (int from, int to, int step, int val)
 {
@@ -936,7 +976,7 @@ QSlider *MainWindow::createSlider
   slider->setValue(val);
   return slider;
 }
-
+*/
 QString MainWindow::toRichText(QString txt)
 {
   QString txt1;
@@ -944,4 +984,17 @@ QString MainWindow::toRichText(QString txt)
   return txt1;
 }
 
+QwtSlider *Mainwindow::createSlider
+                      (double from, double to, double step, double val, bool logaritmic)
+{
+  QwtSlider* slider = new QwtSlider(this, 
+                   Qt::Horizontal, QwtSlider::TopScale, QwtSlider::BgTrough);
+  if ( logaritmic ) slider->setScaleEngine(new QwtLog10ScaleEngine);
+  slider->setThumbWidth(10);
+  slider->setRange(from, to); // paging disabled
+  slider->setScale(from, to, step);
+//  slider->setScaleMaxMinor(10);
+  slider->setValue(val);
+  return slider;
+}
 
