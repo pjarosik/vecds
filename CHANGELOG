@@ -6,21 +6,19 @@ made those changes.
 v 0.4.* 2012/05/16
 ------------------
 
-Improvements:
+Improvments:
+
+	** The code that makes up vecds has been put in its own
+           "namespace vecds". (TDY 2012/0525).
+
+	** A standard directory structure has been initiated on the
+           source code. Examples, settings, and the vecds
+           documentation are put in a platform independent
+           location. (TDY 2012/05/21).
 
 	** Using qmake to build vecds was always a bit
            simplistic. Now, vecds can be configured and installed on
            almost any system (untested) using cmake. (TDY 2012/05/18).
-
-	** The data structure tree has been destroyed and replaced
-           with share/examples directory. Examples are now universally
-           available to users. (TDY 2012/05/21).
-
-GUI:
-
-	** The help browser never actually worked due to built-in
-           directory structure. This part of vecds has been greatly
-           improved. (TDY 2012/05/21).
 
 Bug fixes:
 
@@ -29,7 +27,7 @@ Bug fixes:
            fixed. (TDY 2012/05/20).
 
 	** Several vecds classes were missing explicit destructors,
-           this has mostly been fixed. (2012/05/21).
+           this has been fixed. (TDY, JC 2012/05/21).
 
 v 0.3.* 2012/05/16
 ------------------
