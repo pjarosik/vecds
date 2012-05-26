@@ -157,6 +157,7 @@ public QMainWindow
 
   
   QMenu *fileMenu;
+  QMenu *editMenu;
   QMenu *defstructMenu;
   QMenu *genMenu;
   QMenu *boxMenu;

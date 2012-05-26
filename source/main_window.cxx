@@ -207,51 +207,37 @@ void MainWindow::createMenus()
   menuBar ()->clear ();
 
   fileMenu = menuBar()->addMenu (tr ("File"));
-  
-  defstructMenu = fileMenu->addMenu ("Structure definition");
-  defstructMenu->addAction (chooseAct);
-  defstructMenu->addSeparator ();
-  defstructMenu->addAction (defnewAct);
-  fileMenu->addSeparator ();
-  
   fileMenu->addAction (openAct);
-  fileMenu->addSeparator ();
-  
-  genMenu = fileMenu->addMenu ("Generation");
-  genMenu->addAction (genAct);
-  genMenu->addSeparator ();
-  genMenu->addAction (gen1Act);
-  fileMenu->addSeparator ();
   fileMenu->addAction (openimgAct);
-  fileMenu->addSeparator ();
-  fileMenu->addAction (closeimgAct);
-  fileMenu->addSeparator ();
   fileMenu->addAction (saveAsAct);
-  fileMenu->addSeparator ();
-  boxMenu = fileMenu->addMenu ("Box");
+  fileMenu->addAction (closeimgAct);
+  //  fileMenu->addSeparator ();
+  // --  
+  editMenu      = menuBar()->addMenu (tr ("Edit"));
+  defstructMenu = editMenu->addMenu ("Structure definition");
+  defstructMenu->addAction (chooseAct);
+  defstructMenu->addAction (defnewAct);
+  genMenu       = editMenu->addMenu ("Generation");
+  genMenu->addAction (genAct);
+  genMenu->addAction (gen1Act);
+  // --
+  boxMenu = editMenu->addMenu ("Box");
   boxMenu->addAction (cubBoxAct);
-  boxMenu->addSeparator ();
   boxMenu->addAction (hexBoxAct);
-  
+
   viewMenu = menuBar ()->addMenu (tr ("View"));
   settMenu = menuBar ()->addMenu (tr ("Settings"));
   settMenu->addAction (settAct);
-  settMenu->addSeparator ();
   settMenu->addAction (multAct);
-
-                                 // This cause a segmentation fault
-                                 // somehow... really it should deal
-                                 // with documentation pages.
-  docMenu = menuBar ()->addMenu (tr ("Documentation"));
-  docMenu->addAction (docAct);
 
                                  // This part all deals with help that
                                  // is available for the user.
   helpMenu = menuBar ()->addMenu (tr ("Help"));
+
+                                 // Documentation and About box.
+  helpMenu->addAction (docAct);
   helpMenu->addAction (aboutAct);
 
-  helpMenu->addSeparator ();
-  helpMenu->addAction (aboutQtAct);
 }
 
 void MainWindow::createStatusBar()
