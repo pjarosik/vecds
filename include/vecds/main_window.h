@@ -78,14 +78,17 @@ public QMainWindow
                                  /* These are slots that deal with
 				  * menu objects (actions).
 				  *
-				  * open atoms data file */
+				  * open atoms data file, images, save
+				  * atoms data file, close image... */
   void SL_open_atoms ();
   void SL_open_image ();
-  void SL_saveAtomsAs ();
-  void SL_closeImg ();
+  void SL_save_as_atoms ();
+  void SL_close_image ();
   void SL_genAtoms ();
   void SL_gen1Atoms ();
 
+  void SL_cubBox ();
+  void SL_hexBox ();
 
                                  /* These are help pages that open in
 				  * a new window.
@@ -97,11 +100,6 @@ public QMainWindow
 				    vecds" page */
   void SL_documentation ();
 
-
-
-
-  void SL_cubBox ();
-  void SL_hexBox ();
 
   void SL_setSliderValue (int);
   void SL_defineStructure ();

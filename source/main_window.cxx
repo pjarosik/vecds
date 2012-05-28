@@ -123,12 +123,12 @@ void MainWindow::createActions ()
                                  // Save data files
     action_save_as = new QAction (tr ("Save atoms"), this);
     action_save_as->setStatusTip (tr ("Save existing coordinates"));
-    connect (action_save_as, SIGNAL (triggered ()), this, SLOT (SL_saveAtomsAs ()));
+    connect (action_save_as, SIGNAL (triggered ()), this, SLOT (SL_save_as_atoms ()));
     
                                  // Close image
     action_close_image = new QAction (tr ("Close image"), this);
     action_close_image->setStatusTip (tr ("Close an existing img"));
-    connect (action_close_image, SIGNAL (triggered ()), this, SLOT (SL_closeImg ()));
+    connect (action_close_image, SIGNAL (triggered ()), this, SLOT (SL_close_image ()));
   }
 
   {
@@ -265,8 +265,27 @@ void MainWindow::SL_open_image ()
   vecds_main_viewer->updateGL ();
 }
 
-void MainWindow::SL_closeImg ()
+void MainWindow::SL_save_as_atoms()
 {
+  bool ok;
+  QString current_dir1 = ActualData->current_dir;
+  QString text = QInputDialog::getText (this, "Save coordinates", "File name:", QLineEdit::Normal, "atoms.xyz", &ok);
+
+  if ((!ok) || text.isEmpty()) 
+    {
+      qWarning ("File name is empty, or unknown error");
+      return;
+    }
+
+  ActualData->saveAtoms (current_dir1.append ("/data/atoms/").append (text));
+  return;
+}
+
+                                 // Function that closes an image file
+void MainWindow::SL_close_image ()
+{
+
+                                 // reset cache
   ActualData->img_loaded = "none";
   InfoDisplay ();
 }
@@ -464,19 +483,6 @@ void MainWindow::createDockWindows ()
 
 // ====================    S L O T S    ===========================
 
-void MainWindow::SL_saveAtomsAs()
-{
-  bool ok;
-  QString current_dir1 = ActualData->current_dir;
-  QString text = QInputDialog::getText(this, "Save coordinates",
-                     "File name:", QLineEdit::Normal, "newAtoms.xyz", &ok);
-// qWarning("file: %s", text.toAscii().data());
-  if ( !ok || text.isEmpty()) return;
-//  if ( Actual->num_choosedAtoms==0 ) saveAtoms(current_dir1.append("/V_atoms/").append(text));
-//  else                               saveChoosedAtoms(current_dir.append("/V_atoms/").append(text));
-  ActualData->saveAtoms(current_dir1.append("/data/atoms/").append(text));
-  return;
-}
 
 void MainWindow::SL_actPoint(QVector3D res)
 {
