@@ -105,14 +105,15 @@ MainWindow::~MainWindow ()
   qWarning ("class MainWindow:~MainWindow. Destructor called");
 }
 
-void MainWindow::createActions()
+                                // This function creates the
+void MainWindow::createActions ()
 {
 
-  // { 
+  { 
                                 // Open data file
     action_open = new QAction (tr ("Open Atoms"), this);
     action_open->setStatusTip (tr ("Open an existing file .xyz or .alc"));
-    connect (action_open, SIGNAL(triggered ()), this, SLOT (SL_openAtoms ()));
+    connect (action_open, SIGNAL (triggered ()), this, SLOT (SL_openAtoms ()));
     
                                  // Open image
     action_open_image = new QAction (tr ("Open HRTEM image"), this);
@@ -128,9 +129,9 @@ void MainWindow::createActions()
     action_close_image = new QAction (tr ("Close image"), this);
     action_close_image->setStatusTip (tr ("Close an existing img"));
     connect (action_close_image, SIGNAL (triggered ()), this, SLOT (SL_closeImg ()));
-  // }
+  }
 
-  // {
+  {
                                  // Define a crystal structure
     action_define_crystal_structure = new QAction (tr ("Define crystal structure"), this);
     action_define_crystal_structure->setCheckable (true);
@@ -143,9 +144,9 @@ void MainWindow::createActions()
     action_choose_crystal_structure->setCheckable (true);
     action_choose_crystal_structure->setStatusTip (tr ("struct ..."));
     connect (action_choose_crystal_structure, SIGNAL(triggered ()), this, SLOT (SL_chooseStructure ()));
-  // }
+  }
 
-  // {
+  {
                                  // Generate crystal structure by
                                  // defining its size by cells in the
                                  // xyz-directions.
@@ -159,9 +160,9 @@ void MainWindow::createActions()
     action_generate_structure_by_length = new QAction (tr ("Generate (by length)"), this);
     action_generate_structure_by_length->setStatusTip (tr ("generate a new file"));
     connect (action_generate_structure_by_length, SIGNAL (triggered ()), this, SLOT (SL_gen1Atoms ()));
-  // }
+  }
 
-  // {
+  {
                                  // Generate a cuboidal box
     action_make_cuboid_box = new QAction (tr ("Cuboid box"), this);
     action_make_cuboid_box->setStatusTip (tr ("Cuboid bounding box"));
@@ -171,9 +172,9 @@ void MainWindow::createActions()
     action_make_hexagonal_box = new QAction (tr ("Hexagonal box"), this);
     action_make_hexagonal_box->setStatusTip (tr ("Hexagonal bounding box"));
     connect (action_make_hexagonal_box, SIGNAL (triggered ()), this, SLOT (SL_hexBox ()));
-  // }
+  }
 
-  // {
+  {
                                  // Add a "documentation" box.
     action_show_documentation = new QAction (tr ("Documentation"), this);
     action_show_documentation->setStatusTip (tr ("Show vecds' documentation box"));
@@ -183,7 +184,8 @@ void MainWindow::createActions()
     action_show_about = new QAction (tr ("About"), this);
     action_show_about->setStatusTip (tr ("Show vecds' about box"));
     connect (action_show_about, SIGNAL (triggered ()), this, SLOT (SL_about ()));
-  // }
+  }
+
 
   MillerAct = new QAction(tr("Miller"), this);
   MillerAct->setStatusTip(tr("input Miller indices"));
@@ -205,6 +207,7 @@ void MainWindow::createActions()
   connect (this, SIGNAL (SIG_repaint ()),     vecds_main_viewer, SLOT (SL_repaint ()));
   connect (this, SIGNAL (SIG_keypress (int)), vecds_main_viewer, SLOT (SL_keypress (int)));
   
+                                 // Actually connect the main viewer
   connect (vecds_main_viewer, SIGNAL (SIG_actPoint (QVector3D)),    this, SLOT (SL_actPoint (QVector3D)));
   connect (vecds_main_viewer, SIGNAL (SIG_actPosition (QVector3D)), this, SLOT (SL_actPosition (QVector3D)));
 }
@@ -258,7 +261,6 @@ void MainWindow::createMenus()
 
 void MainWindow::createStatusBar()
 {
-  //    statusBar()->showMessage("Ready");
   statusBar()->clearMessage();
 }
 
