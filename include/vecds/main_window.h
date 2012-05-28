@@ -93,14 +93,19 @@ public QMainWindow
 				    vecds" page */
   void SL_documentation ();
 
+
+  void SL_saveAtomsAs ();
+
+  void SL_cubBox ();
+  void SL_hexBox ();
+
+  // --------------------- WTF? ---------------------------------  
+
   void SL_millerAct ();
   void SL_dislocAct ();
   void SL_dislAct ();
   void SL_addCoordAct ();
   void SL_changeMode (int mode);
-  void SL_saveAtomsAs ();
-  void SL_cubBox ();
-  void SL_hexBox ();
   void SL_actPoint (QVector3D);
   void SL_actPosition (QVector3D);
   void SL_sett ();
@@ -122,13 +127,51 @@ public QMainWindow
 				    simple name to rememeber. */
   vecds::MainViewer *vecds_main_viewer;
 
-                                 /* Actions that do things */
-  QAction *aboutAct;
-  QAction *docAct;
-  QAction *aboutQtAct;
+                                 /* Actions that do things. These
+				    belong in the "help" menu because
+				    they just show predefined
+				    documentation. */
+  QAction *action_show_documentation;
+  QAction *action_show_about;
+
+                                 /* Actions that belong in the "file"
+				    menu because they operate on
+				    files. */
+  QAction *action_open;
+  QAction *action_open_image;
+  QAction *action_save_as;
+  QAction *action_close_image;
+
+                                 /* Actions that belong in the "edit"
+				    menu because they edit the way the
+				    sytem is displayed. */
+  QAction *action_define_crystal_structure;
+  QAction *action_choose_crystal_structure;
+
+  QAction *action_generate_structure_by_cell;
+  QAction *action_generate_structure_by_length;
+
+                                 /* Note: These are shapes defined by
+				    crystallographic groups (they are
+				    not geometrical shapes) */
+  QAction *action_make_cuboid_box;
+  QAction *action_make_hexagonal_box;
+
 
                                  /* Register if a key is pressed */
   void keyPressEvent (QKeyEvent *key_event);
+
+                                 /* Actually create stuff */
+  void createActions ();
+  void createMenus ();
+  void createStatusBar ();
+  void createDockWindows ();
+  
+
+
+  // --------------------- WTF? ---------------------------------
+
+
 
   void InfoDisplay ();
   void saveAtoms (QString);
@@ -138,11 +181,7 @@ public QMainWindow
 
 
 
-  void createActions();
-  void createMenus();
-  void createStatusBar();
-  void createDockWindows();
-  
+
   QString toRichText(QString txt);
   
   
@@ -167,19 +206,14 @@ public QMainWindow
   QMenu *helpMenu;
   
   QAction *MillerAct;
-  QAction *saveAsAct;
-  //    QAction *refreshAct;
-  QAction *cubBoxAct;
-  QAction *hexBoxAct;
+
+
+
   
-  QAction *defnewAct;
-  //    QAction *defCoresAct;
-  QAction *chooseAct;    
-  QAction *openAct;
-  QAction *genAct;
-  QAction *gen1Act;
-  QAction *openimgAct;
-  QAction *closeimgAct;
+
+
+
+
   QAction *transpAct;
 
   QAction *settAct;

@@ -107,64 +107,85 @@ MainWindow::~MainWindow ()
 
 void MainWindow::createActions()
 {
-  defnewAct = new QAction(tr("Define new structure"), this);
-  defnewAct->setCheckable(true);
-  //    defnewAct->setShortcut(tr("Ctrl+D"));
-  defnewAct->setStatusTip(tr("defines ..."));
-  connect(defnewAct, SIGNAL(triggered()), this, SLOT(SL_defineStructure()));
-  
-  defnewAct = new QAction(tr("Define new structure"), this);
-  defnewAct->setCheckable(true);
-  //    defnewAct->setShortcut(tr("Ctrl+D"));
-  defnewAct->setStatusTip(tr("defines ..."));
-  connect(defnewAct, SIGNAL(triggered()), this, SLOT(SL_defineStructure()));
-    
-  chooseAct = new QAction(tr("Choose structure"), this);
-  chooseAct->setCheckable(true);
-  chooseAct->setStatusTip(tr("struct ..."));
-  connect (chooseAct, SIGNAL(triggered()), this, SLOT(SL_chooseStructure()));
-  
-  openAct = new QAction(tr("Open Atoms"), this);
-  //    openAct->setShortcut(tr("Ctrl+O"));
-  openAct->setStatusTip(tr("Open an existing file .xyz or .alc"));
-  connect(openAct, SIGNAL(triggered()), this, SLOT(SL_openAtoms()));
-  
-  genAct = new QAction(tr("Generate (number of cells)"), this);
 
-  genAct->setText(tr("Generate (number of cells)"));
-  genAct->setStatusTip(tr("generate a new file"));
-  connect (genAct, SIGNAL(triggered()), this, SLOT(SL_genAtoms()));
+  // { 
+                                // Open data file
+    action_open = new QAction (tr ("Open Atoms"), this);
+    action_open->setStatusTip (tr ("Open an existing file .xyz or .alc"));
+    connect (action_open, SIGNAL(triggered ()), this, SLOT (SL_openAtoms ()));
+    
+                                 // Open image
+    action_open_image = new QAction (tr ("Open HRTEM image"), this);
+    action_open_image->setStatusTip(tr ("Open an existing img"));
+    connect (action_open_image, SIGNAL (triggered ()), this, SLOT (SL_openImg ()));
+    
+                                 // Save data files
+    action_save_as = new QAction (tr ("Save atoms"), this);
+    action_save_as->setStatusTip (tr ("Save existing coordinates"));
+    connect (action_save_as, SIGNAL (triggered ()), this, SLOT (SL_saveAtomsAs ()));
+    
+                                 // Close image
+    action_close_image = new QAction (tr ("Close image"), this);
+    action_close_image->setStatusTip (tr ("Close an existing img"));
+    connect (action_close_image, SIGNAL (triggered ()), this, SLOT (SL_closeImg ()));
+  // }
+
+  // {
+                                 // Define a crystal structure
+    action_define_crystal_structure = new QAction (tr ("Define crystal structure"), this);
+    action_define_crystal_structure->setCheckable (true);
+    action_define_crystal_structure->setStatusTip (tr ("defines ..."));
+    connect (action_define_crystal_structure, SIGNAL (triggered ()), this, SLOT (SL_defineStructure ()));
+
+                                 // Choose a predefined a crystal
+                                 // structure
+    action_choose_crystal_structure = new QAction (tr("Choose crystal structure"), this);
+    action_choose_crystal_structure->setCheckable (true);
+    action_choose_crystal_structure->setStatusTip (tr ("struct ..."));
+    connect (action_choose_crystal_structure, SIGNAL(triggered ()), this, SLOT (SL_chooseStructure ()));
+  // }
+
+  // {
+                                 // Generate crystal structure by
+                                 // defining its size by cells in the
+                                 // xyz-directions.
+    action_generate_structure_by_cell = new QAction (tr ("Generate (by cell)"), this);
+    action_generate_structure_by_cell->setStatusTip (tr ("generate a new file"));
+    connect (action_generate_structure_by_cell, SIGNAL (triggered ()), this, SLOT (SL_genAtoms ()));
+    
+                                 // Generate crystal structure by
+                                 // defining its size by lengths in
+                                 // the xyz-directions.
+    action_generate_structure_by_length = new QAction (tr ("Generate (by length)"), this);
+    action_generate_structure_by_length->setStatusTip (tr ("generate a new file"));
+    connect (action_generate_structure_by_length, SIGNAL (triggered ()), this, SLOT (SL_gen1Atoms ()));
+  // }
+
+  // {
+                                 // Generate a cuboidal box
+    action_make_cuboid_box = new QAction (tr ("Cuboid box"), this);
+    action_make_cuboid_box->setStatusTip (tr ("Cuboid bounding box"));
+    connect (action_make_cuboid_box, SIGNAL (triggered ()), this, SLOT (SL_cubBox ()));
+    
+                                 // Generate a hexagonal box
+    action_make_hexagonal_box = new QAction (tr ("Hexagonal box"), this);
+    action_make_hexagonal_box->setStatusTip (tr ("Hexagonal bounding box"));
+    connect (action_make_hexagonal_box, SIGNAL (triggered ()), this, SLOT (SL_hexBox ()));
+  // }
+
+  // {
+                                 // Add a "documentation" box.
+    action_show_documentation = new QAction (tr ("Documentation"), this);
+    action_show_documentation->setStatusTip (tr ("Show vecds' documentation box"));
+    connect (action_show_documentation, SIGNAL (triggered ()), this, SLOT (SL_documentation ()));
   
-  QString str = QString("Generate (size of the structure)");
-  gen1Act = new QAction(str, this);
-  gen1Act->setStatusTip(tr("generate a new file"));
-  connect(gen1Act, SIGNAL(triggered()), this, SLOT(SL_gen1Atoms()));
-  
-  openimgAct = new QAction(tr("Open HRTEM image"), this);
-  //    openimgAct->setShortcut(tr("Ctrl+I"));
-  openimgAct->setStatusTip(tr("Open an existing img"));
-  connect(openimgAct, SIGNAL(triggered()), this, SLOT(SL_openImg()));
-  
-  closeimgAct = new QAction(tr("Close image"), this);
-  //    closeimgAct->setShortcut(tr("Ctrl+X"));
-  closeimgAct->setStatusTip(tr("Close an existing img"));
-  connect(closeimgAct, SIGNAL(triggered()), this, SLOT(SL_closeImg()));
-  
-  saveAsAct = new QAction(tr("Save atoms"), this);
-  //    saveAsAct->setShortcut(tr("Ctrl+W"));
-  saveAsAct->setStatusTip(tr("Save existing coordinates"));
-  connect(saveAsAct, SIGNAL(triggered()), this, SLOT(SL_saveAtomsAs()));
-  
-  cubBoxAct = new QAction(tr("Cuboid box"), this);
-  cubBoxAct->setStatusTip(tr("Cuboid bounding box"));
-  connect(cubBoxAct, SIGNAL(triggered()), this, SLOT(SL_cubBox()));
-  
-  hexBoxAct = new QAction(tr("Hexagonal box"), this);
-  hexBoxAct->setStatusTip(tr("Hexagonal bounding box"));
-  connect(hexBoxAct, SIGNAL(triggered()), this, SLOT(SL_hexBox()));
-  
+                                 // Add an "about" box.
+    action_show_about = new QAction (tr ("About"), this);
+    action_show_about->setStatusTip (tr ("Show vecds' about box"));
+    connect (action_show_about, SIGNAL (triggered ()), this, SLOT (SL_about ()));
+  // }
+
   MillerAct = new QAction(tr("Miller"), this);
-  //    MillerAct->setShortcut(tr("Ctrl+M"));
   MillerAct->setStatusTip(tr("input Miller indices"));
   connect(MillerAct, SIGNAL(triggered()), this, SLOT(SL_millerAct()));
   
@@ -176,20 +197,7 @@ void MainWindow::createActions()
   multAct->setStatusTip(tr("mult. factor"));
   connect(multAct, SIGNAL(triggered()), this, SLOT(SL_mult()));
 
-                                 // Add a "documentation" box.
-  docAct = new QAction (tr ("Documentation"), this);
-  docAct->setStatusTip (tr ("Show vecds' documentation box"));
-  connect (docAct, SIGNAL (triggered ()), this, SLOT (SL_documentation ()));
-  
-                                 // Add an "about" box.
-  aboutAct = new QAction (tr ("About"), this);
-  aboutAct->setStatusTip (tr ("Show vecds' about box"));
-  connect (aboutAct, SIGNAL (triggered ()), this, SLOT (SL_about ()));
-  
-  aboutQtAct = new QAction(tr("About Qt"), this);
-  aboutQtAct->setStatusTip(tr("Show Qt library's About box"));
-  connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
-  
+
                                  // Make signals and slots to enable
                                  // actions on the main viewer.
   connect (this, SIGNAL (SIG_prepareImg ()),  vecds_main_viewer, SLOT (SL_loadImage ()));
@@ -206,27 +214,35 @@ void MainWindow::createMenus()
 {
   menuBar ()->clear ();
 
-  fileMenu = menuBar()->addMenu (tr ("File"));
-  fileMenu->addAction (openAct);
-  fileMenu->addAction (openimgAct);
-  fileMenu->addAction (saveAsAct);
-  fileMenu->addAction (closeimgAct);
+                                 // This deals with "file" (data
+                                 // operations) on the menu bar.
+  fileMenu      = menuBar()->addMenu (tr ("File"));
+  fileMenu->addAction (action_open);
+  fileMenu->addAction (action_open_image);
+  fileMenu->addAction (action_save_as);
+  fileMenu->addAction (action_close_image);
   //  fileMenu->addSeparator ();
-  // --  
-  editMenu      = menuBar()->addMenu (tr ("Edit"));
-  defstructMenu = editMenu->addMenu ("Structure definition");
-  defstructMenu->addAction (chooseAct);
-  defstructMenu->addAction (defnewAct);
-  genMenu       = editMenu->addMenu ("Generation");
-  genMenu->addAction (genAct);
-  genMenu->addAction (gen1Act);
-  // --
-  boxMenu = editMenu->addMenu ("Box");
-  boxMenu->addAction (cubBoxAct);
-  boxMenu->addAction (hexBoxAct);
 
-  viewMenu = menuBar ()->addMenu (tr ("View"));
-  settMenu = menuBar ()->addMenu (tr ("Settings"));
+                                 // This deals with "edit" (data
+                                 // operations) on the menu bar.
+  editMenu      = menuBar()->addMenu (tr ("Edit"));
+  defstructMenu = editMenu->addMenu ("Crystal structure");
+  defstructMenu->addAction (action_define_crystal_structure);
+  defstructMenu->addAction (action_choose_crystal_structure);
+
+  genMenu       = editMenu->addMenu ("Generate structure");
+  genMenu->addAction (action_generate_structure_by_cell);
+  genMenu->addAction (action_generate_structure_by_length);
+
+  boxMenu       = editMenu->addMenu ("Box");
+  boxMenu->addAction (action_make_cuboid_box);
+  boxMenu->addAction (action_make_hexagonal_box);
+
+                                 // This deals with "view" and
+                                 // "settings" - these don't seem to
+                                 // do much...
+  viewMenu      = menuBar ()->addMenu (tr ("View"));
+  settMenu      = menuBar ()->addMenu (tr ("Settings"));
   settMenu->addAction (settAct);
   settMenu->addAction (multAct);
 
@@ -235,8 +251,8 @@ void MainWindow::createMenus()
   helpMenu = menuBar ()->addMenu (tr ("Help"));
 
                                  // Documentation and About box.
-  helpMenu->addAction (docAct);
-  helpMenu->addAction (aboutAct);
+  helpMenu->addAction (action_show_documentation);
+  helpMenu->addAction (action_show_about);
 
 }
 
