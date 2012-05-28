@@ -175,12 +175,12 @@ void MainWindow::createActions ()
   }
 
   {
-                                 // Add a "documentation" box.
+                                 // Add a documentation box.
     action_show_documentation = new QAction (tr ("Documentation"), this);
     action_show_documentation->setStatusTip (tr ("Show vecds' documentation box"));
     connect (action_show_documentation, SIGNAL (triggered ()), this, SLOT (SL_documentation ()));
   
-                                 // Add an "about" box.
+                                 // Add an about box.
     action_show_about = new QAction (tr ("About"), this);
     action_show_about->setStatusTip (tr ("Show vecds' about box"));
     connect (action_show_about, SIGNAL (triggered ()), this, SLOT (SL_about ()));

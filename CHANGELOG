@@ -8,8 +8,11 @@ v 0.4.* 2012/05/16
 
 Improvments:
 
+	** The menu logic has been changed and the code generating it
+           is now more descriptive. (TDY 2012/05/29).
+
 	** The code that makes up vecds has been put in its own
-           "namespace vecds". (TDY 2012/0525).
+           "namespace vecds". (TDY 2012/05/25).
 
 	** A standard directory structure has been initiated on the
            source code. Examples, settings, and the vecds
