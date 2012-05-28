@@ -269,8 +269,7 @@ void MainWindow::SL_open_image ()
 void MainWindow::SL_save_as_atoms()
 {
   bool ok;
-  QString current_dir1 = ActualData->current_dir;
-  QString filename = QInputDialog::getText (this, "Save coordinates", "File name:", QLineEdit::Normal, "atoms.xyz", &ok);
+  QString filename  = QInputDialog::getText (this, "Save coordinates", "File name:", QLineEdit::Normal, "atoms.xyz", &ok);
 
   if ((filename.isEmpty ()) || (!ok)) 
     {
@@ -278,7 +277,11 @@ void MainWindow::SL_save_as_atoms()
       return;
     }
 
-  ActualData->saveAtoms (current_dir1.append (filename));
+                                 // Until we learn how to open windows
+                                 // correctly, just dump it in this
+                                 // place.... 
+  QString directory = VECDS_EXAMPLES;
+  ActualData->saveAtoms (directory.append ("/" + filename));
   return;
 }
 
