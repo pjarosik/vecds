@@ -133,6 +133,19 @@ public QMainWindow
 				    simple name to rememeber. */
   vecds::MainViewer *vecds_main_viewer;
 
+                                 /* This is a list of the menus and
+				    submenus we have in this
+				    project. Most of them are probably
+				    self-explanitory. */
+  QMenu *menu_file;
+  QMenu *menu_edit;
+  QMenu *menu_crystal_structure;
+  QMenu *menu_generate_structure;
+  QMenu *menu_view;
+  QMenu *menu_settings;
+  QMenu *menu_box;
+  QMenu *menu_help;
+
                                  /* Actions that do things. These
 				    belong in the "help" menu because
 				    they just show predefined
@@ -173,7 +186,11 @@ public QMainWindow
   void createStatusBar ();
   void createDockWindows ();
   
-
+                                 /* Create a slider */
+  QSlider* createSlider (const unsigned int minimum, 
+			 const unsigned int maximum, 
+			 const unsigned int step, 
+			 const unsigned int value);
 
   // --------------------- WTF? ---------------------------------
 
@@ -183,29 +200,18 @@ public QMainWindow
   void saveAtoms (QString);
   void saveChoosedAtoms (QString);
 
-  QSlider *createSlider(int from, int to, int step, int val);
   QString toRichText(QString txt);
   
   
   QGridLayout *LAY_g_MainLayout;
-  QWidget *Widg_widget0;
+  QWidget     *Widg_widget0;
   QDockWidget *DWidg_dock;
-  QTabBar *Widg_modesTab;
+  QTabBar     *Widg_modesTab;
   
   QString aname, iname, fname, resname;
   QString infotxt0, infotxtat, infotxtimg;
   
 
-  
-  QMenu *fileMenu;
-  QMenu *editMenu;
-  QMenu *defstructMenu;
-  QMenu *genMenu;
-  QMenu *boxMenu;
-  QMenu *viewMenu;
-  QMenu *settMenu;
-  QMenu *docMenu;
-  QMenu *helpMenu;
   
   QAction *MillerAct;
   QAction *transpAct;

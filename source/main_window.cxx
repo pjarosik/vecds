@@ -265,19 +265,20 @@ void MainWindow::SL_open_image ()
   vecds_main_viewer->updateGL ();
 }
 
+                                 // Function that saves atom files
 void MainWindow::SL_save_as_atoms()
 {
   bool ok;
   QString current_dir1 = ActualData->current_dir;
-  QString text = QInputDialog::getText (this, "Save coordinates", "File name:", QLineEdit::Normal, "atoms.xyz", &ok);
+  QString filename = QInputDialog::getText (this, "Save coordinates", "File name:", QLineEdit::Normal, "atoms.xyz", &ok);
 
-  if ((!ok) || text.isEmpty()) 
+  if ((filename.isEmpty ()) || (!ok)) 
     {
       qWarning ("File name is empty, or unknown error");
       return;
     }
 
-  ActualData->saveAtoms (current_dir1.append ("/data/atoms/").append (text));
+  ActualData->saveAtoms (current_dir1.append (filename));
   return;
 }
 
@@ -297,43 +298,42 @@ void MainWindow::createMenus()
 
                                  // This deals with "file" (data
                                  // operations) on the menu bar.
-  fileMenu      = menuBar()->addMenu (tr ("File"));
-  fileMenu->addAction (action_open_atoms);
-  fileMenu->addAction (action_open_image);
-  fileMenu->addAction (action_save_as);
-  fileMenu->addAction (action_close_image);
-  //  fileMenu->addSeparator ();
+  menu_file     = menuBar ()->addMenu (tr ("File"));
+  menu_file->addAction (action_open_atoms);
+  menu_file->addAction (action_open_image);
+  menu_file->addAction (action_save_as);
+  menu_file->addAction (action_close_image);
+  //  menu_file->addSeparator ();
 
                                  // This deals with "edit" (data
                                  // operations) on the menu bar.
-  editMenu      = menuBar()->addMenu (tr ("Edit"));
-  defstructMenu = editMenu->addMenu ("Crystal structure");
-  defstructMenu->addAction (action_define_crystal_structure);
-  defstructMenu->addAction (action_choose_crystal_structure);
+  menu_edit               = menuBar ()->addMenu (tr ("Edit"));
+  menu_crystal_structure  = menu_edit->addMenu ("Crystal structure");
+  menu_crystal_structure->addAction (action_define_crystal_structure);
+  menu_crystal_structure->addAction (action_choose_crystal_structure);
 
-  genMenu       = editMenu->addMenu ("Generate structure");
-  genMenu->addAction (action_generate_structure_by_cell);
-  genMenu->addAction (action_generate_structure_by_length);
+  menu_generate_structure = menu_edit->addMenu ("Generate structure");
+  menu_generate_structure->addAction (action_generate_structure_by_cell);
+  menu_generate_structure->addAction (action_generate_structure_by_length);
 
-  boxMenu       = editMenu->addMenu ("Box");
-  boxMenu->addAction (action_make_cuboid_box);
-  boxMenu->addAction (action_make_hexagonal_box);
+  menu_box = menu_edit->addMenu ("Box");
+  menu_box->addAction (action_make_cuboid_box);
+  menu_box->addAction (action_make_hexagonal_box);
 
                                  // This deals with "view" and
                                  // "settings" - these don't seem to
                                  // do much...
-  viewMenu      = menuBar ()->addMenu (tr ("View"));
-  settMenu      = menuBar ()->addMenu (tr ("Settings"));
-  settMenu->addAction (settAct);
-  settMenu->addAction (multAct);
+  menu_view     = menuBar ()->addMenu (tr ("View"));
+  menu_settings = menuBar ()->addMenu (tr ("Settings"));
+  menu_settings->addAction (settAct);
+  menu_settings->addAction (multAct);
 
                                  // This part all deals with help that
-                                 // is available for the user.
-  helpMenu = menuBar ()->addMenu (tr ("Help"));
-
-                                 // Documentation and About box.
-  helpMenu->addAction (action_show_documentation);
-  helpMenu->addAction (action_show_about);
+                                 // is available for the user;
+                                 // ie. documentation and About box.
+  menu_help = menuBar ()->addMenu (tr ("Help"));
+  menu_help->addAction (action_show_documentation);
+  menu_help->addAction (action_show_about);
 
 }
 
@@ -357,7 +357,7 @@ void MainWindow::createDockWindows ()
   
   DWidg_dock->setWidget(Widg_modesTab);
   addDockWidget(Qt::RightDockWidgetArea, DWidg_dock);
-  viewMenu->addAction(DWidg_dock->toggleViewAction());
+  menu_view->addAction(DWidg_dock->toggleViewAction());
   
   DWidg_dock = new QDockWidget(tr("sliders"), this);
   DWidg_dock->setAllowedAreas(Qt::LeftDockWidgetArea | 
@@ -438,7 +438,7 @@ void MainWindow::createDockWindows ()
   
   DWidg_dock->setWidget(Lay_main0);
   addDockWidget(Qt::RightDockWidgetArea, DWidg_dock);
-  viewMenu->addAction(DWidg_dock->toggleViewAction());
+  menu_view->addAction(DWidg_dock->toggleViewAction());
   
   connect(Butt_rotMiller, SIGNAL(clicked()), this, SLOT(SL_millerAct()));
   
@@ -852,6 +852,7 @@ void MainWindow::SL_sett ()
   emit SIG_repaint();
 }
 
+                                 // TODO: Same goes for this crap
 void MainWindow::SL_mult()
 {
   bool ok;
@@ -951,20 +952,22 @@ void MainWindow::keyPressEvent(QKeyEvent *keyEv)
 #endif
 }
 
-QSlider *MainWindow::createSlider
-                      (int from, int to, int step, int val)
+QSlider *MainWindow::createSlider (const unsigned int minimum, 
+				   const unsigned int maximum, 
+				   const unsigned int step, 
+				   const unsigned int value)
 {
-  QSlider* slider = new QSlider(Qt::Horizontal);
+  QSlider* slider = new QSlider (Qt::Horizontal);
 
-  slider->setTickInterval(step);
-  slider->setMaximum(to); // paging disabled
-  slider->setMinimum(from);
-//  slider->setScaleMaxMinor(10);
-  slider->setValue(val);
+  slider->setTickInterval (step);
+  slider->setMinimum (minimum);
+  slider->setMaximum (maximum); // paging disabled
+  slider->setValue(value);
+
   return slider;
 }
 
-QString MainWindow::toRichText(QString txt)
+QString MainWindow::toRichText (QString txt)
 {
   QString txt1;
   txt1 = txt.replace("<", "&lt;").replace(">", "&gt;");
