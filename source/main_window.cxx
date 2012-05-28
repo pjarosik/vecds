@@ -111,14 +111,14 @@ void MainWindow::createActions ()
 
   { 
                                 // Open data file
-    action_open = new QAction (tr ("Open Atoms"), this);
-    action_open->setStatusTip (tr ("Open an existing file .xyz or .alc"));
-    connect (action_open, SIGNAL (triggered ()), this, SLOT (SL_openAtoms ()));
+    action_open_atoms = new QAction (tr ("Open Atoms"), this);
+    action_open_atoms->setStatusTip (tr ("Open an existing file .xyz or .alc"));
+    connect (action_open_atoms, SIGNAL (triggered ()), this, SLOT (SL_open_atoms ()));
     
                                  // Open image
     action_open_image = new QAction (tr ("Open HRTEM image"), this);
     action_open_image->setStatusTip(tr ("Open an existing img"));
-    connect (action_open_image, SIGNAL (triggered ()), this, SLOT (SL_openImg ()));
+    connect (action_open_image, SIGNAL (triggered ()), this, SLOT (SL_open_image ()));
     
                                  // Save data files
     action_save_as = new QAction (tr ("Save atoms"), this);
@@ -199,7 +199,6 @@ void MainWindow::createActions ()
   multAct->setStatusTip(tr("mult. factor"));
   connect(multAct, SIGNAL(triggered()), this, SLOT(SL_mult()));
 
-
                                  // Make signals and slots to enable
                                  // actions on the main viewer.
   connect (this, SIGNAL (SIG_prepareImg ()),  vecds_main_viewer, SLOT (SL_loadImage ()));
@@ -212,6 +211,66 @@ void MainWindow::createActions ()
   connect (vecds_main_viewer, SIGNAL (SIG_actPosition (QVector3D)), this, SLOT (SL_actPosition (QVector3D)));
 }
 
+                                 // Function that opens atom files
+void MainWindow::SL_open_atoms ()
+{
+  qWarning ("class MainWindow::SL_open_atoms");
+
+                                 // start by opening up the default
+                                 // vecds examples directory
+  QString filename 
+    = QFileDialog::getOpenFileName (this, "Select atoms", VECDS_EXAMPLES, "(*.xyz *.alc)");
+
+  if ((filename==ActualData->atoms_loaded) || (filename.isEmpty ())) 
+    {
+     qWarning ("Unknown file name or file name is empty");
+      return;
+    }
+
+  ActualData->atoms_loaded = filename;
+
+  if ((!(filename.contains (".xyz"))) && (!(filename.contains (".alc"))))
+     qWarning ("Unknown file format");
+
+  else 
+    {
+      ActualData->atoms_loaded = filename;
+      ActualData->read_alc_xyz (filename);
+      emit SIG_needDraw ();
+    }
+
+  InfoDisplay ();
+  vecds_main_viewer->updateGL ();
+}
+
+                                 // Function that opens image files
+void MainWindow::SL_open_image ()
+{
+  qWarning ("class MainWindow::SL_open_image");
+
+  QString filename 
+    = QFileDialog::getOpenFileName (this, "Select image", VECDS_EXAMPLES, "(*.png *.xpm *.jpg *.tif)");
+
+  if (filename.isEmpty ()) 
+    {
+      qWarning ("Image name is empty");
+      return;
+    }
+
+  ActualData->img_loaded = filename;
+  ActualData->read_img (filename);
+  emit SIG_prepareImg ();
+
+  InfoDisplay ();
+  vecds_main_viewer->updateGL ();
+}
+
+void MainWindow::SL_closeImg ()
+{
+  ActualData->img_loaded = "none";
+  InfoDisplay ();
+}
+
 
 void MainWindow::createMenus()
 {
@@ -220,7 +279,7 @@ void MainWindow::createMenus()
                                  // This deals with "file" (data
                                  // operations) on the menu bar.
   fileMenu      = menuBar()->addMenu (tr ("File"));
-  fileMenu->addAction (action_open);
+  fileMenu->addAction (action_open_atoms);
   fileMenu->addAction (action_open_image);
   fileMenu->addAction (action_save_as);
   fileMenu->addAction (action_close_image);
@@ -628,50 +687,8 @@ void MainWindow::SL_documentation ()
   (*documentation).show_page ("documentation.html");
 }
 
-void MainWindow::SL_openAtoms()
-{
-  QString current_dir1 = ActualData->current_dir;
-  qWarning("SL_openAtoms");//, current_dir1.toAscii().data() );
-  QString aname1 = QFileDialog::getOpenFileName(this, "Select atoms", 
-                current_dir1.append("/data/atoms"), "Molecules (*.xyz *.alc)");
-  if ( aname1.isEmpty()  || aname1==ActualData->atoms_loaded ) return;
-  ActualData->atoms_loaded = aname1;
-  if ( !(aname1.contains(".xyz")) && !(aname1.contains(".alc")) )
-     qWarning ("openAtoms -- unknown file format");
-  else {
-     ActualData->atoms_loaded = aname1;
-     ActualData->read_alc_xyz(aname1);
-     emit SIG_needDraw();
-//    qWarning("sig needDraw");
-  }
-//  infotxtat.sprintf("%s", aname.toAscii().data());
-  InfoDisplay();
-  vecds_main_viewer->updateGL();
-}
 
-void MainWindow::SL_openImg()
-{
-  QString cdir = ActualData->current_dir;
-  QString iname = QFileDialog::getOpenFileName(this, "Select an image",
-    cdir.append("/data/images"), "Images (*.png *.xpm *.jpg *.tif)");
 
-  if ( iname.isEmpty() ) return;
-
-  ActualData->img_loaded = iname;
-//  ActualData->imgChanged = (ActualData->img_loaded!=iname);
-  ActualData->read_img(iname);
-  emit SIG_prepareImg();
-//  infotxtimg.sprintf("%s", iname.toAscii().data());
-  InfoDisplay();
-  vecds_main_viewer->updateGL();
-}
-
-void MainWindow::SL_closeImg()
-{
-  ActualData->img_loaded = "none";
-//    delete &img;
-  InfoDisplay();
-}
 
 void MainWindow::SL_millerAct()
 {

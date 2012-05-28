@@ -34,6 +34,7 @@
 #include <qwt_scale_engine.h>
 
 #include <vecds/algebra.h>
+#include <vecds/base/config.h>
 #include <vecds/main_viewer.h>
 
 QT_BEGIN_NAMESPACE
@@ -74,14 +75,17 @@ public QMainWindow
   
   private slots:
 
-  void SL_setSliderValue (int);
-  void SL_defineStructure ();
-  void SL_chooseStructure ();
-  void SL_openAtoms ();
+                                 /* These are slots that deal with
+				  * menu objects (actions).
+				  *
+				  * open atoms data file */
+  void SL_open_atoms ();
+  void SL_open_image ();
+  void SL_saveAtomsAs ();
+  void SL_closeImg ();
   void SL_genAtoms ();
   void SL_gen1Atoms ();
-  void SL_openImg ();
-  void SL_closeImg ();
+
 
                                  /* These are help pages that open in
 				  * a new window.
@@ -94,10 +98,14 @@ public QMainWindow
   void SL_documentation ();
 
 
-  void SL_saveAtomsAs ();
+
 
   void SL_cubBox ();
   void SL_hexBox ();
+
+  void SL_setSliderValue (int);
+  void SL_defineStructure ();
+  void SL_chooseStructure ();
 
   // --------------------- WTF? ---------------------------------  
 
@@ -137,7 +145,7 @@ public QMainWindow
                                  /* Actions that belong in the "file"
 				    menu because they operate on
 				    files. */
-  QAction *action_open;
+  QAction *action_open_atoms;
   QAction *action_open_image;
   QAction *action_save_as;
   QAction *action_close_image;
@@ -178,10 +186,6 @@ public QMainWindow
   void saveChoosedAtoms (QString);
 
   QSlider *createSlider(int from, int to, int step, int val);
-
-
-
-
   QString toRichText(QString txt);
   
   
@@ -206,28 +210,13 @@ public QMainWindow
   QMenu *helpMenu;
   
   QAction *MillerAct;
-
-
-
-  
-
-
-
-
   QAction *transpAct;
 
   QAction *settAct;
   QAction *multAct;
   
   QLabel *infoLabel;
-/*
-  QwtSlider *phiSlider;
-  QwtSlider *thetaSlider;
-  QwtSlider *psiSlider;
-  QwtSlider *mxSlider;
-  QwtSlider *mySlider;
-  QwtSlider *distSlider;
-*/
+
   QSlider *phiSlider;
   QSlider *thetaSlider;
   QSlider *psiSlider;
