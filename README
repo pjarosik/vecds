@@ -14,3 +14,9 @@ To run vecds:
 $ cd bin
 $ ./vecds
 
+
+Known bugs: 
+
+	** The tiled window manager (i3-wm) looses connection with the
+           graphics somehow when operating in portait mode; I have no
+           clue what does this. (TDY 2012/05/29).
