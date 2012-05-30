@@ -637,6 +637,7 @@ void vecds::MainViewer::SL_dothetaRotation ()
   if (ActualData->sliderMove) 
     {
       double angle = double (ActualData->sliderValue);
+//      double angle = ActualData->sliderValue;
 
       if (angle<-180.) 
 	angle += 360.;
@@ -656,8 +657,8 @@ void vecds::MainViewer::SL_dophiRotation ()
 {
   if (ActualData->sliderMove) 
     {
-      double angle = ActualData->sliderValue;
-
+      double angle = double (ActualData->sliderValue);
+//      double angle = ActualData->sliderValue;
       if (angle<-90.) 
 	angle += 180.;
 
@@ -677,8 +678,8 @@ void vecds::MainViewer::SL_dopsiRotation ()
 
   if (ActualData->sliderMove) 
     {
-      double angle = ActualData->sliderValue;
-
+      double angle = double (ActualData->sliderValue);
+//      double angle = ActualData->sliderValue;
       if (angle<-180.) 
 	angle += 360.;
 
