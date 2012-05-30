@@ -31,6 +31,7 @@
 #include <QMainWindow>
 #include <QSlider>
 
+//#include <qwt_slider.h>
 #include <qwt_scale_engine.h>
 
 #include <vecds/algebra.h>
@@ -102,6 +103,7 @@ public QMainWindow
 
 
   void SL_setSliderValue (int);
+//  void SL_setSliderValue (double);
   void SL_defineStructure ();
   void SL_chooseStructure ();
 
@@ -191,10 +193,9 @@ public QMainWindow
 			 const unsigned int maximum, 
 			 const unsigned int step, 
 			 const unsigned int value);
+//  QwtSlider *createSlider(double from, double to, double step, double val, bool logaritmic=false);
 
   // --------------------- WTF? ---------------------------------
-
-
 
   void InfoDisplay ();
   void saveAtoms (QString);
@@ -227,6 +228,14 @@ public QMainWindow
   QSlider *mxSlider;
   QSlider *mySlider;
   QSlider *distSlider;
+/*
+  QwtSlider *phiSlider;
+  QwtSlider *thetaSlider;
+  QwtSlider *psiSlider;
+  QwtSlider *mxSlider;
+  QwtSlider *mySlider;
+  QwtSlider *distSlider;
+*/
 
   QPushButton *Butt_rotMiller;
   QPushButton *Butt_disloc;
