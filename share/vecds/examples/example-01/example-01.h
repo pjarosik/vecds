@@ -46,7 +46,7 @@ using namespace std;
 
 struct Atoms
 { Atoms () { n_atoms = 0;}
-  int n_atoms; 
+  unsigned int n_atoms; 
   glm::dvec3* coord;
   glm::dvec3* du;
   glm::dvec3* u;
@@ -72,16 +72,16 @@ struct CrysCell
 };
 
 bool read_xyz(string aname);
-void extPrint(string file_name, int nvec, glm::dvec3 *vec);
-void extPrintM(string file_name, int nvec, glm::dmat3 *mat);
+void extPrint(string file_name, unsigned int nvec, glm::dvec3 *vec);
+void extPrintM(string file_name, unsigned int nvec, glm::dmat3 *mat);
 void atoms1Print(string file_name, glm::dvec3 *vec);
 void atoms2Print(string file_name, glm::dvec3 *vec1, glm::dvec3 *vec2);
 bool readProgData(string);
 int Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct);
-void singledisl(int n_a);
+void singledisl(unsigned int n_a);
 void multdisl(int n_a, int num_rep, double distance);
 void singledisl0(int n_a, int count);
-void multdisl0(int n_a, int num_rep, double distance);
+void multdisl0(unsigned int n_a, unsigned int num_rep, double distance);
 glm::dvec3 mixed_u(int, glm::dvec3, double, double);
 glm::dmat3 mixed_beta(int, glm::dvec3, double, double);
 void processMiller(string result_text);
