@@ -33,7 +33,7 @@
                                  /* While we are using vecds, we can
 				    make use of some of the constants
 				    defined there. */
-#include <vecds/constant.h>
+#include <vecds/base/constant.h>
 
 #include <algorithm>
 #include <cctype>
