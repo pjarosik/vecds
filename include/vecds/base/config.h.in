@@ -15,6 +15,7 @@
 #cmakedefine VECDS_DOCS               "@VECDS_DOCS@"
 #cmakedefine VECDS_DATABASE           "@VECDS_DATABASE@"
 #cmakedefine VECDS_EXAMPLES           "@VECDS_EXAMPLES@"
+#cmakedefine VECDS_INCLUDES           "@VECDS_INCLUDES@"
 #cmakedefine VECDS_INTERNALS          "@VECDS_INTERNALS@"
 
 #endif                           // __vecds_config_h

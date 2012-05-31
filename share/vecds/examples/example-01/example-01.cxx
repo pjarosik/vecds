@@ -86,8 +86,10 @@ int main (int argc, char *argv[])
   sw_iter = true;
   n_dislocations = n_addAtoms = 0;
 
-  string cd0 = current_dir;
-  string cd1 = cd0.append("/input/atoms.xyz");
+  // string cd0 = current_dir;
+  // string cd1 = cd0.append ("/input/atoms.xyz");
+
+  string cd1 = VECDS_EXAMPLES;
 
   if ( !read_xyz(cd1) ) 
     {
@@ -99,10 +101,10 @@ int main (int argc, char *argv[])
   atoms->u      = new glm::dvec3[atoms->n_atoms];
   atoms->beta   = new glm::dmat3[atoms->n_atoms];
 
-  for (int i=0; i<atoms->n_atoms; ++i) 
+  for (unsigned int i=0; i<atoms->n_atoms; ++i) 
     atoms->u[i] = atoms->du[i] = glm::dvec3(0., 0., 0.);
 
-  for (int i=0; i<atoms->n_atoms; ++i) 
+  for (unsigned int i=0; i<atoms->n_atoms; ++i) 
     atoms->beta[i] = glm::dmat3(0.,0.,0., 0.,0.,0., 0.,0.,0.);
 
   coord1 = new glm::dvec3[atoms->n_atoms];
@@ -263,7 +265,7 @@ void singledisl(int n_a)
   double bz = burgers_vector.z;
   cout << " be=" << be << "     bz=" << bz << endl;
 
-  for (int i=0; i<atoms->n_atoms; i++) 
+  for (unsigned int i=0; i<atoms->n_atoms; i++) 
     coord1[i] = rot_tensor * atoms->coord[i];
   
   if ( sw_iter ) 
@@ -283,7 +285,7 @@ void singledisl(int n_a)
       p.be = be;
       p.bz = bz;
       
-      for (int i=0; i<n_Atoms; i++) 
+      for (unsigned int i=0; i<n_Atoms; i++) 
 	{
 	  //    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
 	  if ( i==n_a ) 
@@ -344,7 +346,7 @@ void singledisl(int n_a)
     } 
   else 
     {  // !sw_iter
-      for (int i=0; i<n_Atoms; i++) 
+      for (unsigned int i=0; i<n_Atoms; i++) 
 	{
 	  //    if ( i>=atoms->n_atoms-n_addAtoms ) continue;
 	  if ( i==n_a ) 
@@ -358,7 +360,7 @@ void singledisl(int n_a)
 	}
     }
   
-  for (int i=0; i<n_Atoms; i++) 
+  for (unsigned int i=0; i<n_Atoms; i++) 
     atoms->du[i] = rot_inv*atoms->du[i];
   
 }
@@ -371,7 +373,7 @@ void multdisl (int n_a, int num_rep, double distance) // Liczy pole przemieszcze
 void multdisl0 (int n_a, int num_rep, double distance) // Liczy pole przemieszczeń od dyslokacji ze rdzeniem przechodzącym przez punk n_a
 { 
   cout << "multdisl for atom nr. " << n_a << ", num_rep=" << num_rep << ", distance=" << distance << endl;
-  for (int i=0; i<n_Atoms; i++) 
+  for (unsigned int i=0; i<n_Atoms; i++) 
     atoms->du[i] = glm::dvec3(0., 0., 0.);
 
   glm::dvec3 burgers_vector = mil.fraction * crysCell->c2o * glm::dvec3(mil.indices[0], mil.indices[1], mil.indices[2]);
@@ -392,7 +394,7 @@ void multdisl0 (int n_a, int num_rep, double distance) // Liczy pole przemieszcz
     {
       glm::dvec3 cd1 = cd - double(count)*vector;
       glm::dvec3 cd2 = cd + double(count+1)*vector;
-      for (int i=0; i<n_Atoms; i++) 
+      for (unsigned int i=0; i<n_Atoms; i++) 
 	{
 	  if ( i==n_a ) continue;
 	  glm::dvec3 dist1 = atoms->coord[i] - cd1;
@@ -489,7 +491,7 @@ void extPrint (string file_name, int nvec, glm::dvec3 *vec)
       return;
     }
   fout << nvec << endl << endl;
-  for (int i=0; i<nvec; i++)
+  for (unsigned int i=0; i<nvec; i++)
     fout << setw(5) << i+1 << setw(15) << vec[i].x << setw(15) << vec[i].y << setw(15) << vec[i].z << endl;
   fout.close();
 }
@@ -503,7 +505,7 @@ void extPrintM (string file_name, int nvec, glm::dmat3 *mat)
       return;
     }
   fout << nvec << endl << endl;
-  for (int i=0; i<nvec; i++)
+  for (unsigned int i=0; i<nvec; i++)
     fout << setw(15) << mat[i][0][0] << setw(15) << mat[i][1][0] << setw(15) << mat[i][2][0]
 	 << setw(15) << mat[i][0][1] << setw(15) << mat[i][1][1] << setw(15) << mat[i][2][1]
 	 << setw(15) << mat[i][0][2] << setw(15) << mat[i][1][2] << setw(15) << mat[i][2][2] << endl;
@@ -514,7 +516,7 @@ void atoms1Print(string file_name, glm::dvec3 *vec)
 { 
   ofstream fout(file_name.c_str());
   fout << n_Atoms << endl << endl;
-  for (int i=0; i<n_Atoms; i++) 
+  for (unsigned int i=0; i<n_Atoms; i++) 
     fout << setw(5) << atoms->a_name[i] << setw(15) << vec[i].x << setw(15) << vec[i].y << setw(15) << vec[i].z << endl;
   
   fout.close();
@@ -525,7 +527,7 @@ void atoms2Print(string file_name, glm::dvec3 *vec1, glm::dvec3 *vec2)
 { 
   ofstream fout(file_name.c_str());
   fout << n_Atoms << endl << endl;
-  for (int i=0; i<n_Atoms; i++) 
+  for (unsigned int i=0; i<n_Atoms; i++) 
     {
       glm::dvec3 vec = vec1[i]+vec2[i];
       fout << setw(5) << atoms->a_name[i] << setw(15) << vec.x << setw(15) << vec.y << setw(15) << vec.z << endl;
@@ -580,16 +582,20 @@ bool readProgData(string filename)
 	  return true;
 	  }
       if ( what==5 ) {                      // sum_u
-        for (int i=0; i<n_Atoms; i++) {
-          atoms->u[i] += atoms->du[i];
-          atoms->du[i] = glm::dvec3(0., 0., 0.); }
-
+        for (unsigned int i=0; i<n_Atoms; i++) 
+	  {
+	    atoms->u[i] += atoms->du[i];
+	    atoms->du[i] = glm::dvec3(0., 0., 0.); 
+	  }
+	
         nazwa.str("");
         nazwa << "./output/coord-" << setw(4) << setfill('0') << count << ".xyz";
         atoms2Print(nazwa.str().c_str(), atoms->coord, atoms->u);
       }
       if ( what==6 ) {                      // update
-        for (int i=0; i<n_Atoms; i++) atoms->coord[i] += atoms->u[i];
+        for (unsigned int i=0; i<n_Atoms; i++) 
+	  atoms->coord[i] += atoms->u[i];
+
         nazwa.str("");
         nazwa << "./output/Coordinates-" << setw(3) << setfill('0') << count << ".xyz";
         atoms1Print(nazwa.str().c_str(), atoms->coord);
@@ -664,21 +670,21 @@ bool readProgData(string filename)
 	act_disl = fields[1];
 	
 	processMiller(act_disl);
-	for (int i=0; i<n_Atoms; i++) 
-	  {
-	    atoms->du[i] = glm::dvec3(0.,0.,0.); 
-	    atoms->beta[i] = glm::dmat3(0.,0.,0., 0.,0.,0., 0.,0.,0.);
-	  }
+	for (unsigned int i=0; i<n_Atoms; i++) 
+	  atoms->du[i] = glm::dvec3(0.,0.,0.); 
+	for (unsigned int i=0; i<n_Atoms; i++) 
+	  atoms->beta[i] = glm::dmat3(0.,0.,0., 0.,0.,0., 0.,0.,0.);
+
 	singledisl(numMark);
 	++n_dislocations;
 	sumU = glm::dvec3(0.0, 0.0, 0.0);;
 	
-	for (int i=0; i<n_Atoms; i++) 
+	for (unsigned int i=0; i<n_Atoms; i++) 
 	  sumU += atoms->du[i];
 	
 	sumU /= double(n_Atoms);
 	cout << "Dislocation nr. " << n_dislocations << "   sumU = ( " << sumU.x << ", " << sumU.y << ", " << sumU.z << " )" << endl;
-	for (int i=0; i<n_Atoms; i++) 
+	for (unsigned int i=0; i<n_Atoms; i++) 
 	  atoms->du[i] -= sumU;
 	
 	nazwa.str("");
@@ -700,11 +706,12 @@ bool readProgData(string filename)
 	processMiller(act_disl);
 	multdisl(numMark, num_rep, distance);
 	
-	for (int i=0; i<n_Atoms; i++)  
-	  {
-	    atoms->u[i]  += atoms->du[i];
-	    atoms->du[i]  = glm::dvec3(0., 0., 0.);
-	  }
+	for (unsigned int i=0; i<n_Atoms; i++)  
+	  atoms->u[i]  += atoms->du[i];
+
+	for (unsigned int i=0; i<n_Atoms; i++)  
+	  atoms->du[i]  = glm::dvec3(0., 0., 0.);
+
 	
 	++n_dislocations;
 	what = -1;

@@ -23,6 +23,11 @@
 // -------------------------------------------------------------------
 
 
+                                 /* We need to get access to the
+				    config files of the vecds
+				    package. */
+#include <vecds/base/config.h>
+
 #include <algorithm>
 #include <cctype>
 #include <iostream>

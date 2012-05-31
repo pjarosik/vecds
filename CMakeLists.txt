@@ -235,6 +235,9 @@ configure_file (${VECDS_INCLUDES}/vecds/base/config.h.in  ${VECDS_INCLUDES}/vecd
 ## documentation (-DHAVE_DOXYGEN)
 configure_file (${VECDS_SCRIPTS}/doxygen.template.in ${VECDS_SCRIPTS}/doxygen.template)
 
+## Deal with Makefiles for the exampless
+configure_file (${VECDS_EXAMPLES}/example-01/Makefile.in ${VECDS_EXAMPLES}/example-01/Makefile)
+
 include_directories (
   ${VECDS_INCLUDES}
   ${GSL_INCLUDES}
@@ -307,4 +310,3 @@ else ()
 endif ()
 
 set (EXECUTABLE_OUTPUT_PATH ${VECDS_BIN})
-
