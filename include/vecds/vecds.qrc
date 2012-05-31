@@ -1,9 +1,0 @@
-<!DOCTYPE RCC><RCC version="1.0">
-<qresource>
-    <file>../../data/internal/icons/new.png</file>
-    <file>../../data/internal/icons/print.png</file>
-    <file>../../data/internal/icons/save.png</file>
-    <file>../../data/internal/icons/undo.png</file>
-    <file>../../data/internal/icons/camera.png</file>
-</qresource>
-</RCC>
