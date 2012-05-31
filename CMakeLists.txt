@@ -229,14 +229,23 @@ message (STATUS "Configuring build environment")
 ################################################
 
 ## Create a config.h file (-DHAVE_CONFIG_H)
-configure_file (${VECDS_INCLUDES}/vecds/base/config.h.in  ${VECDS_INCLUDES}/vecds/base/config.h)
+configure_file (${VECDS_INCLUDES}/vecds/base/config.h.in  ${VECDS_INCLUDES}/vecds/base/config.h @only)
 
 ## Create a doxygen template file for producing user manual
 ## documentation (-DHAVE_DOXYGEN)
-configure_file (${VECDS_SCRIPTS}/doxygen.template.in ${VECDS_SCRIPTS}/doxygen.template)
+configure_file (${VECDS_SCRIPTS}/doxygen.template.in ${VECDS_SCRIPTS}/doxygen.template @only)
 
 ## Deal with Makefiles for the exampless
-configure_file (${VECDS_EXAMPLES}/example-01/Makefile.in ${VECDS_EXAMPLES}/example-01/Makefile)
+set (vecds_documentation
+  ${VECDS_DOCS}/about
+  ${VECDS_DOCS}/documentation
+  )
+foreach (doc ${vecds_documentation})
+  configure_file (${doc}.html.in ${doc}.html @only)
+endforeach (doc)
+
+## Deal with Makefiles for the examples
+configure_file (${VECDS_EXAMPLES}/example-01/Makefile.in ${VECDS_EXAMPLES}/example-01/Makefile @only)
 
 include_directories (
   ${VECDS_INCLUDES}

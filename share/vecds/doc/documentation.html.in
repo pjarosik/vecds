@@ -12,5 +12,7 @@
 To have full access to the documentation, you will need to have
 compiled <b>vecds</b> with the doxygen program enabled.
 
+The documentation for vecds is located at: @VECDS_DOCS@.
+
 </body>
 </html>
