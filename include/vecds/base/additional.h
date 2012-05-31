@@ -50,51 +50,6 @@ struct params
   double u0z;
 };
 
-
-
-                                 /* The structure Atoms holds
-				    information needed to describe the
-				    location and type of an atom in a
-				    matrix. */
-struct Atoms
-{
-
-                                 /* Empty constructor. */
-  Atoms ()
-  {
-    n_atoms = 0;
-    n_bonds = 0; 
-  }
-
-                                 /* Number of atoms. */
-  unsigned int n_atoms; 
-
-                                 /* Number of bonds between atoms. */
-  unsigned int n_bonds;
-
-                                 /* Array holding a set of coordinates */
-  QVector3D *coordinates;
-
-                                 /* Same as above, but a glm
-				    copy. This is a particuarily
-				    stupid name for this! */
-  glm::dvec3 *coordinates_glm;
-
-                                 /* TODO: WHat are these? */
-  glm::dvec3 *du;
-  QVector3D  *u;
-
-                                 /* An array of integers describing
-				    the atom type */
-  unsigned int *atom_type;
-
-                                 /* An array of two-integers that
-				    describe the bonds between two
-				    atoms. */
-  vecds::Int2 *atom_bond;
-};
-
-
 struct AtomsProperties
 {
 
@@ -126,6 +81,60 @@ struct Settings
   vecds::Int3 colour_spectrum[12];
   
 };
+
+
+
+namespace vecds
+{
+
+                                 /* The structure Atoms holds
+				    information needed to describe the
+				    location and type of an atom in a
+				    matrix. */
+  struct Atoms
+  {
+
+                                 /* Empty constructor. */
+    Atoms ()
+    {
+      n_atoms = 0;
+      n_bonds = 0; 
+    }
+
+                                 /* Number of atoms. */
+    unsigned int n_atoms; 
+
+                                 /* Number of bonds between atoms. */
+    unsigned int n_bonds;
+
+                                 /* Array holding a set of coordinates */
+    QVector3D *coordinates;
+
+                                 /* Same as above, but a glm
+				    copy. This is a particuarily
+				    stupid name for this! */
+    glm::dvec3 *coordinates_glm;
+
+                                 /* TODO: WHat are these? */
+    glm::dvec3 *du;
+    QVector3D  *u;
+    
+                                 /* An array of integers describing
+				    the atom type */
+    unsigned int *atom_type;
+
+                                 /* An array of two-integers that
+				    describe the bonds between two
+				    atoms. */
+    vecds::Int2 *atom_bond;
+  };
+
+}                                /* namespace vecds */
+
+
+namespace vecds
+{
+
 
                                  /* A structure that dewxcribes the
 				    crystallographic make-up of a
@@ -165,47 +174,57 @@ struct CrystalStructure
   QVector3D core[30];
 };
 
-struct Dislocations
+}                                /* namespace vecds */
+
+
+
+namespace vecds
 {
-  Dislocations ()
-  {}
+
+  struct Dislocations
+  {
+    Dislocations ()
+    {}
   
-  QVector3D rrr; // współrz. punktu przkazanego z viewera (Mviewer::SIG_actPoint, Mainwindow::SL_actPoint
+    QVector3D rrr; // współrz. punktu przkazanego z viewera (Mviewer::SIG_actPoint, Mainwindow::SL_actPoint
   
                                  /* Vector defining the relative
 				    coordinates of the "top" of a line
 				    dislocation. */
-  QVector3D p1; 
+    QVector3D p1; 
   
                                  /* Vector defining the relative
 				    coordinates of the "tbottom" of a
 				    line dislocation. */
-  QVector3D p2;
+    QVector3D p2;
   
-  QVector3D cd; // wpółrzędne dyslokacji brane do obliczeń /po znalezieniu punktu i0/
+    QVector3D cd; // wpółrzędne dyslokacji brane do obliczeń /po znalezieniu punktu i0/
   
                                  /* Three-dimensional vector that
 				    describes the orientation of the
 				    Burgers vector of a
 				    dislocation. */
-  QVector3D burgers_vector;
+    QVector3D burgers_vector;
 
                                  /* Three-dimensional vector that
 				    describes the position of the core
 				    of a dislocation. */
-  QVector3D dislocation_core;
+    QVector3D dislocation_core;
 
                                  /* A 3x3 Cartesian rotation tensor. */
-  glm::dmat3 rotation_tensor;
+    glm::dmat3 rotation_tensor;
 
                                  /* Text string that identifies a
 				    Burgers vector. */
-  QString burgers_name;
+    QString burgers_name;
 
                                  /* Text string that identifies a
 				    dislocation core name */
-  QString core_name;
+    QString core_name;
 
-  int i0; // znaleziony punkt
-};
+    int i0; // znaleziony punkt
+  };
+
+}                                /* namespace vecds */
+
 #endif

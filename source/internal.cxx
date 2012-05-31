@@ -34,14 +34,17 @@ Internal::Internal ()
   :
   path (VECDS_INTERNALS)
 {
+  this->actcrstr = new vecds::CrystalStructure ();
+  this->crstr    = new vecds::CrystalStructure[10];
+  this->atoms    = new vecds::Atoms ();
+  this->actdisl  = new vecds::Dislocations ();
+  this->disl     = new vecds::Dislocations[100];
+
   // Create a bunch of internals:
   this->ap       = new AtomsProperties ();
-  this->actcrstr = new CrystalStructure ();
-  this->crstr    = new CrystalStructure[10];
   this->set0     = new Settings (); 
-  this->atoms    = new Atoms ();
-  this->actdisl  = new Dislocations ();
-  this->disl     = new Dislocations[100];
+
+
   
   // Then do something here...
   this->sliderMove   = false;

@@ -64,13 +64,17 @@ class Internal
 
 
   QString current_dir;
-  Atoms* atoms;
+
+  vecds::CrystalStructure *actcrstr;
+  vecds::CrystalStructure *crstr;
+  vecds::Atoms            *atoms;
+  vecds::Dislocations     *actdisl;
+  vecds::Dislocations     *disl;
   
   AtomsProperties *ap;
-  CrystalStructure *actcrstr;
-  CrystalStructure *crstr;
+
   int numbcrstr;
-  Dislocations *actdisl;
+
   
   QString img_loaded;
   QString atoms_loaded;
@@ -96,7 +100,7 @@ class Internal
   QVector3D actPoint;
   double rad_scene;
   
-  Dislocations *disl;
+
   int ndisl;
   
   int  indMiller[6], oldMiller[6];
