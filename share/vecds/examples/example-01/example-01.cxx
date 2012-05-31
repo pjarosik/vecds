@@ -24,6 +24,7 @@
 
 
 #include "example-01.h"
+
 #include <algorithm>
 #include <cctype>
 #include <iostream>
@@ -31,6 +32,7 @@
 #include <sstream>
 #include <iomanip>
 #include <string>
+
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <gsl/gsl_math.h>
@@ -86,10 +88,10 @@ int main (int argc, char *argv[])
   sw_iter = true;
   n_dislocations = n_addAtoms = 0;
 
-  // string cd0 = current_dir;
-  // string cd1 = cd0.append ("/input/atoms.xyz");
+  // string cd0 = VECDS_EXAMPLES;
+  // string cd1 = cd0.append ("/examples-01/input/atoms.xyz");
 
-  string cd1 = VECDS_EXAMPLES;
+  string cd1 = "input/atoms.xyz";
 
   if ( !read_xyz(cd1) ) 
     {
@@ -132,8 +134,11 @@ bool read_xyz (string s0) // czyta zbiór początkowy xyz
     }
 
   int count = -1;
+
   string str1;
+
   istringstream instream;    // Declare an input string stream
+
   while ( !infile.eof() ) 
     {
       getline(infile, str1);
