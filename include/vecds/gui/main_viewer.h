@@ -34,10 +34,12 @@
 #include <QVector2D>
 #include <QVector3D>
 
-                                 // vecds includes
-#include <vecds/algebra.h>
-#include <vecds/mat9d.h>
-#include <vecds/additional.h>
+                                 // vecds base includes
+#include <vecds/base/algebra.h>
+#include <vecds/base/mat9d.h>
+#include <vecds/base/additional.h>
+#include <vecds/base/constant.h>
+
 #include <vecds/arc_ball.h>
 
 

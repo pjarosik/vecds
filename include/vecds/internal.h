@@ -29,15 +29,19 @@
 #define INTERNAL_H
 
 
+#include <QTranslator>
+#include <QVector3D>
+#include <QFile>
 #include <qglobal.h>
 
-                                 // vecds headers
-#include <vecds/base/config.h>
 
-#include <vecds/additional.h>
-#include <vecds/algebra.h>
-#include <vecds/constant.h>
-#include <vecds/function.h>
+                                 // vecds base headers
+#include <vecds/base/config.h>
+#include <vecds/base/additional.h>
+#include <vecds/base/algebra.h>
+#include <vecds/base/constant.h>
+#include <vecds/base/function.h>
+#include <vecds/base/mat9d.h>
 
                                  // forward declarations
 class MaimViewer;
@@ -125,10 +129,10 @@ class Internal
   
   void compute_rotation_tensor();
   
-  void do_atoms_rotation(Mat9d r_tens, QVector3D vec);
-  void do_invis_rotation(Mat9d r_tens, QVector3D vec);
-  void do_signes_rotation(Mat9d r_tens, QVector3D vec);
-  void do_axis_rotation(Mat9d r_tens);
+  void do_atoms_rotation (Mat9d r_tens, QVector3D vec);
+  void do_invis_rotation (Mat9d r_tens, QVector3D vec);
+  void do_signes_rotation (Mat9d r_tens, QVector3D vec);
+  void do_axis_rotation (Mat9d r_tens);
   
   void calc_disloc(int nr_atom, int d_num);
   void calc_disl0();

@@ -37,6 +37,8 @@
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_multiroots.h>
 
+#include <vecds/base/algebra.h>
+
                                  /* TODO: The structure params does
 				    what? */
 struct params 

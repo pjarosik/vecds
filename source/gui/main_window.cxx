@@ -24,18 +24,8 @@
                                  // standard C/C++
 #include <cassert>
 
-                                 // vecds dialogs includes
-#include <vecds/dialogs/help_browser.h>
-#include <vecds/dialogs/doc_browser.h>
-#include <vecds/dialogs/question.h>
-#include <vecds/dialogs/question_form.h>
-
                                  // vecds gui includes
-#include <vecds/gui/main_viewer.h>
 #include <vecds/gui/main_window.h>
-
-#include <vecds/internal.h>
-#include <vecds/constant.h>
 
 
 Internal *ActualData;

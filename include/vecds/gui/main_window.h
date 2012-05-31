@@ -33,13 +33,24 @@
 
 #include <qwt_scale_engine.h>
 
-                                 /* vecds dialogs includes */
+                                 /* vecds base includes */
 #include <vecds/base/config.h>
+#include <vecds/base/constant.h>
+#include <vecds/base/algebra.h>
+
+                                 /* vecds dialogs includes */
+#include <vecds/dialogs/help_browser.h>
+#include <vecds/dialogs/doc_browser.h>
+#include <vecds/dialogs/question.h>
+#include <vecds/dialogs/question_form.h>
+
 
                                  /* vecds gui includes */
 #include <vecds/gui/main_viewer.h>
+#include <vecds/gui/main_viewer.h>
 
-#include <vecds/algebra.h>
+#include <vecds/internal.h>
+
 
 QT_BEGIN_NAMESPACE
 

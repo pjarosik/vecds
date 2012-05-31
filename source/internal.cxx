@@ -21,7 +21,7 @@
 // -------------------------------------------------------------------
 
 #include <QTranslator>
-
+ 
                                  // vecds gui includes
 #include <vecds/gui/main_viewer.h>
 #include <vecds/gui/main_window.h>

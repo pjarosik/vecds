@@ -32,7 +32,6 @@
 #include <vecds/gui/main_viewer.h>
 
 #include <vecds/internal.h>
-#include <vecds/constant.h>
 
 extern Internal *ActualData;
 QString str1;
