@@ -13,6 +13,7 @@
 #cmakedefine VECDS_PACKAGE_BUGREPORT  "@VECDS_PACKAGE_BUGREPORT@"
 
 #cmakedefine VECDS_DOCS               "@VECDS_DOCS@"
+#cmakedefine VECDS_DATABASE           "@VECDS_DATABASE@"
 #cmakedefine VECDS_EXAMPLES           "@VECDS_EXAMPLES@"
 #cmakedefine VECDS_INTERNALS          "@VECDS_INTERNALS@"
 

@@ -219,7 +219,7 @@ void MainWindow::SL_open_atoms ()
                                  // start by opening up the default
                                  // vecds examples directory
   QString filename 
-    = QFileDialog::getOpenFileName (this, "Select atoms", VECDS_EXAMPLES, "(*.xyz *.alc)");
+    = QFileDialog::getOpenFileName (this, "Select atoms", VECDS_DATABASE, "(*.xyz *.alc)");
 
   if ((filename==ActualData->atoms_loaded) || (filename.isEmpty ())) 
     {
@@ -249,7 +249,7 @@ void MainWindow::SL_open_image ()
   qWarning ("class MainWindow::SL_open_image");
 
   QString filename 
-    = QFileDialog::getOpenFileName (this, "Select image", VECDS_EXAMPLES, "(*.png *.xpm *.jpg *.tif)");
+    = QFileDialog::getOpenFileName (this, "Select image", VECDS_DATABASE, "(*.png *.xpm *.jpg *.tif)");
 
   if (filename.isEmpty ()) 
     {
@@ -280,7 +280,7 @@ void MainWindow::SL_save_as_atoms()
                                  // Until we learn how to open windows
                                  // correctly, just dump it in this
                                  // place.... 
-  QString directory = VECDS_EXAMPLES;
+  QString directory = VECDS_DATABASE;
   ActualData->saveAtoms (directory.append ("/" + filename));
   return;
 }

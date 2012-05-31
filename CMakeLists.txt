@@ -27,6 +27,7 @@ set (VECDS_BIN                ${VECDS_PATH}/bin)
 set (VECDS_INCLUDES           ${VECDS_PATH}/include)
 set (VECDS_SHARES             ${VECDS_PATH}/share)
 ## Deep structure
+set (VECDS_DATABASE           ${VECDS_SHARES}/vecds/database)
 set (VECDS_DOCS               ${VECDS_SHARES}/vecds/doc)
 set (VECDS_EXAMPLES           ${VECDS_SHARES}/vecds/examples)
 set (VECDS_SCRIPTS            ${VECDS_SHARES}/vecds/scripts)
