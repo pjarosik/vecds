@@ -36,7 +36,7 @@
                                  /* vecds base includes */
 #include <vecds/base/config.h>
 #include <vecds/base/constant.h>
-#include <vecds/base/algebra.h>
+#include <vecds/base/integer.h>
 
                                  /* vecds dialogs includes */
 #include <vecds/dialogs/help_browser.h>

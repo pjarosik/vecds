@@ -35,8 +35,8 @@
 #include <QVector3D>
 
                                  // vecds base includes
-#include <vecds/base/algebra.h>
-#include <vecds/base/mat9d.h>
+#include <vecds/base/integer.h>
+#include <vecds/base/matrix.h>
 #include <vecds/base/additional.h>
 #include <vecds/base/constant.h>
 
