@@ -1,0 +1,20 @@
+
+These are some known bugs in vecds that should be fixed. A brief
+desciption is given, and the reporter and fixer.
+
+Known bugs: 
+
+	** Saving data does not support a file browser correctly. (TDY
+           2012/05/31).
+
+	** Tiled window managers (i3wm, at least) looses connection
+           with the graphics somehow when operating in portait mode; I
+           have no clue what does this. (TDY 2012/05/29).
+
+	** The help browser was abusing memory by creating multiple
+           copies of itself and not destroying them. This has been
+           fixed. (TDY 2012/05/05). Fixed. (TDY 2012/05/20)
+
+	** Several vecds classes were missing explicit destructors;
+           this is causing wierd untrackable behaviour. (TDY
+           2012/05/05) Fixed. (TDY, JC 2012/05/21).
