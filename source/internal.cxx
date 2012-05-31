@@ -49,9 +49,7 @@ Internal::Internal ()
   this->sliderMove   = false;
   this->img_loaded   = "none";
   this->atoms_loaded = "none";
-  
-  this->current_dir = QDir::currentPath();
-  this->current_dir.replace(QString("/bin"), QString(""));
+
 
                                  // First read in the settings.
   read_settings ();  
@@ -92,7 +90,8 @@ void Internal::init_atoms ()
 
   QFile file (path + "/atoms.babel");
 
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
+  if (!file.open(QIODevice::ReadOnly | 
+		 QIODevice::Text)) 
     {
       qWarning ("atoms.babel not found");
       return;
@@ -106,8 +105,8 @@ void Internal::init_atoms ()
       QStringList fields = line.split(' ', QString::SkipEmptyParts); 
 
       fields.removeFirst();
-      this->ap->namea[i] = fields.takeFirst();
 
+      this->ap->namea[i]      = fields.takeFirst();
       this->ap->a_rad1[i]     = fields.takeFirst().toFloat();
       this->ap->a_rad2[i]     = fields.takeFirst().toFloat();
       this->ap->atom_red[i]   = fields.takeFirst().toFloat();

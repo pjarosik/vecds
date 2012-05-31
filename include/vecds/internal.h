@@ -60,11 +60,9 @@ class Internal
                                  // friendly clases
   friend class MainViewer;
   friend class MainWindow;
-  
 
 
-  QString current_dir;
-
+                                 // general types needed...
   vecds::CrystalStructure *actcrstr;
   vecds::CrystalStructure *crstr;
   vecds::Atoms            *atoms;
@@ -73,63 +71,86 @@ class Internal
   vecds::Dislocations     *disl;
   vecds::Settings         *set0;
 
+  bool choice;
+  
   int numbcrstr;
-
+  
+  double be;
+  double bz;
   
   QString img_loaded;
   QString atoms_loaded;
   QString act_disl;
   QString act_core;
   QString act_mill;
+  
+  QVector3D a_min_;
+  QVector3D a_max_;
+  QVector3D min_;
+  QVector3D max_;
+  QVector3D cent_;
+  QVector3D axeX;
+  QVector3D axeY;
+  QVector3D axeZ;
 
-  double be, bz;
-  bool choice;
+  QVector3D invbox[8];
   
   QPixmap img;
   
   struct params p;
-  QVector3D a_min_, a_max_;
-  QVector3D min_, max_, cent_;
-  QVector3D invbox[8];
-  QVector3D axeX, axeY, axeZ;
+
   // ===================================================
+
   bool sliderMove;
   int Mode;
   double sliderValue;
   // ===================================================
-  QVector3D actPoint;
-  double rad_scene;
-  
 
+  bool visible[10];
+  
   int ndisl;
   
-  int  indMiller[6], oldMiller[6];
+  int indMiller[6];
+  int oldMiller[6];
+  
+  double mfactor;
+  double rad_scene;
   double fraction;
   
+  QVector3D actPoint;
+
   glm::dmat3 rot_tensor, rot_inv;
-  bool visible[10];
-  double mfactor;
-
-
-
   
-  void init_atoms();
-  void init_structures();
-  void read_alc_xyz(QString namea);
-  void read_img(QString iname);
-  void read_settings();
-  int which_atom(QString nam_a);
+  void init_atoms ();
+  void init_structures ();
+  void read_alc_xyz (QString namea);
+  void read_img (QString iname);
+  void read_settings ();
 
-  double read_fraction (QString line);
+  void minmax1 (double *vec, 
+		int numb, 
+		double &vmin, 
+		double &vmax);
+
+  void minmax3 (QVector3D *vec, 
+		int numb, 
+		QVector3D &vmin, 
+		QVector3D &vmax);
+
+  void processMiller (int sw, 
+		      QString rtext, 
+		      QString rtext2="");
+
+  int which_atom (QString nam_a);
+
   int lattice (int, int, int);
   int lattice2 (double, double, unsigned int);
-  void minmax3 (QVector3D *vec, int numb, QVector3D &vmin, QVector3D &vmax);
-  void minmax1 (double *vec, int numb, double &vmin, double &vmax);
-  
-  void processMiller(int sw, QString rtext, QString rtext2="");
-  bool parse_miller(QString line);
-  bool parse_core(QString line);
-  bool internal_miller(QString line2, int which, vecds::Int4 &mil);
+
+  double read_fraction (QString line);
+
+  bool parse_miller (QString line);
+  bool parse_core (QString line);
+  bool internal_miller (QString line2, int which, vecds::Int4 &mil);
   
   void compute_rotation_tensor();
   
@@ -138,21 +159,22 @@ class Internal
   void do_signes_rotation (vecds::Mat9d r_tens, QVector3D vec);
   void do_axis_rotation (vecds::Mat9d r_tens);
   
-  void calc_disloc(int nr_atom, int d_num);
-  void calc_disl0();
+  void calc_disloc (int nr_atom, int d_num);
+  void calc_disl0 ();
 
                                 /* Does something with atom numbers. */
   int atomize (const QVector3D point, 
 	       const unsigned int atom_number);
 
-  void SL_singleDisl(QVector3D r);
-  void addDisplacements();
-  void newdisl(unsigned int n_a, bool sw_iter);
+  void SL_singleDisl (QVector3D r);
+  void addDisplacements ();
+  void newdisl (unsigned int n_a, bool sw_iter);
 
-  bool eqMiller(int m1[6], int m2[6]);
-  void saveAtoms(QString sname);
+  bool eqMiller (int m1[6], int m2[6]);
+  void saveAtoms (QString sname);
 
   glm::dvec3 mixed_u(int i, glm::dvec3 rotdist, double be, double bz);
+
   glm::dmat3 mixed_beta(int i, glm::dvec3 rotdist, double be, double bz);
 
  private:
