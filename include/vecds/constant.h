@@ -70,11 +70,6 @@ namespace vecds
                                  /* Numerical value of \f$e\f$. */
     static const double e          =  2.71828182845904523536;
 
-                                 /* The unit matrix \f$I\f$. */
-    static const Mat9d unit_matrix = Mat9d(1., 0., 0.,
-					   0., 1., 0.,
-					   0., 0., 1.);
-
   }                              // namespace constant
 
 }                                // namespace vecds
