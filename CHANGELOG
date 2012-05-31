@@ -25,12 +25,12 @@ Improvments:
 
 Bug fixes:
 
+	** Several vecds classes were missing explicit destructors,
+           this has been fixed. (TDY, JC 2012/05/21).
+
 	** The help browser was abusing memory by creating multiple
            copies of itself and not destroying them. This has been
            fixed. (TDY 2012/05/20).
-
-	** Several vecds classes were missing explicit destructors,
-           this has been fixed. (TDY, JC 2012/05/21).
 
 v 0.3.* 2012/05/16
 ------------------

@@ -15,11 +15,3 @@ $ cd bin
 $ ./vecds
 
 
-Known bugs: 
-
-	** Saving data does not support a file browser correctly. (TDY
-           2012/05/31).
-
-	** The tiled window manager (i3-wm) looses connection with the
-           graphics somehow when operating in portait mode; I have no
-           clue what does this. (TDY 2012/05/29).
