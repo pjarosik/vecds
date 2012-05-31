@@ -255,16 +255,17 @@ set (vecds_sources
   ${VECDS_PATH}/source/dialogs/question
   ${VECDS_PATH}/source/dialogs/question_form
   ##
+  ${VECDS_PATH}/source/gui/main_viewer
+  ${VECDS_PATH}/source/gui/main_window
+  ${VECDS_PATH}/source/gui/vecds
+  ##
   ${VECDS_PATH}/source/arc_ball
   ${VECDS_PATH}/source/internal
-  ${VECDS_PATH}/source/main
-  ${VECDS_PATH}/source/main_viewer
-  ${VECDS_PATH}/source/main_window
   )
 
 ## Note, header files *only* determine which files will be passed over
 ## for moc generated code; thus, we do not need them all (especially,
-## we should never need "main.*")
+## we should never need the main program (vecds.cxx).
 set (vecds_headers
   ${VECDS_INCLUDES}/vecds/dialogs/monolog_base.h
   ${VECDS_INCLUDES}/vecds/dialogs/dialog_base.h
@@ -273,10 +274,11 @@ set (vecds_headers
   ${VECDS_INCLUDES}/vecds/dialogs/question.h
   ${VECDS_INCLUDES}/vecds/dialogs/question_form.h
   ##
+  ${VECDS_INCLUDES}/vecds/gui/main_viewer.h
+  ${VECDS_INCLUDES}/vecds/gui/main_window.h
+  ##
   ${VECDS_INCLUDES}/vecds/arc_ball.h
   ${VECDS_INCLUDES}/vecds/internal.h
-  ${VECDS_INCLUDES}/vecds/main_viewer.h
-  ${VECDS_INCLUDES}/vecds/main_window.h
 )
 
 qt4_wrap_cpp (vecds_headers_moc ${vecds_headers})

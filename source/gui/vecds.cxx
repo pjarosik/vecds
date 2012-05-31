@@ -28,8 +28,8 @@
 #include <QApplication>
 #include <QGLFormat>
 
-                                 // vecds headers.
-#include <vecds/main_window.h>
+                                 // vecds gui header
+#include <vecds/gui/main_window.h>
 
 
                                  // This is the main code that wraps

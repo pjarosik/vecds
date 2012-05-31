@@ -28,8 +28,9 @@
 #include <QtOpenGL>
 #include <GL/glut.h>
 
-                                 // vecds includes
-#include <vecds/main_viewer.h>
+                                 // vecds gui includes
+#include <vecds/gui/main_viewer.h>
+
 #include <vecds/internal.h>
 #include <vecds/constant.h>
 

@@ -31,12 +31,15 @@
 #include <QMainWindow>
 #include <QSlider>
 
-//#include <qwt_slider.h>
 #include <qwt_scale_engine.h>
 
-#include <vecds/algebra.h>
+                                 /* vecds dialogs includes */
 #include <vecds/base/config.h>
-#include <vecds/main_viewer.h>
+
+                                 /* vecds gui includes */
+#include <vecds/gui/main_viewer.h>
+
+#include <vecds/algebra.h>
 
 QT_BEGIN_NAMESPACE
 

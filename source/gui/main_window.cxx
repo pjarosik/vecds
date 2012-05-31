@@ -24,15 +24,17 @@
                                  // standard C/C++
 #include <cassert>
 
-                                 // vecds includes
+                                 // vecds dialogs includes
 #include <vecds/dialogs/help_browser.h>
 #include <vecds/dialogs/doc_browser.h>
 #include <vecds/dialogs/question.h>
 #include <vecds/dialogs/question_form.h>
 
-#include <vecds/main_viewer.h>
+                                 // vecds gui includes
+#include <vecds/gui/main_viewer.h>
+#include <vecds/gui/main_window.h>
+
 #include <vecds/internal.h>
-#include <vecds/main_window.h>
 #include <vecds/constant.h>
 
 

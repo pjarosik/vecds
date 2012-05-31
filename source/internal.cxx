@@ -22,8 +22,11 @@
 
 #include <QTranslator>
 
-#include <vecds/main_viewer.h>
-#include <vecds/main_window.h>
+                                 // vecds gui includes
+#include <vecds/gui/main_viewer.h>
+#include <vecds/gui/main_window.h>
+
+                                 // vecds includes
 #include <vecds/internal.h>
 
 
