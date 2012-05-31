@@ -1,7 +1,10 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski, Pawel Dluzewski and Toby D. Young.
+// Author: 
+//    Jan Cholewinski (2010)
+//    Pawel Dluzewski (2010)
+//    Toby D. Young (2010, 2012)
 //
 // Copyright (C) 2010, 2012 The vecds authors
 //

@@ -307,3 +307,4 @@ else ()
 endif ()
 
 set (EXECUTABLE_OUTPUT_PATH ${VECDS_BIN})
+
