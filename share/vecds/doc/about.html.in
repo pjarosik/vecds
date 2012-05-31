@@ -8,8 +8,9 @@
 </p>
 
 <p>The web-content of <b>vecds</b> is kindly hosted by Sourceforge
-(http://sourceforge.net) and distributed under the GNU General
-Public License version three (GPLv3).</p>
+(http://sourceforge.net) and distributed under the
+<a href="@VECDS_DOCS@/license.html">GNU General Public License
+v3.0</a>.</p>
 
 <p>For support, discussion, or complaints, or if you are interested in
 the development of <b>vecds</b>, contact
