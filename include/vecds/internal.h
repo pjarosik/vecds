@@ -68,10 +68,10 @@ class Internal
   vecds::CrystalStructure *actcrstr;
   vecds::CrystalStructure *crstr;
   vecds::Atoms            *atoms;
+  vecds::AtomProperties   *ap;
   vecds::Dislocations     *actdisl;
   vecds::Dislocations     *disl;
-  
-  AtomsProperties *ap;
+  vecds::Settings         *set0;
 
   int numbcrstr;
 
@@ -111,7 +111,7 @@ class Internal
   double mfactor;
 
 
-  Settings *set0;
+
   
   void init_atoms();
   void init_structures();

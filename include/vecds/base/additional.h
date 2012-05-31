@@ -50,37 +50,44 @@ struct params
   double u0z;
 };
 
-struct AtomsProperties
+namespace vecds
+{
+  struct AtomProperties
+  {
+    
+    AtomProperties ()
+    {}
+    
+    float a_rad1[125]; 
+    float a_rad2[125];
+    
+    float atom_red[125]; 
+    float atom_green[125]; 
+    float atom_blue[125];
+  
+    QString namea[125];
+  };
+}
+
+namespace vecds
 {
 
-  AtomsProperties ()
-  {}
-  
-  float a_rad1[125]; 
-  float a_rad2[125];
-  
-  float atom_red[125]; 
-  float atom_green[125]; 
-  float atom_blue[125];
-  
-  QString namea[125];
-};
-
-struct Settings
-{
-
-  Settings()
-  {}
-  
-  float fov;
-  double mfact;
-  bool vis[15];
+  struct Settings
+  {
+    
+    Settings()
+    {}
+    
+    float fov;
+    double mfact;
+    bool vis[15];
 
                                  /* Variable poining to the RGB colour
 				    spectrum. */
-  vecds::Int3 colour_spectrum[12];
+    vecds::Int3 colour_spectrum[12];
   
-};
+  };
+}
 
 
 
@@ -139,40 +146,40 @@ namespace vecds
                                  /* A structure that dewxcribes the
 				    crystallographic make-up of a
 				    crystal system. */
-struct CrystalStructure
-{
+  struct CrystalStructure
+  {
                                  /* The structure name */
-  QString structure_name;
+    QString structure_name;
 
                                  /* Crystallographic lengths. */
-  double a, b, c;
+    double a, b, c;
 
                                  /* Crystallographic angles. */
-  double alpha, beta, gamma;
+    double alpha, beta, gamma;
 
                                  /* TODO: WHat are these things? */
-  vecds::Mat9d c2o;
-  vecds::Mat9d o2c;
+    vecds::Mat9d c2o;
+    vecds::Mat9d o2c;
 
-  glm::dmat3 C2O;
-  glm::dmat3 O2C;
+    glm::dmat3 C2O;
+    glm::dmat3 O2C;
 
                                  /* The number of materials / chemical
 				    species */
-  unsigned int n_materials;
+    unsigned int n_materials;
 
                                  /* The number of dislocation cores */
-  unsigned int n_cores;
+    unsigned int n_cores;
 
                                  /* Type of crystal denoted by an
 				    array of unsigned integers(?) */
-  unsigned int crystal_type[20];
+    unsigned int crystal_type[20];
 
                                  /* TODO: WHat are these things? */
-  QString co_name[30];
-  QVector3D cryst[20];
-  QVector3D core[30];
-};
+    QString co_name[30];
+    QVector3D cryst[20];
+    QVector3D core[30];
+  };
 
 }                                /* namespace vecds */
 

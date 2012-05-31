@@ -34,15 +34,14 @@ Internal::Internal ()
   :
   path (VECDS_INTERNALS)
 {
+                                 // Create a bunch of internals:
   this->actcrstr = new vecds::CrystalStructure ();
   this->crstr    = new vecds::CrystalStructure[10];
   this->atoms    = new vecds::Atoms ();
+  this->ap       = new vecds::AtomProperties ();
   this->actdisl  = new vecds::Dislocations ();
   this->disl     = new vecds::Dislocations[100];
-
-  // Create a bunch of internals:
-  this->ap       = new AtomsProperties ();
-  this->set0     = new Settings (); 
+  this->set0     = new vecds::Settings (); 
 
 
   
@@ -450,7 +449,7 @@ void Internal::do_axis_rotation (vecds::Mat9d r_tens)
   this->axeZ = matvecmult(r_tens, this->axeZ);
 }
 
-void Internal::saveAtoms(QString sname)
+void Internal::saveAtoms (QString sname)
 {
   QString line;
   QFile fil(sname);
