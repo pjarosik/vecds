@@ -233,9 +233,9 @@ void Internal::init_structures()
     actcrstr->C2O = glm::dmat3(c2o0, 0, 0., 
                                c2o1, c2o4, c2o7,
                                c2o2, c2o5, c2o8);
-    actcrstr->O2C = glm::inverse(actcrstr->C2O);
-    actcrstr->c2o = Mat9d(actcrstr->C2O);
-    actcrstr->o2c = Mat9d(actcrstr->O2C);
+    actcrstr->O2C = glm::inverse (actcrstr->C2O);
+    actcrstr->c2o = vecds::Mat9d (actcrstr->C2O);
+    actcrstr->o2c = vecds::Mat9d (actcrstr->O2C);
 
     crstr[index++] = *actcrstr;
     }
@@ -440,7 +440,7 @@ void Internal::minmax1 (double *vec, int numb, double &vmin, double &vmax)
   vmin = mnx;
 }
 
-void Internal::do_axis_rotation(Mat9d r_tens)
+void Internal::do_axis_rotation (vecds::Mat9d r_tens)
 {
   this->axeX = matvecmult(r_tens, this->axeX);
   this->axeY = matvecmult(r_tens, this->axeY);
@@ -484,7 +484,7 @@ void Internal::SL_singleDisl (QVector3D rr)
     rot_tensor * actcrstr->C2O 
     * glm::dvec3 (fraction*indMiller[0], fraction*indMiller[1], fraction*indMiller[2]);
   
-  actdisl->burgers_vector = to_QV(burg_vect);
+  actdisl->burgers_vector  = vecds::to_QV (burg_vect);
   actdisl->rotation_tensor = this->rot_tensor;
   
   calc_disl0();
@@ -508,13 +508,13 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
 	   actdisl->p1.x(), actdisl->p1.y(), actdisl->p1.z(), actdisl->p2.x(), actdisl->p2.y(), actdisl->p2.z());
   
   glm::dvec3 burg_vect = rot_tensor * actcrstr->C2O * glm::dvec3(fraction*indMiller[0], fraction*indMiller[1], fraction*indMiller[2]);
-  glm::dvec3 cd        = rot_tensor * to_dvec3 (atoms->coordinates[n_a]);
+  glm::dvec3 cd        = rot_tensor * vecds::to_dvec3 (atoms->coordinates[n_a]);
   
   be = sqrt (burg_vect.x*burg_vect.x+burg_vect.y*burg_vect.y);
   bz = burg_vect.z;
 
   for (unsigned int i=0; i<atoms->n_atoms; i++) 
-    atoms->coordinates_glm[i] = rot_tensor * to_dvec3 (atoms->coordinates[i]);
+    atoms->coordinates_glm[i] = rot_tensor * vecds::to_dvec3 (atoms->coordinates[i]);
   
   if ( sw_iter ) 
     {
@@ -627,7 +627,7 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
   for (unsigned int i=0; i<atoms->n_atoms; i++) 
     {
       atoms->du[i] = rot_inv*atoms->du[i];
-      atoms->u[i] += to_QV(atoms->du[i]);
+      atoms->u[i] += vecds::to_QV (atoms->du[i]);
     }
   
   qWarning ("uwaga!");
@@ -675,7 +675,7 @@ void Internal::calc_disloc (int nr_atom,
   dislocation_core.setZ(actdisl->dislocation_core.x()*actcrstr->c2o[6] + 
 			actdisl->dislocation_core.y()*actcrstr->c2o[7]);
 
-  Mat9d rt = Mat9d(this->rot_tensor);
+  vecds::Mat9d rt = vecds::Mat9d (this->rot_tensor);
   actdisl->cd = atoms->coordinates[i0] + matvecmult(rt, dislocation_core);
   
   actdisl->i0 = i0;
@@ -684,8 +684,8 @@ void Internal::calc_disloc (int nr_atom,
 
   for (unsigned int i=0; i<atoms->n_atoms; ++i) 
     {
-      atoms->coordinates_glm[i] = rot_tensor * to_dvec3(atoms->coordinates[i]);
-      glm::dvec3 dist1 = atoms->coordinates_glm[i] - to_dvec3(actdisl->cd);
+      atoms->coordinates_glm[i] = rot_tensor * vecds::to_dvec3(atoms->coordinates[i]);
+      glm::dvec3 dist1 = atoms->coordinates_glm[i] - vecds::to_dvec3(actdisl->cd);
       atoms->du[i] = mixed_u(i, dist1, p.be, p.bz);
     }
   
@@ -817,8 +817,8 @@ void Internal::calc_disl0 ()
 
   for (unsigned int i=0; i<atoms->n_atoms; ++i) 
     { 
-      atoms->coordinates_glm[i] = rot_tensor * to_dvec3 (atoms->coordinates[i]);
-      glm::dvec3 dist1          = atoms->coordinates_glm[i] - to_dvec3(actdisl->cd);
+      atoms->coordinates_glm[i] = rot_tensor * vecds::to_dvec3 (atoms->coordinates[i]);
+      glm::dvec3 dist1          = atoms->coordinates_glm[i] - vecds::to_dvec3(actdisl->cd);
       atoms->du[i]              = mixed_u (i, dist1, be, bz);
     }
   
@@ -830,7 +830,7 @@ void Internal::calc_disl0 ()
 
 // --------------------------------------------------------------------
 
-void Internal::do_atoms_rotation(Mat9d r_tens, QVector3D vec)
+void Internal::do_atoms_rotation (vecds::Mat9d r_tens, QVector3D vec)
 {
   for (unsigned int i=0; i<this->atoms->n_atoms; ++i)
     this->atoms->coordinates[i] = matvecmult(r_tens, this->atoms->coordinates[i] - vec) + vec;
@@ -839,13 +839,13 @@ void Internal::do_atoms_rotation(Mat9d r_tens, QVector3D vec)
 }
 
 
-void Internal::do_invis_rotation(Mat9d r_tens, QVector3D vec)
+void Internal::do_invis_rotation (vecds::Mat9d r_tens, QVector3D vec)
 {
   for (int i=0; i<8; i++)
     this->invbox[i] = matvecmult(r_tens, this->invbox[i] - vec) + vec;
 }
 
-void Internal::do_signes_rotation(Mat9d r_tens, QVector3D vec)
+void Internal::do_signes_rotation (vecds::Mat9d r_tens, QVector3D vec)
 {
   for (int j=0; j<this->ndisl; j++) 
     {
@@ -925,7 +925,7 @@ int Internal::lattice2 (double sx, double sy, unsigned int nz)
 void Internal::processMiller(int sw, QString result_text, QString result_text2)
 {
   bool swb;
-  Mat9d mat, rt;
+  vecds::Mat9d mat, rt;
   glm::dmat3 rot_in;
 
   if (sw==1) 
@@ -939,15 +939,15 @@ void Internal::processMiller(int sw, QString result_text, QString result_text2)
       compute_rotation_tensor();
 
       this->rot_inv = glm::transpose(glm::inverse(this->rot_tensor));
-      mat = Mat9d(this->rot_tensor * rot_in);
-      rt = Mat9d(this->rot_tensor);
+      mat = vecds::Mat9d (this->rot_tensor * rot_in);
+      rt  = vecds::Mat9d (this->rot_tensor);
       
-      qWarning("######   rot_tensor    ###### det = %g", determinant(this->rot_tensor));
+      qWarning("######   rot_tensor    ###### det = %g", vecds::determinant (this->rot_tensor));
       qWarning ("rot 0 = %g %g %g", rt[0], rt[1], rt[2]); 
       qWarning ("rot 1 = %g %g %g", rt[3], rt[4], rt[5]); 
       qWarning ("rot 2 = %g %g %g", rt[6], rt[7], rt[8]); 
       
-      qWarning("######   mat    ###### det = %g", determinant(mat));
+      qWarning("######   mat    ###### det = %g", vecds::determinant (mat));
       qWarning ("rot 0 = %g %g %g", mat[0], mat[1], mat[2]); 
       qWarning ("rot 1 = %g %g %g", mat[3], mat[4], mat[5]); 
       qWarning ("rot 2 = %g %g %g", mat[6], mat[7], mat[8]); 

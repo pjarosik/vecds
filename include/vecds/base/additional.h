@@ -142,8 +142,9 @@ struct CrystalStructure
   double alpha, beta, gamma;
 
                                  /* TODO: WHat are these things? */
-  Mat9d c2o;
-  Mat9d o2c;
+  vecds::Mat9d c2o;
+  vecds::Mat9d o2c;
+
   glm::dmat3 C2O;
   glm::dmat3 O2C;
 
