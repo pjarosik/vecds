@@ -35,6 +35,10 @@
 				    defined there. */
 #include <vecds/base/constant.h>
 
+                                 /* and some of the functions,
+				    ie. love and beta. */
+// #include <vecds/base/function.h>
+
 #include <algorithm>
 #include <cctype>
 #include <iostream>

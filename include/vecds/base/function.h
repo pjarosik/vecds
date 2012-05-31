@@ -25,6 +25,8 @@
 #include <cassert>
 #include <math.h>
 
+#include <vecds/base/additional.h>
+
 #ifndef FUNCTION_H
 #define FUNCTION_H
 
@@ -116,7 +118,7 @@ namespace vecds
       
       if (r2<1.e-15) 
 	{
-	  qWarning ("Atom in the center of dislocation core");
+	  /* qWarning ("Atom in the center of dislocation core"); */
 
 	  gsl_matrix_set (jac, 0, 0, 1.);
 	  gsl_matrix_set (jac, 0, 1, 0.);
@@ -130,13 +132,13 @@ namespace vecds
 	} 
       else 
 	{
-	  const double a   = be/(4. * vecds::constant::pi * (1.-nu) * r2*r2);
+	  const double a   = be / (4. * vecds::constant::pi * (1.-nu) * r2*r2);
 	  const double bxx = 1. + a * yy * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2);
 	  const double byx = a * xx * ((1.-2.*nu)*x2 + (3.-2.*nu)*y2);     
-	  const double bzx = bz/(2.*vecds::constant::pi) * yy/r2;          
+	  const double bzx = bz / (2.*vecds::constant::pi) * yy/r2;          
 	  const double bxy = -a * xx * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2);    
 	  const double byy = 1. - a * yy * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2);
-	  const double bzy = bz/(2.*vecds::constant::pi) * xx/r2;                         
+	  const double bzy = bz / (2.*vecds::constant::pi) * xx/r2;                         
 	  
 	  gsl_matrix_set (jac, 0, 0, bxx);
 	  gsl_matrix_set (jac, 0, 1, bxy);

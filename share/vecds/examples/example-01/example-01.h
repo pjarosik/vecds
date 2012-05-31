@@ -71,13 +71,20 @@ struct CrysCell
   glm::dmat3 o2c;
 };
 
+
+
+
+int Love_function (const gsl_vector *x, void *par, gsl_vector *result_funct);
+
+
+
 bool read_xyz(string aname);
 void extPrint(string file_name, unsigned int nvec, glm::dvec3 *vec);
 void extPrintM(string file_name, unsigned int nvec, glm::dmat3 *mat);
 void atoms1Print(string file_name, glm::dvec3 *vec);
 void atoms2Print(string file_name, glm::dvec3 *vec1, glm::dvec3 *vec2);
 bool readProgData(string);
-int Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct);
+
 void singledisl(unsigned int n_a);
 void multdisl(int n_a, int num_rep, double distance);
 void singledisl0(int n_a, int count);
@@ -134,15 +141,15 @@ double read_fraction(string line) // czyta ułamek np. w zapisie wektora Burgers
 
 void printVec (string str, glm::dvec3 vec)
 {
-  cout << str << " =  (" << setw(15) << vec.x << setw(15) << vec.y << setw(15) << vec.z << ")" << endl;
+  std::cout << str << " =  (" << setw(15) << vec.x << setw(15) << vec.y << setw(15) << vec.z << ")" << std::endl;
 }
 
 void printMat (string str, glm::dmat3 m)
 {
-  cout << str << "    det = " << glm::determinant(m) << endl;
-  cout << " row 0 = " << setw(15) << m[0][0] << setw(15) << m[1][0] << setw(15) << m[2][0] << endl;
-  cout << " row 1 = " << setw(15) << m[0][1] << setw(15) << m[1][1] << setw(15) << m[2][1] << endl;
-  cout << " row 2 = " << setw(15) << m[0][2] << setw(15) << m[1][2] << setw(15) << m[2][2] << endl;
+  std::cout << str << "    det = " << glm::determinant(m) << std::endl;
+  std::cout << " row 0 = " << setw(15) << m[0][0] << setw(15) << m[1][0] << setw(15) << m[2][0] << std::endl;
+  std::cout << " row 1 = " << setw(15) << m[0][1] << setw(15) << m[1][1] << setw(15) << m[2][1] << std::endl;
+  std::cout << " row 2 = " << setw(15) << m[0][2] << setw(15) << m[1][2] << setw(15) << m[2][2] << std::endl;
 }
 
 int identify (string s1, int size, string words[])
@@ -202,7 +209,7 @@ bool internal_miller(string line2, int which, int *mil)//spradzenie poprawności
       numbmill = fields.size();
       if ( numbmill<3 || numbmill>4 ) 
 	{
-	  cout << "ERROR - BAD NUMBER OF MILLER INDICES 1\n";
+	  std::cout << "ERROR - BAD NUMBER OF MILLER INDICES 1\n";
 	  return false;
 	}
       for (int i=0; i<numbmill; i++) mil[i] = toInt(fields.at(i));
@@ -230,13 +237,13 @@ bool internal_miller(string line2, int which, int *mil)//spradzenie poprawności
 	}
       if ( numbmill<3 || numbmill>4 ) 
 	{
-	  cout << "ERROR - BAD NUMBER OF MILLER INDICES 2\n";
+	  std::cout << "ERROR - BAD NUMBER OF MILLER INDICES 2\n";
 	  return false;}
     } //if - else
   if ( numbmill==4 ) 
     {
       if ( (mil[0]+mil[1])!=-mil[2] )
-	cout << "ERROR BAD SUM - " << mil[0] << "  " << mil[1] << "  " << mil[2] << endl;
+	std::cout << "ERROR BAD SUM - " << mil[0] << "  " << mil[1] << "  " << mil[2] << std::endl;
       if ( which==1 ) 
 	{
 	  mil[0] -= mil[2];
@@ -266,7 +273,7 @@ miller parse_miller(string line)
   fract = (i_left1==string::npos)? 1. : read_fraction(line1.substr(0, i_left1));
   if ( i_left1>=i_right1 || i_left2>=i_right2 ) 
     {// error
-      cout << "ERROR PARENTHESES\n";
+      std::cout << "ERROR PARENTHESES\n";
       return result;
     }
   string line2 = stripBlanks(line1.substr(i_left1+1, i_right1-i_left1-1));
@@ -279,7 +286,7 @@ miller parse_miller(string line)
     } 
   else 
     { 
-      cout << "ERROR - BAD MILLER INDICES 1\n";
+      std::cout << "ERROR - BAD MILLER INDICES 1\n";
       return result;
     }
 
@@ -293,7 +300,7 @@ miller parse_miller(string line)
     } 
   else 
     {
-      cout << "ERROR - BAD MILLER INDICES 2\n";
+      std::cout << "ERROR - BAD MILLER INDICES 2\n";
       return result;
     }
 

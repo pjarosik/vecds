@@ -25,8 +25,6 @@
 #ifndef ADDITIONAL_H
 #define ADDITIONAL_H
 
-#include <qglobal.h>
-
 #include <string>
 
 #include <glm/glm.hpp>
@@ -36,8 +34,6 @@
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_multiroots.h>
-
-#include <vecds/base/algebra.h>
 
                                  /* TODO: The structure params does
 				    what? */

@@ -26,7 +26,7 @@
 #define ALGEBRA_H
 
 #include <math.h>
-#include <qglobal.h>
+#include <cassert>
 
 namespace vecds 
 {
@@ -58,14 +58,14 @@ namespace vecds
                                  /* Read/write operator */
     int &operator[] (unsigned int index) 
     {
-      Q_ASSERT (index<4);
+      assert (index<4);
       return (&i1)[index];
     }
   
                                  /* Read only operator */
     const int &operator[] (unsigned int index) const 
     {
-      Q_ASSERT(index<4);
+      assert (index<4);
       return (&i1)[index];
     }
 
@@ -97,14 +97,14 @@ namespace vecds
                                  /* Read/write operator */
     int &operator[] (unsigned int index) 
     {
-      Q_ASSERT (index<3);
+      assert (index<3);
       return (&i1)[index];
     }
     
                                  /* Read only operator */
     const int &operator[] (unsigned int index) const 
     {
-      Q_ASSERT (index<3);
+      assert (index<3);
       return (&i1)[index];
     }
   };
@@ -135,14 +135,14 @@ namespace vecds
                                  /* Read/write operator */  
     int &operator[] (unsigned int index) 
     {
-      Q_ASSERT (index<2);
+      assert (index<2);
       return (&i1)[index];
     }
 
                                  /* Read only operator */  
     const int &operator[] (unsigned int index) const 
     {
-      Q_ASSERT (index<2);
+      assert (index<2);
       return (&i1)[index];
     }
 
