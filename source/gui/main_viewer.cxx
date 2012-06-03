@@ -89,7 +89,7 @@ vecds::MainViewer::MainViewer (QWidget *parent)
   this->d_0              = 180.;
   this->VIEW_rad_fact    = 0.25;
   this->VIEW_whichRadius = 1;
-  this->mousePos         = glm::dvec3 (0., 0., 0.);
+  this->mousePos         = QVector3D (0., 0., 0.);
   
   init_spheres (8);
 
@@ -220,8 +220,8 @@ void vecds::MainViewer::paintGL ()
     }
 
   glLoadIdentity();
-  double ddx = 1.75 * (max_.x() - min_.x()) * d_x;
-  double ddy = 1.75 * (max_.y() - min_.y()) * d_y;
+  double ddx = 1.75 * (max_.x - min_.x) * d_x;
+  double ddy = 1.75 * (max_.y - min_.y) * d_y;
 
   glGetDoublev (GL_MODELVIEW_MATRIX, model_view);
   glGetDoublev (GL_PROJECTION_MATRIX, projection);
@@ -319,8 +319,8 @@ void vecds::MainViewer::prepare_scene ()
     {
       min_ = ActualData->a_min_;
       max_ = ActualData->a_max_;
-      rad_scene = qMax (qMax ((max_.x ()-min_.x ()), (max_.y ()-min_.y ())), (max_.z ()-min_.z ()));
-      qWarning("+++++++++++++++++ min_ = %g %g %g", min_.x(), min_.y(), min_.z());
+      rad_scene = std::max (std::max((max_.x-min_.x), (max_.y-min_.y)), (max_.z-min_.z));
+      qWarning("+++++++++++++++++ min_ = %g %g %g", min_.x, min_.y, min_.z);
     }
 
   distance0 = distance = (dist0/tan (fov*vecds::constant::deg2rad))*rad_scene;
@@ -331,10 +331,10 @@ void vecds::MainViewer::prepare_scene ()
   ActualData->min_      = min_;
   ActualData->max_      = max_;
   
-  xl = min_.x() - cent_.x();
-  xr = max_.x() - cent_.x();
-  yd = min_.y() - cent_.y();
-  yu = max_.y() - cent_.y();
+  xl = min_.x - cent_.x;
+  xr = max_.x - cent_.x;
+  yd = min_.y - cent_.y;
+  yu = max_.y - cent_.y;
   ActualData->cent_ = cent_;
 
   makeCurrent();
@@ -346,12 +346,12 @@ void vecds::MainViewer::prepare_scene ()
 void vecds::MainViewer::prepare_invbox (const glm::dvec3 xmin, 
 					const glm::dvec3 xmax)
 {
-  double x1 = xmin.x ();
-  double x2 = xmax.x ();
-  double y1 = xmin.y ();
-  double y2 = xmax.y ();
-  double z1 = xmin.z ();
-  double z2 = xmax.z ();
+  double x1 = xmin.x;
+  double x2 = xmax.x;
+  double y1 = xmin.y;
+  double y2 = xmax.y;
+  double z1 = xmin.z;
+  double z2 = xmax.z;
   ActualData->invbox[0] = xmin;
   ActualData->invbox[1] = glm::dvec3 (x1, y1, z2);
   ActualData->invbox[2] = glm::dvec3 (x1, y2, z2);
@@ -441,9 +441,9 @@ void vecds::MainViewer::mouseMoveEvent(QMouseEvent *event)
 	quat2matr (arcball->quaternion);
 	glm::dvec3 result = quat2euler (arcball->quaternion)*vecds::constant::rad2deg;
 	
-	if (rangle_theta!=result.x ()) 
+	if (rangle_theta!=result.x) 
 	  {
-	    rangle_theta = result.x ();
+	    rangle_theta = result.x;
 
 	    if (rangle_theta<-180.) 
 	      rangle_theta += 360.;
@@ -453,9 +453,9 @@ void vecds::MainViewer::mouseMoveEvent(QMouseEvent *event)
 
 	    emit SIG_thetaRotationChanged (int (rangle_theta));
 	  }
-	if (rangle_phi!=result.z ()) 
+	if (rangle_phi!=result.z) 
 	  {
-	    rangle_phi = result.z ();
+	    rangle_phi = result.z;
 
 	    if (rangle_phi<-90.) 
 	      rangle_phi += 180.;
@@ -465,9 +465,9 @@ void vecds::MainViewer::mouseMoveEvent(QMouseEvent *event)
 
 	    emit SIG_phiRotationChanged (int (rangle_phi));
 	  }
-	if (rangle_psi!=result.y ()) 
+	if (rangle_psi!=result.y) 
 	  {
-	    rangle_psi = result.y ();
+	    rangle_psi = result.y;
 
 	    if (rangle_psi<-180.) 
 	      rangle_psi += 180.;
@@ -589,7 +589,7 @@ void vecds::MainViewer::draw_bonds ()
 void vecds::MainViewer::draw_axis ()
 {
   const double fact = 1.0666;
-  glm::dvec3 orig = glm::dvec3(fact*(min_.x()-cent_.x()), fact*(min_.y()-cent_.y()), fact*(max_.z()-cent_.z()));
+  glm::dvec3 orig = glm::dvec3(fact*(min_.x-cent_.x), fact*(min_.y-cent_.y), fact*(max_.z-cent_.z));
   
   glPushMatrix();
   glMaterialfv(GL_FRONT, GL_AMBIENT, colorRed);
