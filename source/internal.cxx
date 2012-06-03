@@ -235,8 +235,8 @@ void Internal::init_structures()
                                c2o1, c2o4, c2o7,
                                c2o2, c2o5, c2o8);
     actcrstr->O2C = glm::inverse (actcrstr->C2O);
-    actcrstr->c2o = vecds::Mat9d (actcrstr->C2O);
-    actcrstr->o2c = vecds::Mat9d (actcrstr->O2C);
+//    actcrstr->c2o = glm::dmat3 (actcrstr->C2O);
+//    actcrstr->o2c = glm::dmat3 (actcrstr->O2C);
 
     crstr[index++] = *actcrstr;
     }
@@ -304,8 +304,8 @@ void Internal::read_settings()
 void Internal::read_alc_xyz(QString aname)
 {
 
-    this->a_min_ = QVector3D(1.e15, 1.e15, 1.e15);
-    this->a_max_ = QVector3D(-1.e15, -1.e15, -1.e15);
+    this->a_min_ = glm::dvec3(1.e15, 1.e15, 1.e15);
+    this->a_max_ = glm::dvec3(-1.e15, -1.e15, -1.e15);
 
     QFile file(aname);
 
@@ -334,8 +334,8 @@ void Internal::read_alc_xyz(QString aname)
     if ( this->atoms->n_atoms>0 ) 
       {
 	this->atoms->atom_type       = new unsigned int[this->atoms->n_atoms];
-	this->atoms->coordinates     = new QVector3D[this->atoms->n_atoms];
-	this->atoms->u               = new QVector3D[this->atoms->n_atoms];
+	this->atoms->coordinates     = new glm::dvec3[this->atoms->n_atoms];
+	this->atoms->u               = new glm::dvec3[this->atoms->n_atoms];
 	this->atoms->coordinates_glm = new glm::dvec3[this->atoms->n_atoms];
 	this->atoms->du              = new glm::dvec3[this->atoms->n_atoms];
       }
@@ -368,10 +368,10 @@ void Internal::read_alc_xyz(QString aname)
       if ( ak==0 ) qWarning("unknown atom in line nr. %d in %s",
 			    i+1, aname.toAscii().data());
       this->atoms->atom_type[i] = ak;
-      this->atoms->coordinates[i].setX (fields.takeFirst ().toDouble ());// *1.e10;
-      this->atoms->coordinates[i].setY (fields.takeFirst ().toDouble ());// *1.e10;
-      this->atoms->coordinates[i].setZ (fields.takeFirst ().toDouble ());// *1.e10;
-      this->atoms->u[i] = QVector3D(0., 0., 0.);
+      this->atoms->coordinates[i].x = fields.takeFirst ().toDouble ();// *1.e10;
+      this->atoms->coordinates[i].y = fields.takeFirst ().toDouble ();// *1.e10;
+      this->atoms->coordinates[i].z = fields.takeFirst ().toDouble ();// *1.e10;
+      this->atoms->u[i] = glm::dvec3(0., 0., 0.);
     }
     minmax3(this->atoms->coordinates, this->atoms->n_atoms, this->a_min_, this->a_max_);
     this->atoms_loaded = aname;
@@ -407,23 +407,23 @@ double Internal::read_fraction(QString line)
     return double(line.left(i_fr).toInt())/double(line.mid(i_fr+1).toInt());
 }
 
-void Internal::minmax3(QVector3D *vec, int numb, QVector3D &vmin, QVector3D &vmax)
+void Internal::minmax3(glm::dvec3 *vec, int numb, glm::dvec3 &vmin, glm::dvec3 &vmax)
 {
   double mxx = -1.e15;  double mxy = -1.e15;  double mxz= -1.e15;
   double mnx = 1.e15;   double mny = 1.e15;   double mnz= 1.e15;
 
   for (int i=0; i<numb; i++) 
     {
-      QVector3D temp = vec[i];
-      if ( temp.x()>mxx ) mxx = temp.x();
-      if ( temp.y()>mxy ) mxy = temp.y();
-      if ( temp.z()>mxz ) mxz = temp.z();
-      if ( temp.x()<mnx ) mnx = temp.x();
-      if ( temp.y()<mny ) mny = temp.y();
-      if ( temp.z()<mnz ) mnz = temp.z();
+      glm::dvec3 temp = vec[i];
+      if ( temp.x>mxx ) mxx = temp.x;
+      if ( temp.y>mxy ) mxy = temp.y;
+      if ( temp.z>mxz ) mxz = temp.z;
+      if ( temp.x<mnx ) mnx = temp.x;
+      if ( temp.y<mny ) mny = temp.y;
+      if ( temp.z<mnz ) mnz = temp.z;
     }
-  vmax = QVector3D(mxx, mxy, mxz);
-  vmin = QVector3D(mnx, mny, mnz);
+  vmax = glm::dvec3(mxx, mxy, mxz);
+  vmin = glm::dvec3(mnx, mny, mnz);
 }
 
 void Internal::minmax1 (double *vec, int numb, double &vmin, double &vmax)
@@ -441,11 +441,11 @@ void Internal::minmax1 (double *vec, int numb, double &vmin, double &vmax)
   vmin = mnx;
 }
 
-void Internal::do_axis_rotation (vecds::Mat9d r_tens)
+void Internal::do_axis_rotation (glm::dmat3 r_tens)
 {
-  this->axeX = matvecmult(r_tens, this->axeX);
-  this->axeY = matvecmult(r_tens, this->axeY);
-  this->axeZ = matvecmult(r_tens, this->axeZ);
+  this->axeX = r_tens * this->axeX;
+  this->axeY = r_tens * this->axeY;
+  this->axeZ = r_tens * this->axeZ;
 }
 
 void Internal::saveAtoms (QString sname)
@@ -464,28 +464,28 @@ void Internal::saveAtoms (QString sname)
   for (unsigned int i=0; i<atoms->n_atoms; i++)
     out << line.sprintf("%4s %12.7f %12.7f %12.7f\n",
 			ap->namea[atoms->atom_type[i]].toAscii ().data (),
-			atoms->coordinates[i].x (), 
-			atoms->coordinates[i].y (), 
-			atoms->coordinates[i].z ());
+			atoms->coordinates[i].x, 
+			atoms->coordinates[i].y, 
+			atoms->coordinates[i].z);
 }
 
 
-void Internal::SL_singleDisl (QVector3D rr)
+void Internal::SL_singleDisl (glm::dvec3 rr)
 {
   rr += this->cent_;
   actdisl->rrr = rr;// + this->cent_;
   actdisl->burgers_name = this->act_disl;
-  actdisl->p1 = QVector3D (rr.x(), rr.y (), this->a_min_.z ());
-  actdisl->p2 = QVector3D (rr.x(), rr.y (), this->a_max_.z ());
+  actdisl->p1 = glm::dvec3 (rr.x, rr.y, this->a_min_.z);
+  actdisl->p2 = glm::dvec3 (rr.x, rr.y, this->a_max_.z);
   qWarning("SL_singleDisl - p1, p2 - (%g %g %g) (%g %g %g)",
-	   actdisl->p1.x (), actdisl->p1.y (), actdisl->p1.z (), 
-	   actdisl->p2.x (), actdisl->p2.y (), actdisl->p2.z ());
+	   actdisl->p1.x, actdisl->p1.y, actdisl->p1.z, 
+	   actdisl->p2.x, actdisl->p2.y, actdisl->p2.z);
   
   glm::dvec3 burg_vect = 
     rot_tensor * actcrstr->C2O 
     * glm::dvec3 (fraction*indMiller[0], fraction*indMiller[1], fraction*indMiller[2]);
   
-  actdisl->burgers_vector  = vecds::to_QV (burg_vect);
+  actdisl->burgers_vector  = burg_vect;
   actdisl->rotation_tensor = this->rot_tensor;
   
   calc_disl0();
@@ -493,29 +493,29 @@ void Internal::SL_singleDisl (QVector3D rr)
   disl[ndisl++] = *actdisl;
   
   qWarning("SINGLE DISL %d,  rrr= (%g %g %g)", ndisl-1, 
-	   actdisl->rrr.x(), actdisl->rrr.y(), actdisl->rrr.z());
+	   actdisl->rrr.x, actdisl->rrr.y,  actdisl->rrr.z);
 }
 
 
 void Internal::newdisl (unsigned int n_a, bool sw_iter)
 {
   qWarning("newdisl");
-  QVector3D rr = this->atoms->coordinates[n_a];// + this->cent_;
+  glm::dvec3 rr = this->atoms->coordinates[n_a];// + this->cent_;
   actdisl->rrr = rr;// + this->cent_;
   actdisl->burgers_name = this->act_disl;
-  actdisl->p1 = QVector3D(rr.x(), rr.y(), this->a_min_.z());
-  actdisl->p2 = QVector3D(rr.x(), rr.y(), this->a_max_.z());
+  actdisl->p1 = glm::dvec3(rr.x, rr.y, this->a_min_.z);
+  actdisl->p2 = glm::dvec3(rr.x, rr.y, this->a_max_.z);
   qWarning("SL_newDisl - p1, p2 - (%g %g %g) (%g %g %g)",
-	   actdisl->p1.x(), actdisl->p1.y(), actdisl->p1.z(), actdisl->p2.x(), actdisl->p2.y(), actdisl->p2.z());
+	   actdisl->p1.x, actdisl->p1.y, actdisl->p1.z, actdisl->p2.x, actdisl->p2.y, actdisl->p2.z);
   
   glm::dvec3 burg_vect = rot_tensor * actcrstr->C2O * glm::dvec3(fraction*indMiller[0], fraction*indMiller[1], fraction*indMiller[2]);
-  glm::dvec3 cd        = rot_tensor * vecds::to_dvec3 (atoms->coordinates[n_a]);
+  glm::dvec3 cd        = rot_tensor * atoms->coordinates[n_a];
   
   be = sqrt (burg_vect.x*burg_vect.x+burg_vect.y*burg_vect.y);
   bz = burg_vect.z;
 
   for (unsigned int i=0; i<atoms->n_atoms; i++) 
-    atoms->coordinates_glm[i] = rot_tensor * vecds::to_dvec3 (atoms->coordinates[i]);
+    atoms->coordinates[i] = rot_tensor * atoms->coordinates[i];
   
   if ( sw_iter ) 
     {
@@ -628,14 +628,14 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
   for (unsigned int i=0; i<atoms->n_atoms; i++) 
     {
       atoms->du[i] = rot_inv*atoms->du[i];
-      atoms->u[i] += vecds::to_QV (atoms->du[i]);
+      atoms->u[i] += atoms->du[i];
     }
   
   qWarning ("uwaga!");
   disl[ndisl++] = *actdisl;
 
   qWarning ("NEW DISL %d,  rrr= (%g %g %g)", ndisl-1, 
-	    actdisl->rrr.x (), actdisl->rrr.y (), actdisl->rrr.z ());
+	    actdisl->rrr.x, actdisl->rrr.y, actdisl->rrr.z);
   
 }
 
@@ -646,7 +646,7 @@ void Internal::addDisplacements ()
   for (unsigned int i=0; i<atoms->n_atoms; ++i) 
     {
       atoms->coordinates[i] += atoms->u[i];
-      atoms->u[i] = QVector3D (0., 0., 0.);
+      atoms->u[i] = glm::dvec3 (0., 0., 0.);
     }
 }
 
@@ -658,35 +658,35 @@ void Internal::calc_disloc (int nr_atom,
   
   int i0 = atomize (actdisl->rrr, nr_atom);
   qWarning("SINGLE DISL  num=%d - i0=%d - coordinates=(%g %g %g)", disl_num, i0,
-	   atoms->coordinates[i0].x (), 
-	   atoms->coordinates[i0].y (), 
-	   atoms->coordinates[i0].z ());
+	   atoms->coordinates[i0].x, 
+	   atoms->coordinates[i0].y, 
+	   atoms->coordinates[i0].z);
 
   if (i0==-1) 
     qWarning("Error i0 for %d dislocation\n", ndisl);
 
-  QVector3D dislocation_core;
+  glm::dvec3 dislocation_core;
   
-  dislocation_core.setX(actdisl->dislocation_core.x()*actcrstr->c2o[0] + 
-			actdisl->dislocation_core.y()*actcrstr->c2o[1]);
+  dislocation_core.setX(actdisl->dislocation_core.x*actcrstr->c2o[0] + 
+			actdisl->dislocation_core.y*actcrstr->c2o[1]);
   
-  dislocation_core.setY(actdisl->dislocation_core.x()*actcrstr->c2o[3] + 
-			actdisl->dislocation_core.y()*actcrstr->c2o[4]);
+  dislocation_core.setY(actdisl->dislocation_core.x*actcrstr->c2o[3] + 
+			actdisl->dislocation_core.y*actcrstr->c2o[4]);
   
-  dislocation_core.setZ(actdisl->dislocation_core.x()*actcrstr->c2o[6] + 
-			actdisl->dislocation_core.y()*actcrstr->c2o[7]);
+  dislocation_core.setZ(actdisl->dislocation_core.x*actcrstr->c2o[6] + 
+			actdisl->dislocation_core.y*actcrstr->c2o[7]);
 
-  vecds::Mat9d rt = vecds::Mat9d (this->rot_tensor);
-  actdisl->cd = atoms->coordinates[i0] + matvecmult(rt, dislocation_core);
+//  vecds::Mat9d rt = vecds::Mat9d (this->rot_tensor);
+  actdisl->cd = atoms->coordinates[i0] + this->rot_tensor * dislocation_core);
   
   actdisl->i0 = i0;
   qWarning("SINGLE DISL corrected coordinates = (%g %g %g),  i0=%d", 
-	   actdisl->cd.x(), actdisl->cd.y(), actdisl->cd.z(), i0);
+	   actdisl->cd.x, actdisl->cd.y, actdisl->cd.z, i0);
 
   for (unsigned int i=0; i<atoms->n_atoms; ++i) 
     {
-      atoms->coordinates_glm[i] = rot_tensor * vecds::to_dvec3(atoms->coordinates[i]);
-      glm::dvec3 dist1 = atoms->coordinates_glm[i] - vecds::to_dvec3(actdisl->cd);
+      atoms->coordinates[i] = rot_tensor * atoms->coordinates[i];
+      glm::dvec3 dist1 = atoms->coordinates[i] - actdisl->cd;
       atoms->du[i] = mixed_u(i, dist1, p.be, p.bz);
     }
   
@@ -697,7 +697,7 @@ void Internal::calc_disloc (int nr_atom,
   disl[ndisl++] = *actdisl;
 
   qWarning("NEW DISL %d,  rrr= (%g %g %g)", ndisl-1, 
-	   actdisl->rrr.x(), actdisl->rrr.y(), actdisl->rrr.z());
+	   actdisl->rrr.x, actdisl->rrr.y, actdisl->rrr.z);
   
   qWarning("Mixed_u end");
 }
@@ -764,7 +764,7 @@ glm::dmat3 Internal::mixed_beta (int i, glm::dvec3 rotdist, double be, double bz
 
 
 
-int Internal::atomize (const QVector3D    point, 
+int Internal::atomize (const glm::dvec3    point, 
 		       const unsigned int atom_number)
 {
   int i0          = -1;
@@ -831,27 +831,27 @@ void Internal::calc_disl0 ()
 
 // --------------------------------------------------------------------
 
-void Internal::do_atoms_rotation (vecds::Mat9d r_tens, QVector3D vec)
+void Internal::do_atoms_rotation (glm::dmat3 r_tens, glm::dvec3 vec)
 {
   for (unsigned int i=0; i<this->atoms->n_atoms; ++i)
-    this->atoms->coordinates[i] = matvecmult(r_tens, this->atoms->coordinates[i] - vec) + vec;
+    this->atoms->coordinates[i] = (r_tens * (this->atoms->coordinates[i] - vec)) + vec;
 
   minmax3(atoms->coordinates, atoms->n_atoms, a_min_, a_max_);
 }
 
 
-void Internal::do_invis_rotation (vecds::Mat9d r_tens, QVector3D vec)
+void Internal::do_invis_rotation (glm::dmat3 r_tens, glm::dvec3 vec)
 {
   for (int i=0; i<8; i++)
-    this->invbox[i] = matvecmult(r_tens, this->invbox[i] - vec) + vec;
+    this->invbox[i] = (r_tens * (this->>invbox[i] - vec)) + vec;
 }
 
-void Internal::do_signes_rotation (vecds::Mat9d r_tens, QVector3D vec)
+void Internal::do_signes_rotation (glm::dmat3 r_tens, glm::dvec3 vec)
 {
   for (int j=0; j<this->ndisl; j++) 
     {
-      disl[j].p1 = matvecmult(r_tens, disl[j].p1 - vec) + vec;
-      disl[j].p2 = matvecmult(r_tens, disl[j].p2 - vec) + vec;
+      disl[j].p1 = (r_tens * (disl[j].p1 - vec)) + vec;
+      disl[j].p2 = (r_tens * (disl[j].p2 - vec)) + vec;
     }
 }
 
@@ -878,11 +878,11 @@ int Internal::lattice(int nx, int ny, int nz)
 	      for (unsigned int an=0; an<this->actcrstr->n_materials; an++) 
 		{
 		  
-		  glm::dvec3 hic = glm::dvec3(double(i)+this->actcrstr->cryst[an].x(),
-					      double(j)+this->actcrstr->cryst[an].y(),
-					      double(k)+this->actcrstr->cryst[an].z());
+		  glm::dvec3 hic = glm::dvec3(double(i)+this->actcrstr->cryst[an].x,
+					      double(j)+this->actcrstr->cryst[an].y,
+					      double(k)+this->actcrstr->cryst[an].z);
 		  glm::dvec3 vvv = actcrstr->C2O * hic;
-		  this->atoms->coordinates[m] = QVector3D(vvv.x, vvv.y, vvv.z);
+		  this->atoms->coordinates[m] = vvv;//glm::dvec3(vvv.x, vvv.y, vvv.z);
 		  this->atoms->atom_type[m++] = this->actcrstr->crystal_type[an];
 		}
 	    }
@@ -911,9 +911,9 @@ int Internal::lattice2 (double sx, double sy, unsigned int nz)
 	       {
 		 for (unsigned int an=0; an<this->actcrstr->n_materials; an++) 
 		   {
-		     glm::dvec3 ccc = glm::dvec3(this->actcrstr->cryst[an].x(), this->actcrstr->cryst[an].y(), this->actcrstr->cryst[an].z());
+		     glm::dvec3 ccc = glm::dvec3(this->actcrstr->cryst[an].x, this->actcrstr->cryst[an].y, this->actcrstr->cryst[an].z);
 		     glm::dvec3 vvv = hic + actcrstr->C2O*ccc;
-		     this->atoms->coordinates[m] = QVector3D(vvv.x, vvv.y, vvv.z);
+		     this->atoms->coordinates[m] = vvv;
 		     this->atoms->atom_type[m++] = this->actcrstr->crystal_type[an];
 		   }
 	       }
@@ -926,7 +926,7 @@ int Internal::lattice2 (double sx, double sy, unsigned int nz)
 void Internal::processMiller(int sw, QString result_text, QString result_text2)
 {
   bool swb;
-  vecds::Mat9d mat, rt;
+  glm::dmat3 mat;
   glm::dmat3 rot_in;
 
   if (sw==1) 
@@ -940,8 +940,8 @@ void Internal::processMiller(int sw, QString result_text, QString result_text2)
       compute_rotation_tensor();
 
       this->rot_inv = glm::transpose(glm::inverse(this->rot_tensor));
-      mat = vecds::Mat9d (this->rot_tensor * rot_in);
-      rt  = vecds::Mat9d (this->rot_tensor);
+      mat = this->rot_tensor * rot_in;
+//      rt  = vecds::Mat9d (this->rot_tensor);
       
       qWarning("######   rot_tensor    ###### det = %g", vecds::determinant (this->rot_tensor));
       qWarning ("rot 0 = %g %g %g", rt[0], rt[1], rt[2]); 
@@ -1088,7 +1088,7 @@ bool Internal::parse_core (QString line)
 	} // for
 
       int nc = ++(actcrstr->n_cores);
-      actdisl->dislocation_core = actcrstr->core[nc] = QVector3D(oth_disl1, oth_disl2, oth_disl3);
+      actdisl->dislocation_core = actcrstr->core[nc] = glm::dvec3(oth_disl1, oth_disl2, oth_disl3);
       if (act_core.isEmpty()) 
 	actcrstr->co_name[nc].sprintf("core_nr_%d", nc);
       else                      

@@ -111,7 +111,7 @@ namespace vecds
     unsigned int n_bonds;
 
                                  /* Array holding a set of coordinates */
-    QVector3D *coordinates;
+    glm::dvec3 *coordinates;
 
                                  /* Same as above, but a glm
 				    copy. This is a particuarily
@@ -120,7 +120,7 @@ namespace vecds
 
                                  /* TODO: WHat are these? */
     glm::dvec3 *du;
-    QVector3D  *u;
+    glm::dvec3  *u;
     
                                  /* An array of integers describing
 				    the atom type */
@@ -154,8 +154,8 @@ namespace vecds
     double alpha, beta, gamma;
 
                                  /* TODO: WHat are these things? */
-    vecds::Mat9d c2o;
-    vecds::Mat9d o2c;
+//    vecds::Mat9d c2o;
+//    vecds::Mat9d o2c;
 
     glm::dmat3 C2O;
     glm::dmat3 O2C;
@@ -189,30 +189,30 @@ namespace vecds
     Dislocations ()
     {}
   
-    QVector3D rrr; // współrz. punktu przkazanego z viewera (Mviewer::SIG_actPoint, Mainwindow::SL_actPoint
+    glm::dvec3 rrr; // współrz. punktu przkazanego z viewera (Mviewer::SIG_actPoint, Mainwindow::SL_actPoint
   
                                  /* Vector defining the relative
 				    coordinates of the "top" of a line
 				    dislocation. */
-    QVector3D p1; 
+    glm::dvec3 p1; 
   
                                  /* Vector defining the relative
 				    coordinates of the "tbottom" of a
 				    line dislocation. */
-    QVector3D p2;
+    glm::dvec3 p2;
   
-    QVector3D cd; // wpółrzędne dyslokacji brane do obliczeń /po znalezieniu punktu i0/
+    glm::dvec3 cd; // wpółrzędne dyslokacji brane do obliczeń /po znalezieniu punktu i0/
   
                                  /* Three-dimensional vector that
 				    describes the orientation of the
 				    Burgers vector of a
 				    dislocation. */
-    QVector3D burgers_vector;
+    glm::dvec3 burgers_vector;
 
                                  /* Three-dimensional vector that
 				    describes the position of the core
 				    of a dislocation. */
-    QVector3D dislocation_core;
+    glm::dvec3 dislocation_core;
 
                                  /* A 3x3 Cartesian rotation tensor. */
     glm::dmat3 rotation_tensor;

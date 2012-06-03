@@ -90,7 +90,14 @@ namespace vecds
     void SIG_xMovementChanged(int);
     void SIG_yMovementChanged(int);
     void SIG_zMovementChanged(int);
-    
+/*
+    void SIG_phiRotationChanged(int);
+    void SIG_thetaRotationChanged(double);
+    void SIG_psiRotationChanged(double);
+    void SIG_xMovementChanged(double);
+    void SIG_yMovementChanged(double);
+    void SIG_zMovementChanged(double);
+*/
     void SIG_actPoint(QVector3D res);
     void SIG_actPosition(QVector3D res);
     
@@ -127,8 +134,8 @@ namespace vecds
     void prepare_scene ();
 
                                  // TODO: document
-    void prepare_invbox (const QVector3D, 
-			 const QVector3D);
+    void prepare_invbox (const glm::dvec3, 
+			 const glm::dvec3);
 
                                  // TODO: document
     void prepare_axis ();
@@ -139,28 +146,28 @@ namespace vecds
     
 
     
-    void arrow(QVector3D orig, QVector3D vect, double fact, double sm);
+    void arrow(glm::dvec3 orig, glm::dvec3 vect, double fact, double sm);
     void drawBox0(float size);
     void draw_arrows(double f);
     void drawBackground();
-    void drawTexture(GLuint tex, QVector3D p1, QVector3D p2, QVector3D p3, QVector3D p4);
+    void drawTexture(GLuint tex, glm::dvec3 p1, glm::dvec3 p2, glm::dvec3 p3, glm::dvec3 p4);
     
     QVector3D getOGLPos(int, int);
     QVector3D getMousePos(int, int);
     
     void drawBox(double v[8][3]/*, double norm_v[8][3]*/);
     void drawInvisBox();
-    void set_v(double v[8][3], double norm_v[8][3], QVector3D p1, QVector3D p2);
+    void set_v(double v[8][3], double norm_v[8][3], glm::dvec3 p1, glm::dvec3 p2);
     void draw_numbers();
     
     void doGLdisloc();
     void paintEvent();
-    void getAxisAngle(const QQuaternion q, QVector3D &v, double &ang);
+    void getAxisAngle(const QQuaternion q, glm::dvec3 &v, double &ang);
     void euler2matr();
     
     QVector2D normalizeMouse(QPoint qp);
     void quat2matr(QQuaternion q);
-    QVector3D quat2euler(QQuaternion q);
+    glm::dvec3 quat2euler(QQuaternion q);
     QQuaternion quatfromEuler();
 
                                  /* number of atoms in this
@@ -173,10 +180,10 @@ namespace vecds
   
 
     
-    QVector3D* coord;
+    glm::dvec3* coord;
     int* a_kind;
     vecds::Int2* bonds;
-    QVector3D min_, max_, a_min_, a_max__;
+    glm::dvec3 min_, max_, a_min_, a_max__;
     
     GLuint textures[100];
     GLuint background;
@@ -210,7 +217,7 @@ namespace vecds
     double* transformM;
     double d_x, d_y, d_0;
 
-    QVector3D axis;
+    glm::dvec3 axis;
     double xl, xr, yd, yu;
     GLuint Pixmap2texture(QPixmap *pix);
     GLuint image2texture(QImage *bmp);
@@ -220,7 +227,7 @@ namespace vecds
     double distance, dist0, distance0;
     
     int mmx, mmy;
-    QVector3D cent_;
+    glm::dvec3 cent_;
     float fov;
     
     

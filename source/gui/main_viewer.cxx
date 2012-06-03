@@ -89,7 +89,7 @@ vecds::MainViewer::MainViewer (QWidget *parent)
   this->d_0              = 180.;
   this->VIEW_rad_fact    = 0.25;
   this->VIEW_whichRadius = 1;
-  this->mousePos         = QVector3D (0., 0., 0.);
+  this->mousePos         = glm::dvec3 (0., 0., 0.);
   
   init_spheres (8);
 
@@ -311,8 +311,8 @@ void vecds::MainViewer::prepare_scene ()
   if (ActualData->atoms_loaded=="none") 
     {
       qWarning("******** none atoms, none fems *********");
-      min_ = QVector3D (-5., -5., -5);
-      max_ = QVector3D (5., 5., 5.);
+      min_ = glm::dvec3 (-5., -5., -5);
+      max_ = glm::dvec3 (5., 5., 5.);
       rad_scene = 10.;
     } 
   else 
@@ -343,8 +343,8 @@ void vecds::MainViewer::prepare_scene ()
   std::cout << "class MainViewer (prepare_scene): successfully initialized the scene." << std::endl;
 }
 
-void vecds::MainViewer::prepare_invbox (const QVector3D xmin, 
-					const QVector3D xmax)
+void vecds::MainViewer::prepare_invbox (const glm::dvec3 xmin, 
+					const glm::dvec3 xmax)
 {
   double x1 = xmin.x ();
   double x2 = xmax.x ();
@@ -353,22 +353,22 @@ void vecds::MainViewer::prepare_invbox (const QVector3D xmin,
   double z1 = xmin.z ();
   double z2 = xmax.z ();
   ActualData->invbox[0] = xmin;
-  ActualData->invbox[1] = QVector3D (x1, y1, z2);
-  ActualData->invbox[2] = QVector3D (x1, y2, z2);
-  ActualData->invbox[3] = QVector3D (x1, y2, z1);
-  ActualData->invbox[4] = QVector3D (x2, y1, z1);
-  ActualData->invbox[5] = QVector3D (x2, y1, z2);
+  ActualData->invbox[1] = glm::dvec3 (x1, y1, z2);
+  ActualData->invbox[2] = glm::dvec3 (x1, y2, z2);
+  ActualData->invbox[3] = glm::dvec3 (x1, y2, z1);
+  ActualData->invbox[4] = glm::dvec3 (x2, y1, z1);
+  ActualData->invbox[5] = glm::dvec3 (x2, y1, z2);
   ActualData->invbox[6] = xmax;
-  ActualData->invbox[7] = QVector3D (x2, y2, z1);
+  ActualData->invbox[7] = glm::dvec3 (x2, y2, z1);
 }
 
 void vecds::MainViewer::prepare_axis ()
 {
   double length = 0.1 * rad_scene;
 
-  ActualData->axeX = QVector3D (length, 0.0, 0.0);
-  ActualData->axeY = QVector3D (0.0, length, 0.0);
-  ActualData->axeZ = QVector3D (0.0, 0.0, length);
+  ActualData->axeX = glm::dvec3 (length, 0.0, 0.0);
+  ActualData->axeY = glm::dvec3 (0.0, length, 0.0);
+  ActualData->axeZ = glm::dvec3 (0.0, 0.0, length);
 }
 
 // ------------------------------------------------------------
@@ -439,7 +439,7 @@ void vecds::MainViewer::mouseMoveEvent(QMouseEvent *event)
 	arcball->drag(mousePt);
 	
 	quat2matr (arcball->quaternion);
-	QVector3D result = quat2euler (arcball->quaternion)*vecds::constant::rad2deg;
+	glm::dvec3 result = quat2euler (arcball->quaternion)*vecds::constant::rad2deg;
 	
 	if (rangle_theta!=result.x ()) 
 	  {
@@ -533,13 +533,13 @@ void vecds::MainViewer::draw_atoms ()
   for (unsigned int i=0; i<ActualData->atoms->n_atoms; i++) 
     {
       unsigned int aki = ActualData->atoms->atom_type[i];
-      QVector3D trans = ActualData->atoms->coordinates[i] - cent_;
+      glm::dvec3 trans = ActualData->atoms->coordinates[i] - cent_;
       if ( i==0 ) 
 	{
-	  qWarning ("aki=%d, trans=(%g, %g, %g)", aki, trans.x(), trans.y(), trans.z());
+	  qWarning ("aki=%d, trans=(%g, %g, %g)", aki, trans.x, trans.y, trans.z);
 	}
       glPushMatrix();
-      glTranslated(trans.x(), trans.y(), trans.z());
+      glTranslated(trans.x, trans.y, trans.z);
       a_color[0] = ActualData->ap->atom_red[aki];
       a_color[1] = ActualData->ap->atom_green[aki];
       a_color[2] = ActualData->ap->atom_blue[aki];
@@ -567,14 +567,14 @@ void vecds::MainViewer::draw_bonds ()
       
       glPushMatrix();
       
-      QVector3D temp1 = ActualData->atoms->coordinates[a2] - ActualData->atoms->coordinates[a1];
+      glm::dvec3 temp1 = ActualData->atoms->coordinates[a2] - ActualData->atoms->coordinates[a1];
       double dist = temp1.length();
       double invnorm = 1.0 / dist;
-      QVector3D temp2 = QVector3D(-temp1.y()*invnorm, temp1.x()*invnorm, 0.0);
-      QVector3D trans = ActualData->atoms->coordinates[a1] - cent_;
+      glm::dvec3 temp2 = glm::dvec3(-temp1.y*invnorm, temp1.x*invnorm, 0.0);
+      glm::dvec3 trans = ActualData->atoms->coordinates[a1] - cent_;
       
-      glTranslated (trans.x(), trans.y(), trans.z());
-      glRotated (vecds::constant::rad2deg*acos(temp1.z()*invnorm), temp2.x(), temp2.y(), temp2.z());
+      glTranslated (trans.x, trans.y, trans.z);
+      glRotated (vecds::constant::rad2deg*acos(temp1.z*invnorm), temp2.x, temp2.y, temp2.z);
       
       GLUquadricObj *qobj = gluNewQuadric();
       gluCylinder(qobj, 0.05, 0.05, dist, 16, 8);
@@ -589,7 +589,7 @@ void vecds::MainViewer::draw_bonds ()
 void vecds::MainViewer::draw_axis ()
 {
   const double fact = 1.0666;
-  QVector3D orig = QVector3D(fact*(min_.x()-cent_.x()), fact*(min_.y()-cent_.y()), fact*(max_.z()-cent_.z()));
+  glm::dvec3 orig = glm::dvec3(fact*(min_.x()-cent_.x()), fact*(min_.y()-cent_.y()), fact*(max_.z()-cent_.z()));
   
   glPushMatrix();
   glMaterialfv(GL_FRONT, GL_AMBIENT, colorRed);
@@ -612,17 +612,17 @@ void vecds::MainViewer::draw_axis ()
   makeCurrent();
 }
 
-void vecds::MainViewer::arrow (QVector3D orig, QVector3D vect, double fact, double sm)
+void vecds::MainViewer::arrow (glm::dvec3 orig, glm::dvec3 vect, double fact, double sm)
 {
   vect           *= (1.0 - fact);
   double dist1    = vect.length();
   double dist2    = dist1 * ( fact/(1.0-fact) );
   double invnorm  = 1.0 / dist1;
-  QVector3D temp1 = QVector3D(-vect.y()*invnorm, vect.x()*invnorm, 0.0);
-  double ang      = vecds::constant::rad2deg*acos(vect.z()*invnorm);
+  glm::dvec3 temp1 = glm::dvec3(-vect.y*invnorm, vect.x*invnorm, 0.0);
+  double ang      = vecds::constant::rad2deg*acos(vect.z*invnorm);
 
-  glTranslated(orig.x(), orig.y(), orig.z());
-  glRotated(ang, temp1.x(), temp1.y(), temp1.z());
+  glTranslated(orig.x, orig.y, orig.z);
+  glRotated(ang, temp1.x, temp1.y, temp1.z);
   GLUquadricObj *qobj = gluNewQuadric();
   gluCylinder(qobj, sm, sm, dist1, 16, 8);
   gluDeleteQuadric(qobj);
@@ -828,18 +828,18 @@ void vecds::MainViewer::doGLdisloc ()
   if ( ActualData->ndisl<=0 ) return;
   for (int i=0; i<ActualData->ndisl; ++i) 
     { 
-      qWarning("doGLdisloc  --   rrr=%g, %g, %g", ActualData->disl[i].rrr.x(), ActualData->disl[i].rrr.y(),
-	       ActualData->disl[i].rrr.z());
+      qWarning("doGLdisloc  --   rrr=%g, %g, %g", ActualData->disl[i].rrr.x, ActualData->disl[i].rrr.y,
+	       ActualData->disl[i].rrr.z);
       glPushMatrix();
-      QVector3D p1    = ActualData->disl[i].p1 - cent_;
-      QVector3D p2    = ActualData->disl[i].p2 - cent_;
-      QVector3D temp1 = p2 - p1;
+      glm::dvec3 p1    = ActualData->disl[i].p1 - cent_;
+      glm::dvec3 p2    = ActualData->disl[i].p2 - cent_;
+      glm::dvec3 temp1 = p2 - p1;
       double dist     = temp1.length();
       double invnorm  = 1.0 / dist;
-      QVector3D temp2 = QVector3D(-temp1.y()*invnorm, temp1.x()*invnorm, 0.0);
+      glm::dvec3 temp2 = glm::dvec3(-temp1.y*invnorm, temp1.x*invnorm, 0.0);
       
-      glTranslated (p1.x(), p1.y(), p1.z());
-      glRotated (vecds::constant::rad2deg*acos(temp1.z()*invnorm), temp2.x(), temp2.y(), temp2.z());
+      glTranslated (p1.x, p1.y, p1.z);
+      glRotated (vecds::constant::rad2deg*acos(temp1.z*invnorm), temp2.x, temp2.y, temp2.z);
       glMaterialfv (GL_FRONT, GL_AMBIENT_AND_DIFFUSE, cube_mat11);
       GLUquadricObj *qobj = gluNewQuadric();
       gluCylinder(qobj, 0.15, 0.15, dist, 16, 8);
@@ -971,12 +971,12 @@ void vecds::MainViewer::quat2matr (QQuaternion q)
   transformM[9] = 2.*(tmp1 + tmp2)*invs;
   transformM[6] = 2.*(tmp1 - tmp2)*invs;
   transformM[3] = transformM[7] = transformM[11] = 
-    transformM[12] = transformM[13] = transformM[14] = 0.;
+  transformM[12] = transformM[13] = transformM[14] = 0.;
   transformM[15] = 1.;
 }
 
 
-QVector3D vecds::MainViewer::quat2euler (QQuaternion q)
+glm::dvec3 vecds::MainViewer::quat2euler (QQuaternion q)
 {
   double head, att, b;
   double test = q.x()*q.y() + q.z()*q.scalar();
@@ -985,14 +985,14 @@ QVector3D vecds::MainViewer::quat2euler (QQuaternion q)
       head = 2.*atan2(q.x(), q.scalar());
       att = vecds::constant::pi_2;
       b = 0.;
-      return QVector3D(head, att, b);
+      return glm::dvec3(head, att, b);
     }
   if (test < -0.499) 
     { // singularity at south pole
       head = -2.*atan2(q.x(), q.scalar());
       att = - vecds::constant::pi_2;
       b = 0.;
-      return QVector3D(head, att, b);
+      return glm::dvec3(head, att, b);
     }
   double sqx = q.x()*q.x();
   double sqy = q.y()*q.y();
@@ -1000,7 +1000,7 @@ QVector3D vecds::MainViewer::quat2euler (QQuaternion q)
   head = atan2(2.*q.y()*q.scalar()-2.*q.x()*q.z(), 1. - 2.*sqy - 2.*sqz);
   att = asin(2.*test);
   b = atan2(2.*q.x()*q.scalar()-2.*q.y()*q.z(), 1. - 2.*sqx - 2.*sqz);
-  return QVector3D(head, att, b);
+  return glm::dvec3(head, att, b);
 }
 
 QQuaternion vecds::MainViewer::quatfromEuler ()
@@ -1022,7 +1022,7 @@ QQuaternion vecds::MainViewer::quatfromEuler ()
 		     c1c2*s3 + s1s2*c3, s1*c2*c3 + c1*s2*s3, c1*s2*c3 - s1*c2*s3);
 }
 
-void vecds::MainViewer::getAxisAngle (const QQuaternion q, QVector3D &v, double &ang)
+void vecds::MainViewer::getAxisAngle (const QQuaternion q, glm::dvec3 &v, double &ang)
 {
   double temp_angle = acos(q.scalar());
   double scale = sqrt(q.x()*q.x() + q.y()*q.y() + q.z()*q.z());
@@ -1030,14 +1030,13 @@ void vecds::MainViewer::getAxisAngle (const QQuaternion q, QVector3D &v, double 
   if ( scale<epsilon )  
     {
       ang = 0.;
-      v = QVector3D(0., 0., 1.);
+      v = glm::dvec3(0., 0., 1.);
     } 
   else 
     {
       ang = temp_angle + temp_angle;
       scale = 1./scale;
-      v = QVector3D(q.x()*scale, q.y()*scale, q.z()*scale);
-      v = v.normalized();
+      v = glm::normalize(glm::dvec3(q.x()*scale, q.y()*scale, q.z()*scale));
     }
   return;
 }

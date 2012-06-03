@@ -84,16 +84,16 @@ class Internal
   QString act_core;
   QString act_mill;
   
-  QVector3D a_min_;
-  QVector3D a_max_;
-  QVector3D min_;
-  QVector3D max_;
-  QVector3D cent_;
-  QVector3D axeX;
-  QVector3D axeY;
-  QVector3D axeZ;
+  glm::dvec3 a_min_;
+  glm::dvec3 a_max_;
+  glm::dvec3 min_;
+  glm::dvec3 max_;
+  glm::dvec3 cent_;
+  glm::dvec3 axeX;
+  glm::dvec3 axeY;
+  glm::dvec3 axeZ;
 
-  QVector3D invbox[8];
+  glm::dvec3 invbox[8];
   
   QPixmap img;
   
@@ -132,10 +132,10 @@ class Internal
 		double &vmin, 
 		double &vmax);
 
-  void minmax3 (QVector3D *vec, 
+  void minmax3 (glm::dvec3 *vec, 
 		int numb, 
-		QVector3D &vmin, 
-		QVector3D &vmax);
+		glm::dvec3 &vmin, 
+		glm::dvec3 &vmax);
 
   void processMiller (int sw, 
 		      QString rtext, 
@@ -154,19 +154,19 @@ class Internal
   
   void compute_rotation_tensor();
   
-  void do_atoms_rotation (vecds::Mat9d r_tens, QVector3D vec);
-  void do_invis_rotation (vecds::Mat9d r_tens, QVector3D vec);
-  void do_signes_rotation (vecds::Mat9d r_tens, QVector3D vec);
+  void do_atoms_rotation (vecds::Mat9d r_tens, glm::dvec3 vec);
+  void do_invis_rotation (vecds::Mat9d r_tens, glm::dvec3 vec);
+  void do_signes_rotation (vecds::Mat9d r_tens, glm::dvec3 vec);
   void do_axis_rotation (vecds::Mat9d r_tens);
   
   void calc_disloc (int nr_atom, int d_num);
   void calc_disl0 ();
 
                                 /* Does something with atom numbers. */
-  int atomize (const QVector3D point, 
+  int atomize (const glm::dvec3 point, 
 	       const unsigned int atom_number);
 
-  void SL_singleDisl (QVector3D r);
+  void SL_singleDisl (glm::dvec3 r);
   void addDisplacements ();
   void newdisl (unsigned int n_a, bool sw_iter);
 
