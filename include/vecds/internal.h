@@ -34,6 +34,18 @@
 #include <QFile>
 #include <qglobal.h>
 
+#include <algorithm>
+#include <cctype>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include <string>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+#include <vector>
+
+
 
                                  // vecds base headers
 #include <vecds/base/config.h>
@@ -44,8 +56,10 @@
 #include <vecds/base/function.h>
 
                                  // forward declarations
-class MaimViewer;
+class MainViewer;
 class MainWindow;
+
+using namespace std;
 
 class Internal
 {
@@ -83,6 +97,7 @@ class Internal
   QString act_disl;
   QString act_core;
   QString act_mill;
+  vecds::miller mil;
   
   glm::dvec3 a_min_;
   glm::dvec3 a_max_;
@@ -110,8 +125,8 @@ class Internal
   
   int ndisl;
   
-  int indMiller[6];
-  int oldMiller[6];
+//  int mil[4];
+//  int oldMiller[6];
   
   double mfactor;
   double rad_scene;
@@ -121,6 +136,16 @@ class Internal
 
   glm::dmat3 rot_tensor, rot_inv;
   
+  string stripBlanks(string StringToModify);
+  int identify(string s1, int size, string words[]);
+  vector<string> tokenize(const string& str, string del);
+
+  void printVec(string str, glm::dvec3 vec);
+  void printMat(string str, glm::dmat3 m);
+
+  int toInt(string word);
+  double toDouble(string word);
+
   void init_atoms ();
   void init_structures ();
   void read_alc_xyz (QString namea);
@@ -146,11 +171,15 @@ class Internal
   int lattice (int, int, int);
   int lattice2 (double, double, unsigned int);
 
-  double read_fraction (QString line);
+//  double read_fraction (QString line);
+  double read_fraction (string line);
 
-  bool parse_miller (QString line);
+//  bool parse_miller (QString line);
+  vecds::miller parse_miller (string line);
   bool parse_core (QString line);
-  bool internal_miller (QString line2, int which, vecds::Int4 &mil);
+//  bool internal_miller (QString line2, int which, vecds::Int4 &mil);
+  bool internal_miller(string line2, int which, int *mil);
+
   
   void compute_rotation_tensor();
   
@@ -170,12 +199,15 @@ class Internal
   void addDisplacements ();
   void newdisl (unsigned int n_a, bool sw_iter);
 
-  bool eqMiller (int m1[6], int m2[6]);
+//  bool eqMiller (int m1[6], int m2[6]);
   void saveAtoms (QString sname);
 
   glm::dvec3 mixed_u(int i, glm::dvec3 rotdist, double be, double bz);
 
   glm::dmat3 mixed_beta(int i, glm::dvec3 rotdist, double be, double bz);
+  
+  
+
 
  private:
 

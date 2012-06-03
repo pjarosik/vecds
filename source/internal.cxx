@@ -184,9 +184,9 @@ void Internal::init_structures()
 	 if ( nf!=4 ) qWarning("Error - Atom_data 3 line=%d", nl);
 	 actcrstr->crystal_type[i] = which_atom (fields.takeFirst ());
 	 
-	 actcrstr->cryst[i].x = read_fraction(fields.takeFirst());
-	 actcrstr->cryst[i].y = read_fraction(fields.takeFirst());
-	 actcrstr->cryst[i].z = read_fraction(fields.takeFirst());
+	 actcrstr->cryst[i].x = read_fraction(fields.takeFirst().toStdString());
+	 actcrstr->cryst[i].y = read_fraction(fields.takeFirst().toStdString());
+	 actcrstr->cryst[i].z = read_fraction(fields.takeFirst().toStdString());
        }
      
     for (unsigned int i=0; i<actcrstr->n_cores; ++i) 
@@ -197,9 +197,9 @@ void Internal::init_structures()
 	if ( nf!=4 ) qWarning("Error - Atom_data 4 line=%d", nl);
 	actcrstr->co_name[i] = fields.takeFirst();
 
-	actcrstr->core[i].x = read_fraction(fields.takeFirst());
-	actcrstr->core[i].y = read_fraction(fields.takeFirst());
-	actcrstr->core[i].z = read_fraction(fields.takeFirst());
+	actcrstr->core[i].x = read_fraction(fields.takeFirst().toStdString());
+	actcrstr->core[i].y = read_fraction(fields.takeFirst().toStdString());
+	actcrstr->core[i].z = read_fraction(fields.takeFirst().toStdString());
       }
     
     c2o0 = actcrstr->a; //0
@@ -397,7 +397,7 @@ int Internal::which_atom(QString nam_a)
       return i;
   return 0;
 }
-
+/*
 double Internal::read_fraction(QString line)
 {
   int i_fr;
@@ -406,7 +406,7 @@ double Internal::read_fraction(QString line)
   else  
     return double(line.left(i_fr).toInt())/double(line.mid(i_fr+1).toInt());
 }
-
+*/
 void Internal::minmax3(glm::dvec3 *vec, int numb, glm::dvec3 &vmin, glm::dvec3 &vmax)
 {
   double mxx = -1.e15;  double mxy = -1.e15;  double mxz= -1.e15;
@@ -482,8 +482,11 @@ void Internal::SL_singleDisl (glm::dvec3 rr)
 	   actdisl->p2.x, actdisl->p2.y, actdisl->p2.z);
   
   glm::dvec3 burg_vect = 
-    rot_tensor * actcrstr->C2O 
-    * glm::dvec3 (fraction*indMiller[0], fraction*indMiller[1], fraction*indMiller[2]);
+    rot_tensor * mil.fraction * actcrstr->C2O 
+    * glm::dvec3(this->mil.indices[0], this->mil.indices[1], this->mil.indices[2]);
+
+//  glm::dvec3 burgers_vector = rot_tensor * (mil.fraction * crysCell->c2o * glm::dvec3(mil.indices[0], mil.indices[1], mil.indices[2]));
+
   
   actdisl->burgers_vector  = burg_vect;
   actdisl->rotation_tensor = this->rot_tensor;
@@ -508,7 +511,11 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
   qWarning("SL_newDisl - p1, p2 - (%g %g %g) (%g %g %g)",
 	   actdisl->p1.x, actdisl->p1.y, actdisl->p1.z, actdisl->p2.x, actdisl->p2.y, actdisl->p2.z);
   
-  glm::dvec3 burg_vect = rot_tensor * actcrstr->C2O * glm::dvec3(fraction*indMiller[0], fraction*indMiller[1], fraction*indMiller[2]);
+//  glm::dvec3 burg_vect = rot_tensor * actcrstr->C2O * glm::dvec3(fraction*indMiller[0], fraction*indMiller[1], fraction*indMiller[2]);
+  glm::dvec3 burg_vect = 
+    rot_tensor * mil.fraction * actcrstr->C2O 
+    * glm::dvec3(this->mil.indices[0], this->mil.indices[1], this->mil.indices[2]);
+
   glm::dvec3 cd        = rot_tensor * atoms->coordinates[n_a];
   
   be = sqrt (burg_vect.x*burg_vect.x+burg_vect.y*burg_vect.y);
@@ -925,17 +932,17 @@ int Internal::lattice2 (double sx, double sy, unsigned int nz)
 
 void Internal::processMiller(int sw, QString result_text, QString result_text2)
 {
-  bool swb;
+//  bool swb;
   glm::dmat3 mat;
   glm::dmat3 rot_in;
 
-  if (sw==1) 
-    swb = parse_miller(result_text);
-  else 
-    swb = (parse_miller(result_text))  && (parse_core(result_text2));
+  
+  this->mil = parse_miller(result_text.toStdString());
+  if (sw!=1) 
+    parse_core(result_text2);
 
-  if ( swb ) 
-    {
+
+
       rot_in = this->rot_inv;
       compute_rotation_tensor();
 
@@ -943,7 +950,7 @@ void Internal::processMiller(int sw, QString result_text, QString result_text2)
       mat = this->rot_tensor * rot_in;
 //      rt  = vecds::Mat9d (this->rot_tensor);
       
-      qWarning("######   rot_tensor    ###### det = %g", glm::determinant (this->rot_tensor));
+//      qWarning("######   rot_tensor    ###### det = %g", glm::determinant (this->rot_tensor));
 /*
 void printMat(string str, glm::dmat3 m)
 {
@@ -957,7 +964,7 @@ void printMat(string str, glm::dmat3 m)
       qWarning ("rot 1 = %g %g %g", rt[3], rt[4], rt[5]); 
       qWarning ("rot 2 = %g %g %g", rt[6], rt[7], rt[8]); 
 */
-      qWarning("######   mat    ###### det = %g", glm::determinant (mat));
+//      qWarning("######   mat    ###### det = %g", glm::determinant (mat));
 /*      qWarning ("rot 0 = %g %g %g", mat[0], mat[1], mat[2]); 
       qWarning ("rot 1 = %g %g %g", mat[3], mat[4], mat[5]); 
       qWarning ("rot 2 = %g %g %g", mat[6], mat[7], mat[8]); 
@@ -966,32 +973,25 @@ void printMat(string str, glm::dmat3 m)
       do_invis_rotation(mat, this->cent_);
       do_signes_rotation(mat, this->cent_);
       do_axis_rotation(mat);
-    }
+//    }
 }
 
 void Internal::compute_rotation_tensor()
 {
-  double h = double (indMiller[0]);
-  double k = double (indMiller[1]);
-  double l = double (indMiller[2]);
-  double u = double (indMiller[3]);
-  double v = double (indMiller[4]);
-  double w = double (indMiller[5]);
-
-  glm::dvec3 s = this->actcrstr->C2O * glm::dvec3(h, k, l);
-  glm::dvec3 m = glm::transpose(this->actcrstr->O2C) * glm::dvec3(u, v, w);
+  glm::dvec3 s = this->actcrstr->C2O * glm::dvec3(mil.indices[0], mil.indices[1], mil.indices[2]);
+  glm::dvec3 m = glm::transpose(this->actcrstr->O2C) * glm::dvec3(mil.indices[3], mil.indices[4], mil.indices[5]);
   s = glm::normalize(s);
   m = glm::normalize(m);
   glm::dvec3 mxs = glm::normalize(glm::cross(m, s));
   glm::dvec3 mxsxm = glm::normalize(glm::cross(mxs, m));
-
   this->rot_tensor = glm::dmat3(mxsxm.x, mxs.x, m.x,
                                 mxsxm.y, mxs.y, m.y,
                                 mxsxm.z, mxs.z, m.z);
+
 }
 
 //------------------ M I L L E R ' S  I N T E R N A L S -------------------
-
+/*
 bool Internal::parse_miller (QString line)
 { 
   vecds::Int4 mil;
@@ -1042,68 +1042,6 @@ bool Internal::parse_miller (QString line)
     }
 
     return true;
-}
-
-bool Internal::parse_core (QString line)
-{ 
-  QString line1;
-  line1 = line.trimmed().simplified();
-  if ( line1==QString("none") ) return false;
-  
-  act_core = "";
-  int i_left3 = line1.indexOf("{");
-  if ( i_left3<0 ) 
-    {
-      int nd = -1;
-
-      for (unsigned int i=0; i<actcrstr->n_cores; ++i) 
-	{
-	  if (line1==actcrstr->co_name[i]) 
-	    {
-	      nd = i;
-	      this->act_core = line1;
-	      break;
-	    }
-	}
-      
-      if (!(this->act_core.isEmpty())) 
-	{
-	  actdisl->dislocation_core = actcrstr->core[nd];
-	  return true;
-	} 
-      else    
-	goto LAB_other;
-      
-    } 
-  else 
-    {
-    LAB_other:
-      int i_right3 = line1.indexOf("}");
-      this->act_core = line1.left(i_left3).trimmed();
-      QStringList list = line1.mid(i_left3+1, i_right3-i_left3-1).trimmed().simplified().split(QRegExp("[,{}]"));
-      double oth_disl1 = read_fraction(list.at(0));
-      double oth_disl2 = read_fraction(list.at(1));
-      double oth_disl3 = read_fraction(list.at( 2));
-      qWarning("act_core=%s  other - %g %g %g", act_core.toAscii().data(), oth_disl1, oth_disl2, oth_disl3);
-
-      for (unsigned int ind=0; ind<this->actcrstr->n_cores; ++ind) 
-	{
-	  if ( act_core==actcrstr->co_name[ind] ) 
-	    {
-	      qWarning ("ERROR- act_core existing for ind=%d (%s - %s)", ind, 
-			actcrstr->co_name[ind].toAscii().data(), act_core.toAscii().data());
-	      return false;
-	    }
-	} // for
-
-      int nc = ++(actcrstr->n_cores);
-      actdisl->dislocation_core = actcrstr->core[nc] = glm::dvec3(oth_disl1, oth_disl2, oth_disl3);
-      if (act_core.isEmpty()) 
-	actcrstr->co_name[nc].sprintf("core_nr_%d", nc);
-      else                      
-	actcrstr->co_name[nc] = act_core;
-    }
-  return true;
 }
 
 bool Internal::internal_miller(QString line2, int which, vecds::Int4 &mil)
@@ -1167,4 +1105,243 @@ bool Internal::internal_miller(QString line2, int which, vecds::Int4 &mil)
 
   return true;
 }
+*/
+bool Internal::parse_core (QString line)
+{ 
+  QString line1;
+  line1 = line.trimmed().simplified();
+  if ( line1==QString("none") ) return false;
+  
+  act_core = "";
+  int i_left3 = line1.indexOf("{");
+  if ( i_left3<0 ) 
+    {
+      int nd = -1;
 
+      for (unsigned int i=0; i<actcrstr->n_cores; ++i) 
+	{
+	  if (line1==actcrstr->co_name[i]) 
+	    {
+	      nd = i;
+	      this->act_core = line1;
+	      break;
+	    }
+	}
+      
+      if (!(this->act_core.isEmpty())) 
+	{
+	  actdisl->dislocation_core = actcrstr->core[nd];
+	  return true;
+	} 
+      else    
+	goto LAB_other;
+      
+    } 
+  else 
+    {
+    LAB_other:
+      int i_right3 = line1.indexOf("}");
+      this->act_core = line1.left(i_left3).trimmed();
+      QStringList list = line1.mid(i_left3+1, i_right3-i_left3-1).trimmed().simplified().split(QRegExp("[,{}]"));
+      double oth_disl1 = read_fraction(list.at(0).toStdString());
+      double oth_disl2 = read_fraction(list.at(1).toStdString());
+      double oth_disl3 = read_fraction(list.at(2).toStdString());
+      qWarning("act_core=%s  other - %g %g %g", act_core.toAscii().data(), oth_disl1, oth_disl2, oth_disl3);
+
+      for (unsigned int ind=0; ind<this->actcrstr->n_cores; ++ind) 
+	{
+	  if ( act_core==actcrstr->co_name[ind] ) 
+	    {
+	      qWarning ("ERROR- act_core existing for ind=%d (%s - %s)", ind, 
+			actcrstr->co_name[ind].toAscii().data(), act_core.toAscii().data());
+	      return false;
+	    }
+	} // for
+
+      int nc = ++(actcrstr->n_cores);
+      actdisl->dislocation_core = actcrstr->core[nc] = glm::dvec3(oth_disl1, oth_disl2, oth_disl3);
+      if (act_core.isEmpty()) 
+	actcrstr->co_name[nc].sprintf("core_nr_%d", nc);
+      else                      
+	actcrstr->co_name[nc] = act_core;
+    }
+  return true;
+}
+
+
+bool Internal::internal_miller(string line2, int which, int *mill)
+{
+  int numbmill;
+  vector<string> fields;
+  numbmill = fields.size();
+  if ( line2.find_first_of(" ,")!=string::npos ) {
+    vector<string> fields = tokenize(line2, " ,");
+    numbmill = fields.size();
+    if ( numbmill<3 || numbmill>4 ) {
+      cout << "ERROR - BAD NUMBER OF MILLER INDICES 1\n";
+      return false;
+    }
+    for (int i=0; i<numbmill; i++) mill[i] = toInt(fields.at(i));
+  } else {
+    bool minus = false;
+    numbmill = 0;
+    size_t i = 0;
+    while ( i<line2.size() ) {
+      char ch = line2.at(i++);
+      if ( ch=='-' ) {
+          minus = true;
+          continue;}
+      if ( isdigit(ch) ) {
+         int n = int(ch)-int('0');
+         mill[numbmill++] = minus? -n : n; 
+         minus = false;}
+      if ( ch=='.' && numbmill==2 ) mill[numbmill++] = -mill[0]-mill[1];
+    }
+    if ( numbmill<3 || numbmill>4 ) {
+      cout << "ERROR - BAD NUMBER OF MILLER INDICES 2\n";
+      return false;}
+  } //if - else
+  if ( numbmill==4 ) {
+    if ( (mill[0]+mill[1])!=-mill[2] )
+         cout << "ERROR BAD SUM - " << mill[0] << "  " << mill[1] << "  " << mill[2] << endl;
+    if ( which==1 ) {
+       mill[0] -= mill[2];
+       mill[1] -= mill[2];
+    }
+    mill[2] = mill[3];
+  }
+  return true;
+}
+
+
+//bool Internal::parse_miller (QString line)
+vecds::miller Internal::parse_miller(string line)
+{
+  vecds::miller result;
+  result.fraction = 0;
+//  result.indices = {0., 0., 0., 0., 0., 0.};
+  int mill[4];
+  int indMiller[6];
+  double fract;
+  string line1;
+  line1 = stripBlanks(line);
+//  cout << "line1=" <<  line1 << endl;
+  size_t i_left1 = line1.find('[');
+  size_t i_right1 = line1.find(']');
+  size_t i_left2 = line1.find('(');
+  size_t i_right2 = line1.find(')');
+  fract = (i_left1==string::npos)? 1. : read_fraction(line1.substr(0, i_left1));
+  if ( i_left1>=i_right1 || i_left2>=i_right2 ) {// error
+    cout << "ERROR PARENTHESES\n";
+    return result;
+  }
+  string line2 = stripBlanks(line1.substr(i_left1+1, i_right1-i_left1-1));
+//  cout << "line2 (1)=" <<  line2 << endl;
+  if ( internal_miller(line2, 1, mill) ) {
+    indMiller[0] = mill[0];
+    indMiller[1] = mill[1];
+    indMiller[2] = mill[2];
+  } else { cout << "ERROR - BAD MILLER INDICES 1\n";
+    return result;}
+  line2 = stripBlanks(line1.substr(i_left2+1, i_right2-i_left2-1));
+//  cout << "line2 (2)=" <<  line2 << endl;
+  if ( internal_miller(line2, 2, mill) ) {
+    indMiller[3] = mill[0];
+    indMiller[4] = mill[1];
+    indMiller[5] = mill[2];
+  } else {
+    cout << "ERROR - BAD MILLER INDICES 2\n";
+    return result;
+  }
+  result.fraction = fract;
+  result.indices[0] = double(indMiller[0]);
+  result.indices[1] = double(indMiller[1]);
+  result.indices[2] = double(indMiller[2]);
+  result.indices[3] = double(indMiller[3]);
+  result.indices[4] = double(indMiller[4]);
+  result.indices[5] = double(indMiller[5]);
+  return result;
+}
+
+string Internal::stripBlanks(string StringToModify)
+{
+   if ( StringToModify.empty() ) return "";
+   size_t startIndex = StringToModify.find_first_not_of(" ");
+   size_t endIndex = StringToModify.find_last_not_of(" ");
+   string tempString = StringToModify;
+   tempString = tempString.substr(startIndex, endIndex-startIndex+1);
+   return tempString;
+}
+
+double Internal::read_fraction(string line) // czyta ułamek np. w zapisie wektora Burgersa, przelicza na liczbę dziesiętną
+{
+  line = stripBlanks(line);
+  size_t i_fr = line.find('/');
+//  cout << " i_fr=" << i_fr << endl;
+  istringstream ins;
+  ins.clear();
+  ins.str(line);
+  double result, temp;
+  char c;
+  if ( i_fr==string::npos ) ins >> result;
+  else {
+     ins >> result >> c >> temp;
+//     cout << "result=" << result << "   c=" << c << "   temp=" << temp << endl;
+     result /= temp;
+  }
+  return result;
+}
+
+void Internal::printVec(string str, glm::dvec3 vec)
+{
+  cout << str << " =  (" << setw(15) << vec.x << setw(15) << vec.y << setw(15) << vec.z << ")" << endl;
+}
+
+void Internal::printMat(string str, glm::dmat3 m)
+{
+  cout << str << "    det = " << glm::determinant(m) << endl;
+  cout << " row 0 = " << setw(15) << m[0][0] << setw(15) << m[1][0] << setw(15) << m[2][0] << endl;
+  cout << " row 1 = " << setw(15) << m[0][1] << setw(15) << m[1][1] << setw(15) << m[2][1] << endl;
+  cout << " row 2 = " << setw(15) << m[0][2] << setw(15) << m[1][2] << setw(15) << m[2][2] << endl;
+}
+
+int Internal::identify(string s1, int size, string words[])
+{
+  for (int i=0; i<size; i++) if ( s1.compare(words[i])==0 ) return i;
+  return -1;
+}
+
+vector<string> Internal::tokenize(const string& str, string del)
+{
+  vector<string> tokens;
+  string delimiters = del;
+  size_t lastPos = str.find_first_not_of(delimiters, 0);            // Skip delimiters at beginning.
+  size_t pos = str.find_first_of(delimiters, lastPos);              // Find first "non-delimiter".
+  tokens.clear();
+  while ( pos!=string::npos || lastPos!=string::npos ) {
+     tokens.push_back(str.substr(lastPos, pos-lastPos));            // Found a token, add it to the vector.
+     lastPos = str.find_first_not_of(delimiters, pos);              // Skip delimiters. Note the "not_of"
+     pos = str.find_first_of(delimiters, lastPos);                  // Find next "non-delimiter"
+  }
+  return tokens;
+}
+
+int Internal::toInt(string word)
+{
+  int i;
+  istringstream ins;
+  ins.clear();
+  ins.str(word);
+  ins >> i;
+  return i;
+}
+
+double Internal::toDouble(string word)
+{
+  double x;
+  istringstream ins;
+  ins.clear();
+  ins.str(word);
+  ins >> x;
+  return x;
+}

@@ -67,6 +67,15 @@ namespace vecds
 
 namespace vecds
 {
+  struct miller
+  {
+    double fraction;
+    double indices[6];
+  };
+}
+
+namespace vecds
+{
 
   struct Settings
   {
