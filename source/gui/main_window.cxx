@@ -554,7 +554,7 @@ void MainWindow::SL_actPoint(QVector3D res)
                                                ix, iy, res.x(), res.y(), res.z());
   statusBar()->showMessage(str1);
   if ( ActualData->Mode==2 ){
-      ActualData->SL_singleDisl(res);
+      ActualData->SL_singleDisl(vecds::to_dvec3(res));
       emit SIG_repaint();
  qWarning("SL_actPoint  --  ndisl=%d", ActualData->ndisl);
   }
@@ -565,7 +565,7 @@ void MainWindow::SL_actPosition(QVector3D res)
  qWarning("SL_actPosition");
   QString str1;
   ActualData->actPoint = res;
-  int i0 = ActualData->atomize(res, 0);
+  int i0 = ActualData->atomize(vecds::to_dvec3(res), 0);
   int ix = vecds_main_viewer->lastPos.x();
   int iy = vecds_main_viewer->lastPos.y();
   
@@ -657,8 +657,8 @@ void MainWindow::SL_genAtoms()
   int nz   = answers.at (2).toInt ();
   int nmax = nx*ny*nz * ActualData->actcrstr->n_materials;
 
-  ActualData->atoms->coordinates = new QVector3D[nmax];
-  ActualData->atoms->u           = new QVector3D[nmax];
+  ActualData->atoms->coordinates = new glm::dvec3[nmax];
+  ActualData->atoms->u           = new glm::dvec3[nmax];
   ActualData->atoms->atom_type   = new unsigned int[nmax];
 
   ActualData->atoms->n_atoms     = ActualData->lattice(nx, ny, nz);
@@ -704,8 +704,8 @@ void MainWindow::SL_gen1Atoms()
     (int(x_size/ActualData->actcrstr->a)+1) *
     (int(y_size/(ActualData->actcrstr->b*sg))+1);
 
-  ActualData->atoms->coordinates = new QVector3D[nmax];
-  ActualData->atoms->u           = new QVector3D[nmax];
+  ActualData->atoms->coordinates = new glm::dvec3[nmax];
+  ActualData->atoms->u           = new glm::dvec3[nmax];
   ActualData->atoms->atom_type   = new unsigned int[nmax];
 
   ActualData->atoms->n_atoms = ActualData->lattice2(x_size, y_size, nz);
