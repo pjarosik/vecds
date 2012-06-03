@@ -943,12 +943,21 @@ void Internal::processMiller(int sw, QString result_text, QString result_text2)
       mat = this->rot_tensor * rot_in;
 //      rt  = vecds::Mat9d (this->rot_tensor);
       
-      qWarning("######   rot_tensor    ###### det = %g", vecds::determinant (this->rot_tensor));
-/*      qWarning ("rot 0 = %g %g %g", rt[0], rt[1], rt[2]); 
+      qWarning("######   rot_tensor    ###### det = %g", glm::determinant (this->rot_tensor));
+/*
+void printMat(string str, glm::dmat3 m)
+{
+  cout << str << "    det = " << glm::determinant(m) << endl;
+  cout << " row 0 = " << setw(15) << m[0][0] << setw(15) << m[1][0] << setw(15) << m[2][0] << endl;
+  cout << " row 1 = " << setw(15) << m[0][1] << setw(15) << m[1][1] << setw(15) << m[2][1] << endl;
+  cout << " row 2 = " << setw(15) << m[0][2] << setw(15) << m[1][2] << setw(15) << m[2][2] << endl;
+}
+
+      qWarning ("rot 0 = %g %g %g", rt[0], rt[1], rt[2]); 
       qWarning ("rot 1 = %g %g %g", rt[3], rt[4], rt[5]); 
       qWarning ("rot 2 = %g %g %g", rt[6], rt[7], rt[8]); 
 */
-      qWarning("######   mat    ###### det = %g", vecds::determinant (mat));
+      qWarning("######   mat    ###### det = %g", glm::determinant (mat));
 /*      qWarning ("rot 0 = %g %g %g", mat[0], mat[1], mat[2]); 
       qWarning ("rot 1 = %g %g %g", mat[3], mat[4], mat[5]); 
       qWarning ("rot 2 = %g %g %g", mat[6], mat[7], mat[8]); 

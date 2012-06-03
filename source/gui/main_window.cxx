@@ -669,7 +669,8 @@ void MainWindow::SL_genAtoms()
   ActualData->atoms_loaded = QString("neW_atoms.xyz");
 
   InfoDisplay();
-  emit SIG_needDraw();
+//  emit SIG_needDraw();
+  vecds_main_viewer->updateGL ();
 }
 
 
@@ -714,8 +715,8 @@ void MainWindow::SL_gen1Atoms()
   ActualData->atoms_loaded = QString("neW_atoms.xyz");
 //  ActualData->INT_nn = ActualData->atoms->n_atoms;
   InfoDisplay();
-  emit SIG_needDraw();
-
+//  emit SIG_needDraw();
+  vecds_main_viewer->updateGL ();
 }
 
 //----------------------------------------------------------
@@ -780,8 +781,8 @@ void MainWindow::SL_millerAct()
   ActualData->act_mill = answers.at (0);
   ActualData->processMiller(1, ActualData->act_mill);
   InfoDisplay();
-
-  emit SIG_repaint();
+  vecds_main_viewer->updateGL ();
+//  emit SIG_repaint();
 }
 
 void MainWindow::SL_dislocAct()
