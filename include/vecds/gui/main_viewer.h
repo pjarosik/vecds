@@ -36,7 +36,7 @@
 
                                  // vecds base includes
 #include <vecds/base/integer.h>
-#include <vecds/base/matrix.h>
+//#include <vecds/base/matrix.h>
 #include <vecds/base/additional.h>
 #include <vecds/base/constant.h>
 

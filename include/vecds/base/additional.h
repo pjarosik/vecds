@@ -228,6 +228,18 @@ namespace vecds
     int i0; // znaleziony punkt
   };
 
+  inline glm::dvec3 to_dvec3 (QVector3D x)
+  { 
+    return glm::dvec3 (x.x (), x.y (), x.z ()); 
+  }
+  
+  
+  inline QVector3D to_QV (glm::dvec3 x)
+  { 
+    return QVector3D (x.x, x.y, x.z); 
+  }
+
 }                                /* namespace vecds */
 
 #endif
+
