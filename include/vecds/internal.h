@@ -154,10 +154,10 @@ class Internal
   
   void compute_rotation_tensor();
   
-  void do_atoms_rotation (vecds::Mat9d r_tens, glm::dvec3 vec);
-  void do_invis_rotation (vecds::Mat9d r_tens, glm::dvec3 vec);
-  void do_signes_rotation (vecds::Mat9d r_tens, glm::dvec3 vec);
-  void do_axis_rotation (vecds::Mat9d r_tens);
+  void do_atoms_rotation (glm::dmat3 r_tens, glm::dvec3 vec);
+  void do_invis_rotation (glm::dmat3 r_tens, glm::dvec3 vec);
+  void do_signes_rotation (glm::dmat3 r_tens, glm::dvec3 vec);
+  void do_axis_rotation (glm::dmat3 r_tens);
   
   void calc_disloc (int nr_atom, int d_num);
   void calc_disl0 ();

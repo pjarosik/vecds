@@ -116,7 +116,7 @@ namespace vecds
                                  /* Same as above, but a glm
 				    copy. This is a particuarily
 				    stupid name for this! */
-    glm::dvec3 *coordinates_glm;
+//    glm::dvec3 *coordinates_glm;
 
                                  /* TODO: WHat are these? */
     glm::dvec3 *du;
@@ -173,8 +173,8 @@ namespace vecds
 
                                  /* TODO: WHat are these things? */
     QString co_name[30];
-    QVector3D cryst[20];
-    QVector3D core[30];
+    glm::dvec3 cryst[20];
+    glm::dvec3 core[30];
   };
 
 }                                /* namespace vecds */
