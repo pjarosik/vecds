@@ -14,5 +14,18 @@ compiled <b>vecds</b> with the doxygen program enabled.
 
 The documentation for vecds is located at: @VECDS_DOCS@.
 
+<a href="@VECDS_DOCS@/main.html"><h3>Users manual</h3></a>
+
+The users manual for <b>vecds</b> is supposed to help the user with
+working with the GUI interface for <b>vecds</b>. See also the
+examples.
+
+<a href="@VECDS_DOCS@/main.html"><h3>Technical documentation</h3></a>
+
+The technical documentation for <b>vecds</b>is mean for users that
+want to get a handle on the internal functions of <b>vecds</b> (see
+also examples); or for developers of <b>vecds</b> who need to know how
+the internal code works.
+
 </body>
 </html>
