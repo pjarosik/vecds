@@ -31,9 +31,7 @@
 Internal *ActualData;
 extern bool qf_ok;
 
-QString infotxt0, infotxtat, infotxtimg;
-QString infsepar = " .......... ";
-
+static QString infsepar = " .......... ";
 
 MainWindow::MainWindow ()
 {
@@ -144,26 +142,26 @@ void MainWindow::createActions ()
                                  // xyz-directions.
     action_generate_structure_by_cell = new QAction (tr ("Generate (by cell)"), this);
     action_generate_structure_by_cell->setStatusTip (tr ("generate a new file"));
-    connect (action_generate_structure_by_cell, SIGNAL (triggered ()), this, SLOT (SL_genAtoms ()));
+    connect (action_generate_structure_by_cell, SIGNAL (triggered ()), this, SLOT (SL_generate_atoms_by_cell ()));
     
                                  // Generate crystal structure by
                                  // defining its size by lengths in
                                  // the xyz-directions.
     action_generate_structure_by_length = new QAction (tr ("Generate (by length)"), this);
     action_generate_structure_by_length->setStatusTip (tr ("generate a new file"));
-    connect (action_generate_structure_by_length, SIGNAL (triggered ()), this, SLOT (SL_gen1Atoms ()));
+    connect (action_generate_structure_by_length, SIGNAL (triggered ()), this, SLOT (SL_generate_atoms_by_length ()));
   }
 
   {
                                  // Generate a cuboidal box
     action_make_cuboid_box = new QAction (tr ("Cuboid box"), this);
     action_make_cuboid_box->setStatusTip (tr ("Cuboid bounding box"));
-    connect (action_make_cuboid_box, SIGNAL (triggered ()), this, SLOT (SL_cubBox ()));
+    connect (action_make_cuboid_box, SIGNAL (triggered ()), this, SLOT (SL_make_cubic_bbox ()));
     
                                  // Generate a hexagonal box
     action_make_hexagonal_box = new QAction (tr ("Hexagonal box"), this);
     action_make_hexagonal_box->setStatusTip (tr ("Hexagonal bounding box"));
-    connect (action_make_hexagonal_box, SIGNAL (triggered ()), this, SLOT (SL_hexBox ()));
+    connect (action_make_hexagonal_box, SIGNAL (triggered ()), this, SLOT (SL_make_hexagonal_bbox ()));
   }
 
   {
@@ -361,95 +359,53 @@ void MainWindow::createDockWindows ()
   Lay_main0 = new QStackedWidget(DWidg_dock);
   DWidg_dock->setWidget(Lay_main0);
   
-  QWidget *Widg_3slid = new QWidget(DWidg_dock);
+  QWidget *Widg_3slid      = new QWidget(DWidg_dock);
   QGridLayout *Lay_g_3slid = new QGridLayout;
   
   QVBoxLayout *Lay_v_ThetaSlid = new QVBoxLayout;
-  QLabel *Lab_ThetaSlid = new QLabel(" Heading (theta)");
-  Lay_v_ThetaSlid->addWidget(Lab_ThetaSlid);
-//  thetaSlider = createSlider(-180., 180., 45., 0.);
-  thetaSlider = createSlider(-180, 180, 1, 0.);
-  Lay_v_ThetaSlid->addWidget(thetaSlider);
+  QLabel *Lab_ThetaSlid        = new QLabel(" Heading (theta)");
+  Lay_v_ThetaSlid->addWidget (Lab_ThetaSlid);
+  slider_rangle_theta          = createSlider(-180, 180, 1, 0.);
+  Lay_v_ThetaSlid->addWidget (slider_rangle_theta);
   
   QVBoxLayout *Lay_v_PhiSlid = new QVBoxLayout; 
-  QLabel *Lab_PhiSlid = new QLabel(" Attitude (phi)");
-  Lay_v_PhiSlid->addWidget(Lab_PhiSlid);
-//  phiSlider = createSlider(-90., 90., 15., 0.);
-  phiSlider = createSlider(-90, 90, 1, 0);
-  Lay_v_PhiSlid->addWidget(phiSlider);
+  QLabel *Lab_PhiSlid        = new QLabel(" Attitude (phi)");
+  Lay_v_PhiSlid->addWidget (Lab_PhiSlid);
+  slider_rangle_phi          = createSlider (-90, 90, 1, 0);
+  Lay_v_PhiSlid->addWidget (slider_rangle_phi);
   
   QVBoxLayout *Lay_v_PsiSlid = new QVBoxLayout;
   QLabel *Lab_PsiSlid = new QLabel(" Bank (psi)");
   Lay_v_PsiSlid->addWidget(Lab_PsiSlid);
-//  psiSlider = createSlider(-180., 180., 45., 0.);
-  psiSlider = createSlider(-180, 180, 1, 0);
-  Lay_v_PsiSlid->addWidget(psiSlider);
+  slider_rangle_psi = createSlider(-180, 180, 1, 0);
+  Lay_v_PsiSlid->addWidget (slider_rangle_psi);
   
   QVBoxLayout *Lay_v_mx = new QVBoxLayout;
   QLabel *Lab_mx = new QLabel(" Move x");
   Lay_v_mx->addWidget(Lab_mx);
-  mxSlider = createSlider(-100, 100, 1, 0);
-  Lay_v_mx->addWidget(mxSlider);
+  slider_mx = createSlider(-100, 100, 1, 0);
+  Lay_v_mx->addWidget (slider_mx);
   
   QVBoxLayout *Lay_v_my = new QVBoxLayout;
   QLabel *Lab_my = new QLabel(" Move y");
   Lay_v_my->addWidget(Lab_my);
-  mySlider = createSlider(-100, 100, 1, 0);
-  Lay_v_my->addWidget(mySlider);
+  slider_my = createSlider(-100, 100, 1, 0);
+  Lay_v_my->addWidget (slider_my);
   
   QVBoxLayout *Lay_v_dist = new QVBoxLayout;
   QLabel *Lab_dist = new QLabel(" Distance");
   Lay_v_dist->addWidget(Lab_dist);
-  distSlider = createSlider(1, 180, 1, 180);
-/*
-  QVBoxLayout *Lay_v_ThetaSlid = new QVBoxLayout;
-  QLabel *Lab_ThetaSlid = new QLabel(" Heading (theta)");
-  Lay_v_ThetaSlid->addWidget(Lab_ThetaSlid);
-  thetaSlider = createSlider(-180., 180., 45., 0.);
-//  thetaSlider = createSlider(-180, 180, 1, 0.);
-  Lay_v_ThetaSlid->addWidget(thetaSlider);
-  
-  QVBoxLayout *Lay_v_PhiSlid = new QVBoxLayout; 
-  QLabel *Lab_PhiSlid = new QLabel(" Attitude (phi)");
-  Lay_v_PhiSlid->addWidget(Lab_PhiSlid);
-  phiSlider = createSlider(-90., 90., 15., 0.);
-//  phiSlider = createSlider(-90, 90, 1, 0);
-  Lay_v_PhiSlid->addWidget(phiSlider);
-  
-  QVBoxLayout *Lay_v_PsiSlid = new QVBoxLayout;
-  QLabel *Lab_PsiSlid = new QLabel(" Bank (psi)");
-  Lay_v_PsiSlid->addWidget(Lab_PsiSlid);
-  psiSlider = createSlider(-180., 180., 45., 0.);
-//  psiSlider = createSlider(-180, 180, 1, 0);
-  Lay_v_PsiSlid->addWidget(psiSlider);
-  
-  QVBoxLayout *Lay_v_mx = new QVBoxLayout;
-  QLabel *Lab_mx = new QLabel(" Move x");
-  Lay_v_mx->addWidget(Lab_mx);
-  mxSlider = createSlider(-100, 100, 1, 0);
-  Lay_v_mx->addWidget(mxSlider);
-  
-  QVBoxLayout *Lay_v_my = new QVBoxLayout;
-  QLabel *Lab_my = new QLabel(" Move y");
-  Lay_v_my->addWidget(Lab_my);
-  mySlider = createSlider(-100, 100, 1, 0);
-  Lay_v_my->addWidget(mySlider);
-  
-  QVBoxLayout *Lay_v_dist = new QVBoxLayout;
-  QLabel *Lab_dist = new QLabel(" Distance");
-  Lay_v_dist->addWidget(Lab_dist);
-  distSlider = createSlider(1, 180, 1, 180);
-*/
+  slider_zoom = createSlider(1, 180, 1, 180);
 
-  Lay_v_dist->addWidget(distSlider);
-  Lay_g_3slid->addLayout(Lay_v_ThetaSlid, 0, 0);
-  Lay_g_3slid->addLayout(Lay_v_PhiSlid, 1, 0);
-  Lay_g_3slid->addLayout(Lay_v_PsiSlid, 2, 0);
-  Lay_g_3slid->addLayout(Lay_v_mx, 3, 0);
-  Lay_g_3slid->addLayout(Lay_v_my, 4, 0);
-  Lay_g_3slid->addLayout(Lay_v_dist, 5, 0);
-  Widg_3slid->setLayout(Lay_g_3slid);
-  Lay_main0->addWidget(Widg_3slid);
+  Lay_v_dist->addWidget (slider_zoom);
+  Lay_g_3slid->addLayout (Lay_v_ThetaSlid, 0, 0);
+  Lay_g_3slid->addLayout (Lay_v_PhiSlid, 1, 0);
+  Lay_g_3slid->addLayout (Lay_v_PsiSlid, 2, 0);
+  Lay_g_3slid->addLayout (Lay_v_mx, 3, 0);
+  Lay_g_3slid->addLayout (Lay_v_my, 4, 0);
+  Lay_g_3slid->addLayout (Lay_v_dist, 5, 0);
+  Widg_3slid->setLayout (Lay_g_3slid);
+  Lay_main0->addWidget (Widg_3slid);
   
   QWidget *Widg_rotMill = new QWidget(DWidg_dock);
   QHBoxLayout *Lay_h_rotMill = new QHBoxLayout;
@@ -474,69 +430,37 @@ void MainWindow::createDockWindows ()
   addDockWidget(Qt::RightDockWidgetArea, DWidg_dock);
   menu_view->addAction(DWidg_dock->toggleViewAction());
   
-  connect(Butt_rotMiller, SIGNAL(clicked()), this, SLOT(SL_millerAct()));
+  connect (Butt_rotMiller, SIGNAL (clicked ()), this, SLOT (SL_millerAct ()));
+  connect (Butt_disloc,    SIGNAL (clicked ()), this, SLOT (SL_dislocAct ()));
+  connect (Butt_sf,        SIGNAL (clicked ()), this, SLOT (SL_dislAct ()));  
+  connect (Butt_qd,        SIGNAL (clicked ()), this, SLOT (SL_addCoordAct ()));
   
-  connect(Butt_disloc, SIGNAL(clicked()), this, SLOT(SL_dislocAct()));
-  
-  connect(Butt_sf, SIGNAL(clicked()), this, SLOT(SL_dislAct()));
-  
-  connect(Butt_qd, SIGNAL(clicked()), this, SLOT(SL_addCoordAct()));
-  
-  connect(Widg_modesTab, SIGNAL(currentChanged(int)),
-                               this, SLOT(SL_changeMode(int)));
- 
-  connect(Widg_modesTab, SIGNAL(currentChanged(int)),
-                             Lay_main0, SLOT(setCurrentIndex(int)));
+  connect (Widg_modesTab, SIGNAL(currentChanged (int)), this, SLOT (SL_changeMode (int)));
+  connect (Widg_modesTab, SIGNAL(currentChanged (int)), Lay_main0, SLOT (setCurrentIndex (int)));
 
-  connect(phiSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
-  connect(phiSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_dophiRotation()));
-  connect(vecds_main_viewer, SIGNAL(SIG_phiRotationChanged(int)), phiSlider, SLOT(setValue(int)));
+  connect (slider_rangle_phi, SIGNAL(valueChanged (int)), this, SLOT (SL_setSliderValue (int)));
+  connect (slider_rangle_phi, SIGNAL(sliderReleased ()), vecds_main_viewer, SLOT (SL_dophiRotation ()));
+  connect (vecds_main_viewer, SIGNAL(SIG_phiRotationChanged (int)), slider_rangle_phi, SLOT (setValue (int)));
 
-  connect(thetaSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
-  connect(thetaSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_dothetaRotation()));
-  connect(vecds_main_viewer, SIGNAL(SIG_thetaRotationChanged(int)), thetaSlider, SLOT(setValue(int)));
+  connect (slider_rangle_theta, SIGNAL(valueChanged (int)), this, SLOT (SL_setSliderValue (int)));
+  connect (slider_rangle_theta, SIGNAL(sliderReleased ()), vecds_main_viewer, SLOT (SL_dothetaRotation ()));
+  connect (vecds_main_viewer, SIGNAL(SIG_thetaRotationChanged (int)), slider_rangle_theta, SLOT (setValue (int)));
 
-  connect(psiSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
-  connect(psiSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_dopsiRotation()));
-  connect(vecds_main_viewer, SIGNAL(SIG_psiRotationChanged(int)), psiSlider, SLOT(setValue(int)));
+  connect (slider_rangle_psi, SIGNAL(valueChanged (int)), this, SLOT (SL_setSliderValue (int)));
+  connect (slider_rangle_psi, SIGNAL(sliderReleased ()), vecds_main_viewer, SLOT (SL_dopsiRotation ()));
+  connect (vecds_main_viewer, SIGNAL(SIG_psiRotationChanged (int)), slider_rangle_psi, SLOT (setValue (int)));
 
-  connect(mxSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
-  connect(mxSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_doXMovement()));
-  connect(vecds_main_viewer, SIGNAL(SIG_xMovementChanged(int)), mxSlider, SLOT(setValue(int)));
+  connect (slider_mx, SIGNAL(valueChanged (int)), this, SLOT (SL_setSliderValue(int)));
+  connect (slider_mx, SIGNAL(sliderReleased ()), vecds_main_viewer, SLOT (SL_doXMovement()));
+  connect (vecds_main_viewer, SIGNAL (SIG_xMovementChanged (int)), slider_mx, SLOT (setValue(int)));
 
-  connect(mySlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
-  connect(mySlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_doYMovement()));
-  connect(vecds_main_viewer, SIGNAL(SIG_yMovementChanged(int)), mySlider, SLOT(setValue(int)));
+  connect (slider_my, SIGNAL(valueChanged (int)), this, SLOT (SL_setSliderValue (int)));
+  connect (slider_my, SIGNAL(sliderReleased ()), vecds_main_viewer, SLOT (SL_doYMovement ()));
+  connect (vecds_main_viewer, SIGNAL(SIG_yMovementChanged (int)), slider_my, SLOT (setValue(int)));
 
-  connect(distSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
-  connect(distSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_doZMovement()));
-  connect(vecds_main_viewer, SIGNAL(SIG_zMovementChanged(int)), distSlider, SLOT(setValue(int)));
-/*
-  connect(phiSlider, SIGNAL(valueChanged(double)), this, SLOT(SL_setSliderValue(double)));
-  connect(phiSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_dophiRotation()));
-  connect(vecds_main_viewer, SIGNAL(SIG_phiRotationChanged(double)), phiSlider, SLOT(setValue(double)));
-
-  connect(thetaSlider, SIGNAL(valueChanged(double)), this, SLOT(SL_setSliderValue(double)));
-  connect(thetaSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_dothetaRotation()));
-  connect(vecds_main_viewer, SIGNAL(SIG_thetaRotationChanged(double)), thetaSlider, SLOT(setValue(double)));
-
-  connect(psiSlider, SIGNAL(valueChanged(double)), this, SLOT(SL_setSliderValue(double)));
-  connect(psiSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_dopsiRotation()));
-  connect(vecds_main_viewer, SIGNAL(SIG_psiRotationChanged(double)), psiSlider, SLOT(setValue(double)));
-
-  connect(mxSlider, SIGNAL(valueChanged(double)), this, SLOT(SL_setSliderValue(double)));
-  connect(mxSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_doXMovement()));
-  connect(vecds_main_viewer, SIGNAL(SIG_xMovementChanged(double)), mxSlider, SLOT(setValue(double)));
-
-  connect(mySlider, SIGNAL(valueChanged(double)), this, SLOT(SL_setSliderValue(double)));
-  connect(mySlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_doYMovement()));
-  connect(vecds_main_viewer, SIGNAL(SIG_yMovementChanged(double)), mySlider, SLOT(setValue(double)));
-
-  connect(distSlider, SIGNAL(valueChanged(double)), this, SLOT(SL_setSliderValue(double)));
-  connect(distSlider, SIGNAL(sliderReleased()), vecds_main_viewer, SLOT(SL_doZMovement()));
-  connect(vecds_main_viewer, SIGNAL(SIG_zMovementChanged(double)), distSlider, SLOT(setValue(double)));
-
-*/
+  connect (slider_zoom, SIGNAL(valueChanged (int)), this, SLOT (SL_setSliderValue (int)));
+  connect (slider_zoom, SIGNAL(sliderReleased ()), vecds_main_viewer, SLOT (SL_doZMovement()));
+  connect (vecds_main_viewer, SIGNAL(SIG_zMovementChanged (int)), slider_zoom, SLOT (setValue(int)));
 
 }
 
@@ -590,10 +514,10 @@ void MainWindow::SL_chooseStructure()
      for (int i=0; i<ActualData->numbcrstr; i++) 
         if ( item==ActualData->crstr[i].structure_name ) {
            ActualData->actcrstr = &(ActualData->crstr[i]);
-           infotxt0.sprintf("Structure: %s%sMiller indices: %s", 
-			    ActualData->actcrstr->structure_name.toAscii ().data (),
-			    infsepar.toAscii().data(), 
-			    toRichText (ActualData->act_mill).toAscii ().data ());
+           infotxt0.sprintf ("Structure: %s%sMiller indices: %s", 
+			     ActualData->actcrstr->structure_name.toAscii ().data (),
+			     infsepar.toAscii().data(), 
+			     toRichText (ActualData->act_mill).toAscii ().data ());
 	   
            InfoDisplay();
            return;
@@ -630,7 +554,7 @@ void MainWindow::SL_defineStructure()
 // ------------------- G E N E R A T I O N ---------------------
 // -------------------------------------------------------------
 
-void MainWindow::SL_genAtoms()
+void MainWindow::SL_generate_atoms_by_cell ()
 {
   vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
 
@@ -674,7 +598,7 @@ void MainWindow::SL_genAtoms()
 }
 
 
-void MainWindow::SL_gen1Atoms()
+void MainWindow::SL_generate_atoms_by_length ()
 {
   vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
 
@@ -924,7 +848,7 @@ void MainWindow::SL_mult()
 
 //---------------------------------------------------------------------
 
-void MainWindow::SL_cubBox()
+void MainWindow::SL_make_cubic_bbox ()
 {
   vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
 
@@ -952,7 +876,7 @@ void MainWindow::SL_cubBox()
   box.setZ (0.5 * answers.at (2).toDouble ());
 }
 
-void MainWindow::SL_hexBox()
+void MainWindow::SL_make_hexagonal_bbox ()
 {
   vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
 
@@ -975,9 +899,10 @@ void MainWindow::SL_hexBox()
     return;
 }
 
-void MainWindow::InfoDisplay()
+void MainWindow::InfoDisplay ()
 {
   QString inftxt;
+
   infoLabel->clear();
   infotxt0.sprintf ("Structure: %s%sMiller indices: %s", 
 		    ActualData->actcrstr->structure_name.toAscii ().data (),

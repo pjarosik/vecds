@@ -99,11 +99,15 @@ public QMainWindow
   void SL_open_image ();
   void SL_save_as_atoms ();
   void SL_close_image ();
-  void SL_genAtoms ();
-  void SL_gen1Atoms ();
 
-  void SL_cubBox ();
-  void SL_hexBox ();
+				 /* generate atoms by cell or by length */
+  void SL_generate_atoms_by_cell ();
+  void SL_generate_atoms_by_length ();
+
+				 /* make bounding boxes; cubic and
+				    hexagonal */
+  void SL_make_cubic_bbox ();
+  void SL_make_hexagonal_bbox ();
 
                                  /* These are help pages that open in
 				  * a new window.
@@ -117,7 +121,6 @@ public QMainWindow
 
 
   void SL_setSliderValue (int);
-  // void SL_setSliderValue (double);
   void SL_defineStructure ();
   void SL_chooseStructure ();
 
@@ -207,13 +210,12 @@ public QMainWindow
 			 const unsigned int maximum, 
 			 const unsigned int step, 
 			 const unsigned int value);
-//  QwtSlider *createSlider(double from, double to, double step, double val, bool logaritmic=false);
 
-  // --------------------- WTF? ---------------------------------
+  // --------------------- What are these? ---------------------------------
 
   void InfoDisplay ();
 
-  QString toRichText(QString txt);
+  QString toRichText (QString txt);
   
   QGridLayout *LAY_g_MainLayout;
   QWidget     *Widg_widget0;
@@ -230,20 +232,20 @@ public QMainWindow
   
   QLabel *infoLabel;
 
-  QSlider *phiSlider;
-  QSlider *thetaSlider;
-  QSlider *psiSlider;
-  QSlider *mxSlider;
-  QSlider *mySlider;
-  QSlider *distSlider;
-/*
-  QwtSlider *phiSlider;
-  QwtSlider *thetaSlider;
-  QwtSlider *psiSlider;
-  QwtSlider *mxSlider;
-  QwtSlider *mySlider;
-  QwtSlider *distSlider;
-*/
+                                 /* Slider controls over the rotation
+				    angles phi, theta, and psi */
+  QSlider *slider_rangle_phi;
+  QSlider *slider_rangle_theta;
+  QSlider *slider_rangle_psi;
+
+                                 /* Slider controls over
+				    something... */
+  QSlider *slider_mx;
+  QSlider *slider_my;
+
+                                 /* Slider controls over zooming in
+				    and out of the computer screen */
+  QSlider *slider_zoom;
 
   QPushButton *Butt_rotMiller;
   QPushButton *Butt_disloc;
