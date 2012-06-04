@@ -89,14 +89,6 @@ namespace vecds
     void SIG_xMovementChanged (int);
     void SIG_yMovementChanged (int);
     void SIG_zMovementChanged (int);
-/*
-    void SIG_phiRotationChanged(int);
-    void SIG_thetaRotationChanged(double);
-    void SIG_psiRotationChanged(double);
-    void SIG_xMovementChanged(double);
-    void SIG_yMovementChanged(double);
-    void SIG_zMovementChanged(double);
-*/
     void SIG_actPoint (QVector3D res);
     void SIG_actPosition (QVector3D res);
     
@@ -233,11 +225,7 @@ namespace vecds
     int mmx, mmy;
     glm::dvec3 cent_;
     float fov;
-    
-    
-    double bg_red;
-    double bg_green;
-    double bg_blue;
+
     GLfloat a_color[4];
     float VIEW_rad_fact;
     int VIEW_whichRadius;

@@ -62,11 +62,11 @@ vecds::MainViewer::MainViewer (QWidget *parent)
   QGLWidget (parent),
                                  // initial conditions (none)
   n_atoms   (0),
-  n_bonds   (0),
+  n_bonds   (0)
                                  // background colours
-  bg_red    (0.99),
-  bg_green  (0.99),
-  bg_blue   (0.99)
+  // bg_red    (0.99),
+  // bg_green  (0.99),
+  // bg_blue   (0.99)
 {
   makeCurrent ();
 
@@ -201,7 +201,8 @@ void vecds::MainViewer::paintGL ()
   glClear (GL_COLOR_BUFFER_BIT | 
 	   GL_DEPTH_BUFFER_BIT);
 
-  glClearColor (bg_red, bg_green, bg_blue, 1.0);
+                                 // This prints white
+  glClearColor (0.99, 0.99, 0.99, 1.0);
 
   if ((ActualData->atoms_loaded=="none") && (ActualData->img_loaded=="none")) 
     {
