@@ -31,6 +31,8 @@
 namespace vecds 
 {
 
+  
+
 
                                  /* The structure <code>Int4</code> is
 				    a four-integer; ie. a set of four

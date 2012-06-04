@@ -4,9 +4,9 @@
 // Author: 
 //    Jan Cholewinski 2010.
 //    Pawel Dluzewski 2010. 
-//    Toby D. Young 2012. 
+//    Toby D. Young 2010, 2012. 
 //
-// Copyright (C) 2010, 2012 The vecds authors
+// Copyright (C) 2010-2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -28,3 +28,21 @@
                                  // vecds includes
 #include <vecds/base/integer.h>
 
+namespace vecds
+{
+
+  /**
+   * The IntVector is a dedicated class for vectors of integers. We
+   * want this, because we would like to have special operations that
+   * may not apply to an ordinary vector of integers.
+   *
+   * @author Toby D. Young
+   */
+  template <unsigned int length>
+  class IntVector
+  {
+  public:
+
+
+  };                             // class IntVector
+}                                // namespace vecds
