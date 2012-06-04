@@ -259,7 +259,6 @@ include_directories (
 
 set (vecds_sources
   ${VECDS_PATH}/source/base/integer
-  ${VECDS_PATH}/source/base/matrix
   ##
   ${VECDS_PATH}/source/dialogs/monolog_base
   ${VECDS_PATH}/source/dialogs/dialog_base
@@ -281,7 +280,6 @@ set (vecds_sources
 ## we should never need the main program (vecds.cxx).
 set (vecds_headers
   ##  ${VECDS_INCLUDES}/vecds/base/integer.h
-  ##  ${VECDS_INCLUDES}/vecds/base/matrix.h
   ##
   ${VECDS_INCLUDES}/vecds/dialogs/monolog_base.h
   ${VECDS_INCLUDES}/vecds/dialogs/dialog_base.h
