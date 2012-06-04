@@ -99,7 +99,8 @@ namespace vecds
 				    block. In general, they asre
 				    called in this order: */
     void initializeGL ();
-    void resizeGL (int width, int height);
+    void resizeGL (unsigned int width, 
+		   unsigned int height);
     void paintGL ();
 
                                  /* These functions are reimplemented

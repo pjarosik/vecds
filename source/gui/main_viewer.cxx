@@ -37,25 +37,23 @@ extern Internal *ActualData;
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
-static GLfloat light0_position[] = { 1000.0, 1000.0, 1000.0, 0.0 };
-static GLfloat light1_position[] = { 1000.0, -1000.0, -1000.0, 0.0 };
-static GLfloat cube_mat11[]      = { 0.75, 0.22, 0.22, 0.43 };
-static GLfloat mat_emission[]    = {0.1, 0.1, 0.1, 0.0};
-static GLfloat specular_color[4] = { 0.4, 0.4, 0.4, 0.8 };
+static const GLfloat light0_position[] = { 1000.0, 1000.0, 1000.0, 0.0 };
+static const GLfloat light1_position[] = { 1000.0, -1000.0, -1000.0, 0.0 };
+static const GLfloat cube_mat11[]      = { 0.75, 0.22, 0.22, 0.43 };
+static const GLfloat mat_emission[]    = {0.1, 0.1, 0.1, 0.0};
+static const GLfloat specular_color[4] = { 0.4, 0.4, 0.4, 0.8 };
 
-static GLfloat color_red[]       = {0.7, 0.1, 0.1, 1.0};
-static GLfloat color_green[]     = {0.1, 0.7, 0.1, 1.0};
-static GLfloat color_blue[]      = {0.1, 0.1, 0.7, 1.0};
-static GLfloat color_grey[]      = {0.5, 0.5, 0.5, 1.0 };
+static const GLfloat color_red[]       = {0.7, 0.1, 0.1, 1.0};
+static const GLfloat color_green[]     = {0.1, 0.7, 0.1, 1.0};
+static const GLfloat color_blue[]      = {0.1, 0.1, 0.7, 1.0};
+static const GLfloat color_grey[]      = {0.5, 0.5, 0.5, 1.0 };
 
-GLfloat invis[]                  = { 0.15, 0.38, 0.15, 0.1 };
+static const GLfloat invis[]                  = { 0.15, 0.38, 0.15, 0.1 };
 GLfloat disloc_sign[4];          // = { 0.7, 0.1, 0.1, 0.4 };
 
 QColor qcol;
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
-
-
 
 vecds::MainViewer::MainViewer (QWidget *parent)
   : 
@@ -63,10 +61,6 @@ vecds::MainViewer::MainViewer (QWidget *parent)
                                  // initial conditions (none)
   n_atoms   (0),
   n_bonds   (0)
-                                 // background colours
-  // bg_red    (0.99),
-  // bg_green  (0.99),
-  // bg_blue   (0.99)
 {
   makeCurrent ();
 
@@ -157,7 +151,8 @@ void vecds::MainViewer::initializeGL ()
                                  // in Qt. It is generally alled
                                  // *after* initializeGL and simply
                                  // resizes the window.
-void vecds::MainViewer::resizeGL (int width, int height)
+void vecds::MainViewer::resizeGL (unsigned int width, 
+				  unsigned int height)
 {
 
   qWarning ("class MainViewer (resizeGL): Resizing GL");
