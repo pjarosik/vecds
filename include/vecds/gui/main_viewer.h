@@ -82,13 +82,17 @@ namespace vecds
     void SL_loadImage ();
     
   signals:
-    
-    void SIG_phiRotationChanged (int);
-    void SIG_thetaRotationChanged (int);
-    void SIG_psiRotationChanged (int);
+
+                                 /* These are all signals to Qt that
+				    something has changed */    
+    void SIG_rangle_phi_changed (const int);
+    void SIG_rangle_theta_changed (const int);
+    void SIG_rangle_psi_changed (const int);
+
     void SIG_xMovementChanged (int);
     void SIG_yMovementChanged (int);
     void SIG_zMovementChanged (int);
+
     void SIG_actPoint (QVector3D res);
     void SIG_actPosition (QVector3D res);
     
@@ -158,8 +162,10 @@ namespace vecds
     void euler2matr ();
     
     QVector2D normalizeMouse (QPoint qp);
-    void quat2matr (QQuaternion q);
-    glm::dvec3 quat2euler (QQuaternion q);
+
+    void quat2matr (const QQuaternion q);
+    glm::dvec3 quat2euler (const QQuaternion q);
+
     QQuaternion quatfromEuler ();
 
                                  /* number of atoms in this

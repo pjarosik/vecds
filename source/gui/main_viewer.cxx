@@ -359,7 +359,7 @@ void vecds::MainViewer::prepare_axis ()
 
 // ------------------------------------------------------------
 
-void vecds::MainViewer::init_spheres( int numbOfSubdiv )
+void vecds::MainViewer::init_spheres (int numbOfSubdiv)
 { 
 // qWarning ("init_spheres");
   for (int i=0; i<125; i++ ) {
@@ -384,12 +384,12 @@ void vecds::MainViewer::init_spheres( int numbOfSubdiv )
 
 //-----------------------------------------------------------------------------------
 
-void vecds::MainViewer::mousePressEvent(QMouseEvent *event)
+void vecds::MainViewer::mousePressEvent (QMouseEvent *event)
 {
-    lastPos = event->pos();
-    mousePt = normalizeMouse(lastPos);
+    this->lastPos = event->pos ();
+    mousePt = normalizeMouse (this->lastPos);
 
-    if ( ActualData->Mode==2 ) 
+    if (ActualData->Mode==2) 
       {
 	QVector3D res = getOGLPos(event->x(), event->y());
 	if (event->buttons() & Qt::LeftButton) 
@@ -416,10 +416,10 @@ void vecds::MainViewer::mousePressEvent(QMouseEvent *event)
 
 }
 
-void vecds::MainViewer::mouseMoveEvent(QMouseEvent *event)
+void vecds::MainViewer::mouseMoveEvent (QMouseEvent *event)
 {
-    lastPos = event->pos();
-    mousePt = normalizeMouse(lastPos);
+    this->lastPos = event->pos ();
+    mousePt = normalizeMouse (this->lastPos);
     if (event->buttons() & Qt::LeftButton) 
       {
 	arcball->drag(mousePt);
@@ -431,13 +431,14 @@ void vecds::MainViewer::mouseMoveEvent(QMouseEvent *event)
 	  {
 	    rangle_theta = result.x;
 
+	    // TODO: here we need a function rebound_pm_180, 360, itd
 	    if (rangle_theta<-180.) 
 	      rangle_theta += 360.;
 
 	    if (rangle_theta>180.) 
 	      rangle_theta -= 360.;
 
-	    emit SIG_thetaRotationChanged (int (rangle_theta));
+	    emit SIG_rangle_theta_changed ((const int) rangle_theta);
 	  }
 	if (rangle_phi!=result.z) 
 	  {
@@ -449,7 +450,7 @@ void vecds::MainViewer::mouseMoveEvent(QMouseEvent *event)
 	    if (rangle_phi>90.) 
 	      rangle_phi -= 180.;
 
-	    emit SIG_phiRotationChanged (int (rangle_phi));
+	    emit SIG_rangle_phi_changed ((const int) rangle_phi);
 	  }
 	if (rangle_psi!=result.y) 
 	  {
@@ -460,15 +461,15 @@ void vecds::MainViewer::mouseMoveEvent(QMouseEvent *event)
 	    if (rangle_psi>180.) 
 	      rangle_psi -= 180.;
 
-	    emit SIG_psiRotationChanged (int (rangle_psi));
+	    emit SIG_rangle_psi_changed ((const int) rangle_psi);
 	  }
 
        updateGL();
       } 
     else if (event->buttons() & Qt::RightButton && ActualData->Mode!=2) 
       {
-	int mmx = event->x() - lastPos.x();
-	int mmy = event->y() - lastPos.y();
+	int mmx = event->x() - this->lastPos.x ();
+	int mmy = event->y() - this->lastPos.y ();
 
 	if ( mmx!=0 ) 
 	  {
@@ -498,7 +499,7 @@ void vecds::MainViewer::wheelEvent(QWheelEvent *event)
       return;
     }
 
-  emit SIG_zMovementChanged(int(180*distance/distance0));
+  emit SIG_zMovementChanged ( int (180*distance/distance0));
   updateGL();
 }
 
@@ -520,10 +521,12 @@ void vecds::MainViewer::draw_atoms ()
     {
       unsigned int aki = ActualData->atoms->atom_type[i];
       glm::dvec3 trans = ActualData->atoms->coordinates[i] - cent_;
+
       if ( i==0 ) 
 	{
 	  qWarning ("aki=%d, trans=(%g, %g, %g)", aki, trans.x, trans.y, trans.z);
 	}
+
       glPushMatrix();
       glTranslated(trans.x, trans.y, trans.z);
       a_color[0] = ActualData->ap->atom_red[aki];
@@ -914,55 +917,66 @@ void vecds::MainViewer::euler2matr ()
   double cb = cos (vecds::constant::deg2rad * rangle_phi);   // bank
   double sb = sin (vecds::constant::deg2rad * rangle_phi);
 
-    transformM[0]  = ch*ca;
-    transformM[1]  = sh*sb - ch*sa*cb;
-    transformM[2]  = ch*sa*sb + sh*cb;
-    transformM[3]  = 0.;
-    transformM[4]  = sa;
-    transformM[5]  = ca*cb;
-    transformM[6]  = -ca*sb;
-    transformM[7]  = 0.;
-    transformM[8]  = -sh*ca;
-    transformM[9]  = sh*sa*cb + ch*sb;
-    transformM[10] = -sh*sa*sb + ch*cb;
-    transformM[11] = 0.;
-    transformM[12] = 0.;
-    transformM[13] = 0.;
-    transformM[14] = 0.;
-    transformM[15] = 1.;
+  transformM[0]  = ch*ca;
+  transformM[1]  = sh*sb - ch*sa*cb;
+  transformM[2]  = ch*sa*sb + sh*cb;
+  transformM[3]  = 0.;
+  transformM[4]  = sa;
+  transformM[5]  = ca*cb;
+  transformM[6]  = -ca*sb;
+  transformM[7]  = 0.;
+  transformM[8]  = -sh*ca;
+  transformM[9]  = sh*sa*cb + ch*sb;
+  transformM[10] = -sh*sa*sb + ch*cb;
+  transformM[11] = 0.;
+  transformM[12] = 0.;
+  transformM[13] = 0.;
+  transformM[14] = 0.;
+  transformM[15] = 1.;
 }
 
-void vecds::MainViewer::quat2matr (QQuaternion q)
+void vecds::MainViewer::quat2matr (const QQuaternion q)
 {
-  double sqw = q.scalar()*q.scalar();
-  double sqx = q.x()*q.x();
-  double sqy = q.y()*q.y();
-  double sqz = q.z()*q.z();
+  const double sqw  = q.scalar ()*q.scalar ();
+  const double sqx  = q.x ()*q.x ();
+  const double sqy  = q.y ()*q.y ();
+  const double sqz  = q.z ()*q.z ();
+  const double invs = 1 / (sqx + sqy + sqz + sqw);
   
-  double invs = 1 / (sqx + sqy + sqz + sqw);
-  transformM[0] = (sqx - sqy - sqz + sqw)*invs;
-  transformM[5] = (-sqx + sqy - sqz + sqw)*invs;
+  transformM[0]  = ( sqx - sqy - sqz + sqw)*invs;
+  transformM[5]  = (-sqx + sqy - sqz + sqw)*invs;
   transformM[10] = (-sqx - sqy + sqz + sqw)*invs;
   
   double tmp1 = q.x()*q.y();
   double tmp2 = q.z()*q.scalar();
-  transformM[4] = 2.*(tmp1 + tmp2)*invs;
-  transformM[1] = 2.*(tmp1 - tmp2)*invs;
+
+  transformM[4]  = 2.*(tmp1 + tmp2)*invs;
+  transformM[1]  = 2.*(tmp1 - tmp2)*invs;
+
   tmp1 = q.x()*q.z();
   tmp2 = q.y()*q.scalar();
-  transformM[8] = 2.*(tmp1 - tmp2)*invs;
-  transformM[2] = 2.*(tmp1 + tmp2)*invs;
+
+  transformM[8]  = 2.*(tmp1 - tmp2)*invs;
+  transformM[2]  = 2.*(tmp1 + tmp2)*invs;
+
   tmp1 = q.y()*q.z();
   tmp2 = q.x()*q.scalar();
-  transformM[9] = 2.*(tmp1 + tmp2)*invs;
-  transformM[6] = 2.*(tmp1 - tmp2)*invs;
-  transformM[3] = transformM[7] = transformM[11] = 
-  transformM[12] = transformM[13] = transformM[14] = 0.;
+
+  transformM[9]  = 2.*(tmp1 + tmp2)*invs;
+  transformM[6]  = 2.*(tmp1 - tmp2)*invs;
+
+  transformM[3]  = 0.;
+  transformM[7]  = 0.;
+  transformM[11] = 0.;
+  transformM[12] = 0.;
+  transformM[13] = 0.;
+  transformM[14] = 0.;
+
   transformM[15] = 1.;
 }
 
 
-glm::dvec3 vecds::MainViewer::quat2euler (QQuaternion q)
+glm::dvec3 vecds::MainViewer::quat2euler (const QQuaternion q)
 {
   double head, att, b;
   double test = q.x()*q.y() + q.z()*q.scalar();
