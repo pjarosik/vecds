@@ -36,7 +36,6 @@
 
                                  // vecds base includes
 #include <vecds/base/integer.h>
-//#include <vecds/base/matrix.h>
 #include <vecds/base/additional.h>
 #include <vecds/base/constant.h>
 
@@ -70,26 +69,26 @@ namespace vecds
     
     public slots:
     
-    void SL_dophiRotation();
-    void SL_dothetaRotation();
-    void SL_dopsiRotation();
-    void SL_doXMovement();
-    void SL_doYMovement();
-    void SL_doZMovement();
+    void SL_dophiRotation ();
+    void SL_dothetaRotation ();
+    void SL_dopsiRotation ();
+    void SL_doXMovement ();
+    void SL_doYMovement ();
+    void SL_doZMovement ();
     
-    void SL_needDraw();
-    void SL_repaint();
-    void SL_keypress(int key);
-    void SL_loadImage();
+    void SL_needDraw ();
+    void SL_repaint ();
+    void SL_keypress (int key);
+    void SL_loadImage ();
     
   signals:
     
-    void SIG_phiRotationChanged(int);
-    void SIG_thetaRotationChanged(int);
-    void SIG_psiRotationChanged(int);
-    void SIG_xMovementChanged(int);
-    void SIG_yMovementChanged(int);
-    void SIG_zMovementChanged(int);
+    void SIG_phiRotationChanged (int);
+    void SIG_thetaRotationChanged (int);
+    void SIG_psiRotationChanged (int);
+    void SIG_xMovementChanged (int);
+    void SIG_yMovementChanged (int);
+    void SIG_zMovementChanged (int);
 /*
     void SIG_phiRotationChanged(int);
     void SIG_thetaRotationChanged(double);
@@ -98,8 +97,8 @@ namespace vecds
     void SIG_yMovementChanged(double);
     void SIG_zMovementChanged(double);
 */
-    void SIG_actPoint(QVector3D res);
-    void SIG_actPosition(QVector3D res);
+    void SIG_actPoint (QVector3D res);
+    void SIG_actPosition (QVector3D res);
     
   protected:
  
@@ -119,9 +118,9 @@ namespace vecds
     void mouseMoveEvent (QMouseEvent *event);
 
                                  /* vecds functions. */
-    void draw_atoms();
-    void draw_bonds();
-    void draw_axis();
+    void draw_atoms ();
+    void draw_bonds ();
+    void draw_axis ();
  
 
     
@@ -140,35 +139,35 @@ namespace vecds
                                  // TODO: document
     void prepare_axis ();
   
-    void init_spheres(int numbOfSubdiv);
-    void normalizeAngle(double *angle);
-    void wheelEvent(QWheelEvent *event);
+    void init_spheres (int numbOfSubdiv);
+    void normalizeAngle (double *angle);
+    void wheelEvent (QWheelEvent *event);
     
 
     
-    void arrow(glm::dvec3 orig, glm::dvec3 vect, double fact, double sm);
-    void drawBox0(float size);
-    void draw_arrows(double f);
-    void drawBackground();
-    void drawTexture(GLuint tex, glm::dvec3 p1, glm::dvec3 p2, glm::dvec3 p3, glm::dvec3 p4);
+    void arrow (glm::dvec3 orig, glm::dvec3 vect, double fact, double sm);
+    void drawBox0 (float size);
+    void draw_arrows (double f);
+    void drawBackground ();
+    void drawTexture (GLuint tex, glm::dvec3 p1, glm::dvec3 p2, glm::dvec3 p3, glm::dvec3 p4);
     
-    QVector3D getOGLPos(int, int);
-    QVector3D getMousePos(int, int);
+    QVector3D getOGLPos (int, int);
+    QVector3D getMousePos (int, int);
     
-    void drawBox(double v[8][3]/*, double norm_v[8][3]*/);
-    void drawInvisBox();
-    void set_v(double v[8][3], double norm_v[8][3], glm::dvec3 p1, glm::dvec3 p2);
-    void draw_numbers();
+    void drawBox (double v[8][3]/*, double norm_v[8][3]*/);
+    void drawInvisBox ();
+    void set_v (double v[8][3], double norm_v[8][3], glm::dvec3 p1, glm::dvec3 p2);
+    void draw_numbers ();
     
-    void doGLdisloc();
-    void paintEvent();
-    void getAxisAngle(const QQuaternion q, glm::dvec3 &v, double &ang);
-    void euler2matr();
+    void doGLdisloc ();
+    void paintEvent ();
+    void getAxisAngle (const QQuaternion q, glm::dvec3 &v, double &ang);
+    void euler2matr ();
     
-    QVector2D normalizeMouse(QPoint qp);
-    void quat2matr(QQuaternion q);
-    glm::dvec3 quat2euler(QQuaternion q);
-    QQuaternion quatfromEuler();
+    QVector2D normalizeMouse (QPoint qp);
+    void quat2matr (QQuaternion q);
+    glm::dvec3 quat2euler (QQuaternion q);
+    QQuaternion quatfromEuler ();
 
                                  /* number of atoms in this
 				    context. */
@@ -179,18 +178,23 @@ namespace vecds
     unsigned int n_bonds;
   
 
-    
+    vecds::Int2* bonds;    
+
     glm::dvec3* coord;
+    glm::dvec3 min_;    
+    glm::dvec3 max_;
+    glm::dvec3 a_min_;
+    glm::dvec3 a_max__;
+
     int* a_kind;
-    vecds::Int2* bonds;
-    glm::dvec3 min_, max_, a_min_, a_max__;
     
     GLuint textures[100];
     GLuint background;
     
   public:
     
-    double screenW, screenH;
+    double screenW;
+    double screenH;
     QPoint lastPos;
     
   private:

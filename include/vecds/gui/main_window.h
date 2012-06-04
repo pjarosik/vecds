@@ -117,7 +117,7 @@ public QMainWindow
 
 
   void SL_setSliderValue (int);
-//  void SL_setSliderValue (double);
+  // void SL_setSliderValue (double);
   void SL_defineStructure ();
   void SL_chooseStructure ();
 
@@ -194,7 +194,7 @@ public QMainWindow
 
 
                                  /* Register if a key is pressed */
-  void keyPressEvent (QKeyEvent *key_event);
+  void keyPressEvent (const QKeyEvent *key_event);
 
                                  /* Actually create stuff */
   void createActions ();
@@ -212,11 +212,8 @@ public QMainWindow
   // --------------------- WTF? ---------------------------------
 
   void InfoDisplay ();
-  void saveAtoms (QString);
-  void saveChoosedAtoms (QString);
 
   QString toRichText(QString txt);
-  
   
   QGridLayout *LAY_g_MainLayout;
   QWidget     *Widg_widget0;
@@ -226,11 +223,8 @@ public QMainWindow
   QString aname, iname, fname, resname;
   QString infotxt0, infotxtat, infotxtimg;
   
-
-  
   QAction *MillerAct;
   QAction *transpAct;
-
   QAction *settAct;
   QAction *multAct;
   

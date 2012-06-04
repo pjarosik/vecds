@@ -34,35 +34,24 @@
 #include <vecds/internal.h>
 
 extern Internal *ActualData;
-QString str1;
+
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
-GLfloat mat_ambient[] = { 0.4, 0.4, 0.4, 0.8 };
-GLfloat colorA[] = { 0.8, 0.8, 0.2, 0.7 };
+static GLfloat light0_position[] = { 1000.0, 1000.0, 1000.0, 0.0 };
+static GLfloat light1_position[] = { 1000.0, -1000.0, -1000.0, 0.0 };
+static GLfloat cube_mat11[]      = { 0.75, 0.22, 0.22, 0.43 };
+static GLfloat mat_emission[]    = {0.1, 0.1, 0.1, 0.0};
+static GLfloat specular_color[4] = { 0.4, 0.4, 0.4, 0.8 };
 
-GLfloat light0_position[] = { 1000.0, 1000.0, 1000.0, 0.0 };
-GLfloat light1_position[] = { 1000.0, -1000.0, -1000.0, 0.0 };
-GLfloat cube_mat[]        = { 0.3, 0.3, 0.3, 0.2 };
-GLfloat cube_mat0[]       = { 0.57, 0.57, 0.585, 0.22 };
-GLfloat cube_mat1[]       = { 0.22, 0.75, 0.22, 0.43 };
-GLfloat cube_mat11[]      = { 0.75, 0.22, 0.22, 0.43 };
-GLfloat mat_diffuse[]     = { 0.9, 0.9, 0.9, 1.0 };
-GLfloat mat_specular[]    = { 0.4, 0.4, 0.4, 1.0 };
-GLfloat mat_emission[]    = {0.1, 0.1, 0.1, 0.0};
-GLfloat specular_color[4] = { 0.4, 0.4, 0.4, 0.8 };
-GLfloat colorRed[]        = {0.7, 0.1, 0.1, 1.0};
-GLfloat colorGreen[]      = {0.1, 0.7, 0.1, 1.0};
-GLfloat colorBlue[]       = {0.1, 0.1, 0.7, 1.0};
+static GLfloat color_red[]       = {0.7, 0.1, 0.1, 1.0};
+static GLfloat color_green[]     = {0.1, 0.7, 0.1, 1.0};
+static GLfloat color_blue[]      = {0.1, 0.1, 0.7, 1.0};
+static GLfloat color_grey[]      = {0.5, 0.5, 0.5, 1.0 };
 
-GLfloat mat_shininess[] = { 10.0 };
-GLfloat signesAdd[] = {0.9, 0.9, 0.9, 0.7};
-GLfloat disloc_sign[4];// = { 0.7, 0.1, 0.1, 0.4 };
+GLfloat invis[]                  = { 0.15, 0.38, 0.15, 0.1 };
+GLfloat disloc_sign[4];          // = { 0.7, 0.1, 0.1, 0.4 };
 
-GLfloat grey[] = { 0.5, 0.5, 0.5, 1.0 };
-GLfloat invis[] = { 0.15, 0.38, 0.15, 0.1 };
 QColor qcol;
-
-//GLint viewport[4];
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 
@@ -81,6 +70,7 @@ vecds::MainViewer::MainViewer (QWidget *parent)
 {
   makeCurrent ();
 
+                                 // reset rotation angles
   this->rangle_phi       = 0.;
   this->rangle_theta     = 0.;
   this->rangle_psi       = 0.;
@@ -408,12 +398,12 @@ void vecds::MainViewer::mousePressEvent(QMouseEvent *event)
 	QVector3D res = getOGLPos(event->x(), event->y());
 	if (event->buttons() & Qt::LeftButton) 
 	  {
-	    emit SIG_actPoint(res);
+	    emit SIG_actPoint (res);
 	    updateGL();
 	  }
 	if (event->buttons() & Qt::RightButton) 
 	  {
-	    emit SIG_actPosition(res);
+	    emit SIG_actPosition (res);
 	  } 
       } 
     else 
@@ -557,8 +547,8 @@ void vecds::MainViewer::draw_atoms ()
 
 void vecds::MainViewer::draw_bonds ()
 {
-  glMaterialfv(GL_FRONT, GL_AMBIENT, grey);
-  glMaterialfv(GL_FRONT, GL_DIFFUSE, grey);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, color_grey);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, color_grey);
  
   for (unsigned int i=0; i<ActualData->atoms->n_bonds; i++) 
     {
@@ -592,20 +582,20 @@ void vecds::MainViewer::draw_axis ()
   glm::dvec3 orig = glm::dvec3(fact*(min_.x-cent_.x), fact*(min_.y-cent_.y), fact*(max_.z-cent_.z));
   
   glPushMatrix();
-  glMaterialfv(GL_FRONT, GL_AMBIENT, colorRed);
-  glMaterialfv(GL_FRONT, GL_DIFFUSE, colorRed);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, color_red);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, color_red);
   arrow(orig, ActualData->axeX, 0.3, small);
   glPopMatrix();
   
   glPushMatrix();
-  glMaterialfv(GL_FRONT, GL_AMBIENT, colorGreen);
-  glMaterialfv(GL_FRONT, GL_DIFFUSE, colorGreen);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, color_green);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, color_green);
   arrow(orig, ActualData->axeY, 0.3, small);
   glPopMatrix();
   
   glPushMatrix();
-  glMaterialfv(GL_FRONT, GL_AMBIENT, colorBlue);
-  glMaterialfv(GL_FRONT, GL_DIFFUSE, colorBlue);
+  glMaterialfv(GL_FRONT, GL_AMBIENT, color_blue);
+  glMaterialfv(GL_FRONT, GL_DIFFUSE, color_blue);
   arrow(orig, ActualData->axeZ, 0.3, small);
   glPopMatrix();
   

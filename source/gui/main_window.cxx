@@ -591,9 +591,9 @@ void MainWindow::SL_chooseStructure()
         if ( item==ActualData->crstr[i].structure_name ) {
            ActualData->actcrstr = &(ActualData->crstr[i]);
            infotxt0.sprintf("Structure: %s%sMiller indices: %s", 
-			    ActualData->actcrstr->structure_name.toAscii().data(),
+			    ActualData->actcrstr->structure_name.toAscii ().data (),
 			    infsepar.toAscii().data(), 
-			    toRichText(ActualData->act_mill).toAscii().data());
+			    toRichText (ActualData->act_mill).toAscii ().data ());
 	   
            InfoDisplay();
            return;
@@ -991,12 +991,12 @@ void MainWindow::InfoDisplay()
   inftxt.sprintf("%s%s%s", infotxt0.toAscii().data(), 
                            infotxtat.toAscii().data(), 
                            infotxtimg.toAscii().data());
-// qWarning("INFO: %s", inftxt.toAscii().data());
+
    infoLabel->setText(inftxt);
 }
 
                                  // Register a key event
-void MainWindow::keyPressEvent(QKeyEvent *keyEv)
+void MainWindow::keyPressEvent(const QKeyEvent *keyEv)
 {
   const int k = keyEv->key ();
   emit SIG_keypress (k);
@@ -1030,21 +1030,6 @@ QSlider *MainWindow::createSlider (const unsigned int minimum,
 QString MainWindow::toRichText (QString txt)
 {
   QString txt1;
-  txt1 = txt.replace("<", "&lt;").replace(">", "&gt;");
+  txt1 = txt.replace ("<", "&lt;").replace(">", "&gt;");
   return txt1;
 }
-/*
-QwtSlider *MainWindow::createSlider
-                      (double from, double to, double step, double val, bool logaritmic)
-{
-  QwtSlider* slider = new QwtSlider(this, 
-                   Qt::Horizontal, QwtSlider::TopScale, QwtSlider::Trough);
-  if ( logaritmic ) slider->setScaleEngine(new QwtLog10ScaleEngine);
-  slider->setBorderWidth(10);
-  slider->setRange(from, to); // paging disabled
-  slider->setScale(from, to, step);
-//  slider->setScaleMaxMinor(10);
-  slider->setValue(val);
-  return slider;
-}
-*/
