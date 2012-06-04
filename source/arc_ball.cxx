@@ -1,10 +1,11 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
+// Author: 
+//    Jan Cholewinski 2010. 
+//    Pawel Dluzewski 2010.
 //
-// Copyright (C) 2010 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -46,15 +47,15 @@ vecds::ArcBall::~ArcBall ()
 void vecds::ArcBall::click (const QVector2D &mouse_coordinate)
 {
   this->vector_begin  = mapToSphere (mouse_coordinate);
-  this->q_down    = this->quaternion;
-  this->mouseQuat = QQuaternion (1., 0., 0., 0.);
+  this->q_down        = this->quaternion;
+  this->mouseQuat     = QQuaternion (1., 0., 0., 0.);
 }
 
 void vecds::ArcBall::drag (const QVector2D &mouse_coordinate)
 {
   this->vector_end     = mapToSphere (mouse_coordinate);
-  this->mouseQuat  = get_quaternion (this->vector_begin, this->vector_end);
-  this->quaternion = this->mouseQuat * this->q_down;
+  this->mouseQuat      = get_quaternion (this->vector_begin, this->vector_end);
+  this->quaternion     = this->mouseQuat * this->q_down;
 }
 
 QQuaternion vecds::ArcBall::get_quaternion (const QVector3D &vec_1, 

@@ -932,10 +932,8 @@ int Internal::lattice2 (double sx, double sy, unsigned int nz)
 
 void Internal::processMiller(int sw, QString result_text, QString result_text2)
 {
-//  bool swb;
   glm::dmat3 mat;
   glm::dmat3 rot_in;
-
   
   this->mil = parse_miller(result_text.toStdString());
   if (sw!=1) 
@@ -948,32 +946,11 @@ void Internal::processMiller(int sw, QString result_text, QString result_text2)
 
       this->rot_inv = glm::transpose(glm::inverse(this->rot_tensor));
       mat = this->rot_tensor * rot_in;
-//      rt  = vecds::Mat9d (this->rot_tensor);
       
-//      qWarning("######   rot_tensor    ###### det = %g", glm::determinant (this->rot_tensor));
-/*
-void printMat(string str, glm::dmat3 m)
-{
-  cout << str << "    det = " << glm::determinant(m) << endl;
-  cout << " row 0 = " << setw(15) << m[0][0] << setw(15) << m[1][0] << setw(15) << m[2][0] << endl;
-  cout << " row 1 = " << setw(15) << m[0][1] << setw(15) << m[1][1] << setw(15) << m[2][1] << endl;
-  cout << " row 2 = " << setw(15) << m[0][2] << setw(15) << m[1][2] << setw(15) << m[2][2] << endl;
-}
-
-      qWarning ("rot 0 = %g %g %g", rt[0], rt[1], rt[2]); 
-      qWarning ("rot 1 = %g %g %g", rt[3], rt[4], rt[5]); 
-      qWarning ("rot 2 = %g %g %g", rt[6], rt[7], rt[8]); 
-*/
-//      qWarning("######   mat    ###### det = %g", glm::determinant (mat));
-/*      qWarning ("rot 0 = %g %g %g", mat[0], mat[1], mat[2]); 
-      qWarning ("rot 1 = %g %g %g", mat[3], mat[4], mat[5]); 
-      qWarning ("rot 2 = %g %g %g", mat[6], mat[7], mat[8]); 
-*/
-      do_atoms_rotation(mat, this->cent_);
-      do_invis_rotation(mat, this->cent_);
-      do_signes_rotation(mat, this->cent_);
-      do_axis_rotation(mat);
-//    }
+      do_atoms_rotation (mat, this->cent_);
+      do_invis_rotation (mat, this->cent_);
+      do_signes_rotation (mat, this->cent_);
+      do_axis_rotation (mat);
 }
 
 void Internal::compute_rotation_tensor()
@@ -991,121 +968,7 @@ void Internal::compute_rotation_tensor()
 }
 
 //------------------ M I L L E R ' S  I N T E R N A L S -------------------
-/*
-bool Internal::parse_miller (QString line)
-{ 
-  vecds::Int4 mil;
-  QString line1, line_a;
-  line1 = line.trimmed().simplified();
-  this->act_mill = line1;
-  qWarning("line1=%s\n", line1.toAscii().data());
-  for (int i=0; i<6; i++) oldMiller[i] = indMiller[i];
 
-  int i_left1 = line1.indexOf("[");
-  int i_right1 = line1.indexOf("]");
-  int i_left2 = line1.indexOf("(");
-  int i_right2 = line1.indexOf(")");
-
-  fraction = (i_left1==0)? 1. : read_fraction(line1.left(i_left1));
-
-  if ( i_left1>=i_right1 || i_left2>=i_right2 ) 
-    {// error
-      qWarning("ERROR PARENTHESES\n");
-      return false;
-    }
-
-  QString line2 = line1.mid(i_left1+1, i_right1-i_left1-1).trimmed();
-
-  if ( internal_miller(line2, 1, mil) ) 
-    {
-      indMiller[0] = mil.i1;
-      indMiller[1] = mil.i2;
-      indMiller[2] = mil.i3;
-    } 
-  else 
-    {
-      qWarning("ERROR - BAD MILLER INDICES 1");
-      return false;
-    }
-
-  line2 = line1.mid(i_left2+1, i_right2-i_left2-1).trimmed();
-  if ( internal_miller(line2, 2, mil) ) 
-    {
-      indMiller[3] = mil.i1;
-      indMiller[4] = mil.i2;
-      indMiller[5] = mil.i3;
-    } 
-  else 
-    {
-      qWarning("ERROR - BAD MILLER INDICES 2");
-      return false;
-    }
-
-    return true;
-}
-
-bool Internal::internal_miller(QString line2, int which, vecds::Int4 &mil)
-{
-  int numbmill;
-  QStringList fields;
-  
-  
-  if ( line2.contains(",") || line2.contains(" ") ) 
-    {
-      fields = line2.split(QRegExp("[ ,]"), QString::SkipEmptyParts);
-      numbmill = fields.size();
-      if ( numbmill<3 || numbmill>4 ) 
-	{
-	  qWarning("ERROR - BAD NUMBER OF MILLER INDICES 1");
-          return false;
-	}
-      for (int i=0; i<numbmill; i++) mil[i] = fields.at(i).toInt();
-    } 
-  else 
-    {
-      bool minus = false;
-      numbmill = 0;
-      int i=0;
-      while ( i<line2.size() ) 
-	{
-	  QChar ch = QChar(line2.at(i++));
-	  if ( ch==QChar('-') ) 
-	    {
-	      minus = true;
-	      continue;
-	    }
-	  if ( ch.isDigit() ) 
-	    {
-	      int n = ch.digitValue();
-	      mil[numbmill++] = minus? -n : n; 
-	      minus = false;
-	    }
-          if ( ch==QChar('.') && numbmill==2 ) mil[numbmill++] = -mil[0]-mil[1];
-	}
-      if ( numbmill<3 || numbmill>4 ) 
-	{
-          qWarning("ERROR - BAD NUMBER OF MILLER INDICES 2");
-          return false;
-	}
-    }
-  if ( numbmill==4 ) 
-    {
-      if ( (mil[0]+mil[1])!=-mil[2] ) 
-	{
-	  qWarning("ERROR BAD SUM - %d %d %d\n", mil[0], mil[1], mil[2]);
-          mil[2] = -mil[0]-mil[1];
-	}
-      if ( which==1 ) 
-	{
-	  mil[0] -= mil[2];
-	  mil[1] -= mil[2];
-	}
-      mil[2] = mil[3];
-    }
-
-  return true;
-}
-*/
 bool Internal::parse_core (QString line)
 { 
   QString line1;
@@ -1200,43 +1063,44 @@ bool Internal::internal_miller(string line2, int which, int *mill)
     if ( numbmill<3 || numbmill>4 ) {
       cout << "ERROR - BAD NUMBER OF MILLER INDICES 2\n";
       return false;}
-  } //if - else
-  if ( numbmill==4 ) {
-    if ( (mill[0]+mill[1])!=-mill[2] )
-         cout << "ERROR BAD SUM - " << mill[0] << "  " << mill[1] << "  " << mill[2] << endl;
-    if ( which==1 ) {
-       mill[0] -= mill[2];
-       mill[1] -= mill[2];
-    }
-    mill[2] = mill[3];
   }
+  if ( numbmill==4 ) 
+    {
+      if ( (mill[0]+mill[1])!=-mill[2] )
+	cout << "ERROR BAD SUM - " << mill[0] << "  " << mill[1] << "  " << mill[2] << endl;
+      if ( which==1 ) {
+	mill[0] -= mill[2];
+	mill[1] -= mill[2];
+      }
+      mill[2] = mill[3];
+    }
   return true;
 }
 
 
-//bool Internal::parse_miller (QString line)
 vecds::miller Internal::parse_miller(string line)
 {
   vecds::miller result;
   result.fraction = 0;
-//  result.indices = {0., 0., 0., 0., 0., 0.};
+
   int mill[4];
   int indMiller[6];
   double fract;
   string line1;
   line1 = stripBlanks(line);
-//  cout << "line1=" <<  line1 << endl;
+
   size_t i_left1 = line1.find('[');
   size_t i_right1 = line1.find(']');
   size_t i_left2 = line1.find('(');
   size_t i_right2 = line1.find(')');
   fract = (i_left1==string::npos)? 1. : read_fraction(line1.substr(0, i_left1));
-  if ( i_left1>=i_right1 || i_left2>=i_right2 ) {// error
-    cout << "ERROR PARENTHESES\n";
-    return result;
-  }
+  if ( i_left1>=i_right1 || i_left2>=i_right2 ) 
+    {
+      cout << "ERROR PARENTHESES\n";
+      return result;
+    }
   string line2 = stripBlanks(line1.substr(i_left1+1, i_right1-i_left1-1));
-//  cout << "line2 (1)=" <<  line2 << endl;
+
   if ( internal_miller(line2, 1, mill) ) {
     indMiller[0] = mill[0];
     indMiller[1] = mill[1];
@@ -1244,7 +1108,7 @@ vecds::miller Internal::parse_miller(string line)
   } else { cout << "ERROR - BAD MILLER INDICES 1\n";
     return result;}
   line2 = stripBlanks(line1.substr(i_left2+1, i_right2-i_left2-1));
-//  cout << "line2 (2)=" <<  line2 << endl;
+
   if ( internal_miller(line2, 2, mill) ) {
     indMiller[3] = mill[0];
     indMiller[4] = mill[1];
@@ -1277,18 +1141,18 @@ double Internal::read_fraction(string line) // czyta ułamek np. w zapisie wekto
 {
   line = stripBlanks(line);
   size_t i_fr = line.find('/');
-//  cout << " i_fr=" << i_fr << endl;
+
   istringstream ins;
   ins.clear();
   ins.str(line);
   double result, temp;
   char c;
   if ( i_fr==string::npos ) ins >> result;
-  else {
-     ins >> result >> c >> temp;
-//     cout << "result=" << result << "   c=" << c << "   temp=" << temp << endl;
-     result /= temp;
-  }
+  else 
+    {
+      ins >> result >> c >> temp; 
+      result /= temp;
+    }
   return result;
 }
 
