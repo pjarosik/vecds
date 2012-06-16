@@ -280,6 +280,7 @@ include_directories (
 
 set (vecds_sources
   ${VECDS_PATH}/source/base/integer_vector
+  ${VECDS_PATH}/source/base/internal
   ##
   ${VECDS_PATH}/source/dialogs/monolog_base
   ${VECDS_PATH}/source/dialogs/dialog_base
@@ -293,7 +294,6 @@ set (vecds_sources
   ${VECDS_PATH}/source/gui/vecds
   ##
   ${VECDS_PATH}/source/arc_ball
-  ${VECDS_PATH}/source/internal
   )
 
 ## Note, header files *only* determine which files will be passed over
@@ -301,6 +301,7 @@ set (vecds_sources
 ## we should never need the main program (vecds.cxx).
 set (vecds_headers
   ##  ${VECDS_INCLUDES}/vecds/base/integer_vector.h
+  ${VECDS_INCLUDES}/vecds/base/internal.h
   ##
   ${VECDS_INCLUDES}/vecds/dialogs/monolog_base.h
   ${VECDS_INCLUDES}/vecds/dialogs/dialog_base.h
@@ -313,7 +314,6 @@ set (vecds_headers
   ${VECDS_INCLUDES}/vecds/gui/main_window.h
   ##
   ${VECDS_INCLUDES}/vecds/arc_ball.h
-  ${VECDS_INCLUDES}/vecds/internal.h
 )
 
 qt4_wrap_cpp (vecds_headers_moc ${vecds_headers})

@@ -27,7 +27,7 @@
 #include <vecds/gui/main_window.h>
 
                                  // vecds includes
-#include <vecds/internal.h>
+#include <vecds/base/internal.h>
 
 
 vecds::Internal::Internal ()

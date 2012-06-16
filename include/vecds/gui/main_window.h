@@ -36,6 +36,7 @@
                                  /* vecds base includes */
 #include <vecds/base/config.h>
 #include <vecds/base/constant.h>
+#include <vecds/base/internal.h>
 
                                  /* vecds dialogs includes */
 #include <vecds/dialogs/help_browser.h>
@@ -47,8 +48,6 @@
                                  /* vecds gui includes */
 #include <vecds/gui/main_viewer.h>
 #include <vecds/gui/main_viewer.h>
-
-#include <vecds/internal.h>
 
 
 QT_BEGIN_NAMESPACE

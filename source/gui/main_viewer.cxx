@@ -31,7 +31,7 @@
                                  // vecds gui includes
 #include <vecds/gui/main_viewer.h>
 
-#include <vecds/internal.h>
+#include <vecds/base/internal.h>
 
 extern vecds::Internal *ActualData;
 
