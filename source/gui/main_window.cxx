@@ -28,7 +28,7 @@
 #include <vecds/gui/main_window.h>
 
 
-Internal *ActualData;
+vecds::Internal *ActualData;
 extern bool qf_ok;
 
 static QString infsepar = " .......... ";
@@ -43,7 +43,7 @@ MainWindow::MainWindow ()
                                  // VECDS_PACKAGE_NAME
   setWindowTitle (VECDS_PACKAGE_NAME);
   
-  ActualData = new Internal;
+  ActualData = new vecds::Internal;
   
   ActualData->act_mill = "[2-1-10](0001)";
   ActualData->act_disl = "1/3[2-1-10](0001)";

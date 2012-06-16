@@ -33,7 +33,7 @@
 
 #include <vecds/internal.h>
 
-extern Internal *ActualData;
+extern vecds::Internal *ActualData;
 
 // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
 

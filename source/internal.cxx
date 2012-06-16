@@ -30,7 +30,7 @@
 #include <vecds/internal.h>
 
 
-Internal::Internal ()
+vecds::Internal::Internal ()
   :
   path (VECDS_INTERNALS)
 {
@@ -81,10 +81,11 @@ Internal::Internal ()
 #endif
 }
 
-Internal::~Internal ()
+vecds::Internal::~Internal ()
 {}
 
-void Internal::init_atoms ()
+void 
+vecds::Internal::init_atoms ()
 {
   int i = 0;
 
@@ -121,7 +122,8 @@ void Internal::init_atoms ()
 #endif
 }
 
-void Internal::init_structures()
+void 
+vecds::Internal::init_structures()
 {
   QString line;
   QStringList fields;
@@ -246,7 +248,8 @@ void Internal::init_structures()
 
 // This function reads in the settings (for something) from a file
 // called settings.set0.
-void Internal::read_settings ()
+void 
+vecds::Internal::read_settings ()
 {
 
   QFile file (path + "/settings.set0");
@@ -322,8 +325,9 @@ void Internal::read_settings ()
   qWarning ("class Internal: \"%d\" settings were initialized.", count);
 }
 
-void Internal::write_vector (const std::string &str, 
-			     const glm::dvec3  &V)
+void 
+vecds::Internal::write_vector (const std::string &str, 
+			       const glm::dvec3  &V)
 {
   std::cout << str << " = (" 
 	    << std::setw (15) << V.x << ", "
@@ -331,8 +335,9 @@ void Internal::write_vector (const std::string &str,
 	    << std::setw (15) << V.z << ")" << std::endl;
 }
 
-void Internal::write_matrix (const std::string &str, 
-			     const glm::dmat3  &M)
+void 
+vecds::Internal::write_matrix (const std::string &str, 
+			       const glm::dmat3  &M)
 {
   std::cout << str << ": determinant = " << glm::determinant (M) 
 	    << std::endl
@@ -341,7 +346,8 @@ void Internal::write_matrix (const std::string &str,
 	    << " (" << std::setw (15) << M[0][2] << ", " << std::setw(15) << M[1][2] << ", " << std::setw(15) << M[2][2] << ")" << std::endl;
 }
 
-void Internal::read_alc_xyz (QString aname)
+void 
+vecds::Internal::read_alc_xyz (QString aname)
 {
 
     this->a_min_ = glm::dvec3(1.e15, 1.e15, 1.e15);
@@ -429,7 +435,8 @@ void Internal::read_alc_xyz (QString aname)
 
 
 
-int Internal::which_atom (QString nam_a)
+int 
+vecds::Internal::which_atom (QString nam_a)
 {
   for (int i=1; i<125; i++)
     if (nam_a.startsWith(this->ap->namea[i], Qt::CaseInsensitive)) 
@@ -438,10 +445,11 @@ int Internal::which_atom (QString nam_a)
   return 0;
 }
 
-void Internal::minmax3 (glm::dvec3 *vec, 
-			int         numb, 
-			glm::dvec3 &vmin, 
-			glm::dvec3 &vmax)
+void 
+vecds::Internal::minmax3 (glm::dvec3 *vec, 
+			  int         numb, 
+			  glm::dvec3 &vmin, 
+			  glm::dvec3 &vmax)
 {
   double mxx = -1.e15;  
   double mxy = -1.e15;  
@@ -466,10 +474,11 @@ void Internal::minmax3 (glm::dvec3 *vec,
   vmin = glm::dvec3(mnx, mny, mnz);
 }
 
-void Internal::minmax1 (double *vec, 
-			int     numb, 
-			double &vmin, 
-			double &vmax)
+void 
+vecds::Internal::minmax1 (double *vec, 
+			  int     numb, 
+			  double &vmin, 
+			  double &vmax)
 {
   double mxx = -1.e15;
   double mnx =  1.e15;
@@ -485,14 +494,16 @@ void Internal::minmax1 (double *vec,
   vmin = mnx;
 }
 
-void Internal::do_axis_rotation (glm::dmat3 r_tens)
+void 
+vecds::Internal::do_axis_rotation (glm::dmat3 r_tens)
 {
   this->axeX = r_tens * this->axeX;
   this->axeY = r_tens * this->axeY;
   this->axeZ = r_tens * this->axeZ;
 }
 
-void Internal::saveAtoms (QString sname)
+void 
+vecds::Internal::saveAtoms (QString sname)
 {
   QString line;
   QFile fil(sname);
@@ -515,7 +526,8 @@ void Internal::saveAtoms (QString sname)
 }
 
 
-void Internal::SL_singleDisl (glm::dvec3 rr)
+void 
+vecds::Internal::SL_singleDisl (glm::dvec3 rr)
 {
   rr += this->cent_;
   actdisl->rrr = rr;// + this->cent_;
@@ -544,7 +556,8 @@ void Internal::SL_singleDisl (glm::dvec3 rr)
 }
 
 
-void Internal::newdisl (unsigned int n_a, bool sw_iter)
+void 
+vecds::Internal::newdisl (unsigned int n_a, bool sw_iter)
 {
   qWarning("newdisl");
   glm::dvec3 rr = this->atoms->coordinates[n_a];
@@ -694,7 +707,8 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
 
 // ------------------------------------------------
 
-void Internal::addDisplacements ()
+void 
+vecds::Internal::addDisplacements ()
 {
   for (unsigned int i=0; i<atoms->n_atoms; ++i) 
     {
@@ -705,8 +719,9 @@ void Internal::addDisplacements ()
 
 
 
-void Internal::calc_disloc (int nr_atom, 
-			    int disl_num)
+void 
+vecds::Internal::calc_disloc (int nr_atom, 
+			      int disl_num)
 {
   
   int i0 = atomize (actdisl->rrr, nr_atom);
@@ -756,7 +771,8 @@ void Internal::calc_disloc (int nr_atom,
 
 //---------------------------------------------------------------------
 
-glm::dvec3 Internal::mixed_u(int i, glm::dvec3 rotdist, double be, double bz)
+glm::dvec3 
+vecds::Internal::mixed_u(int i, glm::dvec3 rotdist, double be, double bz)
 {
   double nu = 0.35;
   double rad_fact = 1.0;
@@ -778,7 +794,8 @@ glm::dvec3 Internal::mixed_u(int i, glm::dvec3 rotdist, double be, double bz)
     } 
 } // mixed_u
 
-glm::dmat3 Internal::mixed_beta (int i, glm::dvec3 rotdist, double be, double bz)
+glm::dmat3 
+vecds::Internal::mixed_beta (int i, glm::dvec3 rotdist, double be, double bz)
 {   
 
   glm::dmat3 b(0., 0., 0.,  
@@ -816,8 +833,9 @@ glm::dmat3 Internal::mixed_beta (int i, glm::dvec3 rotdist, double be, double bz
 
 
 
-int Internal::atomize (const glm::dvec3    point, 
-		       const unsigned int atom_number)
+int 
+vecds::Internal::atomize (const glm::dvec3    point, 
+			  const unsigned int atom_number)
 {
   int i0          = -1;
   double infinity = 1.e33;
@@ -836,7 +854,8 @@ int Internal::atomize (const glm::dvec3    point,
   return i0;
 }
 
-void Internal::calc_disl0 ()
+void 
+vecds::Internal::calc_disl0 ()
 {
   
   int    i0       = 0;
@@ -883,7 +902,8 @@ void Internal::calc_disl0 ()
 
 // --------------------------------------------------------------------
 
-void Internal::do_atoms_rotation (glm::dmat3 r_tens, glm::dvec3 vec)
+void 
+vecds::Internal::do_atoms_rotation (glm::dmat3 r_tens, glm::dvec3 vec)
 {
   for (unsigned int i=0; i<this->atoms->n_atoms; ++i)
     this->atoms->coordinates[i] = (r_tens * (this->atoms->coordinates[i] - vec)) + vec;
@@ -892,13 +912,15 @@ void Internal::do_atoms_rotation (glm::dmat3 r_tens, glm::dvec3 vec)
 }
 
 
-void Internal::do_invis_rotation (glm::dmat3 r_tens, glm::dvec3 vec)
+void 
+vecds::Internal::do_invis_rotation (glm::dmat3 r_tens, glm::dvec3 vec)
 {
   for (int i=0; i<8; i++)
     this->invbox[i] = (r_tens * (this->invbox[i] - vec)) + vec;
 }
 
-void Internal::do_signes_rotation (glm::dmat3 r_tens, glm::dvec3 vec)
+void 
+vecds::Internal::do_signes_rotation (glm::dmat3 r_tens, glm::dvec3 vec)
 {
   for (int j=0; j<this->ndisl; j++) 
     {
@@ -908,7 +930,8 @@ void Internal::do_signes_rotation (glm::dmat3 r_tens, glm::dvec3 vec)
 }
 
 
-void Internal::read_img(QString iname)
+void 
+vecds::Internal::read_img(QString iname)
 {
   this->img.load(iname);
   if ( this->img.isNull() ) 
@@ -918,12 +941,13 @@ void Internal::read_img(QString iname)
     }
 }
 
-int Internal::lattice (int nx, 
-		       int ny, 
-		       int nz)
+int 
+vecds::Internal::lattice (int nx, 
+			  int ny, 
+			  int nz)
 {
   int m = 0;
-
+  
   for (int k=0; k<nz; k++) 
     for (int j=0; j<ny; j++) 
       for (int i=0; i<nx; i++) 
@@ -943,9 +967,10 @@ int Internal::lattice (int nx,
   return m;
 }
 
-int Internal::lattice2 (double       sx, 
-			double       sy, 
-			unsigned int nz)
+int 
+vecds::Internal::lattice2 (double       sx, 
+			   double       sy, 
+			   unsigned int nz)
 {
   unsigned int m = 0;
   double sg      = sin (vecds::constant::deg2rad*this->actcrstr->gamma);
@@ -973,9 +998,10 @@ int Internal::lattice2 (double       sx,
   return m;
 }
 
-void Internal::processMiller(int sw, 
-			     QString result_text, 
-			     QString result_text2)
+void 
+vecds::Internal::processMiller(int sw, 
+			       QString result_text, 
+			       QString result_text2)
 {
   glm::dmat3 mat;
   glm::dmat3 rot_in;
@@ -996,7 +1022,8 @@ void Internal::processMiller(int sw,
   do_axis_rotation (mat);
 }
 
-void Internal::compute_rotation_tensor()
+void 
+vecds::Internal::compute_rotation_tensor ()
 {
   glm::dvec3 s = this->actcrstr->C2O * glm::dvec3 (mil.indices[0], mil.indices[1], mil.indices[2]);
   glm::dvec3 m = glm::transpose (this->actcrstr->O2C) * glm::dvec3 (mil.indices[3], mil.indices[4], mil.indices[5]);
@@ -1015,7 +1042,8 @@ void Internal::compute_rotation_tensor()
 
 //------------------ M I L L E R ' S  I N T E R N A L S -------------------
 
-bool Internal::parse_core (QString line)
+bool 
+vecds::Internal::parse_core (QString line)
 { 
   QString line1;
   line1 = line.trimmed().simplified();
@@ -1078,9 +1106,10 @@ bool Internal::parse_core (QString line)
 }
 
 
-bool Internal::internal_miller(std::string  line2, 
-			       int          which, 
-			       int         *miller_indices)
+bool 
+vecds::Internal::internal_miller(std::string  line2, 
+				 int          which, 
+				 int         *miller_indices)
 {
   unsigned int n_miller_indices = 0;
 
@@ -1148,7 +1177,8 @@ bool Internal::internal_miller(std::string  line2,
 }
 
 
-vecds::miller Internal::parse_miller (std::string line)
+vecds::miller 
+vecds::Internal::parse_miller (std::string line)
 {
   vecds::miller result;
   result.fraction = 0;
@@ -1209,7 +1239,8 @@ vecds::miller Internal::parse_miller (std::string line)
   return result;
 }
 
-std::string Internal::stripBlanks (std::string StringToModify)
+std::string 
+vecds::Internal::stripBlanks (std::string StringToModify)
 {
    if (StringToModify.empty ()) 
      return "";
@@ -1224,7 +1255,8 @@ std::string Internal::stripBlanks (std::string StringToModify)
                                  // czyta ułamek np. w zapisie wektora
                                  // Burgersa, przelicza na liczbę
                                  // dziesiętną
-double Internal::read_fraction (std::string line) 
+double 
+vecds::Internal::read_fraction (std::string line) 
 {
   line = stripBlanks (line);
   size_t i_fr = line.find ('/');
@@ -1249,9 +1281,10 @@ double Internal::read_fraction (std::string line)
 
 
 
-int Internal::identify (const std::string s1, 
-			const int         size, 
-			const std::string words[])
+int 
+vecds::Internal::identify (const std::string s1, 
+			   const int         size, 
+			   const std::string words[])
 {
   for (int i=0; i<size; ++i) 
     if (s1.compare (words[i])==0) 
@@ -1260,7 +1293,8 @@ int Internal::identify (const std::string s1,
   return -1;
 }
 
-std::vector<std::string> Internal::tokenize (const std::string& str, 
+std::vector<std::string> 
+vecds::Internal::tokenize (const std::string& str, 
 					std::string        del)
 {
   std::vector<std::string> tokens;
@@ -1278,7 +1312,8 @@ std::vector<std::string> Internal::tokenize (const std::string& str,
   return tokens;
 }
 
-int Internal::toInt (std::string word)
+int 
+vecds::Internal::toInt (std::string word)
 {
   int i;
   std::istringstream ins;
