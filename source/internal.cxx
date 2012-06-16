@@ -355,13 +355,13 @@ void Internal::read_alc_xyz (QString aname)
 	return;
       }
 
-    if ( this->atoms->n_atoms>0 ) 
+    if (this->atoms->n_atoms>0) 
       {
 	delete [] this->atoms->atom_type;
 	delete [] this->atoms->coordinates;
       }
 
-    if ( this->atoms->n_bonds>0 ) 
+    if (this->atoms->n_bonds>0) 
       {
 	delete [] this->atoms->atom_bond;
       }
@@ -371,12 +371,11 @@ void Internal::read_alc_xyz (QString aname)
     QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
     this->atoms->n_atoms = fields.takeFirst ().toInt ();
 
-    if ( this->atoms->n_atoms>0 ) 
+    if (this->atoms->n_atoms>0) 
       {
 	this->atoms->atom_type       = new unsigned int[this->atoms->n_atoms];
 	this->atoms->coordinates     = new glm::dvec3[this->atoms->n_atoms];
 	this->atoms->u               = new glm::dvec3[this->atoms->n_atoms];
-//	this->atoms->coordinates_glm = new glm::dvec3[this->atoms->n_atoms];
 	this->atoms->du              = new glm::dvec3[this->atoms->n_atoms];
       }
 
@@ -430,44 +429,58 @@ void Internal::read_alc_xyz (QString aname)
 
 
 
-int Internal::which_atom(QString nam_a)
+int Internal::which_atom (QString nam_a)
 {
   for (int i=1; i<125; i++)
     if (nam_a.startsWith(this->ap->namea[i], Qt::CaseInsensitive)) 
       return i;
+
   return 0;
 }
 
-void Internal::minmax3(glm::dvec3 *vec, int numb, glm::dvec3 &vmin, glm::dvec3 &vmax)
+void Internal::minmax3 (glm::dvec3 *vec, 
+			int         numb, 
+			glm::dvec3 &vmin, 
+			glm::dvec3 &vmax)
 {
-  double mxx = -1.e15;  double mxy = -1.e15;  double mxz= -1.e15;
-  double mnx = 1.e15;   double mny = 1.e15;   double mnz= 1.e15;
+  double mxx = -1.e15;  
+  double mxy = -1.e15;  
+  double mxz = -1.e15;
+  double mnx =  1.e15;   
+  double mny =  1.e15;   
+  double mnz =  1.e15;
 
   for (int i=0; i<numb; i++) 
     {
       glm::dvec3 temp = vec[i];
-      if ( temp.x>mxx ) mxx = temp.x;
-      if ( temp.y>mxy ) mxy = temp.y;
-      if ( temp.z>mxz ) mxz = temp.z;
-      if ( temp.x<mnx ) mnx = temp.x;
-      if ( temp.y<mny ) mny = temp.y;
-      if ( temp.z<mnz ) mnz = temp.z;
+
+      if (temp.x>mxx) mxx = temp.x;
+      if (temp.y>mxy) mxy = temp.y;
+      if (temp.z>mxz) mxz = temp.z;
+      if (temp.x<mnx) mnx = temp.x;
+      if (temp.y<mny) mny = temp.y;
+      if (temp.z<mnz) mnz = temp.z;
     }
+
   vmax = glm::dvec3(mxx, mxy, mxz);
   vmin = glm::dvec3(mnx, mny, mnz);
 }
 
-void Internal::minmax1 (double *vec, int numb, double &vmin, double &vmax)
+void Internal::minmax1 (double *vec, 
+			int     numb, 
+			double &vmin, 
+			double &vmax)
 {
   double mxx = -1.e15;
-  double mnx = 1.e15;
+  double mnx =  1.e15;
 
   for (int i=0; i<numb; ++i) 
     {
       double temp = vec[i];
-      if ( temp>mxx ) mxx = temp;
-      if ( temp<mnx ) mnx = temp;
+      if (temp>mxx) mxx = temp;
+      if (temp<mnx) mnx = temp;
     }
+
   vmax = mxx;
   vmin = mnx;
 }
@@ -492,12 +505,13 @@ void Internal::saveAtoms (QString sname)
 
   QTextStream out(&fil);
   out << line.sprintf("%d\n ---\n", atoms->n_atoms);
+
   for (unsigned int i=0; i<atoms->n_atoms; i++)
-    out << line.sprintf("%4s %12.7f %12.7f %12.7f\n",
-			ap->namea[atoms->atom_type[i]].toAscii ().data (),
-			atoms->coordinates[i].x, 
-			atoms->coordinates[i].y, 
-			atoms->coordinates[i].z);
+    out << line.sprintf ("%4s %12.7f %12.7f %12.7f\n",
+			 ap->namea[atoms->atom_type[i]].toAscii ().data (),
+			 atoms->coordinates[i].x, 
+			 atoms->coordinates[i].y, 
+			 atoms->coordinates[i].z);
 }
 
 
@@ -508,13 +522,15 @@ void Internal::SL_singleDisl (glm::dvec3 rr)
   actdisl->burgers_name = this->act_disl;
   actdisl->p1 = glm::dvec3 (rr.x, rr.y, this->a_min_.z);
   actdisl->p2 = glm::dvec3 (rr.x, rr.y, this->a_max_.z);
+  
   qWarning("SL_singleDisl - p1, p2 - (%g %g %g) (%g %g %g)",
 	   actdisl->p1.x, actdisl->p1.y, actdisl->p1.z, 
 	   actdisl->p2.x, actdisl->p2.y, actdisl->p2.z);
   
   glm::dvec3 burg_vect = 
     rot_tensor * mil.fraction * actcrstr->C2O 
-    * glm::dvec3(this->mil.indices[0], this->mil.indices[1], this->mil.indices[2]);
+    * 
+    glm::dvec3 (this->mil.indices[0], this->mil.indices[1], this->mil.indices[2]);
   
   actdisl->burgers_vector  = burg_vect;
   actdisl->rotation_tensor = this->rot_tensor;
@@ -531,15 +547,17 @@ void Internal::SL_singleDisl (glm::dvec3 rr)
 void Internal::newdisl (unsigned int n_a, bool sw_iter)
 {
   qWarning("newdisl");
-  glm::dvec3 rr = this->atoms->coordinates[n_a];// + this->cent_;
-  actdisl->rrr = rr;// + this->cent_;
+  glm::dvec3 rr = this->atoms->coordinates[n_a];
+
+  actdisl->rrr = rr;
   actdisl->burgers_name = this->act_disl;
   actdisl->p1 = glm::dvec3(rr.x, rr.y, this->a_min_.z);
   actdisl->p2 = glm::dvec3(rr.x, rr.y, this->a_max_.z);
-  qWarning("SL_newDisl - p1, p2 - (%g %g %g) (%g %g %g)",
-	   actdisl->p1.x, actdisl->p1.y, actdisl->p1.z, actdisl->p2.x, actdisl->p2.y, actdisl->p2.z);
+
+  qWarning ("SL_newDisl - p1, p2 - (%g %g %g) (%g %g %g)",
+	    actdisl->p1.x, actdisl->p1.y, actdisl->p1.z, 
+	    actdisl->p2.x, actdisl->p2.y, actdisl->p2.z);
   
-//  glm::dvec3 burg_vect = rot_tensor * actcrstr->C2O * glm::dvec3(fraction*indMiller[0], fraction*indMiller[1], fraction*indMiller[2]);
   glm::dvec3 burg_vect = 
     rot_tensor * mil.fraction * actcrstr->C2O 
     * glm::dvec3(this->mil.indices[0], this->mil.indices[1], this->mil.indices[2]);
@@ -656,7 +674,7 @@ void Internal::newdisl (unsigned int n_a, bool sw_iter)
 	    }
 
 	  glm::dvec3 dist1 = atoms->coordinates[i] - cd;
-	  atoms->du[i] = mixed_u(i, dist1, be, bz);
+	  atoms->du[i] = mixed_u (i, dist1, be, bz);
 	}
     }
   
@@ -711,7 +729,6 @@ void Internal::calc_disloc (int nr_atom,
   dislocation_core.z = actdisl->dislocation_core.x*actcrstr->C2O[2][0] + 
 			actdisl->dislocation_core.y*actcrstr->C2O[2][1];
 
-//  vecds::Mat9d rt = vecds::Mat9d (this->rot_tensor);
   actdisl->cd = atoms->coordinates[i0] + this->rot_tensor * dislocation_core;
   
   actdisl->i0 = i0;
