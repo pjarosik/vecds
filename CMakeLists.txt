@@ -279,7 +279,7 @@ include_directories (
   )
 
 set (vecds_sources
-  ${VECDS_PATH}/source/base/integer
+  ${VECDS_PATH}/source/base/integer_vector
   ##
   ${VECDS_PATH}/source/dialogs/monolog_base
   ${VECDS_PATH}/source/dialogs/dialog_base
@@ -300,7 +300,7 @@ set (vecds_sources
 ## for moc generated code; thus, we do not need them all (especially,
 ## we should never need the main program (vecds.cxx).
 set (vecds_headers
-  ##  ${VECDS_INCLUDES}/vecds/base/integer.h
+  ##  ${VECDS_INCLUDES}/vecds/base/integer_vector.h
   ##
   ${VECDS_INCLUDES}/vecds/dialogs/monolog_base.h
   ${VECDS_INCLUDES}/vecds/dialogs/dialog_base.h
