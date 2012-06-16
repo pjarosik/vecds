@@ -75,3 +75,6 @@ namespace vecds
   }
 
 }                                // namespace vecds
+
+/*-------------- Explicit Instantiations -------------------------------*/
+template class vecds::IntVector<3>;

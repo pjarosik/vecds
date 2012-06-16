@@ -45,7 +45,7 @@ Internal::Internal ()
 
 
   
-  // Then do something here...
+                                 // Then do something here...
   this->sliderMove   = false;
   this->img_loaded   = "none";
   this->atoms_loaded = "none";
@@ -119,7 +119,6 @@ void Internal::init_atoms ()
 #ifdef DEBUG
   qWarning ("class Internal (init_atoms): atoms successfully initialized");
 #endif
-  // qWarning("+++++++++++++++  ATOMS INITIALIZED  +++++++++++++++++++");
 }
 
 void Internal::init_structures()
@@ -202,9 +201,7 @@ void Internal::init_structures()
 	actcrstr->core[i].z = read_fraction(fields.takeFirst().toStdString());
       }
     
-    c2o0 = actcrstr->a; //0
-    //    c2o3 = 0.;   //3
-    //    c2o6 = 0.;   //6
+    c2o0 = actcrstr->a;
 
     double cosa6 = cos (vecds::constant::deg2rad*actcrstr->gamma);
     double sina6 = sin (vecds::constant::deg2rad*actcrstr->gamma);
@@ -229,14 +226,11 @@ void Internal::init_structures()
     c2o8 = actcrstr->c * 
       sqrt(1.+2.*cosa4*cosa5*cosa6-cosa4*cosa4-cosa5*cosa5-cosa6*cosa6)/sina6;//8
     
-    //    actcrstr->o2c = invert(actcrstr->c2o);
-    
     actcrstr->C2O = glm::dmat3(c2o0, 0, 0., 
                                c2o1, c2o4, c2o7,
                                c2o2, c2o5, c2o8);
+
     actcrstr->O2C = glm::inverse (actcrstr->C2O);
-//    actcrstr->c2o = glm::dmat3 (actcrstr->C2O);
-//    actcrstr->o2c = glm::dmat3 (actcrstr->O2C);
 
     crstr[index++] = *actcrstr;
     }
@@ -250,7 +244,9 @@ void Internal::init_structures()
   // qWarning("============== init structures O.K.");
 }
 
-void Internal::read_settings()
+// This function reads in the settings (for something) from a file
+// called settings.set0.
+void Internal::read_settings ()
 {
 
   QFile file (path + "/settings.set0");
@@ -258,50 +254,76 @@ void Internal::read_settings()
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
     {
       qWarning("ERROR    file 'settings.set0' not found");
-      //      return;
     }
   
-  QTextStream in(&file);
-  int count = 0;
-  int r, g, b;
-
+  QTextStream in (&file);
+  unsigned int count = 0;
+  
   while (!in.atEnd()) 
     {
       QString line = in.readLine();
-      if ( line.startsWith("#") ) continue;
-      QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-      int nf = fields.size();
+      if (line.startsWith ("#")) 
+	continue;
 
-      if ( count==0 ) 
+      QStringList fields = line.split (QRegExp ("\\s+"), QString::SkipEmptyParts);
+      int nf = fields.size ();
+      
+      switch (count)
 	{
-	  this->set0->fov = fields.takeFirst().toFloat();
-	  goto endloop;
-	}
-      if ( count==1 ) 
-	{
-	  this->set0->mfact = fields.takeFirst().toDouble();
-         goto endloop;
-	}
-      if ( count==2 ) 
-	{
-	  if ( nf!=8 ) qWarning("Settings - line 3 - error!");
-	  for (int i=0; i<8; i++) this->set0->vis[i] = (fields.takeFirst ().toInt ()==0)? false : true;
-	  goto endloop;
-	}
 
-     r = fields.takeFirst().toInt();
-     g = fields.takeFirst().toInt();
-     b = fields.takeFirst().toInt();
+	case 0:
 
-     this->set0->colour_spectrum[count-3] = vecds::Int3 (r, g, b);
-    endloop:
-     ++count;
+                                           // Process 0
+	  this->set0->fov = fields.takeFirst ().toFloat ();
+	  break;
+
+	case 1: 
+
+                                           // Process 1
+	  this->set0->mfact = fields.takeFirst ().toDouble ();
+	  break;
+
+	case 3: 
+
+                                           // Process 1
+	  if (nf!=8) 
+	    qWarning("Settings - line 3 - error!");
+	  
+	  for (int i=0; i<8; ++i) 
+	    {
+	      this->set0->vis[i] = (fields.takeFirst ().toInt ()==0)
+		? 
+		false : true;
+	    }
+	  break;
+
+                                           // if counter > 2, process
+                                           // the colour spectrum.
+	default:
+
+                                           // For some reason, the
+                                           // size of colour_spectrum
+                                           // is 12, therefore, we
+                                           // should never be
+                                           // accessing memory beyond
+                                           // that point!
+	  assert (count<12);
+	  
+	  this->set0->colour_spectrum[count-3] = { fields.takeFirst().toInt(),
+						   fields.takeFirst().toInt(),
+						   fields.takeFirst().toInt() };
+
+	}
+      
+                                           // increment the counter.
+      ++count;
+      
     }
   qWarning ("class Internal: \"%d\" settings were initialized.", count);
 }
 
 
-void Internal::read_alc_xyz(QString aname)
+void Internal::read_alc_xyz (QString aname)
 {
 
     this->a_min_ = glm::dvec3(1.e15, 1.e15, 1.e15);

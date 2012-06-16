@@ -269,7 +269,4 @@ namespace vecds
 
 } // namespace vecds
 
-
-template class vecds::IntVector<1>;
-
 #endif

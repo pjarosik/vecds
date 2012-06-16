@@ -112,6 +112,11 @@ class Internal
   
   struct params p;
 
+                                  /**
+				   * Read settings from disk.
+				   */
+  void read_settings ();
+
   // ===================================================
 
   bool sliderMove;
@@ -138,17 +143,17 @@ class Internal
   int identify(string s1, int size, string words[]);
   vector<string> tokenize(const string& str, string del);
 
-  void printVec(string str, glm::dvec3 vec);
-  void printMat(string str, glm::dmat3 m);
+  void printVec (string str, glm::dvec3 vec);
+  void printMat (string str, glm::dmat3 m);
 
-  int toInt(string word);
-  double toDouble(string word);
+  int toInt (string word);
+  double toDouble (string word);
 
   void init_atoms ();
   void init_structures ();
   void read_alc_xyz (QString namea);
   void read_img (QString iname);
-  void read_settings ();
+
 
   void minmax1 (double *vec, 
 		int numb, 

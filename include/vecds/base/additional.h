@@ -35,6 +35,9 @@
 #include <gsl/gsl_matrix.h>
 #include <gsl/gsl_multiroots.h>
 
+                                 /* vecds includes */
+#include <vecds/base/integer_vector.h>
+
                                  /* TODO: The structure params does
 				    what? */
 struct params 
@@ -87,10 +90,12 @@ namespace vecds
     double mfact;
     bool vis[15];
 
-                                 /* Variable poining to the RGB colour
-				    spectrum. */
-    vecds::Int3 colour_spectrum[12];
-  
+                                  /** 
+				   * Variable poining to the RGB
+				   * colour spectrum.
+				   */
+    vecds::IntVector<3> colour_spectrum[12];
+
   };
 }
 
