@@ -49,6 +49,27 @@ message (STATUS "The CMake generator identification is: ${CMAKE_GENERATOR}")
 message (STATUS "The CMake module path is: ${CMAKE_MODULE_PATH}")
 message (STATUS "Found CMake: ${CMAKE_COMMAND} (found version \"${CMAKE_VERSION}\")")
 
+enable_language (CXX)
+if (CMAKE_COMPILER_IS_GNUCXX)
+  execute_process (COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE CXX_COMPILER_VERSION)
+  string (REGEX MATCHALL "[0-9]+" CXX_COMPILER_VERSION_COMPONENTS ${CXX_COMPILER_VERSION})
+  list (GET CXX_COMPILER_VERSION_COMPONENTS 0 CXX_COMPILER_VERSION_MAJOR)
+  list (GET CXX_COMPILER_VERSION_COMPONENTS 1 CXX_COMPILER_VERSION_MINOR)
+  list (GET CXX_COMPILER_VERSION_COMPONENTS 2 CXX_COMPILER_VERSION_TWEAK)
+  set (CXX_COMPILER_VERSION ${CXX_COMPILER_VERSION_MAJOR}.${CXX_COMPILER_VERSION_MINOR}.${CXX_COMPILER_VERSION_TWEAK})
+  message (STATUS "Found GNU compiler: ${CMAKE_CXX_COMPILER} (found version \"${CXX_COMPILER_VERSION}\")")
+endif ()
+
+## Compiler flags
+include (CheckCXXCompilerFlag)
+check_cxx_compiler_flag (-flto      CXX_COMPILER_FLAG_FLTO)
+check_cxx_compiler_flag (-std=c++0x CXX_COMPILER_FLAG_ISO_CXX0X)
+check_cxx_compiler_flag (-rdynamic  CXX_COMPILER_FLAG_RDYNAMIC)
+
+if (CXX_COMPILER_FLAG_ISO_CXX0X)
+  add_definitions ("-std=c++0x")
+endif ()
+
 ##############################################
 message (STATUS "Configuring system packages")
 ##############################################
