@@ -322,23 +322,23 @@ void Internal::read_settings ()
   qWarning ("class Internal: \"%d\" settings were initialized.", count);
 }
 
-void Internal::write_vector (const string     &str, 
-			     const glm::dvec3 &V)
+void Internal::write_vector (const std::string &str, 
+			     const glm::dvec3  &V)
 {
   std::cout << str << " = (" 
-	    << setw (15) << V.x << ", "
-	    << setw (15) << V.y << ", "
-	    << setw (15) << V.z << ")" << std::endl;
+	    << std::setw (15) << V.x << ", "
+	    << std::setw (15) << V.y << ", "
+	    << std::setw (15) << V.z << ")" << std::endl;
 }
 
-void Internal::write_matrix (const string     &str, 
-			     const glm::dmat3 &M)
+void Internal::write_matrix (const std::string &str, 
+			     const glm::dmat3  &M)
 {
   std::cout << str << ": determinant = " << glm::determinant (M) 
 	    << std::endl
-	    << " (" << setw (15) << M[0][0] << ", " << setw(15) << M[1][0] << ", " << setw(15) << M[2][0] << ")" << std::endl
-	    << " (" << setw (15) << M[0][1] << ", " << setw(15) << M[1][1] << ", " << setw(15) << M[2][1] << ")" << std::endl
-	    << " (" << setw (15) << M[0][2] << ", " << setw(15) << M[1][2] << ", " << setw(15) << M[2][2] << ")" << std::endl;
+	    << " (" << std::setw (15) << M[0][0] << ", " << std::setw(15) << M[1][0] << ", " << std::setw(15) << M[2][0] << ")" << std::endl
+	    << " (" << std::setw (15) << M[0][1] << ", " << std::setw(15) << M[1][1] << ", " << std::setw(15) << M[2][1] << ")" << std::endl
+	    << " (" << std::setw (15) << M[0][2] << ", " << std::setw(15) << M[1][2] << ", " << std::setw(15) << M[2][2] << ")" << std::endl;
 }
 
 void Internal::read_alc_xyz (QString aname)
@@ -515,9 +515,6 @@ void Internal::SL_singleDisl (glm::dvec3 rr)
   glm::dvec3 burg_vect = 
     rot_tensor * mil.fraction * actcrstr->C2O 
     * glm::dvec3(this->mil.indices[0], this->mil.indices[1], this->mil.indices[2]);
-
-//  glm::dvec3 burgers_vector = rot_tensor * (mil.fraction * crysCell->c2o * glm::dvec3(mil.indices[0], mil.indices[1], mil.indices[2]));
-
   
   actdisl->burgers_vector  = burg_vect;
   actdisl->rotation_tensor = this->rot_tensor;
@@ -904,32 +901,34 @@ void Internal::read_img(QString iname)
     }
 }
 
-int Internal::lattice(int nx, int ny, int nz)
+int Internal::lattice (int nx, 
+		       int ny, 
+		       int nz)
 {
   int m = 0;
+
   for (int k=0; k<nz; k++) 
-    {
-      for (int j=0; j<ny; j++) 
+    for (int j=0; j<ny; j++) 
+      for (int i=0; i<nx; i++) 
 	{
-	  for (int i=0; i<nx; i++) 
+	  for (unsigned int an=0; an<this->actcrstr->n_materials; an++) 
 	    {
-	      for (unsigned int an=0; an<this->actcrstr->n_materials; an++) 
-		{
-		  
-		  glm::dvec3 hic = glm::dvec3(double(i)+this->actcrstr->cryst[an].x,
-					      double(j)+this->actcrstr->cryst[an].y,
-					      double(k)+this->actcrstr->cryst[an].z);
-		  glm::dvec3 vvv = actcrstr->C2O * hic;
-		  this->atoms->coordinates[m] = vvv;//glm::dvec3(vvv.x, vvv.y, vvv.z);
-		  this->atoms->atom_type[m++] = this->actcrstr->crystal_type[an];
-		}
+	      
+	      glm::dvec3 hic = glm::dvec3 (double (i)+this->actcrstr->cryst[an].x,
+					   double (j)+this->actcrstr->cryst[an].y,
+					   double (k)+this->actcrstr->cryst[an].z);
+	      
+	      this->atoms->coordinates[m] = (actcrstr->C2O * hic);
+	      this->atoms->atom_type[m++] = this->actcrstr->crystal_type[an];
 	    }
 	}
-    }
+
   return m;
 }
 
-int Internal::lattice2 (double sx, double sy, unsigned int nz)
+int Internal::lattice2 (double       sx, 
+			double       sy, 
+			unsigned int nz)
 {
   unsigned int m = 0;
   double sg      = sin (vecds::constant::deg2rad*this->actcrstr->gamma);
@@ -938,65 +937,64 @@ int Internal::lattice2 (double sx, double sy, unsigned int nz)
   unsigned int ny = static_cast<unsigned int>(sy/(this->actcrstr->b*sg))+1;
 
   for (unsigned int k=0; k<nz; ++k) 
-    {
-     for (unsigned int j=0; j<ny; ++j) 
-       {
-	 for (unsigned int i=0; i<nx; ++i) 
-	   {
-	     glm::dvec3 hic = actcrstr->C2O * glm::dvec3 (double (i), double (j), double (k));
-
-	     if ((hic.x>=0.) && (hic.x<sx) && (hic.y>=0.) && (hic.y<sy)) 
-	       {
-		 for (unsigned int an=0; an<this->actcrstr->n_materials; an++) 
-		   {
-		     glm::dvec3 ccc = this->actcrstr->cryst[an];//.x, this->actcrstr->cryst[an].y, this->actcrstr->cryst[an].z);
-		     glm::dvec3 vvv = hic + actcrstr->C2O*ccc;
-		     this->atoms->coordinates[m] = vvv;
-		     this->atoms->atom_type[m++] = this->actcrstr->crystal_type[an];
-		   }
-	       }
-	   }
-       }
-    }
+    for (unsigned int j=0; j<ny; ++j) 
+      for (unsigned int i=0; i<nx; ++i) 
+	{
+	  glm::dvec3 hic = actcrstr->C2O * glm::dvec3 (double (i), double (j), double (k));
+	  
+	  if ((hic.x>=0.) && (hic.x<sx) && (hic.y>=0.) && (hic.y<sy)) 
+	    {
+	      for (unsigned int an=0; an<this->actcrstr->n_materials; an++) 
+		{
+		  glm::dvec3 ccc = this->actcrstr->cryst[an];
+		  
+		  this->atoms->coordinates[m] = (actcrstr->C2O*ccc + hic);
+		  this->atoms->atom_type[m++] = this->actcrstr->crystal_type[an];
+		}
+	    }
+	}
   return m;
 }
 
-void Internal::processMiller(int sw, QString result_text, QString result_text2)
+void Internal::processMiller(int sw, 
+			     QString result_text, 
+			     QString result_text2)
 {
   glm::dmat3 mat;
   glm::dmat3 rot_in;
   
   this->mil = parse_miller(result_text.toStdString());
   if (sw!=1) 
-    parse_core(result_text2);
+    parse_core (result_text2);
 
-
-
-      rot_in = this->rot_inv;
-      compute_rotation_tensor();
-
-      this->rot_inv = glm::transpose(glm::inverse(this->rot_tensor));
-      mat = this->rot_tensor * rot_in;
-      
-      do_atoms_rotation (mat, this->cent_);
-      do_invis_rotation (mat, this->cent_);
-      do_signes_rotation (mat, this->cent_);
-      do_axis_rotation (mat);
+  rot_in = this->rot_inv;
+  compute_rotation_tensor ();
+  
+  this->rot_inv = glm::transpose (glm::inverse (this->rot_tensor));
+  mat = this->rot_tensor * rot_in;
+  
+  do_atoms_rotation (mat, this->cent_);
+  do_invis_rotation (mat, this->cent_);
+  do_signes_rotation (mat, this->cent_);
+  do_axis_rotation (mat);
 }
 
 void Internal::compute_rotation_tensor()
 {
-  glm::dvec3 s = this->actcrstr->C2O * glm::dvec3(mil.indices[0], mil.indices[1], mil.indices[2]);
-  glm::dvec3 m = glm::transpose(this->actcrstr->O2C) * glm::dvec3(mil.indices[3], mil.indices[4], mil.indices[5]);
+  glm::dvec3 s = this->actcrstr->C2O * glm::dvec3 (mil.indices[0], mil.indices[1], mil.indices[2]);
+  glm::dvec3 m = glm::transpose (this->actcrstr->O2C) * glm::dvec3 (mil.indices[3], mil.indices[4], mil.indices[5]);
+
   s = glm::normalize(s);
   m = glm::normalize(m);
-  glm::dvec3 mxs = glm::normalize(glm::cross(m, s));
-  glm::dvec3 mxsxm = glm::normalize(glm::cross(mxs, m));
+
+  glm::dvec3 mxs   = glm::normalize (glm::cross (m, s));
+  glm::dvec3 mxsxm = glm::normalize (glm::cross (mxs, m));
+
   this->rot_tensor = glm::dmat3(mxsxm.x, mxs.x, m.x,
                                 mxsxm.y, mxs.y, m.y,
                                 mxsxm.z, mxs.z, m.z);
-
 }
+
 
 //------------------ M I L L E R ' S  I N T E R N A L S -------------------
 
@@ -1063,20 +1061,20 @@ bool Internal::parse_core (QString line)
 }
 
 
-bool Internal::internal_miller(string line2, 
-			       int which, 
-			       int *miller_indices)
+bool Internal::internal_miller(std::string  line2, 
+			       int          which, 
+			       int         *miller_indices)
 {
   unsigned int n_miller_indices = 0;
 
-  if (line2.find_first_of (" ,")!=string::npos) 
+  if (line2.find_first_of (" ,")!=std::string::npos) 
     {
-      vector<string> fields = tokenize(line2, " ,");
-      n_miller_indices      = fields.size ();
+      std::vector<std::string> fields = tokenize (line2, " ,");
+      n_miller_indices                = fields.size ();
       
       if (n_miller_indices<3 || n_miller_indices>4) 
 	{
-	  cout << "ERROR - BAD NUMBER OF MILLER INDICES 1\n";
+	  std::cout << "ERROR - BAD NUMBER OF MILLER INDICES 1\n";
 	  return false;
 	}
       
@@ -1109,7 +1107,7 @@ bool Internal::internal_miller(string line2,
 	}
       if (n_miller_indices<3 || n_miller_indices>4) 
 	{
-	  cout << "ERROR - BAD NUMBER OF MILLER INDICES 2\n";
+	  std::cout << "ERROR - BAD NUMBER OF MILLER INDICES 2\n";
 	  return false;
 	}
     }
@@ -1117,7 +1115,7 @@ bool Internal::internal_miller(string line2,
     {
       if ((miller_indices[0]+miller_indices[1])!=-miller_indices[2])
 	{
-	  cout << "ERROR BAD SUM - " << miller_indices[0] << "  " << miller_indices[1] << "  " << miller_indices[2] << endl;
+	  std::cout << "ERROR BAD SUM - " << miller_indices[0] << "  " << miller_indices[1] << "  " << miller_indices[2] << std::endl;
 	}
       
       if (which==1) 
@@ -1133,7 +1131,7 @@ bool Internal::internal_miller(string line2,
 }
 
 
-vecds::miller Internal::parse_miller (string line)
+vecds::miller Internal::parse_miller (std::string line)
 {
   vecds::miller result;
   result.fraction = 0;
@@ -1141,7 +1139,7 @@ vecds::miller Internal::parse_miller (string line)
   int mill[4];
   int indMiller[6];
   double fract;
-  string line1;
+  std::string line1;
   line1 = stripBlanks(line);
 
   size_t i_left1  = line1.find('[');
@@ -1149,14 +1147,14 @@ vecds::miller Internal::parse_miller (string line)
   size_t i_left2  = line1.find('(');
   size_t i_right2 = line1.find(')');
 
-  fract = (i_left1==string::npos)? 1. : read_fraction(line1.substr(0, i_left1));
+  fract = (i_left1==std::string::npos)? 1. : read_fraction(line1.substr(0, i_left1));
 
   if ( i_left1>=i_right1 || i_left2>=i_right2 ) 
     {
-      cout << "ERROR PARENTHESES\n";
+      std::cout << "ERROR PARENTHESES\n";
       return result;
     }
-  string line2 = stripBlanks(line1.substr(i_left1+1, i_right1-i_left1-1));
+  std::string line2 = stripBlanks(line1.substr(i_left1+1, i_right1-i_left1-1));
 
   if (internal_miller (line2, 1, mill)) 
     {
@@ -1166,12 +1164,12 @@ vecds::miller Internal::parse_miller (string line)
     } 
   else 
     { 
-      cout << "ERROR - BAD MILLER INDICES 1\n";
+      std::cout << "ERROR - BAD MILLER INDICES 1\n";
       return result;
     }
-  line2 = stripBlanks(line1.substr(i_left2+1, i_right2-i_left2-1));
+  line2 = stripBlanks (line1.substr (i_left2+1, i_right2-i_left2-1));
 
-  if (internal_miller(line2, 2, mill)) 
+  if (internal_miller (line2, 2, mill)) 
     {
       indMiller[3] = mill[0];
       indMiller[4] = mill[1];
@@ -1179,45 +1177,49 @@ vecds::miller Internal::parse_miller (string line)
     } 
   else 
     {
-      cout << "ERROR - BAD MILLER INDICES 2\n";
+      std::cout << "ERROR - BAD MILLER INDICES 2\n";
       return result;
     }
 
   result.fraction   = fract;
-  result.indices[0] = double(indMiller[0]);
-  result.indices[1] = double(indMiller[1]);
-  result.indices[2] = double(indMiller[2]);
-  result.indices[3] = double(indMiller[3]);
-  result.indices[4] = double(indMiller[4]);
-  result.indices[5] = double(indMiller[5]);
+  result.indices[0] = double (indMiller[0]);
+  result.indices[1] = double (indMiller[1]);
+  result.indices[2] = double (indMiller[2]);
+  result.indices[3] = double (indMiller[3]);
+  result.indices[4] = double (indMiller[4]);
+  result.indices[5] = double (indMiller[5]);
 
   return result;
 }
 
-string Internal::stripBlanks (string StringToModify)
+std::string Internal::stripBlanks (std::string StringToModify)
 {
-   if ( StringToModify.empty() ) return "";
-   size_t startIndex = StringToModify.find_first_not_of(" ");
-   size_t endIndex = StringToModify.find_last_not_of(" ");
-   string tempString = StringToModify;
-   tempString = tempString.substr(startIndex, endIndex-startIndex+1);
-   return tempString;
+   if (StringToModify.empty ()) 
+     return "";
+
+   size_t startIndex      = StringToModify.find_first_not_of (" ");
+   size_t endIndex        = StringToModify.find_last_not_of (" ");
+   std::string tempString = StringToModify;
+
+   return tempString.substr (startIndex, endIndex-startIndex+1);
 }
 
-// czyta ułamek np. w zapisie wektora Burgersa, przelicza na liczbę dziesiętną
-double Internal::read_fraction (string line) 
+                                 // czyta ułamek np. w zapisie wektora
+                                 // Burgersa, przelicza na liczbę
+                                 // dziesiętną
+double Internal::read_fraction (std::string line) 
 {
   line = stripBlanks (line);
   size_t i_fr = line.find ('/');
 
-  istringstream ins;
+  std::istringstream ins;
   ins.clear ();
   ins.str (line);
 
   double result, temp;
   char c;
 
-  if (i_fr==string::npos) 
+  if (i_fr==std::string::npos) 
     ins >> result;
   else 
     {
@@ -1230,34 +1232,39 @@ double Internal::read_fraction (string line)
 
 
 
-int Internal::identify(string s1, int size, string words[])
+int Internal::identify (const std::string s1, 
+			const int         size, 
+			const std::string words[])
 {
-  for (int i=0; i<size; i++) if ( s1.compare(words[i])==0 ) return i;
+  for (int i=0; i<size; ++i) 
+    if (s1.compare (words[i])==0) 
+      return i;
+
   return -1;
 }
 
-vector<string> Internal::tokenize (const string& str, 
-				   string        del)
+std::vector<std::string> Internal::tokenize (const std::string& str, 
+					std::string        del)
 {
-  vector<string> tokens;
-  string delimiters = del;
-  size_t lastPos    = str.find_first_not_of (delimiters, 0);         // Skip delimiters at beginning.
-  size_t pos        = str.find_first_of (delimiters, lastPos);       // Find first "non-delimiter".
-  tokens.clear();
+  std::vector<std::string> tokens;
+  std::string delimiters = del;
+  size_t lastPos         = str.find_first_not_of (delimiters, 0);         // Skip delimiters at beginning.
+  size_t pos             = str.find_first_of (delimiters, lastPos);       // Find first "non-delimiter".
+  tokens.clear ();
 
-  while (pos!=string::npos || lastPos!=string::npos) 
+  while (pos!=std::string::npos || lastPos!=std::string::npos) 
     {
-      tokens.push_back(str.substr(lastPos, pos-lastPos));            // Found a token, add it to the vector.
-      lastPos = str.find_first_not_of(delimiters, pos);              // Skip delimiters. Note the "not_of"
-      pos = str.find_first_of(delimiters, lastPos);                  // Find next "non-delimiter"
+      tokens.push_back (str.substr(lastPos, pos-lastPos));            // Found a token, add it to the vector.
+      lastPos = str.find_first_not_of (delimiters, pos);              // Skip delimiters. Note the "not_of"
+      pos = str.find_first_of (delimiters, lastPos);                  // Find next "non-delimiter"
     }
   return tokens;
 }
 
-int Internal::toInt (string word)
+int Internal::toInt (std::string word)
 {
   int i;
-  istringstream ins;
+  std::istringstream ins;
   ins.clear ();
   ins.str (word);
   ins >> i;

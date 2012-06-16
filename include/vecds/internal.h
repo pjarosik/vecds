@@ -57,8 +57,9 @@
 class MainViewer;
 class MainWindow;
 
-using namespace std;
-
+/**
+ * This is a class called Internal.
+ */
 class Internal
 {
  public:
@@ -121,26 +122,25 @@ class Internal
 				   * Write a complete vector to
 				   * <code>std::cout</code>.
 				   */
-  void write_vector (const string     &str, 
-		     const glm::dvec3 &V);
+  void write_vector (const std::string &str, 
+		     const glm::dvec3  &V);
 
                                   /**
 				   * Write a complete matrix to
 				   * <code>std::cout</code>.
 				   */
-  void write_matrix (const string     &str, 
-		     const glm::dmat3 &M);
+  void write_matrix (const std::string &str, 
+		     const glm::dmat3  &M);
 
 
                                   /**
 				   * Returns a boolean somehow...
 				   */
-  bool internal_miller (string line2, 
-			int which, 
-			int *miller_indices);
+  bool internal_miller (std::string  line2, 
+			int          which, 
+			int         *miller_indices);
 
   // ===================================================
-
   bool sliderMove;
   int Mode;
   double sliderValue;
@@ -158,13 +158,18 @@ class Internal
 
   glm::dmat3 rot_tensor, rot_inv;
   
-  string stripBlanks(string StringToModify);
-  int identify(string s1, int size, string words[]);
-  vector<string> tokenize(const string& str, string del);
+  std::string stripBlanks (std::string StringToModify);
+
+  int identify(const std::string s1, 
+	       const int         size, 
+	       const std::string words[]);
+
+  std::vector<std::string> tokenize (const std::string &str, 
+				     std::string        del);
 
 
 
-  int toInt (string word);
+  int toInt (std::string word);
 
   void init_atoms ();
   void init_structures ();
@@ -191,9 +196,9 @@ class Internal
   int lattice (int, int, int);
   int lattice2 (double, double, unsigned int);
 
-  double read_fraction (string line);
+  double read_fraction (std::string line);
 
-  vecds::miller parse_miller (string line);
+  vecds::miller parse_miller (std::string line);
   bool parse_core (QString line);
 
 
@@ -232,6 +237,8 @@ class Internal
 				    needed by vecds to run
 				    correctly. */
   QString path; 
+
+
 
 
 };
