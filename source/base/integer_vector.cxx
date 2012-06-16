@@ -74,7 +74,9 @@ namespace vecds
     std::memset (vector_data, int(0), sizeof(int)*length);
   }
 
+
 }                                // namespace vecds
 
 /*-------------- Explicit Instantiations -------------------------------*/
+template class vecds::IntVector<2>;
 template class vecds::IntVector<3>;

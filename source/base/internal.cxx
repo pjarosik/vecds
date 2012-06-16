@@ -393,13 +393,13 @@ vecds::Internal::read_alc_xyz (QString aname)
 	this->atoms->n_bonds = fields.takeFirst ().toInt ();
 	if ( this->atoms->n_bonds>0 ) 
 	  {
-	    this->atoms->atom_bond = new vecds::Int2[this->atoms->n_bonds];
+	    this->atoms->atom_bond = new vecds::IntVector<2>[this->atoms->n_bonds];
 	  }
       } 
     else 
-      {  // !alc_
+      {  
 	this->atoms->n_bonds = 0;
-       line = in.readLine();
+	line = in.readLine();
       }
 
     qWarning("READ_ALC     ---   n_atoms = %d", this->atoms->n_atoms);
@@ -427,8 +427,8 @@ vecds::Internal::read_alc_xyz (QString aname)
 	line = in.readLine();
 	fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
 	fields.removeFirst();
-	this->atoms->atom_bond[i].i1 = fields.takeFirst ().toInt ();
-	this->atoms->atom_bond[i].i2 = fields.takeFirst ().toInt ();
+	this->atoms->atom_bond[i](0) = fields.takeFirst ().toInt ();
+	this->atoms->atom_bond[i](1) = fields.takeFirst ().toInt ();
       }
 }
 

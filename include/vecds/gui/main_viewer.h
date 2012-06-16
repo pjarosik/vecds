@@ -177,7 +177,7 @@ namespace vecds
     unsigned int n_bonds;
   
 
-    vecds::Int2* bonds;    
+    vecds::IntVector<2>* bonds;    
 
     glm::dvec3* coord;
     glm::dvec3 min_;    

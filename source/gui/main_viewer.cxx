@@ -551,8 +551,8 @@ void vecds::MainViewer::draw_bonds ()
  
   for (unsigned int i=0; i<ActualData->atoms->n_bonds; i++) 
     {
-      int a1 = ActualData->atoms->atom_bond[i].i1 - 1;
-      int a2 = ActualData->atoms->atom_bond[i].i2 - 1;
+      int a1 = ActualData->atoms->atom_bond[i](0) - 1;
+      int a2 = ActualData->atoms->atom_bond[i](1) - 1;
       
       glPushMatrix();
       

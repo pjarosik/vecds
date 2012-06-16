@@ -126,11 +126,6 @@ namespace vecds
                                  /* Array holding a set of coordinates */
     glm::dvec3 *coordinates;
 
-                                 /* Same as above, but a glm
-				    copy. This is a particuarily
-				    stupid name for this! */
-//    glm::dvec3 *coordinates_glm;
-
                                  /* TODO: WHat are these? */
     glm::dvec3 *du;
     glm::dvec3  *u;
@@ -142,7 +137,7 @@ namespace vecds
                                  /* An array of two-integers that
 				    describe the bonds between two
 				    atoms. */
-    vecds::Int2 *atom_bond;
+    vecds::IntVector<2> *atom_bond;
   };
 
 }                                /* namespace vecds */
