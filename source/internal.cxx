@@ -309,9 +309,9 @@ void Internal::read_settings ()
                                            // that point!
 	  assert (count<12);
 	  
-	  this->set0->colour_spectrum[count-3] = { fields.takeFirst().toInt(),
-						   fields.takeFirst().toInt(),
-						   fields.takeFirst().toInt() };
+	  this->set0->colour_spectrum[count-3] = { fields.takeFirst ().toInt (),
+						   fields.takeFirst ().toInt (),
+						   fields.takeFirst ().toInt () };
 
 	}
       
@@ -322,6 +322,24 @@ void Internal::read_settings ()
   qWarning ("class Internal: \"%d\" settings were initialized.", count);
 }
 
+void Internal::write_vector (const string     &str, 
+			     const glm::dvec3 &V)
+{
+  std::cout << str << " = (" 
+	    << setw (15) << V.x << ", "
+	    << setw (15) << V.y << ", "
+	    << setw (15) << V.z << ")" << std::endl;
+}
+
+void Internal::write_matrix (const string     &str, 
+			     const glm::dmat3 &M)
+{
+  std::cout << str << ": determinant = " << glm::determinant (M) 
+	    << std::endl
+	    << " (" << setw (15) << M[0][0] << ", " << setw(15) << M[1][0] << ", " << setw(15) << M[2][0] << ")" << std::endl
+	    << " (" << setw (15) << M[0][1] << ", " << setw(15) << M[1][1] << ", " << setw(15) << M[2][1] << ")" << std::endl
+	    << " (" << setw (15) << M[0][2] << ", " << setw(15) << M[1][2] << ", " << setw(15) << M[2][2] << ")" << std::endl;
+}
 
 void Internal::read_alc_xyz (QString aname)
 {
@@ -351,7 +369,7 @@ void Internal::read_alc_xyz (QString aname)
     QTextStream in(&file);
     QString line = in.readLine();
     QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-    this->atoms->n_atoms = fields.takeFirst().toInt();
+    this->atoms->n_atoms = fields.takeFirst ().toInt ();
 
     if ( this->atoms->n_atoms>0 ) 
       {
@@ -367,7 +385,7 @@ void Internal::read_alc_xyz (QString aname)
     if ( alc_ ) 
       {
 	fields.removeFirst();
-	this->atoms->n_bonds = fields.takeFirst().toInt();
+	this->atoms->n_bonds = fields.takeFirst ().toInt ();
 	if ( this->atoms->n_bonds>0 ) 
 	  {
 	    this->atoms->atom_bond = new vecds::Int2[this->atoms->n_bonds];
@@ -404,8 +422,8 @@ void Internal::read_alc_xyz (QString aname)
 	line = in.readLine();
 	fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
 	fields.removeFirst();
-	this->atoms->atom_bond[i].i1 = fields.takeFirst().toInt();
-	this->atoms->atom_bond[i].i2 = fields.takeFirst().toInt();
+	this->atoms->atom_bond[i].i1 = fields.takeFirst ().toInt ();
+	this->atoms->atom_bond[i].i2 = fields.takeFirst ().toInt ();
       }
 }
 
@@ -419,16 +437,7 @@ int Internal::which_atom(QString nam_a)
       return i;
   return 0;
 }
-/*
-double Internal::read_fraction(QString line)
-{
-  int i_fr;
-  if ((i_fr=line.indexOf ("/", 0))<0) 
-    return line.toDouble();
-  else  
-    return double(line.left(i_fr).toInt())/double(line.mid(i_fr+1).toInt());
-}
-*/
+
 void Internal::minmax3(glm::dvec3 *vec, int numb, glm::dvec3 &vmin, glm::dvec3 &vmax)
 {
   double mxx = -1.e15;  double mxy = -1.e15;  double mxz= -1.e15;
@@ -1054,53 +1063,77 @@ bool Internal::parse_core (QString line)
 }
 
 
-bool Internal::internal_miller(string line2, int which, int *mill)
+bool Internal::internal_miller(string line2, 
+			       int which, 
+			       int *miller_indices)
 {
-  int numbmill;
-  vector<string> fields;
-  numbmill = fields.size();
-  if ( line2.find_first_of(" ,")!=string::npos ) {
-    vector<string> fields = tokenize(line2, " ,");
-    numbmill = fields.size();
-    if ( numbmill<3 || numbmill>4 ) {
-      cout << "ERROR - BAD NUMBER OF MILLER INDICES 1\n";
-      return false;
-    }
-    for (int i=0; i<numbmill; i++) mill[i] = toInt(fields.at(i));
-  } else {
-    bool minus = false;
-    numbmill = 0;
-    size_t i = 0;
-    while ( i<line2.size() ) {
-      char ch = line2.at(i++);
-      if ( ch=='-' ) {
-          minus = true;
-          continue;}
-      if ( isdigit(ch) ) {
-         int n = int(ch)-int('0');
-         mill[numbmill++] = minus? -n : n; 
-         minus = false;}
-      if ( ch=='.' && numbmill==2 ) mill[numbmill++] = -mill[0]-mill[1];
-    }
-    if ( numbmill<3 || numbmill>4 ) {
-      cout << "ERROR - BAD NUMBER OF MILLER INDICES 2\n";
-      return false;}
-  }
-  if ( numbmill==4 ) 
+  unsigned int n_miller_indices = 0;
+
+  if (line2.find_first_of (" ,")!=string::npos) 
     {
-      if ( (mill[0]+mill[1])!=-mill[2] )
-	cout << "ERROR BAD SUM - " << mill[0] << "  " << mill[1] << "  " << mill[2] << endl;
-      if ( which==1 ) {
-	mill[0] -= mill[2];
-	mill[1] -= mill[2];
-      }
-      mill[2] = mill[3];
+      vector<string> fields = tokenize(line2, " ,");
+      n_miller_indices      = fields.size ();
+      
+      if (n_miller_indices<3 || n_miller_indices>4) 
+	{
+	  cout << "ERROR - BAD NUMBER OF MILLER INDICES 1\n";
+	  return false;
+	}
+      
+      for (unsigned int i=0; i<n_miller_indices; ++i) 
+	{
+	  miller_indices[i] = toInt (fields.at (i));
+	}
+
+    } 
+  else 
+    {
+      bool minus       = false;
+      n_miller_indices = 0;
+      size_t i         = 0;
+      while (i<line2.size ()) 
+	{
+	  char ch = line2.at(i++);
+	  if ( ch=='-' ) 
+	    {
+	      minus = true;
+	      continue;
+	    }
+	  if (isdigit (ch)) 
+	    {
+	      int n = int(ch)-int('0');
+	      miller_indices[++n_miller_indices] = minus ? -n : n; 
+	      minus = false;
+	    }
+	  if ( ch=='.' && n_miller_indices==2 ) miller_indices[n_miller_indices++] = -miller_indices[0]-miller_indices[1];
+	}
+      if (n_miller_indices<3 || n_miller_indices>4) 
+	{
+	  cout << "ERROR - BAD NUMBER OF MILLER INDICES 2\n";
+	  return false;
+	}
     }
+  if (n_miller_indices==4) 
+    {
+      if ((miller_indices[0]+miller_indices[1])!=-miller_indices[2])
+	{
+	  cout << "ERROR BAD SUM - " << miller_indices[0] << "  " << miller_indices[1] << "  " << miller_indices[2] << endl;
+	}
+      
+      if (which==1) 
+	{
+	  miller_indices[0] -= miller_indices[2];
+	  miller_indices[1] -= miller_indices[2];
+	}
+
+      miller_indices[2] = miller_indices[3];
+    }
+
   return true;
 }
 
 
-vecds::miller Internal::parse_miller(string line)
+vecds::miller Internal::parse_miller (string line)
 {
   vecds::miller result;
   result.fraction = 0;
@@ -1111,11 +1144,13 @@ vecds::miller Internal::parse_miller(string line)
   string line1;
   line1 = stripBlanks(line);
 
-  size_t i_left1 = line1.find('[');
+  size_t i_left1  = line1.find('[');
   size_t i_right1 = line1.find(']');
-  size_t i_left2 = line1.find('(');
+  size_t i_left2  = line1.find('(');
   size_t i_right2 = line1.find(')');
+
   fract = (i_left1==string::npos)? 1. : read_fraction(line1.substr(0, i_left1));
+
   if ( i_left1>=i_right1 || i_left2>=i_right2 ) 
     {
       cout << "ERROR PARENTHESES\n";
@@ -1123,33 +1158,43 @@ vecds::miller Internal::parse_miller(string line)
     }
   string line2 = stripBlanks(line1.substr(i_left1+1, i_right1-i_left1-1));
 
-  if ( internal_miller(line2, 1, mill) ) {
-    indMiller[0] = mill[0];
-    indMiller[1] = mill[1];
-    indMiller[2] = mill[2];
-  } else { cout << "ERROR - BAD MILLER INDICES 1\n";
-    return result;}
+  if (internal_miller (line2, 1, mill)) 
+    {
+      indMiller[0] = mill[0];
+      indMiller[1] = mill[1];
+      indMiller[2] = mill[2];
+    } 
+  else 
+    { 
+      cout << "ERROR - BAD MILLER INDICES 1\n";
+      return result;
+    }
   line2 = stripBlanks(line1.substr(i_left2+1, i_right2-i_left2-1));
 
-  if ( internal_miller(line2, 2, mill) ) {
-    indMiller[3] = mill[0];
-    indMiller[4] = mill[1];
-    indMiller[5] = mill[2];
-  } else {
-    cout << "ERROR - BAD MILLER INDICES 2\n";
-    return result;
-  }
-  result.fraction = fract;
+  if (internal_miller(line2, 2, mill)) 
+    {
+      indMiller[3] = mill[0];
+      indMiller[4] = mill[1];
+      indMiller[5] = mill[2];
+    } 
+  else 
+    {
+      cout << "ERROR - BAD MILLER INDICES 2\n";
+      return result;
+    }
+
+  result.fraction   = fract;
   result.indices[0] = double(indMiller[0]);
   result.indices[1] = double(indMiller[1]);
   result.indices[2] = double(indMiller[2]);
   result.indices[3] = double(indMiller[3]);
   result.indices[4] = double(indMiller[4]);
   result.indices[5] = double(indMiller[5]);
+
   return result;
 }
 
-string Internal::stripBlanks(string StringToModify)
+string Internal::stripBlanks (string StringToModify)
 {
    if ( StringToModify.empty() ) return "";
    size_t startIndex = StringToModify.find_first_not_of(" ");
@@ -1159,37 +1204,31 @@ string Internal::stripBlanks(string StringToModify)
    return tempString;
 }
 
-double Internal::read_fraction(string line) // czyta ułamek np. w zapisie wektora Burgersa, przelicza na liczbę dziesiętną
+// czyta ułamek np. w zapisie wektora Burgersa, przelicza na liczbę dziesiętną
+double Internal::read_fraction (string line) 
 {
-  line = stripBlanks(line);
-  size_t i_fr = line.find('/');
+  line = stripBlanks (line);
+  size_t i_fr = line.find ('/');
 
   istringstream ins;
-  ins.clear();
-  ins.str(line);
+  ins.clear ();
+  ins.str (line);
+
   double result, temp;
   char c;
-  if ( i_fr==string::npos ) ins >> result;
+
+  if (i_fr==string::npos) 
+    ins >> result;
   else 
     {
       ins >> result >> c >> temp; 
       result /= temp;
     }
+
   return result;
 }
 
-void Internal::printVec(string str, glm::dvec3 vec)
-{
-  cout << str << " =  (" << setw(15) << vec.x << setw(15) << vec.y << setw(15) << vec.z << ")" << endl;
-}
 
-void Internal::printMat(string str, glm::dmat3 m)
-{
-  cout << str << "    det = " << glm::determinant(m) << endl;
-  cout << " row 0 = " << setw(15) << m[0][0] << setw(15) << m[1][0] << setw(15) << m[2][0] << endl;
-  cout << " row 1 = " << setw(15) << m[0][1] << setw(15) << m[1][1] << setw(15) << m[2][1] << endl;
-  cout << " row 2 = " << setw(15) << m[0][2] << setw(15) << m[1][2] << setw(15) << m[2][2] << endl;
-}
 
 int Internal::identify(string s1, int size, string words[])
 {
@@ -1197,37 +1236,31 @@ int Internal::identify(string s1, int size, string words[])
   return -1;
 }
 
-vector<string> Internal::tokenize(const string& str, string del)
+vector<string> Internal::tokenize (const string& str, 
+				   string        del)
 {
   vector<string> tokens;
   string delimiters = del;
-  size_t lastPos = str.find_first_not_of(delimiters, 0);            // Skip delimiters at beginning.
-  size_t pos = str.find_first_of(delimiters, lastPos);              // Find first "non-delimiter".
+  size_t lastPos    = str.find_first_not_of (delimiters, 0);         // Skip delimiters at beginning.
+  size_t pos        = str.find_first_of (delimiters, lastPos);       // Find first "non-delimiter".
   tokens.clear();
-  while ( pos!=string::npos || lastPos!=string::npos ) {
-     tokens.push_back(str.substr(lastPos, pos-lastPos));            // Found a token, add it to the vector.
-     lastPos = str.find_first_not_of(delimiters, pos);              // Skip delimiters. Note the "not_of"
-     pos = str.find_first_of(delimiters, lastPos);                  // Find next "non-delimiter"
-  }
+
+  while (pos!=string::npos || lastPos!=string::npos) 
+    {
+      tokens.push_back(str.substr(lastPos, pos-lastPos));            // Found a token, add it to the vector.
+      lastPos = str.find_first_not_of(delimiters, pos);              // Skip delimiters. Note the "not_of"
+      pos = str.find_first_of(delimiters, lastPos);                  // Find next "non-delimiter"
+    }
   return tokens;
 }
 
-int Internal::toInt(string word)
+int Internal::toInt (string word)
 {
   int i;
   istringstream ins;
-  ins.clear();
-  ins.str(word);
+  ins.clear ();
+  ins.str (word);
   ins >> i;
   return i;
 }
 
-double Internal::toDouble(string word)
-{
-  double x;
-  istringstream ins;
-  ins.clear();
-  ins.str(word);
-  ins >> x;
-  return x;
-}

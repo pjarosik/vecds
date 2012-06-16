@@ -117,6 +117,28 @@ class Internal
 				   */
   void read_settings ();
 
+                                  /**
+				   * Write a complete vector to
+				   * <code>std::cout</code>.
+				   */
+  void write_vector (const string     &str, 
+		     const glm::dvec3 &V);
+
+                                  /**
+				   * Write a complete matrix to
+				   * <code>std::cout</code>.
+				   */
+  void write_matrix (const string     &str, 
+		     const glm::dmat3 &M);
+
+
+                                  /**
+				   * Returns a boolean somehow...
+				   */
+  bool internal_miller (string line2, 
+			int which, 
+			int *miller_indices);
+
   // ===================================================
 
   bool sliderMove;
@@ -127,10 +149,7 @@ class Internal
   bool visible[10];
   
   int ndisl;
-  
-//  int mil[4];
-//  int oldMiller[6];
-  
+    
   double mfactor;
   double rad_scene;
   double fraction;
@@ -143,11 +162,9 @@ class Internal
   int identify(string s1, int size, string words[]);
   vector<string> tokenize(const string& str, string del);
 
-  void printVec (string str, glm::dvec3 vec);
-  void printMat (string str, glm::dmat3 m);
+
 
   int toInt (string word);
-  double toDouble (string word);
 
   void init_atoms ();
   void init_structures ();
@@ -174,14 +191,12 @@ class Internal
   int lattice (int, int, int);
   int lattice2 (double, double, unsigned int);
 
-//  double read_fraction (QString line);
   double read_fraction (string line);
 
-//  bool parse_miller (QString line);
   vecds::miller parse_miller (string line);
   bool parse_core (QString line);
-//  bool internal_miller (QString line2, int which, vecds::Int4 &mil);
-  bool internal_miller(string line2, int which, int *mil);
+
+
 
   
   void compute_rotation_tensor();
@@ -202,7 +217,6 @@ class Internal
   void addDisplacements ();
   void newdisl (unsigned int n_a, bool sw_iter);
 
-//  bool eqMiller (int m1[6], int m2[6]);
   void saveAtoms (QString sname);
 
   glm::dvec3 mixed_u(int i, glm::dvec3 rotdist, double be, double bz);

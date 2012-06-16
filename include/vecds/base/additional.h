@@ -95,7 +95,6 @@ namespace vecds
 				   * colour spectrum.
 				   */
     vecds::IntVector<3> colour_spectrum[12];
-
   };
 }
 
