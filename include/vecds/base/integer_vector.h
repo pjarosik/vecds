@@ -1,9 +1,12 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
+// Author: 
+//    Jan Cholewinski 2010
+//    Pawel Dluzewski 2010
+//    Toby D. Young 2012
 //
-// Copyright (C) 2010 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify  it under the  terms of  the GNU  General Public  License as
@@ -40,6 +43,9 @@ namespace vecds
    * want this, because we would like to have special operations that
    * may not apply to an ordinary vector of integers.
    *
+   * A typical initialser for this could be: <code>vecds::IntVector<3>
+   * V = { 1.0, 1.1, 1.25 }</code>.
+   *
    * @author Toby D. Young
    */
   template <unsigned int rank>
@@ -47,10 +53,10 @@ namespace vecds
     {
     public:
 
-                                  /**
-				   * Constructor. Set all objects in
-				   * the vector to zero if zero=true.
-				   */
+                                 /**
+				  * Constructor. Set all objects in
+				  * the vector to zero if zero=true.
+				  */
       IntVector (const bool zero = true);
 
                                  /**
@@ -121,7 +127,7 @@ namespace vecds
       const int& operator () (const unsigned int i) const;
 
                                  /**
-				  * Read-write access operator to the
+				  * Read-write access pointer to the
 				  * underlying C array structure
 				  * associated with this vector.
 				  */
@@ -131,7 +137,7 @@ namespace vecds
       }
 
                                  /**
-				  * Read only access operator to the
+				  * Read only access pointer to the
 				  * underlying C array structure
 				  * associated with this vector.
 				  */

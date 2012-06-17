@@ -6,7 +6,7 @@
 //    Pawel Dluzewski 2010. 
 //    Toby D. Young 2010, 2012. 
 //
-// Copyright (C) 2010-2012 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors
 //
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -38,7 +38,7 @@ namespace vecds
     length (rank),
     vector_data (new int[length])
   {
-    if (zero)
+    if (zero) 
       clear ();
   }
 
@@ -62,16 +62,16 @@ namespace vecds
                                  // tensor.
     if (vector_data)
       delete[] vector_data;
-
-    vector_data = 0;
+    
+    // vector_data = 0;
   }
 
   template <unsigned int rank>
   void
   IntVector<rank>::clear () 
   {
-                                 // Zero out tensor memory.
-    std::memset (vector_data, int(0), sizeof(int)*length);
+                                 // Zero out vector memory.
+    std::memset (vector_data, int (0), sizeof (int)*length);
   }
 
 
