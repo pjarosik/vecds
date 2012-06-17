@@ -34,12 +34,15 @@
 #include <QVector2D>
 #include <QVector3D>
 
+                                 // vecds gui includes
+#include <vecds/gui/arc_ball.h>
+
                                  // vecds library includes
 #include <vecds/numerics/integer_vector.h>
 #include <vecds/base/additional.h>
 #include <vecds/base/constant.h>
 
-#include <vecds/arc_ball.h>
+
 
 
 namespace vecds

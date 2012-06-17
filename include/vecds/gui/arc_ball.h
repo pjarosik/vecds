@@ -1,10 +1,11 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
+// Author: 
+//    Jan Cholewinski 2010
+//    Pawel Dluzewski 2010
 //
-// Copyright (C) 2010 The vecds authors
+// Copyright (C) 2010, 2012 The vecds authors
 //
 // This  program is  free  software: you  can  redistribute it  and/or
 // modify  it under the  terms of  the GNU  General Public  License as
@@ -22,8 +23,8 @@
 //					 
 // -------------------------------------------------------------------
 
-#ifndef ARC_HBALL_H
-#define ARC_HBALL_H
+#ifndef ARC_BALL_H
+#define ARC_BALL_H
 
                                  // standard C/C++
 #include <math.h>
@@ -31,14 +32,15 @@
 
                                  // Qt includes
 #include <QQuaternion>
-#include <QVector3D>
 #include <QVector2D>
+#include <QVector3D>
 
 namespace vecds
 {
 
 
-                                 /* The ArcBall class defines tools
+                                 /**
+				  * The ArcBall class defines tools
 				  * for rotating and viewing
 				  * three-dimensional images.
                                   *
@@ -54,7 +56,8 @@ namespace vecds
 				  * a rotation around the arc-ball.
 				  *
 				  * Rotations are mapped onto a
-				  * quaternion. */
+				  * quaternion. 
+				  */
   class ArcBall
   {
   protected:
@@ -63,26 +66,39 @@ namespace vecds
     
   public:
 
-                                 /* constructor */
+                                 /**
+				  * Constructor. Create an empty
+				  * (null) ArcBall by initialisation
+				  * of certain variables.
+				  */
     ArcBall ();
 
-                                 /* destructor */
+                                 /**
+				  * Destructor 
+				  */
     ~ArcBall ();
   
-                                 /* definitions of what to do when
-				    "click" and "drag" are done with
-				    the mouse. */
+                                 /**
+				  * Definition of what to do when
+				  * "click" is done with the mouse.
+				  */
     void click (const QVector2D &mouse_coordinate);
+
+                                 /**
+				  * Definition of what to do when
+				  * "drag" is done with the mouse.
+				  */
     void drag (const QVector2D &mouse_coordinate);
 
-                                 /* Return this quaternion. */
+                                 /**
+				  * Return this quaternion. 
+				  */
     QQuaternion get_quaternion (const QVector3D &vec_1, 
 				const QVector3D &vec_2);
 
     QVector3D 
       vector_begin,
       vector_end;
-
   
     QQuaternion 
       quaternion,

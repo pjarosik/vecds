@@ -25,12 +25,9 @@
 
 
                                  // vecds includes
-#include <vecds/arc_ball.h> 
+#include <vecds/gui/arc_ball.h> 
 
 
-                                 /* Constructor. Create an empty
-				    (null) ArcBall by initialisation
-				    of certain variables. */
 vecds::ArcBall::ArcBall () 
   :
   vector_begin (QVector3D (0., 0., 0.)),
@@ -53,9 +50,9 @@ void vecds::ArcBall::click (const QVector2D &mouse_coordinate)
 
 void vecds::ArcBall::drag (const QVector2D &mouse_coordinate)
 {
-  this->vector_end     = mapToSphere (mouse_coordinate);
-  this->mouseQuat      = get_quaternion (this->vector_begin, this->vector_end);
-  this->quaternion     = this->mouseQuat * this->q_down;
+  this->vector_end    = mapToSphere (mouse_coordinate);
+  this->mouseQuat     = get_quaternion (this->vector_begin, this->vector_end);
+  this->quaternion    = this->mouseQuat * this->q_down;
 }
 
 QQuaternion vecds::ArcBall::get_quaternion (const QVector3D &vec_1, 
@@ -87,8 +84,8 @@ QVector3D vecds::ArcBall::mapToSphere (QVector2D mouse_coordinate)
                                  // If the length comes back as a
                                  // negative number we are in trouble,
                                  // check that and bail out if
-                                 // length!>=0.
-  assert (length>0);
+                                 // length>=0.
+  assert ((length>0) || (length==0));
 
                                  // The mouse_coordinate is in 2d (ie,
                                  // it is on the screen), byt we need

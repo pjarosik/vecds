@@ -294,11 +294,10 @@ set (vecds_sources
   ${VECDS_PATH}/source/dialogs/question
   ${VECDS_PATH}/source/dialogs/question_form
   ##
+  ${VECDS_PATH}/source/gui/arc_ball
   ${VECDS_PATH}/source/gui/main_viewer
   ${VECDS_PATH}/source/gui/main_window
   ${VECDS_PATH}/source/gui/vecds
-  ##
-  ${VECDS_PATH}/source/arc_ball
   )
 
 ## Note, header files *only* determine which files will be passed over
@@ -316,10 +315,9 @@ set (vecds_headers
   ${VECDS_INCLUDES}/vecds/dialogs/question.h
   ${VECDS_INCLUDES}/vecds/dialogs/question_form.h
   ##
+  ${VECDS_INCLUDES}/vecds/gui/arc_ball.h
   ${VECDS_INCLUDES}/vecds/gui/main_viewer.h
   ${VECDS_INCLUDES}/vecds/gui/main_window.h
-  ##
-  ${VECDS_INCLUDES}/vecds/arc_ball.h
 )
 
 qt4_wrap_cpp (vecds_headers_moc ${vecds_headers})
