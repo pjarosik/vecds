@@ -28,7 +28,7 @@
 
                                  // vecds includes
 #include <vecds/base/internal.h>
-
+#include <vecds/numerics/function.h>
 
 vecds::Internal::Internal ()
   :

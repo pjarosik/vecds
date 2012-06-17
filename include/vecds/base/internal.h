@@ -50,7 +50,7 @@
 #include <vecds/base/config.h>
 #include <vecds/base/additional.h>
 #include <vecds/base/constant.h>
-#include <vecds/base/function.h>
+#include <vecds/numerics/function.h>
 
                                  // forward declarations
 class MainViewer;
