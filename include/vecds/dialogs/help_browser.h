@@ -1,10 +1,12 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
-// (2012)
+// Author: 
+//    Jan Cholewinski 2010  
+//    Pawel Dluzewski 2010 
+//    Toby D. Young 2012
 //
-// Copyright (C) 2010, 2012 The vecds authors, Toby D. Young
+// Copyright (C) 2010, 2012 The vecds authors.
 //
 // This program is free software: you can redistribute it and/or
 // modify  it under the  terms of  the GNU  General Public  License as

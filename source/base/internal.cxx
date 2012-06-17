@@ -258,7 +258,7 @@ vecds::Internal::read_settings ()
 
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) 
     {
-      qWarning("ERROR    file 'settings.set0' not found");
+      qWarning ("ERROR    file 'settings.set0' not found");
     }
   
   QTextStream in (&file);
@@ -294,7 +294,7 @@ vecds::Internal::read_settings ()
 	  if (n_fields!=8) 
 	    qWarning("Settings - line 3 - error!");
 	  
-	  for (int i=0; i<8; ++i) 
+	  for (unsigned int i=0; i<8; ++i) 
 	    {
 	      this->set0->vis[i] = (fields.takeFirst ().toInt ()==0)
 		? 

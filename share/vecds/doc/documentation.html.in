@@ -20,7 +20,7 @@ The users manual for <b>vecds</b> is supposed to help the user with
 working with the GUI interface for <b>vecds</b>. See also the
 examples.
 
-<a href="@VECDS_DOCS@/oxygen/html/index.html"><h3>Technical documentation</h3></a>
+<a href="@VECDS_DOCS@/doxygen/html/index.html"><h3>Technical documentation</h3></a>
 
 The technical documentation for <b>vecds</b>is mean for users that
 want to get a handle on the internal functions of <b>vecds</b> (see

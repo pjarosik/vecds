@@ -74,11 +74,8 @@ vecds::HelpBrowser::init_window (const QString &page)
 
                                  // signals and slots giving actions
                                  // to buttons.
-  // connect (home_button,  SIGNAL (clicked ()), text_browser, SLOT (home ())); 
-  // connect (back_button,  SIGNAL (clicked ()), text_browser, SLOT (backward ())); 
-
   connect (this->close_button, SIGNAL (clicked ()),                   this, SLOT (close ())); 
-  connect (text_browser, SIGNAL (sourceChanged (const QUrl &)), this, SLOT (updateWindowTitle ())); 
+  connect (this->text_browser, SIGNAL (sourceChanged (const QUrl &)), this, SLOT (updateWindowTitle ())); 
 
                                  // path to images
   text_browser->setSearchPaths (QStringList() << path << ":/images"); 

@@ -44,11 +44,7 @@ namespace vecds
 				    documentation browser. The idea
 				    here is to create a window that
 				    displays some text and maybe some
-				    figures too. This is almost
-				    identical to the HelpBrowser
-				    class, so we should think about
-				    adding virtual classes to the
-				    browser section of the code. */
+				    figures too. */
   class DocBrowser 
     : 
   public MonologBase
@@ -81,10 +77,6 @@ namespace vecds
 
                                  /* the browser itself */
     QTextBrowser *text_browser;
-
-                                 /* string denoting path to the
-				    documentation */
-    QString       doc_path;
 
   };                             /* DocBrowser */
 
