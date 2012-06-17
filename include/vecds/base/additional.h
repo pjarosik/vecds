@@ -36,7 +36,7 @@
 #include <gsl/gsl_multiroots.h>
 
                                  /* vecds includes */
-#include <vecds/base/integer_vector.h>
+#include <vecds/numerics/integer_vector.h>
 
                                  /* TODO: The structure params does
 				    what? */

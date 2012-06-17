@@ -26,7 +26,7 @@
 
 
                                  // vecds includes
-#include <vecds/base/integer_vector.h>
+#include <vecds/numerics/integer_vector.h>
 
 namespace vecds
 {

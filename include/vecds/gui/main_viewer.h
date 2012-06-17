@@ -34,8 +34,8 @@
 #include <QVector2D>
 #include <QVector3D>
 
-                                 // vecds base includes
-#include <vecds/base/integer_vector.h>
+                                 // vecds library includes
+#include <vecds/numerics/integer_vector.h>
 #include <vecds/base/additional.h>
 #include <vecds/base/constant.h>
 
