@@ -90,7 +90,7 @@ namespace vecds
     double mfact;
     bool vis[15];
 
-                                  /** 
+                                  /**
 				   * Variable poining to the RGB
 				   * colour spectrum. The integer
 				   * vector stores RGB numbers.

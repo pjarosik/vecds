@@ -1,7 +1,9 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Toby D. Young.
+// Author: 
+//    Jan Cholewinski 2012  
+//    Toby D. Young 2010, 2012
 //
 // Copyright (C) 2010, 2012 The vecds authors
 //
@@ -34,37 +36,45 @@
 namespace vecds
 {
 
-                                 /* This is a namespace that declares
-				    functions used in a variety of
-				    places in this application. */
+                                 /**
+				  * This is a namespace that declares
+				  * functions used in a variety of
+				  * places in this application. 
+				  */
   namespace function
   {
 
-                                 /* The heavyside step-function
-				    \f$H(x)\f$, also known as the unit
-				    step-function, is defined as:
-				    \f[H(x)=\left\{\begin{array}{cc}0&x<0\\1&x\geq0\end{array}\right.\quad.\f] */
+                                 /**
+				  * The heavyside step-function
+				  * \f$H(x)\f$, also known as the unit
+				  * step-function, is defined as:
+				  * \f[H(x)=\left\{\begin{array}{cc}0&x<0\\1&x\geq0\end{array}\right.\quad.\f]
+				  */
     inline double heavyside (const double x)
     {
       return (x<0.) ? 0. : 1.;
     }
 
-                                 /* A process that exhibits a
-				    progression from small-to-large
-				    and accelerates can sometimes be
-				    mapped using a Sigmoid
-				    function. This is particuarily
-				    useful when a detailed description
-				    of the process is lacking. The
-				    Sigmoid function \f$S(x)\f$ is
-				    defined as: \f[
-				    S(x)=\frac{1}{1+e^{-x}}\quad.\f] */
+                                 /**
+				  * A process that exhibits a
+				  * progression from small-to-large
+				  * and accelerates can sometimes be
+				  * mapped using a Sigmoid
+				  * function. This is particuarily
+				  * useful when a detailed description
+				  * of the process is lacking. The
+				  * Sigmoid function \f$S(x)\f$ is
+				  * defined as:
+				  * \f[S(x)=\frac{1}{1+e^{-x}}\quad.\f]
+				  */
     inline double sigmoid (const double x)
     {
       return (1./(1. + exp (-x)));
     }
 
-                                 /* The love function */
+                                 /**
+				  * The Love function.
+				  */
     inline int love (const gsl_vector *x, 
 		     void             *par, 
 		     gsl_vector       *result) 
@@ -100,7 +110,9 @@ namespace vecds
       return GSL_SUCCESS;
     }
 
-                                 /* distortion function */
+                                 /**
+				  * Distortion function...
+				  */
     inline int beta (const gsl_vector *x, 
 		     void             *par, 
 		     gsl_matrix       *jac) 
@@ -118,8 +130,6 @@ namespace vecds
       
       if (r2<1.e-15) 
 	{
-	  /* qWarning ("Atom in the center of dislocation core"); */
-
 	  gsl_matrix_set (jac, 0, 0, 1.);
 	  gsl_matrix_set (jac, 0, 1, 0.);
 	  gsl_matrix_set (jac, 0, 2, 0.);
@@ -153,7 +163,11 @@ namespace vecds
       
       return GSL_SUCCESS;
     }
-    
+
+                                 /**
+				  * This calls the Love functionand
+				  * the....?
+				  */    
     inline int love_fdf (const gsl_vector *x, 
 			 void             *par, 
 			 gsl_vector       *result_funct, 
