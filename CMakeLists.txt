@@ -40,6 +40,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "")
   ##  set (CMAKE_BUILD_TYPE "Unknown")
   set (CMAKE_BUILD_TYPE "Debug")
 endif ()
+add_definitions ("-DHAVE_CONFIG_H") 
 
 ## Debug messages...
 message (STATUS "Found ${VECDS_NAME}: ${CMAKE_BUILD_TYPE} build type")
@@ -62,12 +63,14 @@ endif ()
 
 ## Compiler flags
 include (CheckCXXCompilerFlag)
-check_cxx_compiler_flag (-flto      CXX_COMPILER_FLAG_FLTO)
 check_cxx_compiler_flag (-std=c++0x CXX_COMPILER_FLAG_ISO_CXX0X)
 check_cxx_compiler_flag (-rdynamic  CXX_COMPILER_FLAG_RDYNAMIC)
 
-if (CXX_COMPILER_FLAG_ISO_CXX0X)
-  add_definitions ("-std=c++0x")
+if (CXX_COMPILER_FLAG_ISO_CXX0X) 
+  add_definitions ("-std=c++0x") 
+endif ()
+if (CXX_COMPILER_FLAG_RDYNAMIC)  
+  add_definitions ("-rdynamic")  
 endif ()
 
 ##############################################
@@ -126,8 +129,9 @@ find_package_handle_standard_args ("OpenGL libraries" REQUIRED_VARS OPENGL_LIBRA
 find_package_handle_standard_args ("OpenGL includes"  REQUIRED_VARS OPENGL_INCLUDE_DIR)
 
 ##############################################
-find_package (Qt4 REQUIRED COMPONENTS QtCore QtOpenGL)
-set (QT_USE_QTCORE TRUE)
+find_package (Qt4 REQUIRED COMPONENTS QtCore QtGui QtOpenGL)
+set (QT_USE_QTCORE   TRUE)
+set (QT_USE_QTGUI    TRUE)
 set (QT_USE_QTOPENGL TRUE)
 include (${QT_USE_FILE})
 add_definitions (${QT_DEFINITIONS})
@@ -219,7 +223,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
   if (MSVC OR MSVC_IDE OR MSVC60 OR MSVC70 OR MSVC71 OR MSVC80 OR MSVC90 OR MSVC10)
     ## Microsoft Visual Compilers go out on limb to not document their
     ## compiler flags in an understandable way. Accordingly, if any of
-    ## those compilers show up, do nothing and hope for the best.
+    ## those compilers show up, do nothing, and hope for the best.
     add_definitions ()
   else ()
     ## Random guesses...

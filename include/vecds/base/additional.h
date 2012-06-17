@@ -92,7 +92,8 @@ namespace vecds
 
                                   /** 
 				   * Variable poining to the RGB
-				   * colour spectrum.
+				   * colour spectrum. The integer
+				   * vector stores RGB numbers.
 				   */
     vecds::IntVector<3> colour_spectrum[12];
   };
@@ -103,10 +104,12 @@ namespace vecds
 namespace vecds
 {
 
-                                 /* The structure Atoms holds
-				    information needed to describe the
-				    location and type of an atom in a
-				    matrix. */
+                                 /** 
+				  * The structure Atoms holds
+				  * information needed to describe the
+				  * location and type of an atom in a
+				  * matrix.
+				  */
   struct Atoms
   {
 
@@ -162,9 +165,6 @@ namespace vecds
     double alpha, beta, gamma;
 
                                  /* TODO: WHat are these things? */
-//    vecds::Mat9d c2o;
-//    vecds::Mat9d o2c;
-
     glm::dmat3 C2O;
     glm::dmat3 O2C;
 
@@ -181,6 +181,7 @@ namespace vecds
 
                                  /* TODO: WHat are these things? */
     QString co_name[30];
+
     glm::dvec3 cryst[20];
     glm::dvec3 core[30];
   };
@@ -205,7 +206,7 @@ namespace vecds
     glm::dvec3 p1; 
   
                                  /* Vector defining the relative
-				    coordinates of the "tbottom" of a
+				    coordinates of the "bottom" of a
 				    line dislocation. */
     glm::dvec3 p2;
   

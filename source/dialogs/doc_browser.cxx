@@ -53,7 +53,7 @@ vecds::DocBrowser::init_window (const QString &page)
 
                                  // create a doc browser and
                                  // navigation buttons.
-  text_browser = new QTextBrowser; 
+  this->text_browser = new QTextBrowser; 
   this->home_button  = new QPushButton (tr ("&Home")); 
   this->back_button  = new QPushButton (tr ("&Back")); 
   this->close_button = new QPushButton (tr ("Close")); 
@@ -78,11 +78,10 @@ vecds::DocBrowser::init_window (const QString &page)
 
                                  // signals and slots giving actions
                                  // to buttons.
-  connect (this->home_button,  SIGNAL (clicked ()), text_browser, SLOT (home ())); 
-  connect (this->back_button,  SIGNAL (clicked ()), text_browser, SLOT (backward ())); 
-
-  connect (this->close_button, SIGNAL (clicked ()),                   this, SLOT (close ())); 
-  connect (this->text_browser, SIGNAL (sourceChanged (const QUrl &)), this, SLOT (updateWindowTitle ())); 
+  connect (this->home_button,  SIGNAL (clicked ()),                   text_browser, SLOT (home ())); 
+  connect (this->back_button,  SIGNAL (clicked ()),                   text_browser, SLOT (backward ())); 
+  connect (this->close_button, SIGNAL (clicked ()),                   this,         SLOT (close ())); 
+  connect (this->text_browser, SIGNAL (sourceChanged (const QUrl &)), this,         SLOT (updateWindowTitle ())); 
 
                                  // path to images
   text_browser->setSearchPaths (QStringList() << path << ":/images"); 

@@ -143,10 +143,12 @@ vecds::Internal::init_structures()
   fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts); 
   
   this->numbcrstr = fields.takeFirst ().toInt ();
-  int nl = 1;
+
+  int nl    = 1;
   int index = 0;
   double c2o0, c2o1, c2o2, c2o4, c2o5, c2o7, c2o8;
-  while (!in.atEnd()) 
+
+  while (!in.atEnd ()) 
     {
       qWarning("+-------line nr %d", nl);
       line = in.readLine(); ++nl;
@@ -265,15 +267,15 @@ vecds::Internal::read_settings ()
   while (!in.atEnd()) 
     {
       QString line = in.readLine();
+
       if (line.startsWith ("#")) 
 	continue;
-
-      QStringList fields = line.split (QRegExp ("\\s+"), QString::SkipEmptyParts);
-      int nf = fields.size ();
+      
+      QStringList fields    = line.split (QRegExp ("\\s+"), QString::SkipEmptyParts);
+      unsigned int n_fields = fields.size ();
       
       switch (count)
 	{
-
 	case 0:
 
                                            // Process 0
@@ -285,11 +287,11 @@ vecds::Internal::read_settings ()
                                            // Process 1
 	  this->set0->mfact = fields.takeFirst ().toDouble ();
 	  break;
-
-	case 3: 
-
-                                           // Process 1
-	  if (nf!=8) 
+	  
+	case 2: 
+	  
+                                           // Process 2
+	  if (n_fields!=8) 
 	    qWarning("Settings - line 3 - error!");
 	  
 	  for (int i=0; i<8; ++i) 
@@ -310,8 +312,9 @@ vecds::Internal::read_settings ()
                                            // should never be
                                            // accessing memory beyond
                                            // that point!
-	  assert (count<12);
-	  
+	  assert (count<12+3);
+
+                                           // Write spectrum values
 	  this->set0->colour_spectrum[count-3] = { fields.takeFirst ().toInt (),
 						   fields.takeFirst ().toInt (),
 						   fields.takeFirst ().toInt () };
@@ -322,7 +325,6 @@ vecds::Internal::read_settings ()
       ++count;
       
     }
-  qWarning ("class Internal: \"%d\" settings were initialized.", count);
 }
 
 void 
