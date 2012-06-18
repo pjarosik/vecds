@@ -665,7 +665,7 @@ void MainWindow::SL_documentation ()
 
                                  // The first documentation page is
                                  // always "documentation.html".
-#if HAVE_DOXYGEN
+#if HAVE_DOXYGEN_H 
   (*documentation).show_page ("documentation.html");
 #else
   (*documentation).show_page ("no_documentation.html");

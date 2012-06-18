@@ -4,7 +4,7 @@
 <body>
 
 <p style="text-align: center;">
-<h1>Visual Editor of Crystal Defects</h1>
+<h1>@VECDS_PACKAGE_NAME@</h1>
 </p>
 
 <h2>Documentation</h2>
@@ -14,7 +14,7 @@ compiled <b>vecds</b> with the doxygen program enabled.
 
 The documentation for vecds is located at: @VECDS_DOCS@.
 
-<a href="@VECDS_DOCS@/main.html"><h3>Users manual</h3></a>
+<a href="@VECDS_DOCS@/manual/html/index.html"><h3>Users manual</h3></a>
 
 The users manual for <b>vecds</b> is supposed to help the user with
 working with the GUI interface for <b>vecds</b>. See also the
