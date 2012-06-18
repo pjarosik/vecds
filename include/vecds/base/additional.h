@@ -104,7 +104,7 @@ namespace vecds
 namespace vecds
 {
 
-                                 /** 
+                                 /**
 				  * The structure Atoms holds
 				  * information needed to describe the
 				  * location and type of an atom in a
@@ -113,33 +113,46 @@ namespace vecds
   struct Atoms
   {
 
-                                 /* Empty constructor. */
+                                 /**
+				  * Constructor. 
+				  */
     Atoms ()
     {
       n_atoms = 0;
       n_bonds = 0; 
     }
 
-                                 /* Number of atoms. */
+                                 /**
+				  * Number of atoms in this crystal
+				  * structure.
+				  */
     unsigned int n_atoms; 
 
-                                 /* Number of bonds between atoms. */
+                                 /**
+				  * Number of bonds between atoms.
+				  */
     unsigned int n_bonds;
 
-                                 /* Array holding a set of coordinates */
+                                 /**
+				  * Array holding a set of coordinates 
+				  */
     glm::dvec3 *coordinates;
 
                                  /* TODO: WHat are these? */
     glm::dvec3 *du;
     glm::dvec3  *u;
     
-                                 /* An array of integers describing
-				    the atom type */
+                                 /**
+				  * An array of integers describing
+				  * the atom type.
+				  */
     unsigned int *atom_type;
 
-                                 /* An array of two-integers that
-				    describe the bonds between two
-				    atoms. */
+                                 /**
+				  * An array of two-integers that
+				  * describe the bonds between two
+				  * atoms.
+				  */
     vecds::IntVector<2> *atom_bond;
   };
 
@@ -150,33 +163,47 @@ namespace vecds
 {
 
 
-                                 /* A structure that dewxcribes the
-				    crystallographic make-up of a
-				    crystal system. */
+                                 /**
+				  * A structure that dewxcribes the
+				  * crystallographic make-up of a
+				  * crystal system.
+				  */
   struct CrystalStructure
   {
-                                 /* The structure name */
+                                 /**
+				  * This particular crystal structure
+				  * name.
+				  */
     QString structure_name;
 
-                                 /* Crystallographic lengths. */
+                                 /**
+				  * Crystallographic lengths. 
+				  */
     double a, b, c;
 
-                                 /* Crystallographic angles. */
+                                 /**
+				  * Crystallographic angles. 
+				  */
     double alpha, beta, gamma;
 
                                  /* TODO: WHat are these things? */
     glm::dmat3 C2O;
     glm::dmat3 O2C;
 
-                                 /* The number of materials / chemical
-				    species */
+                                 /**
+				  * The number of material / chemical species.
+				  */
     unsigned int n_materials;
 
-                                 /* The number of dislocation cores */
+                                 /**
+				  * The number of dislocation cores.
+				  */
     unsigned int n_cores;
 
-                                 /* Type of crystal denoted by an
-				    array of unsigned integers(?) */
+                                 /**
+				  * Type of crystal denoted by an
+				  * array of unsigned integers
+				  */
     unsigned int crystal_type[20];
 
                                  /* TODO: WHat are these things? */
@@ -200,49 +227,68 @@ namespace vecds
   
     glm::dvec3 rrr; // współrz. punktu przkazanego z viewera (Mviewer::SIG_actPoint, Mainwindow::SL_actPoint
   
-                                 /* Vector defining the relative
-				    coordinates of the "top" of a line
-				    dislocation. */
+                                 /**
+				  * Vector defining the relative
+				  * coordinates of the "top" of a line
+				  * dislocation.
+				  */
     glm::dvec3 p1; 
   
-                                 /* Vector defining the relative
-				    coordinates of the "bottom" of a
-				    line dislocation. */
+                                 /**
+				  * Vector defining the relative
+				  * coordinates of the "bottom" of a
+				  * line dislocation.
+				  */
     glm::dvec3 p2;
   
     glm::dvec3 cd; // wpółrzędne dyslokacji brane do obliczeń /po znalezieniu punktu i0/
   
-                                 /* Three-dimensional vector that
-				    describes the orientation of the
-				    Burgers vector of a
-				    dislocation. */
+                                 /**
+				  * Three-dimensional vector that
+				  * describes the orientation of the
+				  * Burgers vector of a dislocation.
+				  */
     glm::dvec3 burgers_vector;
 
-                                 /* Three-dimensional vector that
-				    describes the position of the core
-				    of a dislocation. */
+                                 /**
+				  * Three-dimensional vector that
+				  * describes the position of the core
+				  * of a dislocation.
+				  */
     glm::dvec3 dislocation_core;
 
-                                 /* A 3x3 Cartesian rotation tensor. */
+                                 /**
+				  * A 3x3 Cartesian rotation tensor.
+				  */
     glm::dmat3 rotation_tensor;
 
-                                 /* Text string that identifies a
-				    Burgers vector. */
+                                 /**
+				  * Text string that identifies the
+				  * name of this particular Burgers
+				  * vector.
+				  */
     QString burgers_name;
 
-                                 /* Text string that identifies a
-				    dislocation core name */
+                                 /**
+				  * Text string that identifies this
+				  * particular dislocation core name
+				  */
     QString core_name;
 
     int i0; // znaleziony punkt
   };
 
-  inline glm::dvec3 to_dvec3 (QVector3D x)
+                                 /**
+				  * Inline conversion of vector types.
+				  */
+  inline glm::dvec3 convert (QVector3D x)
   { 
     return glm::dvec3 (x.x (), x.y (), x.z ()); 
   }
   
-  
+                                 /**
+				  * Inline conversion of vector types.
+				  */
   inline QVector3D to_QV (glm::dvec3 x)
   { 
     return QVector3D (x.x, x.y, x.z); 

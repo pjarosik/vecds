@@ -477,11 +477,12 @@ void MainWindow::SL_actPoint(QVector3D res)
   str1.sprintf("act point coordinates: ix=%d, iy=%d, x=%g, y=%g, z=%g",
                                                ix, iy, res.x(), res.y(), res.z());
   statusBar()->showMessage(str1);
-  if ( ActualData->Mode==2 ){
-      ActualData->SL_singleDisl(vecds::to_dvec3(res));
-      emit SIG_repaint();
- qWarning("SL_actPoint  --  ndisl=%d", ActualData->ndisl);
-  }
+  if (ActualData->Mode==2)
+    {
+      ActualData->SL_singleDisl (vecds::convert (res));
+      emit SIG_repaint ();
+      qWarning("SL_actPoint  --  ndisl=%d", ActualData->ndisl);
+    }
 }
 
 void MainWindow::SL_actPosition(QVector3D res)
@@ -489,15 +490,13 @@ void MainWindow::SL_actPosition(QVector3D res)
  qWarning("SL_actPosition");
   QString str1;
   ActualData->actPoint = res;
-  int i0 = ActualData->atomize(vecds::to_dvec3(res), 0);
-  int ix = vecds_main_viewer->lastPos.x();
-  int iy = vecds_main_viewer->lastPos.y();
+  int i0 = ActualData->atomize (vecds::convert (res), 0);
+  int ix = vecds_main_viewer->lastPos.x ();
+  int iy = vecds_main_viewer->lastPos.y ();
   
-  str1.sprintf("position: ix=%d, iy=%d, x=%g, y=%g, z=%g, i0=%d",
-                                       ix, iy, res.x(), res.y(), res.z(), i0);
- qWarning("mainwindow:position: ix=%d, iy=%d, x=%g, y=%g, z=%g, i0=%d", ix, iy, res.x(), res.y(), res.z(), i0);
+  qWarning ("mainwindow:position: ix=%d, iy=%d, x=%g, y=%g, z=%g, i0=%d", ix, iy, res.x(), res.y(), res.z(), i0);
   statusBar()->showMessage(str1);
-//  emit SIG_repaint();
+
 }
 
 
