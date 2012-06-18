@@ -29,8 +29,8 @@
 
 
 vecds::Internal *ActualData;
-extern bool qf_ok;
 
+extern bool qf_ok;
 static QString infsepar = " .......... ";
 
 MainWindow::MainWindow ()
@@ -58,23 +58,17 @@ MainWindow::MainWindow ()
                                  // Size policies?
   vecds_main_viewer->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-  qWarning ("   Setting up info labels...");
   infoLabel = new QLabel (this);
   infoLabel->setFrameStyle (QFrame::StyledPanel | 
 			    QFrame::Sunken);
 
   infoLabel->setTextFormat (Qt::RichText);
 
-  qWarning ("   Assigning actions...");
   createActions();
-  qWarning ("   Creating menus...");
   createMenus ();
-  qWarning ("   Creating docks...");
   createDockWindows ();
-  qWarning ("   Creating status bar...");
   createStatusBar();
 
-  qWarning ("   Dealing with the main layout...");
   LAY_g_MainLayout = new QGridLayout;
 
   LAY_g_MainLayout->setMargin (3);
@@ -84,18 +78,15 @@ MainWindow::MainWindow ()
   Widg_widget0->setLayout (LAY_g_MainLayout);
   Widg_modesTab->setCurrentIndex(0);
 
-  qWarning ("   Calling display information...");
   InfoDisplay ();
-
-  qWarning ("class MainWindow: Successfully initialized");
 }
 
+                                // Destructor.
 MainWindow::~MainWindow ()
-{
-  qWarning ("class MainWindow:~MainWindow. Destructor called");
-}
+{}
 
-                                // This function creates the
+                                // This function creates the actions
+                                // wanted on this window.
 void MainWindow::createActions ()
 {
 
@@ -177,17 +168,17 @@ void MainWindow::createActions ()
   }
 
 
-  MillerAct = new QAction(tr("Miller"), this);
-  MillerAct->setStatusTip(tr("input Miller indices"));
-  connect(MillerAct, SIGNAL(triggered()), this, SLOT(SL_millerAct()));
+  MillerAct = new QAction (tr ("Miller"), this);
+  MillerAct->setStatusTip (tr ("Miller indices"));
+  connect(MillerAct, SIGNAL (triggered ()), this, SLOT (SL_millerAct ()));
   
-  settAct = new QAction(tr("Visibility"), this);
-  settAct->setStatusTip(tr("visibility"));
-  connect(settAct, SIGNAL(triggered()), this, SLOT(SL_sett()));
+  settAct = new QAction (tr ("Visibility"), this);
+  settAct->setStatusTip (tr ("Visibility"));
+  connect(settAct, SIGNAL (triggered ()), this, SLOT (SL_sett ()));
   
-  multAct = new QAction(tr("Mult. factor"), this);
-  multAct->setStatusTip(tr("mult. factor"));
-  connect(multAct, SIGNAL(triggered()), this, SLOT(SL_mult()));
+  multAct = new QAction (tr ("Mult. factor"), this);
+  multAct->setStatusTip (tr ("Mult. factor"));
+  connect(multAct, SIGNAL (triggered ()), this, SLOT (SL_mult ()));
 
                                  // Make signals and slots to enable
                                  // actions on the main viewer.
@@ -467,16 +458,17 @@ void MainWindow::createDockWindows ()
 // ====================    S L O T S    ===========================
 
 
-void MainWindow::SL_actPoint(QVector3D res)
+void MainWindow::SL_actPoint (QVector3D res)
 {
   QString str1;
-// qWarning("SL_actPoint");
   ActualData->actPoint = res;
+
   int ix = vecds_main_viewer->lastPos.x();
   int iy = vecds_main_viewer->lastPos.y();
-  str1.sprintf("act point coordinates: ix=%d, iy=%d, x=%g, y=%g, z=%g",
-                                               ix, iy, res.x(), res.y(), res.z());
+
+  str1.sprintf("act point coordinates: ix=%d, iy=%d, x=%g, y=%g, z=%g", ix, iy, res.x(), res.y(), res.z());
   statusBar()->showMessage(str1);
+
   if (ActualData->Mode==2)
     {
       ActualData->SL_singleDisl (vecds::convert (res));
@@ -485,18 +477,18 @@ void MainWindow::SL_actPoint(QVector3D res)
     }
 }
 
-void MainWindow::SL_actPosition(QVector3D res)
+void MainWindow::SL_actPosition (QVector3D res)
 {
  qWarning("SL_actPosition");
   QString str1;
   ActualData->actPoint = res;
+
   int i0 = ActualData->atomize (vecds::convert (res), 0);
   int ix = vecds_main_viewer->lastPos.x ();
   int iy = vecds_main_viewer->lastPos.y ();
   
   qWarning ("mainwindow:position: ix=%d, iy=%d, x=%g, y=%g, z=%g, i0=%d", ix, iy, res.x(), res.y(), res.z(), i0);
-  statusBar()->showMessage(str1);
-
+  statusBar()->showMessage (str1);
 }
 
 
