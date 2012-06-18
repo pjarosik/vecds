@@ -264,6 +264,7 @@ configure_file (${VECDS_SCRIPTS}/doxygen.template.in ${VECDS_SCRIPTS}/doxygen.te
 set (vecds_documentation
   ${VECDS_DOCS}/about
   ${VECDS_DOCS}/documentation
+  ${VECDS_DOCS}/no_documentation
   ${VECDS_DOCS}/license
   )
 foreach (doc ${vecds_documentation})

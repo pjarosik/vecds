@@ -1,0 +1,24 @@
+
+<!DOCTYPE html>
+<html>
+<body>
+
+<p style="text-align: center;">
+<h1>Visual Editor of Crystal Defects</h1>
+</p>
+
+<h2>Documentation</h2>
+
+To have full access to the documentation, you will need to have
+compiled <b>vecds</b> with the doxygen program enabled, but doxygen
+was not found at configure time.
+
+The technical documentation for <b>vecds</b> should be located here:
+@VECDS_DOCS@/doxygen/html/index.html but was not found, or some other
+error occured. 
+
+<p>If you think this is message is in error, please send a bug reports
+to: @VECDS_PACKAGE_BUGREPORT@.</p>
+
+</body>
+</html>
