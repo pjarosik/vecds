@@ -83,6 +83,9 @@ namespace vecds
 
     protected:
 
+    private:
+
+
                                  /**
 				  * Internal reference to the number
 				  * of components this vector
@@ -92,7 +95,6 @@ namespace vecds
 				  */
       unsigned int length;
 
-    private:
 
                                  /**
 				  * Internal object denoting this
