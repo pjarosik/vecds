@@ -83,16 +83,16 @@ namespace vecds
     }
 
 
-    int beta (const gsl_vector *x, 
-	      void             *par, 
+    int beta (const gsl_vector *point, 
+	      void             *parameters, 
 	      gsl_matrix       *jac) 
     {
       double nu = 0.35;
-      double be = ((struct params *) par)->be;
-      double bz = ((struct params *) par)->bz;
+      double be = ((struct params *) parameters)->be;
+      double bz = ((struct params *) parameters)->bz;
       
-      const double xx = gsl_vector_get(x, 0);
-      const double yy = gsl_vector_get(x, 1);
+      const double xx = gsl_vector_get (point, 0);
+      const double yy = gsl_vector_get (point, 1);
       
       const double y2 = yy*yy;
       const double x2 = xx*xx;

@@ -88,7 +88,12 @@ namespace vecds
     double sigmoid (const double x);
 
                                  /**
-				  * The Love function.
+				  * Compute the Love function at this
+				  * <code>point</code> according to
+				  * the <code>parameters</code> which
+				  * specify the ???. On success, this
+				  * function returns
+				  * <code>GSL_SUCCESS</code>.
 				  */
     int love (const gsl_vector *point, 
 	      void             *parameters, 
@@ -98,11 +103,11 @@ namespace vecds
 				  * Distortion function...
 				  */
     int beta (const gsl_vector *x, 
-	      void             *par, 
+	      void             *parameters, 
 	      gsl_matrix       *jac);
     
                                  /**
-				  * This calls the Love functionand
+				  * This calls the Love function and
 				  * the....?
 				  */    
     int love_fdf (const gsl_vector *x, 
