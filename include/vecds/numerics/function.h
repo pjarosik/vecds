@@ -44,9 +44,8 @@
 namespace vecds
 {
 
-                                 /** 
-				  * TODO: The structure params does
-				  * what?
+                                 /**
+				  * Parameters that define...?
 				  */
   struct params 
   {
@@ -91,8 +90,8 @@ namespace vecds
                                  /**
 				  * The Love function.
 				  */
-    int love (const gsl_vector *x, 
-	      void             *par, 
+    int love (const gsl_vector *point, 
+	      void             *parameters, 
 	      gsl_vector       *result);
     
                                  /**

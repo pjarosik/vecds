@@ -1,4 +1,5 @@
 
+
 // -------------------------------------------------------------------
 //
 // Author: Jan Cholewinski and Toby D. Young.
@@ -43,33 +44,36 @@ namespace vecds
       return (1./(1. + exp (-x)));
     }
 
-    int love (const gsl_vector *x, 
-	      void             *par, 
+    int love (const gsl_vector *point, 
+	      void             *parameters, 
 	      gsl_vector       *result) 
     {
-      const double rad_fact = 1.;
+      const double radius_factor = 1.;
+
+                                 // poissons ration
       const double nu       = 0.35;
-      const double be       = ((struct params *) par)->be;
-      const double bz       = ((struct params *) par)->bz;
-      const double u0x      = ((struct params *) par)->u0x;
-      const double u0y      = ((struct params *) par)->u0y;
-      const double u0z      = ((struct params *) par)->u0z;
+
+      const double be       = ((struct params *) parameters)->be;
+      const double bz       = ((struct params *) parameters)->bz;
+      const double u0x      = ((struct params *) parameters)->u0x;
+      const double u0y      = ((struct params *) parameters)->u0y;
+      const double u0z      = ((struct params *) parameters)->u0z;
       
-      const double x_distance = gsl_vector_get (x, 0);
-      const double y_distance = gsl_vector_get (x, 1);
-      const double r2         = x_distance*x_distance + y_distance*y_distance;
-      const double r          = sqrt (r2);
-      const double xx         = x_distance/r;
-      const double yy         = y_distance/r;
+      const double x_distance    = gsl_vector_get (point, 0);
+      const double y_distance    = gsl_vector_get (point, 1);
+      const double radius_square = x_distance*x_distance + y_distance*y_distance;
+      const double radius        = sqrt (radius_square);
+      const double xx            = x_distance/radius;
+      const double yy            = y_distance/radius;
 
-                                 /* radius of an inmobile ring
-				    relative to which the atoms in the
-				    core move up */
-      const double r02 = rad_fact*be*be; 
+                                 // radius of an inmobile ring
+                                 // relative to which the atoms in the
+                                 // core move up
+      const double r02 = radius_factor*be*be; 
 
-      const double ux = u0x - be /(2.*vecds::constant::pi)*(atan2(yy,xx)+xx*yy/(2.*(1.-nu)));
-      const double uy = u0y + be /(8.*vecds::constant::pi*(1.-nu)) * ((1.-nu-nu)*log(r2/r02) + (xx+yy)*(xx-yy));
-      const double uz = u0z - bz /(2.*vecds::constant::pi)*atan2(yy, xx);
+      const double ux = u0x - be / (2.*vecds::constant::pi) * (atan2 (yy,xx) + xx*yy/(2.*(1.-nu)));
+      const double uy = u0y + be / (8.*vecds::constant::pi  * (1.-nu)) * ((1.-nu-nu)*log (radius_square/r02) + (xx+yy)*(xx-yy));
+      const double uz = u0z - bz / (2.*vecds::constant::pi) * atan2 (yy, xx);
       
       gsl_vector_set (result, 0, ux);
       gsl_vector_set (result, 1, uy);
