@@ -23,11 +23,13 @@
 // -------------------------------------------------------------------
 
 
+
 #include "example-01.h"
 
-                                 /* We need to get access to the
-				    config files of the vecds
-				    package. */
+                                 /** 
+				  * We need to get access to the
+				  * config files of the vecds package.
+				  */
 #include <vecds/base/config.h>
 
                                  /* While we are using vecds, we can
