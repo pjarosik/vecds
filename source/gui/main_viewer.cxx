@@ -29,9 +29,13 @@
 #include <GL/glut.h>
 
                                  // vecds gui includes
+//#include <./main_viewer.h>
+
+//#include <./internal.h>
 #include <vecds/gui/main_viewer.h>
 
 #include <vecds/base/internal.h>
+
 
 extern vecds::Internal *ActualData;
 
@@ -410,7 +414,7 @@ void vecds::MainViewer::mousePressEvent (QMouseEvent *event)
 
                                  // Update start vector and prepare
                                  // For dragging
-	    arcball->click (mousePt);
+	    arcball->click (to_dvec2(mousePt));
 	  }
       }
 
@@ -422,7 +426,7 @@ void vecds::MainViewer::mouseMoveEvent (QMouseEvent *event)
     mousePt = normalizeMouse (this->lastPos);
     if (event->buttons() & Qt::LeftButton) 
       {
-	arcball->drag(mousePt);
+	arcball->drag(to_dvec2(mousePt));
 	
 	quat2matr (arcball->quaternion);
 	glm::dvec3 result = quat2euler (arcball->quaternion)*vecds::constant::rad2deg;
@@ -553,6 +557,8 @@ void vecds::MainViewer::draw_bonds ()
     {
       int a1 = ActualData->atoms->atom_bond[i](0) - 1;
       int a2 = ActualData->atoms->atom_bond[i](1) - 1;
+//      int a1 = ActualData->atoms->atom_bond1[i] - 1;
+//      int a2 = ActualData->atoms->atom_bond2[i] - 1;
       
       glPushMatrix();
       

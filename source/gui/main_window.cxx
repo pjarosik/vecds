@@ -25,7 +25,9 @@
 #include <cassert>
 
                                  // vecds gui includes
+//#include <./main_window.h>
 #include <vecds/gui/main_window.h>
+
 
 
 vecds::Internal *ActualData;
@@ -471,7 +473,7 @@ void MainWindow::SL_actPoint (QVector3D res)
 
   if (ActualData->Mode==2)
     {
-      ActualData->SL_singleDisl (vecds::convert (res));
+      ActualData->SL_singleDisl (vecds::to_dvec3 (res));
       emit SIG_repaint ();
       qWarning("SL_actPoint  --  ndisl=%d", ActualData->ndisl);
     }
@@ -483,7 +485,7 @@ void MainWindow::SL_actPosition (QVector3D res)
   QString str1;
   ActualData->actPoint = res;
 
-  int i0 = ActualData->atomize (vecds::convert (res), 0);
+  int i0 = ActualData->atomize (vecds::to_dvec3 (res), 0);
   int ix = vecds_main_viewer->lastPos.x ();
   int iy = vecds_main_viewer->lastPos.y ();
   

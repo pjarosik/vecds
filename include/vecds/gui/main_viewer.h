@@ -34,7 +34,6 @@
 #include <QVector2D>
 #include <QVector3D>
 
-                                 // vecds gui includes
 #include <vecds/gui/arc_ball.h>
 
                                  // vecds library includes
@@ -42,6 +41,13 @@
 #include <vecds/base/additional.h>
 #include <vecds/base/constant.h>
 
+/*                                 // vecds gui includes
+#include <./arc_ball.h>
+                         // vecds library includes
+#include <./integer_vector.h>
+#include <./additional.h>
+#include <./constant.h>
+*/
 
 
 
@@ -181,6 +187,8 @@ namespace vecds
   
 
     vecds::IntVector<2>* bonds;    
+//    int* bonds1;
+//    int* bonds2;
 
     glm::dvec3* coord;
     glm::dvec3 min_;    

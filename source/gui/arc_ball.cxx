@@ -25,13 +25,14 @@
 
 
                                  // vecds includes
+//#include <./arc_ball.h> 
 #include <vecds/gui/arc_ball.h> 
 
 
 vecds::ArcBall::ArcBall () 
   :
-  vector_begin (QVector3D (0., 0., 0.)),
-  vector_end   (QVector3D (0., 0., 0.)),
+  vector_begin (glm::dvec3 (0., 0., 0.)),
+  vector_end   (glm::dvec3 (0., 0., 0.)),
   quaternion   (QQuaternion (1., 0., 0., 0.)),
   q_down       (QQuaternion (1., 0., 0., 0.)),
   mouseQuat    (QQuaternion (1., 0., 0., 0.)),
@@ -41,45 +42,45 @@ vecds::ArcBall::ArcBall ()
 vecds::ArcBall::~ArcBall () 
 {}
 
-void vecds::ArcBall::click (const QVector2D &mouse_coordinate)
+void vecds::ArcBall::click (const glm::dvec2 &mouse_coordinate)
 {
   this->vector_begin  = mapToSphere (mouse_coordinate);
   this->q_down        = this->quaternion;
   this->mouseQuat     = QQuaternion (1., 0., 0., 0.);
 }
 
-void vecds::ArcBall::drag (const QVector2D &mouse_coordinate)
+void vecds::ArcBall::drag (const glm::dvec2 &mouse_coordinate)
 {
   this->vector_end    = mapToSphere (mouse_coordinate);
   this->mouseQuat     = get_quaternion (this->vector_begin, this->vector_end);
   this->quaternion    = this->mouseQuat * this->q_down;
 }
 
-QQuaternion vecds::ArcBall::get_quaternion (const QVector3D &vec_1, 
-					    const QVector3D &vec_2)
+QQuaternion vecds::ArcBall::get_quaternion (const glm::dvec3 &vec_1, 
+					    const glm::dvec3 &vec_2)
 {
-  QVector3D perpendicular_vector = QVector3D::crossProduct (vec_2, vec_1);
+  glm::dvec3 perpendicular_vector = glm::cross (vec_2, vec_1);
 
-  return (perpendicular_vector.x ()*perpendicular_vector.x () + 
-	  perpendicular_vector.y ()*perpendicular_vector.y () +
-	  perpendicular_vector.z ()*perpendicular_vector.z () > 
+  return (perpendicular_vector.x * perpendicular_vector.x  + 
+	  perpendicular_vector.y * perpendicular_vector.y  +
+	  perpendicular_vector.z * perpendicular_vector.z  > 
 	  this->epsilon)   
     ?
-    QQuaternion (QVector3D::dotProduct (vec_1, vec_2), 
-		 perpendicular_vector.x (), 
-		 perpendicular_vector.y (), 
-		 perpendicular_vector.z ()
+    QQuaternion (glm::dot (vec_1, vec_2), 
+		 perpendicular_vector.x, 
+		 perpendicular_vector.y, 
+		 perpendicular_vector.z
 		 ).normalized () 
     :
     QQuaternion (1., 0., 0., 0.);
 }
 
 
-QVector3D vecds::ArcBall::mapToSphere (QVector2D mouse_coordinate)
+glm::dvec3 vecds::ArcBall::mapToSphere (glm::dvec2 mouse_coordinate)
 {
   const double length = 
-    mouse_coordinate.x ()*mouse_coordinate.x () + 
-    mouse_coordinate.y ()*mouse_coordinate.y ();
+    mouse_coordinate.x * mouse_coordinate.x + 
+    mouse_coordinate.y * mouse_coordinate.y;
   
                                  // If the length comes back as a
                                  // negative number we are in trouble,
@@ -92,19 +93,19 @@ QVector3D vecds::ArcBall::mapToSphere (QVector2D mouse_coordinate)
                                  // a 3d object. We therefore compute
                                  // the "mouse_position" on the
                                  // surface of a sphere.
-  QVector3D mouse_position;
+  glm::dvec3 mouse_position;
 
                                  // TODO: What is 1.96? Why?
   if (length>1.96) 
     {
       double l2_norm = sqrt (length);
-      mouse_position = QVector3D (mouse_coordinate.x ()/l2_norm, 
-				  mouse_coordinate.y ()/l2_norm, 0.);
+      mouse_position = glm::dvec3 (mouse_coordinate.x/l2_norm, 
+				  mouse_coordinate.y/l2_norm, 0.);
     } 
   else 
     {
-      mouse_position = QVector3D (mouse_coordinate.x (), 
-				  mouse_coordinate.y (), 
+      mouse_position = glm::dvec3 (mouse_coordinate.x,
+				  mouse_coordinate.y,
 				  sqrt (1.96-length));
     }
   

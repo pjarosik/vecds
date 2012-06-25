@@ -36,10 +36,15 @@
 #include <gsl/gsl_multiroots.h>
 
                                  /* vecds includes */
+//#include <./integer_vector.h>
 #include <vecds/numerics/integer_vector.h>
 
                                  /* TODO: The structure params does
 				    what? */
+				 /*
+				  * The structure params holds
+				  * information needed to perform solving nonlinear equations by GSL routines
+				  */
 struct params 
 {
   double be;
@@ -108,7 +113,7 @@ namespace vecds
 				  * The structure Atoms holds
 				  * information needed to describe the
 				  * location and type of an atom in a
-				  * matrix.
+				  * matrix and resultant displacement field /new coordinates/
 				  */
   struct Atoms
   {
@@ -138,7 +143,7 @@ namespace vecds
 				  */
     glm::dvec3 *coordinates;
 
-                                 /* TODO: WHat are these? */
+                                 /* TODO: WHat are these?  - incremental and total displacement */
     glm::dvec3 *du;
     glm::dvec3  *u;
     
@@ -188,7 +193,7 @@ namespace vecds
 				  */
     double alpha, beta, gamma;
 
-                                 /* TODO: WHat are these things? */
+                                 /* TODO: WHat are these things?  transformation matrices from Crystallographic to Orthogonal - C2O and inverse - O2C*/
     glm::dmat3 C2O;
     glm::dmat3 O2C;
 
@@ -209,10 +214,10 @@ namespace vecds
     unsigned int crystal_type[20];
 
                                  /* TODO: WHat are these things? */
-    QString co_name[30];
+    QString co_name[30];         /* table of introduced names of dislocation cores */
 
-    glm::dvec3 cryst[20];
-    glm::dvec3 core[30];
+    glm::dvec3 cryst[20];        /* crystallographic coordinates of each atom in unit cell */
+    glm::dvec3 core[30];         /* crystallographic positions of dislocation cores with corrresponding 'co_name' in unit cell */
   };
 
 }                                /* namespace vecds */
@@ -283,18 +288,29 @@ namespace vecds
                                  /**
 				  * Inline conversion of vector types.
 				  */
-  inline glm::dvec3 convert (QVector3D x)
-  { 
+  inline glm::dvec3 to_dvec3 (QVector3D x)  // for me 'to_dvec3' is a better name
+  {
     return glm::dvec3 (x.x (), x.y (), x.z ()); 
+  }
+  
+  inline glm::dvec2 to_dvec2 (QVector2D x)
+  {
+    return glm::dvec2 (x.x (), x.y ()); 
   }
   
                                  /**
 				  * Inline conversion of vector types.
 				  */
-  inline QVector3D to_QV (glm::dvec3 x)
-  { 
+  inline QVector3D to_QV3 (glm::dvec3 x)
+  {
     return QVector3D (x.x, x.y, x.z); 
   }
+
+  inline QVector2D to_QV2 (glm::dvec2 x)
+  {
+    return QVector2D (x.x, x.y); 
+  }
+
 
 }                                /* namespace vecds */
 

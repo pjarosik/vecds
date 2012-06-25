@@ -30,6 +30,8 @@
 #include <math.h>
 #include <cassert>
 
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
                                  // Qt includes
 #include <QQuaternion>
 #include <QVector2D>
@@ -62,7 +64,7 @@ namespace vecds
   {
   protected:
     
-    inline QVector3D mapToSphere (QVector2D mouse_coordinate);
+    inline glm::dvec3 mapToSphere (glm::dvec2 mouse_coordinate);
     
   public:
 
@@ -82,25 +84,26 @@ namespace vecds
 				  * Definition of what to do when
 				  * "click" is done with the mouse.
 				  */
-    void click (const QVector2D &mouse_coordinate);
+    void click (const glm::dvec2 &mouse_coordinate);
 
                                  /**
 				  * Definition of what to do when
 				  * "drag" is done with the mouse.
 				  */
-    void drag (const QVector2D &mouse_coordinate);
+    void drag (const glm::dvec2 &mouse_coordinate);
 
                                  /**
 				  * Return this quaternion. 
 				  */
-    QQuaternion get_quaternion (const QVector3D &vec_1, 
-				const QVector3D &vec_2);
+    QQuaternion get_quaternion (const glm::dvec3 &vec_1, 
+				const glm::dvec3 &vec_2);
 
-    QVector3D 
+    glm::dvec3
       vector_begin,
       vector_end;
   
-    QQuaternion 
+//    glm::dquaternion
+    QQuaternion
       quaternion,
       q_down, 
       mouseQuat;
