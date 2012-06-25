@@ -154,6 +154,8 @@ namespace vecds
 				  * atoms.
 				  */
     vecds::IntVector<2> *atom_bond;
+//    int *atom_bond1;
+//    int *atom_bond2;
   };
 
 }                                /* namespace vecds */

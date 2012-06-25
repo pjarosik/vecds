@@ -72,9 +72,9 @@ namespace vecds
                                  // destructor
     ~Internal ();
   
-                                 // friendly clases
-    friend class MainViewer;
-    friend class MainWindow;
+//                                 // friendly clases
+//    friend class MainViewer;
+//    friend class MainWindow;
 
 
                                  // general types needed...
