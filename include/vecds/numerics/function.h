@@ -71,6 +71,7 @@ namespace vecds
 				  * step-function, is defined as:
 				  * \f[H(x)=\left\{\begin{array}{cc}0&x<0\\1&x\geq0\end{array}\right.\quad.\f]
 				  */
+
     double heavyside (const double x);
 
                                  /**
@@ -99,6 +100,7 @@ namespace vecds
 				  * function returns
 				  * <code>GSL_SUCCESS</code>.
 				  */
+  extern "C" {
     inline
     int love (const gsl_vector *point, 
 	      void             *parameters, 
@@ -192,12 +194,13 @@ namespace vecds
       
       return GSL_SUCCESS;
     }
-
+  }                              // extern "C"
 
                                  /**
 				  * This calls the Love function and
 				  * the....?
 				  */        
+  extern "C" {
     inline
     int love_fdf (const gsl_vector *x, 
 		  void             *par, 
@@ -215,10 +218,10 @@ namespace vecds
       return GSL_SUCCESS;
     }
 
-
+  }                              // extern "C"
     
   }                              // namespace function
-
+ 
 }                                // namespace vecds
 
 #endif
