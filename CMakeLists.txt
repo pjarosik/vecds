@@ -36,10 +36,7 @@ set (VECDS_INTERNALS          ${VECDS_SHARES}/vecds/internals)
 ## set (CMAKE_INSTALL_PREFIX     ${VECDS_BIN})
 set (CMAKE_CXX_FLAGS_DEBUG    "-O0 -g -DDEBUG -Wall")
 set (CMAKE_CXX_FLAGS_RELEASE  "-O3 -DNDEBUG")  
-if (CMAKE_BUILD_TYPE STREQUAL "")
-  ##  set (CMAKE_BUILD_TYPE "Unknown")
-  set (CMAKE_BUILD_TYPE "Debug")
-endif ()
+
 add_definitions ("-DHAVE_CONFIG_H") 
 
 ## Debug messages...
@@ -226,11 +223,7 @@ if (CMAKE_BUILD_TYPE STREQUAL "Release")
     ## those compilers show up, do nothing, and hope for the best.
     add_definitions ()
   else ()
-    ## Random guesses...
-    add_definitions ("-march=native")
-    
-    ## Optimizations (no warnings!):
-    add_definitions ("-fdata-sections -ffunction-sections -findirect-inlining -fforce-addr -fstrict-aliasing -ftemplate-depth-128 -funroll-loops")
+    add_definitions ("-march=native -fdata-sections -ffunction-sections -findirect-inlining -fforce-addr -fstrict-aliasing -ftemplate-depth-128 -funroll-loops")
   endif ()
   
   ############################################
@@ -239,14 +232,9 @@ else ()
     ## See note above...
     add_definitions ()
   else ()
-    ## Warnings:
-    add_definitions ("-Wextra -Wpointer-arith -Wsign-compare -Wswitch -Wwrite-strings")
-     
-    ## Optimizations (basically none):
-    add_definitions ("-ftemplate-depth-128")
+    add_definitions ("-ftemplate-depth-128 -pedantic -Wextra -Wpointer-arith -Wsign-compare -Wswitch -Wwrite-strings")
   endif ()
 endif ()
-
 
 
 ################################################
