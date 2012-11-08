@@ -330,7 +330,8 @@ void singledisl (unsigned int n_a)
 	      std::cout<< "Error for n_a=" << n_a << "   i=" << i << std::endl;  continue; 
 	    }
 	  count = 0;
-	  
+          s = gsl_multiroot_fdfsolver_alloc(T, 3);
+          x = gsl_vector_alloc(3);
 	  do 
 	    {
 	      ++count;
@@ -348,12 +349,12 @@ void singledisl (unsigned int n_a)
 		}
 
 	      gsl_multiroot_function_fdf f = {&Love_function, &Beta_function, &Love_fdf, 3, &p};
-	      x = gsl_vector_alloc(3);
+
 	      gsl_vector_set(x, 0, temp.x);
 	      gsl_vector_set(x, 1, temp.y);
 	      gsl_vector_set(x, 2, temp.z);
 	      
-	      s = gsl_multiroot_fdfsolver_alloc(T, 3);
+
 	      gsl_multiroot_fdfsolver_set(s, &f, x);
 	      
 	      status = gsl_multiroot_fdfsolver_iterate(s);
@@ -630,6 +631,13 @@ bool readProgData(string filename)
 	  }
 	if ( what==4 ) 
 	  {                      // end
+	  delete [] atoms->du;
+	  delete [] atoms->u;
+	  delete [] atoms->coord;
+	  delete [] atoms->beta;
+	  delete [] atoms->a_name;
+	  delete [] atoms->a_name;
+	  delete [] coord1;
 	  std::cout << "End of data" << std::endl;
 	  return true;
 	  }
