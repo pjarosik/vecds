@@ -1,67 +1,36 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010), Toby D. Young
-// (2012).
-//
-// Copyright (C) 2010, 2012 The vecds authors
+// Copyright (C) 2010 The vecds authors
 //
 // This  program is  free  software: you  can  redistribute it  and/or
 // modify  it under the  terms of  the GNU  General Public  License as
-// published by the Free Software Foundation, either version 3 of the
+// published by the Free Software  Foundation, either version 3 of the
 // License, or (at your option) any later version.
 //  
 // This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
+// WITHOUT  ANY  WARRANTY;  without   even  the  implied  warranty  of
 // MERCHANTABILITY or  FITNESS FOR A PARTICULAR PURPOSE.   See the GNU
 // General Public License for more details.
 //
 // You should have  received a copy of the  GNU General Public License
-// along with this program.  If not, see
+// along      with      this      program.       If      not,      see
 // <http://www.gnu.org/licenses/>.
 //					 
 // -------------------------------------------------------------------
 
 
-#ifndef MAIN_WINDOW_H
-#define MAIN_WINDOW_H
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
 
-
+//#include <QWidget>
 #include <QtGui>
 #include <QMainWindow>
+//#include <qwt_slider.h>
 #include <QSlider>
-
-#include <qwt_scale_engine.h>
-
-#include <vecds/base/config.h>
-#include <vecds/base/constant.h>
-#include <vecds/base/internal.h>
-
-                                 /* vecds dialogs includes */
-#include <vecds/dialogs/help_browser.h>
-#include <vecds/dialogs/doc_browser.h>
-#include <vecds/dialogs/question.h>
-#include <vecds/dialogs/question_form.h>
-
-
-                                 /* vecds gui includes */
-#include <vecds/gui/main_viewer.h>
-#include <vecds/gui/main_viewer.h>
-
-/*                                 
-#include <vecds/base/config.h>
-#include <vecds/base/constant.h>
-#include <vecds/base/internal.h>
-
-#include <vecds/dialogs/help_browser.h>
-#include <vecds/dialogs/doc_browser.h>
-#include <vecds/dialogs/question.h>
-#include <vecds/dialogs/question_form.h>
-
-
-#include <vecds/gui/main_viewer.h>
-#include <vecds/gui/main_viewer.h>
-*/
+//#include <qwt_scale_engine.h>
+//#include <qwt_color_map.h>
+#include <vecds/base/algebra.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -77,186 +46,140 @@ class QStackedWidget;
 class QLayout;
 class QWthatsThis;
 class QVector3D;
+//class QVector;
 
 QT_END_NAMESPACE
 
 class MainViewer;
-class DocBrowser;
 class HelpBrowser;
 class Questionform;
 class ArcBall;
 
-class MainWindow 
-: 
-public QMainWindow
+class MainWindow : public QMainWindow
 {
   Q_OBJECT
     
     public:
   MainWindow ();
-
-  ~MainWindow ();
-
-
   
   private slots:
-
-                                 /* These are slots that deal with
-				  * menu objects (actions).
-				  *
-				  * open atoms data file, images, save
-				  * atoms data file, close image... */
-  void SL_open_atoms ();
-  void SL_open_image ();
-  void SL_save_as_atoms ();
-  void SL_close_image ();
-
-				 /* generate atoms by cell or by length */
-  void SL_generate_atoms_by_cell ();
-  void SL_generate_atoms_by_length ();
-
-				 /* make bounding boxes; cubic and
-				    hexagonal */
-  void SL_make_cubic_bbox ();
-  void SL_make_hexagonal_bbox ();
-
-                                 /* These are help pages that open in
-				  * a new window.
-				  *
-				  * First, the "about vecds" page */
-  void SL_about ();
-
-                                 /* and second, the "documentation of
-				    vecds" page */
-  void SL_documentation ();
-
-
-  void SL_setSliderValue (int);
-  void SL_defineStructure ();
-  void SL_chooseStructure ();
-
-  // --------------------- WTF? ---------------------------------  
-
-  void SL_millerAct ();
-  void SL_dislocAct ();
-  void SL_dislAct ();
-  void SL_addCoordAct ();
-  void SL_changeMode (int mode);
-  void SL_actPoint (QVector3D);
-  void SL_actPosition (QVector3D);
-  void SL_sett ();
-  void SL_mult ();
+//  void SL_setSliderValue(double);
+  void SL_setSliderValue(int);
+  void SL_defineStructure();
+  void SL_chooseStructure();
+  void SL_openAtoms();
+  void SL_genAtoms();
+  void SL_gen1Atoms();
+  void SL_openImg();
+  void SL_closeImg();
+  void SL_openFems();
+  void SL_openRes();
+  void SL_about();
+  void SL_millerAct();
+  void SL_dislocAct();
+  void SL_dislAct();
+  void SL_changeMode(int mode);
+  void SL_saveAtomsAs();
+  void SL_saveMarkedAtomsAs();
+  void SL_cubBox();
+  void SL_hexBox();
+//  void SL_performActions();
+  //    void SL_bondsAct();
+  //    void SL_showBonds(QVector3D);
+  void SL_actPoint(QVector3D);
+  void SL_actPosition(QVector3D);
+  void SL_sett();
+  void SL_mult();
   
  signals:
-
-  void SIG_prepareImg ();
-  void SIG_needDraw ();
-  void SIG_repaint ();
-  void SIG_keypress (int);
-  void SIG_actPoint (QVector3D);
-
+  void SIG_prepareRotation();
+  void SIG_prepareImg();
+  void SIG_needDraw();
+  void SIG_repaint();
+  void SIG_keypress(int);
+  void SIG_actPoint(QVector3D);
+  //    void SIG_actPointChanged(QVector3D);
+  //    void SIG_updateSpheres();
  private:
+  void InfoDisplay();
+  //    void deleteActions();
+  void saveAtoms(QString);
+  void saveChoosedAtoms(QString);
+  //    void deleteActions();
+//  QwtSlider *createSlider(double from, double to, double step, double val, 
+//                                          bool logaritmic=false);
+  QSlider *createSlider(int from, int to, int step, int val);
 
-                                 /* This is the main viewer for
-				    vecds. Probably, we only ever want
-				    one of these, so lets give it a
-				    simple name to rememeber. */
-  vecds::MainViewer *vecds_main_viewer;
-
-                                 /* This is a list of the menus and
-				    submenus we have in this
-				    project. Most of them are probably
-				    self-explanitory. */
-  QMenu *menu_file;
-  QMenu *menu_edit;
-  QMenu *menu_crystal_structure;
-  QMenu *menu_generate_structure;
-  QMenu *menu_view;
-  QMenu *menu_settings;
-  QMenu *menu_box;
-  QMenu *menu_help;
-
-                                 /* Actions that do things. These
-				    belong in the "help" menu because
-				    they just show predefined
-				    documentation. */
-  QAction *action_show_documentation;
-  QAction *action_show_about;
-
-                                 /* Actions that belong in the "file"
-				    menu because they operate on
-				    files. */
-  QAction *action_open_atoms;
-  QAction *action_open_image;
-  QAction *action_save_as;
-  QAction *action_close_image;
-
-                                 /* Actions that belong in the "edit"
-				    menu because they edit the way the
-				    sytem is displayed. */
-  QAction *action_define_crystal_structure;
-  QAction *action_choose_crystal_structure;
-
-  QAction *action_generate_structure_by_cell;
-  QAction *action_generate_structure_by_length;
-
-                                 /* Note: These are shapes defined by
-				    crystallographic groups (they are
-				    not geometrical shapes) */
-  QAction *action_make_cuboid_box;
-  QAction *action_make_hexagonal_box;
-
-
-                                 /* Register if a key is pressed */
-  void keyPressEvent (const QKeyEvent *key_event);
-
-                                 /* Actually create stuff */
-  void createActions ();
-  void createMenus ();
-  void createStatusBar ();
-  void createDockWindows ();
+  void keyPressEvent(QKeyEvent *keyEv);
+  void createActions();
+  void createMenus();
+  void createStatusBar();
+  void createDockWindows();
   
-                                 /* Create a slider */
-  QSlider* createSlider (const unsigned int minimum, 
-			 const unsigned int maximum, 
-			 const unsigned int step, 
-			 const unsigned int value);
-
-  // --------------------- What are these? ---------------------------------
-
-  void InfoDisplay ();
-
-  QString toRichText (QString txt);
+  QString toRichText(QString txt);
+  
   
   QGridLayout *LAY_g_MainLayout;
-  QWidget     *Widg_widget0;
+  QWidget *Widg_widget0;
   QDockWidget *DWidg_dock;
-  QTabBar     *Widg_modesTab;
+  QTabBar *Widg_modesTab;
   
   QString aname, iname, fname, resname;
   QString infotxt0, infotxtat, infotxtimg;
   
+  MainViewer *mview1;
+  
+  QMenu *fileMenu;
+  QMenu *defstructMenu;
+  QMenu *genMenu;
+  QMenu *boxMenu;
+  QMenu *viewMenu;
+  QMenu *settMenu;
+  //    QMenu *showMenu;
+  QMenu *quitMenu;
+  QMenu *helpMenu;
+  //    QMenu *setMenu; 
+  
   QAction *MillerAct;
+  QAction *saveAsAct;
+  QAction *saveMarkedAsAct;
+  //    QAction *refreshAct;
+  QAction *cubBoxAct;
+  QAction *hexBoxAct;
+  
+  QAction *defnewAct;
+  //    QAction *defCoresAct;
+  QAction *chooseAct;    
+  QAction *openAct;
+  QAction *openFemAct;
+  QAction *openResAct;
+  QAction *genAct;
+  QAction *gen1Act;
+  QAction *openimgAct;
+  QAction *closeimgAct;
   QAction *transpAct;
+  QAction *aboutAct;
+  QAction *aboutQtAct;
   QAction *settAct;
   QAction *multAct;
-  
+//  QAction *quitAct; // Action fot the quit button.
+//  QAction *performAct;
+
   QLabel *infoLabel;
-
-                                 /* Slider controls over the rotation
-				    angles phi, theta, and psi */
-  QSlider *slider_rangle_phi;
-  QSlider *slider_rangle_theta;
-  QSlider *slider_rangle_psi;
-
-                                 /* Slider controls over
-				    something... */
-  QSlider *slider_mx;
-  QSlider *slider_my;
-
-                                 /* Slider controls over zooming in
-				    and out of the computer screen */
-  QSlider *slider_zoom;
+/*
+  QwtSlider *phiSlider;
+  QwtSlider *thetaSlider;
+  QwtSlider *psiSlider;
+  QwtSlider *mxSlider;
+  QwtSlider *mySlider;
+  QwtSlider *distSlider;
+*/
+  QSlider *phiSlider;
+  QSlider *thetaSlider;
+  QSlider *psiSlider;
+  QSlider *mxSlider;
+  QSlider *mySlider;
+  QSlider *distSlider;
 
   QPushButton *Butt_rotMiller;
   QPushButton *Butt_disloc;

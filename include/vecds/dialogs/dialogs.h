@@ -19,23 +19,52 @@
 //					 
 // -------------------------------------------------------------------
 
-#include <QWidget> 
 
-class QPushButton;
-class QTextBrowser;
-class HelpBrowser : public QWidget
+#ifndef QUESTIONS_H
+#define QUESTIONS_H
+
+#include <QDialog>
+#include <QLineEdit>
+#include <QLabel>
+#include <QDialogButtonBox>
+#include <QRadioButton>
+#include <QGroupBox>
+#include <QCheckBox>
+
+/**
+ * Question forms
+ */
+class QuestionForm : public QDialog
 {
-    Q_OBJECT 
-public: 
-    HelpBrowser(const QString &path, const QString &page,
-                                       QWidget *parent = 0);
-    static void showPage(const QString &page);
-private slots: 
-    void updateWindowTitle();
-private: 
-    QTextBrowser *textBrowser;
-    QPushButton *homeButton;
-    QPushButton *backButton;
-    QPushButton *closeButton;
+  Q_OBJECT
+    
+    public:
+  QuestionForm (QString title, QString descr, 
+		QStringList quest, QStringList sug, QStringList &ans, 
+		bool &ok, 
+		QWidget *parent = 0);
+  
+ private:
+  QLabel *lab0;
+  QLabel *lab[50];
+  QLineEdit *qEdit[50];
+  QDialogButtonBox *buttonBox;
 };
 
+class Questions : public QDialog
+{
+  Q_OBJECT
+    
+    public:
+  Questions (QString title, 
+	     QStringList quest, 
+	     bool *results, 
+	     bool &ok,
+	     QWidget *parent = 0);
+  
+ private:
+  QCheckBox *lab[50];
+  QDialogButtonBox *buttonBox;
+};
+
+#endif

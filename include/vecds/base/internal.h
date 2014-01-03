@@ -1,30 +1,23 @@
 
 // -------------------------------------------------------------------
 //
-// Author: 
-//    Jan Cholewinski (2010)
-//    Pawel Dluzewski (2010)
-//    Toby D. Young (2010, 2012)
+// Copyright (C) 2010 The vecds authors
 //
-// Copyright (C) 2010, 2012 The vecds authors
-//
-// This program is free software: you can redistribute it and/or
+// This  program is  free  software: you  can  redistribute it  and/or
 // modify  it under the  terms of  the GNU  General Public  License as
 // published by the Free Software  Foundation, either version 3 of the
 // License, or (at your option) any later version.
 //  
 // This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
+// WITHOUT  ANY  WARRANTY;  without   even  the  implied  warranty  of
 // MERCHANTABILITY or  FITNESS FOR A PARTICULAR PURPOSE.   See the GNU
 // General Public License for more details.
 //
 // You should have  received a copy of the  GNU General Public License
-// along with this program.  If not, see
+// along      with      this      program.       If      not,      see
 // <http://www.gnu.org/licenses/>.
 //					 
 // -------------------------------------------------------------------
-
-
 #ifndef INTERNAL_H
 #define INTERNAL_H
 
@@ -56,197 +49,180 @@
 class MainViewer;
 class MainWindow;
 
-namespace vecds
+class Internal
 {
+ public:
+  Internal();
+  ~Internal();
+  
+  friend class MainViewer;
+  friend class MainWindow;
+  
+ private:
+  
+  /**
+   * The current directory being used.
+   */
+  QString current_dir;
+  Atoms* atoms;
+  
+  AtomsProperties *ap;
+  CrystalStructure *actcrcell;
+  CrystalStructure *crstr;
+  int numbcrstr;
+  Dislocations *actdisl;
+  
+  QString img_loaded;
+  QString atoms_loaded;
+  QString res_loaded;
+  QString fems_loaded;
+  
+  QString act_disl;
+  QString act_core;
+  QString act_mill;
+  bool choice;
+  bool showU;
+  
+  QPixmap img;
+  
+  
+  Nodes* nodes;
+  Elements* elems;
+  Face* faces;
+  int numbFaces;
+  Results* results;
+  
+  E0 c27;
+  
+  QVector3D e_min_, e_max_;
+  QVector3D a_min_, a_max_;
+  QVector3D min_, max_, cent_;
+  QVector3D invbox[8];
+  QVector3D axeX, axeY, axeZ;
+  // ===================================================
+  bool sliderMove;
+  int Mode;
+//  double sliderValue;
+  int sliderValue;
+  // ===================================================
+  QVector3D actPoint;
+  double rad_scene;
+  
+  Dislocations *disl;
+  int n_dislocations;
+  
+  int  indMiller[6], oldMiller[6];
+  double fraction;
+  
+  Mat9d rot_tensor, rot_inv; //, mat;
+  
+  bool visible[10];
+  double mfactor;
+  Settings *set0;
+  
+  unsigned int INT_nn, INT_ne, INT_nr;
+  FILE *outputFile;
+
+  // =====================  coordinates   ====================
+  /*
+    double** results;
+    int *ires;
+    int numbRes;
+    double r_min_[17];
+    double r_max_[17];
+  */
+  // =====================  fems   ====================
+  // ===================================================
+  
+  void init_atoms();
+  void init_structures();
+  void init_e0();
+  void init_c27();
 
   /**
-   * This is a class called Internal.
+   * Read a file in as alchemy format.
    */
-  class Internal
-  {
-  public:
+  void read_alchemy_xyz (QString namea);
 
-                                 // constructor
-    Internal ();
 
-                                 // destructor
-    ~Internal ();
+  void read_fems (QString fname);
+  void read_res (QString resname);
+  void read_img (QString iname);
+
+  /**
+   * Read in settings: This actually sets the RGB colour to be used
+   * that is defined by the user.
+   */
+  void read_settings ();
+
+  /** 
+   * Some kind of integer that tells us which atom we are looking at:
+   */
+  int which_atom (QString nam_a);
+
+  //    void invert33(const double m1[9], double m2[9]);
+  //    double det33(const double m1[9]);
+  double read_fraction(QString line);
+  int lattice(int, int, int);
+  int lattice2(double, double, int);
+
+  /**
+   * Find the \f${\rm min}[vec]\f$ and \f${\rm max}[vec]\f$ given all
+   * the entries in <tt>vec</tt>.
+   */
+  void minmax3(QVector3D *vec, int numb, QVector3D &vmin, QVector3D &vmax);
+
+  /**
+   * Find the \f${\rm min}[vec]\f$ and \f${\rm max}[vec]\f$ given all
+   * the entries in <tt>vec</tt>.
+   */
+  void minmax (double *vec, int numb, double &vmin, double &vmax);
+
+  /**
+   * This function does what?
+   */
+  bool func (Int4, Int4); 
+//  bool func (QVector<int>&, QVector<int>&);
+
+  /**
+   * Calculate faces:
+   */
+  void calc_faces();
   
-//                                 // friendly clases
-//    friend class MainViewer;
-//    friend class MainWindow;
+  void processMiller(int sw, QString rtext, QString rtext2="");
+  bool parse_miller(QString line);
+  bool parse_core(QString line);
 
-
-                                 // general types needed...
-    vecds::CrystalStructure *actcrstr;
-    vecds::CrystalStructure *crstr;
-    vecds::Atoms            *atoms;
-    vecds::AtomProperties   *ap;
-    vecds::Dislocations     *actdisl;
-    vecds::Dislocations     *disl;
-    vecds::Settings         *set0;
-    
-    bool choice;
-    
-    int numbcrstr;
-    
-    double be;
-    double bz;
-    
-    QString img_loaded;
-    QString atoms_loaded;
-    QString act_disl;
-    QString act_core;
-    QString act_mill;
-    vecds::miller mil;
-    
-    glm::dvec3 a_min_;
-    glm::dvec3 a_max_;
-    glm::dvec3 min_;
-    glm::dvec3 max_;
-    glm::dvec3 cent_;
-    glm::dvec3 axeX;
-    glm::dvec3 axeY;
-    glm::dvec3 axeZ;
-    
-    glm::dvec3 invbox[8];
-    
-    QPixmap img;
-    
-    struct params p;
-
-                                  /**
-				   * Read settings from disk.
-				   */
-    void read_settings ();
-
-                                  /**
-				   * Write a complete vector to
-				   * <code>std::cout</code>.
-				   */
-    void write_vector (const std::string &str, 
-		       const glm::dvec3  &V);
-
-                                  /**
-				   * Write a complete matrix to
-				   * <code>std::cout</code>.
-				   */
-    void write_matrix (const std::string &str, 
-		       const glm::dmat3  &M);
-
-
-                                  /**
-				   * Returns a boolean somehow...
-				   */
-    bool internal_miller (std::string  line2, 
-			  int          which, 
-			  int         *miller_indices);
-    
-    // ===================================================
-    bool sliderMove;
-    int Mode;
-    double sliderValue;
-    // ===================================================
-    
-    bool visible[10];
-    
-    int ndisl;
-    
-    double mfactor;
-    double rad_scene;
-    double fraction;
-    
-    QVector3D actPoint;
-    
-    glm::dmat3 rot_tensor, rot_inv;
-    
-    std::string stripBlanks (std::string StringToModify);
-    
-    int identify (const std::string s1, 
-		  const int         size, 
-		  const std::string words[]);
-    
-    std::vector<std::string> tokenize (const std::string &str, 
-				       std::string        del);
-    
-    
-    
-    int toInt (std::string word);
-    
-    void init_atoms ();
-    void init_structures ();
-    void read_alc_xyz (QString namea);
-    void read_img (QString iname);
-    
-    
-    void minmax1 (double *vec, 
-		  int numb, 
-		  double &vmin, 
-		  double &vmax);
-    
-    void minmax3 (glm::dvec3 *vec, 
-		  int numb, 
-		  glm::dvec3 &vmin, 
-		  glm::dvec3 &vmax);
-    
-    void processMiller (int sw, 
-			QString rtext, 
-			QString rtext2="");
-    
-    int which_atom (QString nam_a);
-    
-    int lattice (int, int, int);
-    int lattice2 (double, double, unsigned int);
-    
-    double read_fraction (std::string line);
-    
-    vecds::miller parse_miller (std::string line);
-    bool parse_core (QString line);
-    
-    
-    
-    
-    void compute_rotation_tensor ();
-    
-    void do_atoms_rotation (glm::dmat3 r_tens, glm::dvec3 vec);
-    void do_invis_rotation (glm::dmat3 r_tens, glm::dvec3 vec);
-    void do_signes_rotation (glm::dmat3 r_tens, glm::dvec3 vec);
-    void do_axis_rotation (glm::dmat3 r_tens);
-    
-    void calc_disloc (int nr_atom, int d_num);
-    void calc_disl0 ();
-    
-                                /* Does something with atom numbers. */
-    int atomize (const glm::dvec3 point, 
-		 const unsigned int atom_number);
-    
-    void SL_singleDisl (glm::dvec3 r);
-    void addDisplacements ();
-    void newdisl (unsigned int n_a, bool sw_iter);
-    
-    void saveAtoms (QString sname);
-    
-    glm::dvec3 mixed_u(int i, glm::dvec3 rotdist, double be, double bz);
-    
-    glm::dmat3 mixed_beta(int i, glm::dvec3 rotdist, double be, double bz);
+  /**
+   * This function does what?
+   */
+//  bool internal_miller (QString line2, int which, Int4 &mil);
+  bool internal_miller (QString line2, int which, QList<int> &miller_indices);
+//			QVector<int>&miller_indices); 
   
+  Mat9d rotation_tensor();
   
+  void do_atoms_rotation(Mat9d r_tens, QVector3D vec);
+  void do_invis_rotation(Mat9d r_tens, QVector3D vec);
+  void do_signes_rotation(Mat9d r_tens, QVector3D vec);
+  void do_axis_rotation(Mat9d r_tens);
+  
+  void calc_disloc(int nr_atom, int d_num);
+  void calc_disl0();
+  int atomize(QVector3D point, int wh_at);
+  void SL_singleDisl(QVector3D r);
+  QVector3D mixed_u(int i);
+  void newdisl(int n_a);
+  //    void mixed_u1(int disl_num, int i);
+  //    void mixed_u2(int disl_num, int i);
+  
+  bool eqMiller(int m1[6], int m2[6]);
+  void extPrint (QString file_name, QVector3D *vec);
+  void saveAtoms (QString sname);
+  void saveMarkedAtoms(QString sname);
+  int cubBox(QVector3D, QVector3D);
+  int hexBox(double, double, QVector3D);
 
-
-  private:
-
-                                 /** 
-				  * This is the path to internal files
-				  * needed by vecds to run correctly.
-				  */
-    QString path; 
-    
-    
-
-
-  };                             // class Internal
-
-}                                // namespace vecds
-
+};
 #endif 
 

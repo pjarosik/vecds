@@ -41,8 +41,8 @@
 #define FUNCTION_H
 
 
-namespace vecds
-{
+//namespace vecds
+//{
 
                                  /**
 				  * Parameters that define...?
@@ -129,9 +129,13 @@ namespace vecds
                                  // core move up
       const double r02 = radius_factor*be*be; 
 
-      const double ux = u0x - be / (2.*vecds::constant::pi) * (atan2 (yy,xx) + xx*yy/(2.*(1.-nu)));
-      const double uy = u0y + be / (8.*vecds::constant::pi  * (1.-nu)) * ((1.-nu-nu)*log (radius_square/r02) + (xx+yy)*(xx-yy));
-      const double uz = u0z - bz / (2.*vecds::constant::pi) * atan2 (yy, xx);
+      const double ux = u0x - be / (2.*constant::pi) * (atan2 (yy,xx) + xx*yy/(2.*(1.-nu)));
+      const double uy = u0y + be / (8.*constant::pi  * (1.-nu)) * ((1.-nu-nu)*log (radius_square/r02) + (xx+yy)*(xx-yy));
+      const double uz = u0z - bz / (2.*constant::pi) * atan2 (yy, xx);
+
+//      const double ux = u0x - be / (2.*vecds::constant::pi) * (atan2 (yy,xx) + xx*yy/(2.*(1.-nu)));
+//      const double uy = u0y + be / (8.*vecds::constant::pi  * (1.-nu)) * ((1.-nu-nu)*log (radius_square/r02) + (xx+yy)*(xx-yy));
+//      const double uz = u0z - bz / (2.*vecds::constant::pi) * atan2 (yy, xx);
       
       gsl_vector_set (result, 0, ux);
       gsl_vector_set (result, 1, uy);
@@ -173,13 +177,13 @@ namespace vecds
 	} 
       else 
 	{
-	  const double a   = be / (4. * vecds::constant::pi * (1.-nu) * r2*r2);
+	  const double a   = be / (4. * constant::pi * (1.-nu) * r2*r2);
 	  const double bxx = 1. + a * yy * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2);
 	  const double byx = a * xx * ((1.-2.*nu)*x2 + (3.-2.*nu)*y2);     
-	  const double bzx = bz / (2.*vecds::constant::pi) * yy/r2;          
+	  const double bzx = bz / (2.* constant::pi) * yy/r2;          
 	  const double bxy = -a * xx * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2);    
 	  const double byy = 1. - a * yy * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2);
-	  const double bzy = bz / (2.*vecds::constant::pi) * xx/r2;                         
+	  const double bzy = bz / (2.* constant::pi) * xx/r2;                         
 	  
 	  gsl_matrix_set (jac, 0, 0, bxx);
 	  gsl_matrix_set (jac, 0, 1, bxy);
@@ -222,6 +226,6 @@ namespace vecds
     
   }                              // namespace function
  
-}                                // namespace vecds
+//}                                // namespace vecds
 
 #endif

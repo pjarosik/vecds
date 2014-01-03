@@ -53,7 +53,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   string (REGEX MATCHALL "[0-9]+" CXX_COMPILER_VERSION_COMPONENTS ${CXX_COMPILER_VERSION})
   list (GET CXX_COMPILER_VERSION_COMPONENTS 0 CXX_COMPILER_VERSION_MAJOR)
   list (GET CXX_COMPILER_VERSION_COMPONENTS 1 CXX_COMPILER_VERSION_MINOR)
-  list (GET CXX_COMPILER_VERSION_COMPONENTS 2 CXX_COMPILER_VERSION_TWEAK)
+##  list (GET CXX_COMPILER_VERSION_COMPONENTS 2 CXX_COMPILER_VERSION_TWEAK)
   set (CXX_COMPILER_VERSION ${CXX_COMPILER_VERSION_MAJOR}.${CXX_COMPILER_VERSION_MINOR}.${CXX_COMPILER_VERSION_TWEAK})
   message (STATUS "Found GNU compiler: ${CMAKE_CXX_COMPILER} (found version \"${CXX_COMPILER_VERSION}\")")
 endif ()
@@ -184,33 +184,6 @@ find_path (QWTPLOT3D_INCLUDES
 find_package_handle_standard_args ("Qwt3d includes"  REQUIRED_VARS QWTPLOT3D_INCLUDES)
 
 ##############################################
-## Note: It is a complete mystery as to why we need to include the Qwt
-## Polar libraries. It seems something "Extra" gets triggered in the
-## Qwt on some distributions of Linux since, without it installed, we
-## get error messages of the type:
-##
-## fatal error: qwt_scale_engine.h: no such file or directory
-##
-## So there...
-find_library (QWTPOLAR_LIBRARIES
-  NAMES qwtpolar 
-  PATHS 
-  /usr/local/lib 
-  /usr/lib
-) 
-
-find_package_handle_standard_args ("QwtPolar libraries" REQUIRED_VARS QWTPOLAR_LIBRARIES)
-
-find_path (QWTPOLAR_INCLUDES
-  ## Look for qwt polar header.
-  NAMES qwt_polar.h
-  PATHS
-  /usr/local/include/qwtpolar
-  /usr/include/qwtpolar
-)
-
-find_package_handle_standard_args ("QwtPolar includes"  REQUIRED_VARS QWTPOLAR_INCLUDES)
-##############################################
 
 #########################################
 message (STATUS "Configuring build type")
@@ -268,20 +241,14 @@ include_directories (
   ${GSBLASL_INCLUDES}
   ${QT_INCLUDES}
   ${QWT_INCLUDES}
-  ${QWTPLOT3D_INCLUDES}
   )
 
 set (vecds_sources
   ${VECDS_PATH}/source/base/internal 
-  ${VECDS_PATH}/source/numerics/function
   ${VECDS_PATH}/source/numerics/integer_vector
   ##
-  ${VECDS_PATH}/source/dialogs/monolog_base
-  ${VECDS_PATH}/source/dialogs/dialog_base
-  ${VECDS_PATH}/source/dialogs/doc_browser
+  ${VECDS_PATH}/source/dialogs/dialogs
   ${VECDS_PATH}/source/dialogs/help_browser
-  ${VECDS_PATH}/source/dialogs/question
-  ${VECDS_PATH}/source/dialogs/question_form
   ##
   ${VECDS_PATH}/source/gui/arc_ball
   ${VECDS_PATH}/source/gui/main_viewer
@@ -297,12 +264,8 @@ set (vecds_headers
   ##  ${VECDS_INCLUDES}/vecds/base/internal.h
   ##  ${VECDS_INCLUDES}/vecds/numerics/integer_vector.h
   ##
-  ${VECDS_INCLUDES}/vecds/dialogs/monolog_base.h
-  ${VECDS_INCLUDES}/vecds/dialogs/dialog_base.h
-  ${VECDS_INCLUDES}/vecds/dialogs/doc_browser.h
+  ${VECDS_INCLUDES}/vecds/dialogs/dialogs.h
   ${VECDS_INCLUDES}/vecds/dialogs/help_browser.h
-  ${VECDS_INCLUDES}/vecds/dialogs/question.h
-  ${VECDS_INCLUDES}/vecds/dialogs/question_form.h
   ##
   ${VECDS_INCLUDES}/vecds/gui/arc_ball.h
   ${VECDS_INCLUDES}/vecds/gui/main_viewer.h
@@ -323,7 +286,6 @@ target_link_libraries (${VECDS_NAME}
   ${OPENGL_LIBRARIES}
   ${QT_LIBRARIES} 
   ${QWT_LIBRARIES}
-  ${QWTPLOT3D_LIBRARIES}
   )
 
 ## Dcoumentation via doxygen.

@@ -1,23 +1,20 @@
 
 // -------------------------------------------------------------------
 //
-// Author: Jan Cholewinski and Pawel Dluzewski (2010)
-// Affiliation: Polish Academy of Sciences
-//
 // Copyright (C) 2010 The vecds authors
 //
 // This  program is  free  software: you  can  redistribute it  and/or
-// modify it under the terms of the GNU General Public License as
+// modify  it under the  terms of  the GNU  General Public  License as
 // published by the Free Software  Foundation, either version 3 of the
 // License, or (at your option) any later version.
 //  
 // This program is distributed in the hope that it will be useful, but
-// WITHOUT ANY WARRANTY; without even the implied warranty of
+// WITHOUT  ANY  WARRANTY;  without   even  the  implied  warranty  of
 // MERCHANTABILITY or  FITNESS FOR A PARTICULAR PURPOSE.   See the GNU
 // General Public License for more details.
 //
 // You should have  received a copy of the  GNU General Public License
-// along with this program.  If not, see
+// along      with      this      program.       If      not,      see
 // <http://www.gnu.org/licenses/>.
 //					 
 // -------------------------------------------------------------------
@@ -26,236 +23,238 @@
 #ifndef MAIN_VIEWER_H
 #define MAIN_VIEWER_H
 
-
-                                 // Qt includes
 #include <QGLWidget>
 #include <QColor>
 #include <QQuaternion>
 #include <QVector2D>
 #include <QVector3D>
-
+#include <QVector>
+               // vecds library includes
 #include <vecds/gui/arc_ball.h>
-
-                                 // vecds library includes
+                       
 #include <vecds/numerics/integer_vector.h>
+#include <vecds/numerics/algebra.h>
+#include <vecds/numerics/mat9d.h>
 #include <vecds/base/additional.h>
 #include <vecds/base/constant.h>
 
-/*                                 // vecds gui includes
-#include <./arc_ball.h>
-                         // vecds library includes
-#include <./integer_vector.h>
-#include <./additional.h>
-#include <./constant.h>
-*/
+                    /**
+		     * This is the class <code>MainViewer</code>. Since
+		     * we use QGL widgets here this must be a derived
+		     * class.
+		     */
 
-
-
-namespace vecds
+class MainViewer : public QGLWidget
 {
-
-                                 /* This is the class
-				    <code>MainViewer</code>. Since we
-				    use QGL widgets here this must be
-				    a derived class. */
-
-  class MainViewer 
-    : 
-  public QGLWidget
-  {
     Q_OBJECT
-      
-      public:
-                                 /* constructor */
 
-    MainViewer (QWidget *parent = 0);
+public:
+                    /**
+		     * Constructor
+		     */
 
-                                 /* destructor */
+    MainViewer(QWidget *parent = 0);
+
+                    /**
+		     * Destructor
+		     */
     ~MainViewer();
-  
+
     QSize minimumSizeHint() const;
     QSize sizeHint() const;
-    
-    public slots:
-    
-    void SL_dophiRotation ();
-    void SL_dothetaRotation ();
-    void SL_dopsiRotation ();
-    void SL_doXMovement ();
-    void SL_doYMovement ();
-    void SL_doZMovement ();
-    
-    void SL_needDraw ();
-    void SL_repaint ();
-    void SL_keypress (int key);
-    void SL_loadImage ();
-    
-  signals:
 
-                                 /* These are all signals to Qt that
-				    something has changed */    
-    void SIG_rangle_phi_changed (const int);
-    void SIG_rangle_theta_changed (const int);
-    void SIG_rangle_psi_changed (const int);
+//private slots:
+public slots:
+    void SL_rotate();
+    void SL_dophiRotation();
+    void SL_dothetaRotation();
+    void SL_dopsiRotation();
+    void SL_doXMovement();
+    void SL_doYMovement();
+    void SL_doZMovement();
 
-    void SIG_xMovementChanged (int);
-    void SIG_yMovementChanged (int);
-    void SIG_zMovementChanged (int);
+    void SL_needDraw();
+    void SL_repaint();
+    void SL_keypress(int key);
+    void SL_loadImage();
+//    void SL_spectrograms();
 
-    void SIG_actPoint (QVector3D res);
-    void SIG_actPosition (QVector3D res);
-    
-  protected:
- 
-                                 /* These functions are reimplemented
-				    from Qt's virtual functin
-				    block. In general, they asre
-				    called in this order: */
-    void initializeGL ();
-    void resizeGL (unsigned int width, 
-		   unsigned int height);
-    void paintGL ();
+signals:
+    void SIG_phiRotationChanged(int angle);
+    void SIG_thetaRotationChanged(int angle);
+    void SIG_psiRotationChanged(int angle);
+    void SIG_xMovementChanged(int range);
+    void SIG_yMovementChanged(int range);
+    void SIG_zMovementChanged(int range);
+    void SIG_actPoint(QVector3D res);
+    void SIG_actPosition(QVector3D res);
 
-                                 /* These functions are reimplemented
-				    from Qt's virtual function
-				    library. They deal with mouse
-				    clicks and other movements. */
-    void mousePressEvent (QMouseEvent *event);
-    void mouseMoveEvent (QMouseEvent *event);
+protected:
 
-                                 /* vecds functions. */
-    void draw_atoms ();
-    void draw_bonds ();
-    void draw_axis ();
- 
+    void initializeGL();
+    void paintGL();
+    void resizeGL(int width, int height);
+    void draw_atoms();
+    void draw_bonds();
+    void draw_axis();
 
-    
-  private:
-    
-                                 // TODO: document
-    void set_defaults ();
+    void mousePressEvent(QMouseEvent *event);
+    void mouseMoveEvent(QMouseEvent *event);
+    void mouseReleaseEvent(QMouseEvent *event);
 
-                                 // TODO: document
-    void prepare_scene ();
+private:
+    void init_spheres(int numbOfSubdiv);
+    void init_faces();
+    void normalizeAngle(double *angle);
+    void wheelEvent(QWheelEvent *event);
+    void set_defaults();
+    void calculate_size();
+    void prepare_scene();
+    void prepare_invbox(QVector3D, QVector3D);
+    void prepare_axis();
+    void arrow(QVector3D orig, QVector3D vect, double fact, double sm);
+    void draw_quad(float size);
+//    void draw_quad(double v[8][3], double n[8][3]);
+//    void draw_nodes();
+    void draw_nod_disp(double f);
+    void draw_arrows(double f);
+//    void draw_nodes();
+    void drawBackground();
+//    void colorQuad(QColor, QColor, QColor, QColor, QVector3D, QVector3D, QVector3D, QVector3D);
+    void drawTexture(GLuint tex, QVector3D p1, QVector3D p2, QVector3D p3,
+                                                         QVector3D p4);
+    QVector3D getOGLPos(int, int);
+    QVector3D getMousePos(int, int);
+    void draw_quad (double v[8][3], double norm_v[8][3]);
+    void drawInvisBox();
 
-                                 // TODO: document
-    void prepare_invbox (const glm::dvec3, 
-			 const glm::dvec3);
 
-                                 // TODO: document
-    void prepare_axis ();
-  
-    void init_spheres (int numbOfSubdiv);
-    void normalizeAngle (double *angle);
-    void wheelEvent (QWheelEvent *event);
-    
+    void draw_faces1(double f);
 
-    
-    void arrow (glm::dvec3 orig, glm::dvec3 vect, double fact, double sm);
-    void drawBox0 (float size);
-    void draw_arrows (double f);
-    void drawBackground ();
-    void drawTexture (GLuint tex, glm::dvec3 p1, glm::dvec3 p2, glm::dvec3 p3, glm::dvec3 p4);
-    
-    QVector3D getOGLPos (int, int);
-    QVector3D getMousePos (int, int);
-    
-    void drawBox (double v[8][3]/*, double norm_v[8][3]*/);
-    void drawInvisBox ();
-    void set_v (double v[8][3], double norm_v[8][3], glm::dvec3 p1, glm::dvec3 p2);
-    void draw_numbers ();
-    
-    void doGLdisloc ();
-    void paintEvent ();
-    void getAxisAngle (const QQuaternion q, glm::dvec3 &v, double &ang);
-    void euler2matr ();
-    
-    QVector2D normalizeMouse (QPoint qp);
+    /**
+     * No idea what this does...?
+     */ 
+    void draw_line (QVector<int> line, double f);
 
-    void quat2matr (const QQuaternion q);
-    glm::dvec3 quat2euler (const QQuaternion q);
+    void draw_numbers();
+//    void draw_cube_fem();
 
-    QQuaternion quatfromEuler ();
+    void doGLdisloc();
 
-                                 /* number of atoms in this
-				    context. */
-    unsigned int n_atoms;
-    
-                                 /* number of bonds in this
-				    context. */ 
+    /**
+     * No idea what this does?
+     */
+    void draw(QPainter* painter, Int4 pq, int n_res,
+	      double min_val, double step, int n_steps);
+    void draw(QPainter* painter, QVector<int> pq, int n_res,
+	      double min_val, double step, int n_steps);
+
+    void paintEvent();
+
+    /**
+     * Get the angle of this axis.
+     */
+    void get_axis_angle (const QQuaternion q, QVector3D &v, double &ang);
+
+    void euler2matr();
+//    void quat2Matr9(QQuaternion q);
+//    QVector2D normalizeMouse(QPoint qp);
+//    void quat2matr(QQuaternion q);
+    QVector3D quat2euler(QQuaternion q);
+    QQuaternion quatfromEuler();
+
+  /**
+   * Number of bonds in this context.
+   */ 
     unsigned int n_bonds;
   
+  /**
+   * Number of atoms in this context.
+   */
+    unsigned int n_atoms;
 
-    vecds::IntVector<2>* bonds;    
-//    int* bonds1;
-//    int* bonds2;
-
-    glm::dvec3* coord;
-    glm::dvec3 min_;    
-    glm::dvec3 max_;
-    glm::dvec3 a_min_;
-    glm::dvec3 a_max__;
-
+    QVector3D* coord;
+    //    QVector3D* normals;
     int* a_kind;
+    
+    QVector3D min_, max_, a_min_, a_max_, e_min_, e_max_;
     
     GLuint textures[100];
     GLuint background;
     
-  public:
-    
-    double screenW;
-    double screenH;
+ public:
+    double screenW, screenH;
     QPoint lastPos;
+    //    double m_x, m_y;
     
-  private:
-    
+ private:
     GLdouble model_view[16];
     GLdouble projection[16];
     GLint viewport[4];
-    
-                                 // create an arc-ball for viewing
-    vecds::ArcBall *arcball;
-
-                                 /* rotation angles (rangle) related
-				    to: banking */
-    double rangle_phi;
-
-                                 /* to: heading */
-    double rangle_theta;
-
-                                 /* to: altitude */
-    double rangle_psi; 
-
+    ArcBall *arcb;
     QVector2D mousePt;
     QVector3D mousePos;
+    //    Mat9d thisRot, lastRot;
     double* transformM;
-    double d_x, d_y, d_0;
-
-    glm::dvec3 axis;
+    double phiRot, thetaRot, psiRot, d_x, d_y, d_0;
+    //    QQuaternion cam_quat, mouse_quat, temp_quat;
+    //    double change_x, change_y, change_z;
+    double angle;
+    QVector3D axis;
     double xl, xr, yd, yu;
     GLuint Pixmap2texture(QPixmap *pix);
     GLuint image2texture(QImage *bmp);
     
     GLuint sphereList[125], cubeList;
     
+    //    QVector3D invbox[8];
     double distance, dist0, distance0;
     
     int mmx, mmy;
-    glm::dvec3 cent_;
+    QVector3D cent_;
     float fov;
-
+    
+    Nodes* nodes;
+    Elements* elems;
+    //    Face* faces;
+    Face f0;
+    
+    /**
+     * Number of elements in this mesh context.
+     */
+    unsigned int n_elements;
+    
+    /**
+     * Number of faces in this element context.
+     */
+    unsigned int n_faces;
+    
+    /**
+     * Number of nodes in this element context.
+     */
+    unsigned int n_nodes;
+    
+    //    int n_elements, numbFaces, n_nodes, numbRes;
+    
+    double bg_red;
+    double bg_green;
+    double bg_blue;
     GLfloat a_color[4];
     float VIEW_rad_fact;
     int VIEW_whichRadius;
-    
     // = = = = = = = = = = = = = = = = = = = = = = = = = = = = = 
+    // QString string;
     double small;
     double smaller;
+    
+    /**
+     * RGB spectrum container for the main viewer.
+     */
+    QColor *colour_spectrum;
+    
     double rad_scene;
-
-  };                             // class MainViewer
-
-}                                // namespace vecds
+    // QVector3D cube_normals[12];
+};
 #endif
 
                  

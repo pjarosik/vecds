@@ -21,329 +21,273 @@
 //					 
 // -------------------------------------------------------------------
 
-                                 // standard C/C++
-#include <cassert>
-
-                                 // vecds gui includes
-//#include <./main_window.h>
+#include <vecds/gui/main_viewer.h>
+#include <vecds/base/internal.h>
 #include <vecds/gui/main_window.h>
+#include <vecds/dialogs/help_browser.h>
+#include <vecds/dialogs/dialogs.h>
+#include <vecds/base/constant.h>
 
 
-
-vecds::Internal *ActualData;
-
+Internal *ActualData;
 extern bool qf_ok;
-static QString infsepar = " .......... ";
+
+QString infotxt0, infotxtat, infotxtimg;
+QString infsepar = " .......... ";
+
 
 MainWindow::MainWindow ()
 {
   Widg_widget0 = new QWidget;
+  setCentralWidget(Widg_widget0);
+  setWindowTitle("Visual Editor of Crystal Defects");
 
-  setCentralWidget (Widg_widget0);
+  ActualData = new Internal;
 
-                                 // Set this window title to the
-                                 // VECDS_PACKAGE_NAME
-  setWindowTitle (VECDS_PACKAGE_NAME);
-  
-  ActualData = new vecds::Internal;
-  
   ActualData->act_mill = "[2-1-10](0001)";
   ActualData->act_disl = "1/3[2-1-10](0001)";
   ActualData->act_core = "none";
-  
+
   aname   = "none";
   iname   = "none";
-
-                                 // Create the main viewer.
-  vecds_main_viewer = new vecds::MainViewer (this);
-
-                                 // Size policies?
-  vecds_main_viewer->setSizePolicy (QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-  infoLabel = new QLabel (this);
-  infoLabel->setFrameStyle (QFrame::StyledPanel | 
-			    QFrame::Sunken);
-
-  infoLabel->setTextFormat (Qt::RichText);
-
+  fname   = "none";
+  resname = "none";
+  
+  //    ActualData->kindOfDisl = 0;
+  
+  mview1 = new MainViewer(this);
+  mview1->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  // qWarning("mview -- 1");
+  infoLabel = new QLabel(this);
+  infoLabel->setFrameStyle(QFrame::StyledPanel | QFrame::Sunken);
+  infoLabel->setTextFormat(Qt::RichText);
+  // qWarning("mview -- 2");
   createActions();
-  createMenus ();
-  createDockWindows ();
+  // qWarning("mview -- 3");
+  createMenus();
+  //    createToolBars();
+  createDockWindows();
+  // qWarning("mview -- 4");
   createStatusBar();
-
+  //---------------------------
   LAY_g_MainLayout = new QGridLayout;
-
-  LAY_g_MainLayout->setMargin (3);
-  LAY_g_MainLayout->addWidget (infoLabel, 0, 0);
-  LAY_g_MainLayout->addWidget (vecds_main_viewer, 1, 0);
-
-  Widg_widget0->setLayout (LAY_g_MainLayout);
+  LAY_g_MainLayout->setMargin(3);
+  LAY_g_MainLayout->addWidget(infoLabel, 0, 0);
+  LAY_g_MainLayout->addWidget(mview1, 1, 0);
+  Widg_widget0->setLayout(LAY_g_MainLayout);
   Widg_modesTab->setCurrentIndex(0);
-
-  InfoDisplay ();
+  // qWarning("mview -- 5");
+  InfoDisplay();
 }
 
-                                // Destructor.
-MainWindow::~MainWindow ()
-{}
-
-                                // This function creates the actions
-                                // wanted on this window.
-void MainWindow::createActions ()
+void MainWindow::createActions()
 {
-
-  { 
-                                // Open data file
-    action_open_atoms = new QAction (tr ("Open Atoms"), this);
-    action_open_atoms->setStatusTip (tr ("Open an existing file .xyz or .alc"));
-    connect (action_open_atoms, SIGNAL (triggered ()), this, SLOT (SL_open_atoms ()));
-    
-                                 // Open image
-    action_open_image = new QAction (tr ("Open HRTEM image"), this);
-    action_open_image->setStatusTip(tr ("Open an existing img"));
-    connect (action_open_image, SIGNAL (triggered ()), this, SLOT (SL_open_image ()));
-    
-                                 // Save data files
-    action_save_as = new QAction (tr ("Save atoms"), this);
-    action_save_as->setStatusTip (tr ("Save existing coordinates"));
-    connect (action_save_as, SIGNAL (triggered ()), this, SLOT (SL_save_as_atoms ()));
-    
-                                 // Close image
-    action_close_image = new QAction (tr ("Close image"), this);
-    action_close_image->setStatusTip (tr ("Close an existing img"));
-    connect (action_close_image, SIGNAL (triggered ()), this, SLOT (SL_close_image ()));
-  }
-
-  {
-                                 // Define a crystal structure
-    action_define_crystal_structure = new QAction (tr ("Define crystal structure"), this);
-    action_define_crystal_structure->setCheckable (true);
-    action_define_crystal_structure->setStatusTip (tr ("defines ..."));
-    connect (action_define_crystal_structure, SIGNAL (triggered ()), this, SLOT (SL_defineStructure ()));
-
-                                 // Choose a predefined a crystal
-                                 // structure
-    action_choose_crystal_structure = new QAction (tr("Choose crystal structure"), this);
-    action_choose_crystal_structure->setCheckable (true);
-    action_choose_crystal_structure->setStatusTip (tr ("struct ..."));
-    connect (action_choose_crystal_structure, SIGNAL(triggered ()), this, SLOT (SL_chooseStructure ()));
-  }
-
-  {
-                                 // Generate crystal structure by
-                                 // defining its size by cells in the
-                                 // xyz-directions.
-    action_generate_structure_by_cell = new QAction (tr ("Generate (by cell)"), this);
-    action_generate_structure_by_cell->setStatusTip (tr ("generate a new file"));
-    connect (action_generate_structure_by_cell, SIGNAL (triggered ()), this, SLOT (SL_generate_atoms_by_cell ()));
-    
-                                 // Generate crystal structure by
-                                 // defining its size by lengths in
-                                 // the xyz-directions.
-    action_generate_structure_by_length = new QAction (tr ("Generate (by length)"), this);
-    action_generate_structure_by_length->setStatusTip (tr ("generate a new file"));
-    connect (action_generate_structure_by_length, SIGNAL (triggered ()), this, SLOT (SL_generate_atoms_by_length ()));
-  }
-
-  {
-                                 // Generate a cuboidal box
-    action_make_cuboid_box = new QAction (tr ("Cuboid box"), this);
-    action_make_cuboid_box->setStatusTip (tr ("Cuboid bounding box"));
-    connect (action_make_cuboid_box, SIGNAL (triggered ()), this, SLOT (SL_make_cubic_bbox ()));
-    
-                                 // Generate a hexagonal box
-    action_make_hexagonal_box = new QAction (tr ("Hexagonal box"), this);
-    action_make_hexagonal_box->setStatusTip (tr ("Hexagonal bounding box"));
-    connect (action_make_hexagonal_box, SIGNAL (triggered ()), this, SLOT (SL_make_hexagonal_bbox ()));
-  }
-
-  {
-                                 // Add a documentation box.
-    action_show_documentation = new QAction (tr ("Documentation"), this);
-    action_show_documentation->setStatusTip (tr ("Show vecds' documentation box"));
-    connect (action_show_documentation, SIGNAL (triggered ()), this, SLOT (SL_documentation ()));
+  defnewAct = new QAction(tr("Define new structure"), this);
+  defnewAct->setCheckable(true);
+  //    defnewAct->setShortcut(tr("Ctrl+D"));
+  defnewAct->setStatusTip(tr("defines ..."));
+  connect(defnewAct, SIGNAL(triggered()), this, SLOT(SL_defineStructure()));
   
-                                 // Add an about box.
-    action_show_about = new QAction (tr ("About"), this);
-    action_show_about->setStatusTip (tr ("Show vecds' about box"));
-    connect (action_show_about, SIGNAL (triggered ()), this, SLOT (SL_about ()));
-  }
-
-
-  MillerAct = new QAction (tr ("Miller"), this);
-  MillerAct->setStatusTip (tr ("Miller indices"));
-  connect(MillerAct, SIGNAL (triggered ()), this, SLOT (SL_millerAct ()));
+  defnewAct = new QAction(tr("Define new structure"), this);
+  defnewAct->setCheckable(true);
+  //    defnewAct->setShortcut(tr("Ctrl+D"));
+  defnewAct->setStatusTip(tr("defines ..."));
+  connect(defnewAct, SIGNAL(triggered()), this, SLOT(SL_defineStructure()));
   
-  settAct = new QAction (tr ("Visibility"), this);
-  settAct->setStatusTip (tr ("Visibility"));
-  connect(settAct, SIGNAL (triggered ()), this, SLOT (SL_sett ()));
+  //  defCoresAct = new QAction(tr("Define dislocation cores"), this);
+  //    openAct->setShortcut(tr("Ctrl+O"));
+  //  defCoresAct->setStatusTip(tr("Define dislocation cores"));
+  //  connect(defCoresAct, SIGNAL(triggered()), this, SLOT(SL_defCores()));
   
-  multAct = new QAction (tr ("Mult. factor"), this);
-  multAct->setStatusTip (tr ("Mult. factor"));
-  connect(multAct, SIGNAL (triggered ()), this, SLOT (SL_mult ()));
-
-                                 // Make signals and slots to enable
-                                 // actions on the main viewer.
-  connect (this, SIGNAL (SIG_prepareImg ()),  vecds_main_viewer, SLOT (SL_loadImage ()));
-  connect (this, SIGNAL (SIG_needDraw ()),    vecds_main_viewer, SLOT (SL_needDraw ()));
-  connect (this, SIGNAL (SIG_repaint ()),     vecds_main_viewer, SLOT (SL_repaint ()));
-  connect (this, SIGNAL (SIG_keypress (int)), vecds_main_viewer, SLOT (SL_keypress (int)));
+  //  refreshAct = new QAction(tr("Field of view"), this);
+  //  refreshAct->setStatusTip(tr("Camera angle"));
+  //  connect(refreshAct, SIGNAL(triggered()), this, SLOT(SL_refresh()));
   
-                                 // Actually connect the main viewer
-  connect (vecds_main_viewer, SIGNAL (SIG_actPoint (QVector3D)),    this, SLOT (SL_actPoint (QVector3D)));
-  connect (vecds_main_viewer, SIGNAL (SIG_actPosition (QVector3D)), this, SLOT (SL_actPosition (QVector3D)));
-}
+  chooseAct = new QAction(tr("Choose structure"), this);
+  chooseAct->setCheckable(true);
+  //    chooseAct->setShortcut(tr("Ctrl+S"));
+  chooseAct->setStatusTip(tr("struct ..."));
+  connect(chooseAct, SIGNAL(triggered()), this, SLOT(SL_chooseStructure()));
+  
+  // Open a file containing definitions of atomic structure in .xyz ot
+  // .alc format
+  openAct = new QAction (tr ("Open atoms"), this);
+  openAct->setStatusTip (tr ("Open an existing file as .xyz or .alc"));
+  connect(openAct, SIGNAL (triggered ()), this, SLOT (SL_openAtoms ()));
+  
+  genAct = new QAction(tr("Generate (number of cells)"), this);
+  //  genAct = QWhatsThis::createAction(this);
+  genAct->setText(tr("Generate (number of cells)"));
+  //    genAct->setShortcut(tr("Ctrl+N"));
+  genAct->setStatusTip(tr("generate a new file"));
+  //  genAct->setWhatsThis(tr("use this button\n aaaaaaaaaaaaaaaa\n to generate a <h4>new</h4> file\n by giving number of repetitions"));
+  //  QWhatsThis::hideText();
+  connect(genAct, SIGNAL(triggered()), this, SLOT(SL_genAtoms()));
 
-                                 // Function that opens atom files
-void MainWindow::SL_open_atoms ()
-{
-  qWarning ("class MainWindow::SL_open_atoms");
+  QString str = QString("Generate (size of the structure)");
+  gen1Act = new QAction(str, this);
+  gen1Act->setStatusTip(tr("generate a new file"));
+  connect(gen1Act, SIGNAL(triggered()), this, SLOT(SL_gen1Atoms()));
 
-                                 // start by opening up the default
-                                 // vecds examples directory
-  QString filename 
-    = QFileDialog::getOpenFileName (this, "Select atoms", VECDS_DATABASE, "(*.xyz *.alc)");
+  openimgAct = new QAction(tr("Open HRTEM image"), this);
+  //    openimgAct->setShortcut(tr("Ctrl+I"));
+  openimgAct->setStatusTip(tr("Open an existing img"));
+  connect(openimgAct, SIGNAL(triggered()), this, SLOT(SL_openImg()));
 
-  if ((filename==ActualData->atoms_loaded) || (filename.isEmpty ())) 
-    {
-     qWarning ("Unknown file name or file name is empty");
-      return;
-    }
+  closeimgAct = new QAction(tr("Close image"), this);
+  //    closeimgAct->setShortcut(tr("Ctrl+X"));
+  closeimgAct->setStatusTip(tr("Close an existing img"));
+  connect(closeimgAct, SIGNAL(triggered()), this, SLOT(SL_closeImg()));
 
-  ActualData->atoms_loaded = filename;
+  // Open a fem file
+  openFemAct = new QAction (tr ("Open FE mesh"), this);
+  openFemAct->setStatusTip (tr ("Open an existing file .fem"));
+  connect(openFemAct, SIGNAL(triggered()), this, SLOT(SL_openFems()));
 
-  if ((!(filename.contains (".xyz"))) && (!(filename.contains (".alc"))))
-     qWarning ("Unknown file format");
+  openResAct = new QAction(tr("Open results"), this);
+  //    openAct->setShortcut(tr("Ctrl+O"));
+  openResAct->setStatusTip(tr("Open an existing file .o"));
+  connect(openResAct, SIGNAL(triggered()), this, SLOT(SL_openRes()));
 
-  else 
-    {
-      ActualData->atoms_loaded = filename;
-      ActualData->read_alc_xyz (filename);
-      emit SIG_needDraw ();
-    }
+  saveAsAct = new QAction(tr("Save atoms"), this);
+  //    saveAsAct->setShortcut(tr("Ctrl+W"));
+  saveAsAct->setStatusTip(tr("Save existing coordinates"));
+  connect(saveAsAct, SIGNAL(triggered()), this, SLOT(SL_saveAtomsAs()));
 
-  InfoDisplay ();
-  vecds_main_viewer->updateGL ();
-}
+  saveMarkedAsAct = new QAction(tr("Save marked atoms"), this);
+//    saveAsAct->setShortcut(tr("Ctrl+W"));
+  saveMarkedAsAct->setStatusTip(tr("Save existing coordinates of .."));
+  connect(saveMarkedAsAct, SIGNAL(triggered()), this, SLOT(SL_saveMarkedAtomsAs()));
 
-                                 // Function that opens image files
-void MainWindow::SL_open_image ()
-{
-  qWarning ("class MainWindow::SL_open_image");
-
-  QString filename 
-    = QFileDialog::getOpenFileName (this, "Select image", VECDS_DATABASE, "(*.png *.xpm *.jpg *.tif)");
-
-  if (filename.isEmpty ()) 
-    {
-      qWarning ("Image name is empty");
-      return;
-    }
-
-  ActualData->img_loaded = filename;
-  ActualData->read_img (filename);
-  emit SIG_prepareImg ();
-
-  InfoDisplay ();
-  vecds_main_viewer->updateGL ();
-}
-
-                                 // Function that saves atom files
-void MainWindow::SL_save_as_atoms()
-{
-  bool ok;
-  QString filename  = QInputDialog::getText (this, "Save coordinates", "File name:", QLineEdit::Normal, "atoms.xyz", &ok);
-
-  if ((filename.isEmpty ()) || (!ok)) 
-    {
-      qWarning ("File name is empty, or unknown error");
-      return;
-    }
-
-                                 // Until we learn how to open windows
-                                 // correctly, just dump it in this
-                                 // place.... 
-  QString directory = VECDS_DATABASE;
-  ActualData->saveAtoms (directory.append ("/" + filename));
-  return;
-}
-
-                                 // Function that closes an image file
-void MainWindow::SL_close_image ()
-{
-
-                                 // reset cache
-  ActualData->img_loaded = "none";
-  InfoDisplay ();
+  cubBoxAct = new QAction(tr("Cuboid box"), this);
+  cubBoxAct->setStatusTip(tr("Cuboid bounding box"));
+  connect(cubBoxAct, SIGNAL(triggered()), this, SLOT(SL_cubBox()));
+  
+  hexBoxAct = new QAction(tr("Hexagonal box"), this);
+  hexBoxAct->setStatusTip(tr("Hexagonal bounding box"));
+  connect(hexBoxAct, SIGNAL(triggered()), this, SLOT(SL_hexBox()));
+  
+  MillerAct = new QAction(tr("Miller"), this);
+  //    MillerAct->setShortcut(tr("Ctrl+M"));
+  MillerAct->setStatusTip(tr("input Miller indices"));
+  connect(MillerAct, SIGNAL(triggered()), this, SLOT(SL_millerAct()));
+  
+  settAct = new QAction(tr("Visibility"), this);
+  settAct->setStatusTip(tr("visibility"));
+  connect(settAct, SIGNAL(triggered()), this, SLOT(SL_sett()));
+  
+  multAct = new QAction(tr("Mult. factor"), this);
+  multAct->setStatusTip(tr("mult. factor"));
+  connect(multAct, SIGNAL(triggered()), this, SLOT(SL_mult()));
+/*
+  performAct = new QAction (tr ("---------"), this);
+  performAct->setStatusTip (tr ("---------"));
+  connect(performAct, SIGNAL (triggered()), this, SLOT (SL_performActions()));
+*/
+  // About box for vecds
+  aboutAct = new QAction (tr ("About"), this);
+  aboutAct->setStatusTip (tr ("Show the vecds application's about box"));
+  connect (aboutAct, SIGNAL (triggered()), this, SLOT (SL_about()));
+  
+  // About box for Qt
+  aboutQtAct = new QAction (tr ("About Qt"), this);
+  aboutQtAct->setStatusTip (tr ("Show the Qt library's about box"));
+  connect (aboutQtAct, SIGNAL (triggered()), qApp, SLOT (aboutQt()));
+  
+  //------------------------------------------------------------------
+  connect(this, SIGNAL(SIG_prepareImg()), mview1, SLOT(SL_loadImage()));
+  
+  connect(this, SIGNAL(SIG_needDraw()), mview1, SLOT(SL_needDraw()));
+  
+  connect(this, SIGNAL(SIG_repaint()), mview1, SLOT(SL_repaint()));
+  
+  connect(this, SIGNAL(SIG_keypress(int)), mview1, SLOT(SL_keypress(int)));
+  
+  connect(mview1, SIGNAL(SIG_actPoint(QVector3D)), this, SLOT(SL_actPoint(QVector3D)));
+  
+  connect(mview1, SIGNAL(SIG_actPosition(QVector3D)), this, SLOT(SL_actPosition(QVector3D)));
 }
 
 
 void MainWindow::createMenus()
 {
-  menuBar ()->clear ();
+  menuBar()->clear();
+  // qWarning("mainw - createMenus -- 0");
+  fileMenu = menuBar()->addMenu(tr("File"));
+  
+  defstructMenu = fileMenu->addMenu("Structure definition");
+  defstructMenu->addAction(chooseAct);
+  defstructMenu->addSeparator();
+  defstructMenu->addAction(defnewAct);
+  fileMenu->addSeparator();
+  
+  fileMenu->addAction(openAct);
+  fileMenu->addSeparator();
+  fileMenu->addAction(openFemAct);
+  fileMenu->addSeparator();
+  fileMenu->addAction(openResAct);
+  fileMenu->addSeparator();
+  
+  genMenu = fileMenu->addMenu("Generation");
+  genMenu->addAction(genAct);
+  genMenu->addSeparator();
+  genMenu->addAction(gen1Act);
+  fileMenu->addSeparator();
+  fileMenu->addAction(openimgAct);
+  fileMenu->addSeparator();
+  fileMenu->addAction(closeimgAct);
+  fileMenu->addSeparator();
+  fileMenu->addAction(saveAsAct);
+  fileMenu->addSeparator();
+  fileMenu->addAction(saveMarkedAsAct);
+  fileMenu->addSeparator();
 
-                                 // This deals with "file" (data
-                                 // operations) on the menu bar.
-  menu_file     = menuBar ()->addMenu (tr ("File"));
-  menu_file->addAction (action_open_atoms);
-  menu_file->addAction (action_open_image);
-  menu_file->addAction (action_save_as);
-  menu_file->addAction (action_close_image);
-  //  menu_file->addSeparator ();
+  boxMenu = fileMenu->addMenu("Box");
+  boxMenu->addAction(cubBoxAct);
+  boxMenu->addSeparator();
+  boxMenu->addAction(hexBoxAct);
+  
+//  fileMenu->addSeparator();
+//  fileMenu->addAction(performAct);
 
-                                 // This deals with "edit" (data
-                                 // operations) on the menu bar.
-  menu_edit               = menuBar ()->addMenu (tr ("Edit"));
-  menu_crystal_structure  = menu_edit->addMenu ("Crystal structure");
-  menu_crystal_structure->addAction (action_define_crystal_structure);
-  menu_crystal_structure->addAction (action_choose_crystal_structure);
-
-  menu_generate_structure = menu_edit->addMenu ("Generate structure");
-  menu_generate_structure->addAction (action_generate_structure_by_cell);
-  menu_generate_structure->addAction (action_generate_structure_by_length);
-
-  menu_box = menu_edit->addMenu ("Box");
-  menu_box->addAction (action_make_cuboid_box);
-  menu_box->addAction (action_make_hexagonal_box);
-
-                                 // This deals with "view" and
-                                 // "settings" - these don't seem to
-                                 // do much...
-  menu_view     = menuBar ()->addMenu (tr ("View"));
-  menu_settings = menuBar ()->addMenu (tr ("Settings"));
-  menu_settings->addAction (settAct);
-  menu_settings->addAction (multAct);
-
-                                 // This part all deals with help that
-                                 // is available for the user;
-                                 // ie. documentation and About box.
-  menu_help = menuBar ()->addMenu (tr ("Help"));
-  menu_help->addAction (action_show_documentation);
-  menu_help->addAction (action_show_about);
-
+  viewMenu = menuBar()->addMenu(tr("View"));
+  
+  settMenu = menuBar()->addMenu(tr("Settings"));
+  settMenu->addAction(settAct);
+  settMenu->addSeparator();
+  settMenu->addAction(multAct);
+  
+  helpMenu = menuBar()->addMenu(tr("Help"));
+  helpMenu->addAction(aboutAct);
+  helpMenu->addSeparator();
+  helpMenu->addAction(aboutQtAct);
+  qWarning("mainw - createMenus O.K.");
 }
 
 void MainWindow::createStatusBar()
 {
+  //    statusBar()->showMessage("Ready");
   statusBar()->clearMessage();
 }
 
-void MainWindow::createDockWindows ()
+void MainWindow::createDockWindows()
 {
-  qWarning ("class MainWindow: creating dock windows");
-  DWidg_dock = new QDockWidget(tr ("MODES"), this);
-  DWidg_dock->setAllowedAreas(Qt::LeftDockWidgetArea | 
-			      Qt::RightDockWidgetArea);
+  qWarning("mainw - createDockWindows");
+  DWidg_dock = new QDockWidget(tr("Mode"), this);
+  DWidg_dock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
+  //  QWhatsThis::enterWhatsThisMode();
   Widg_modesTab = new QTabBar;
-  Widg_modesTab->addTab (QIcon (":VECDS_internal/icons/new.png"),   "View");
-  Widg_modesTab->addTab (QIcon (":VECDS_internal/icons/print.png"), "Rot");
-  Widg_modesTab->addTab (QIcon (":VECDS_internal/icons/undo.png"),  "Add");
-
+  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/new.png"), "0");
+  //  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/save.png"), "");
+  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/print.png"), "Rot");
+  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/undo.png"), "Add");
+  //  Widg_modesTab->addTab(QIcon(":VECDS_internal/icons/camera.png"), "Bonds");
+  //  Widg_modesTab->setTabWhatsThis(0, "Movement - continous");
   
   DWidg_dock->setWidget(Widg_modesTab);
   addDockWidget(Qt::RightDockWidgetArea, DWidg_dock);
-  menu_view->addAction(DWidg_dock->toggleViewAction());
+  viewMenu->addAction(DWidg_dock->toggleViewAction());
   
   DWidg_dock = new QDockWidget(tr("sliders"), this);
   DWidg_dock->setAllowedAreas(Qt::LeftDockWidgetArea | 
@@ -352,53 +296,56 @@ void MainWindow::createDockWindows ()
   Lay_main0 = new QStackedWidget(DWidg_dock);
   DWidg_dock->setWidget(Lay_main0);
   
-  QWidget *Widg_3slid      = new QWidget(DWidg_dock);
+  QWidget *Widg_3slid = new QWidget(DWidg_dock);
   QGridLayout *Lay_g_3slid = new QGridLayout;
   
   QVBoxLayout *Lay_v_ThetaSlid = new QVBoxLayout;
-  QLabel *Lab_ThetaSlid        = new QLabel(" Heading (theta)");
-  Lay_v_ThetaSlid->addWidget (Lab_ThetaSlid);
-  slider_rangle_theta          = createSlider(-180, 180, 1, 0.);
-  Lay_v_ThetaSlid->addWidget (slider_rangle_theta);
+  QLabel *Lab_ThetaSlid = new QLabel(" Heading (theta)");
+  Lay_v_ThetaSlid->addWidget(Lab_ThetaSlid);
+//  thetaSlider = createSlider(-180., 180., 45., 0.);
+  thetaSlider = createSlider(-180, 180, 1, 0.);
+  Lay_v_ThetaSlid->addWidget(thetaSlider);
   
   QVBoxLayout *Lay_v_PhiSlid = new QVBoxLayout; 
-  QLabel *Lab_PhiSlid        = new QLabel(" Attitude (phi)");
-  Lay_v_PhiSlid->addWidget (Lab_PhiSlid);
-  slider_rangle_phi          = createSlider (-90, 90, 1, 0);
-  Lay_v_PhiSlid->addWidget (slider_rangle_phi);
+  QLabel *Lab_PhiSlid = new QLabel(" Attitude (phi)");
+  Lay_v_PhiSlid->addWidget(Lab_PhiSlid);
+//  phiSlider = createSlider(-90., 90., 15., 0.);
+  phiSlider = createSlider(-90, 90, 1, 0);
+  Lay_v_PhiSlid->addWidget(phiSlider);
   
   QVBoxLayout *Lay_v_PsiSlid = new QVBoxLayout;
   QLabel *Lab_PsiSlid = new QLabel(" Bank (psi)");
   Lay_v_PsiSlid->addWidget(Lab_PsiSlid);
-  slider_rangle_psi = createSlider(-180, 180, 1, 0);
-  Lay_v_PsiSlid->addWidget (slider_rangle_psi);
+//  psiSlider = createSlider(-180., 180., 45., 0.);
+  psiSlider = createSlider(-180, 180, 1, 0);
+  Lay_v_PsiSlid->addWidget(psiSlider);
   
   QVBoxLayout *Lay_v_mx = new QVBoxLayout;
   QLabel *Lab_mx = new QLabel(" Move x");
   Lay_v_mx->addWidget(Lab_mx);
-  slider_mx = createSlider(-100, 100, 1, 0);
-  Lay_v_mx->addWidget (slider_mx);
+  mxSlider = createSlider(-100, 100, 1, 0);
+  Lay_v_mx->addWidget(mxSlider);
   
   QVBoxLayout *Lay_v_my = new QVBoxLayout;
   QLabel *Lab_my = new QLabel(" Move y");
   Lay_v_my->addWidget(Lab_my);
-  slider_my = createSlider(-100, 100, 1, 0);
-  Lay_v_my->addWidget (slider_my);
+  mySlider = createSlider(-100, 100, 1, 0);
+  Lay_v_my->addWidget(mySlider);
   
   QVBoxLayout *Lay_v_dist = new QVBoxLayout;
   QLabel *Lab_dist = new QLabel(" Distance");
   Lay_v_dist->addWidget(Lab_dist);
-  slider_zoom = createSlider(1, 180, 1, 180);
-
-  Lay_v_dist->addWidget (slider_zoom);
-  Lay_g_3slid->addLayout (Lay_v_ThetaSlid, 0, 0);
-  Lay_g_3slid->addLayout (Lay_v_PhiSlid, 1, 0);
-  Lay_g_3slid->addLayout (Lay_v_PsiSlid, 2, 0);
-  Lay_g_3slid->addLayout (Lay_v_mx, 3, 0);
-  Lay_g_3slid->addLayout (Lay_v_my, 4, 0);
-  Lay_g_3slid->addLayout (Lay_v_dist, 5, 0);
-  Widg_3slid->setLayout (Lay_g_3slid);
-  Lay_main0->addWidget (Widg_3slid);
+  distSlider = createSlider(1, 180, 1, 180);
+  Lay_v_dist->addWidget(distSlider);
+  
+  Lay_g_3slid->addLayout(Lay_v_ThetaSlid, 0, 0);
+  Lay_g_3slid->addLayout(Lay_v_PhiSlid, 1, 0);
+  Lay_g_3slid->addLayout(Lay_v_PsiSlid, 2, 0);
+  Lay_g_3slid->addLayout(Lay_v_mx, 3, 0);
+  Lay_g_3slid->addLayout(Lay_v_my, 4, 0);
+  Lay_g_3slid->addLayout(Lay_v_dist, 5, 0);
+  Widg_3slid->setLayout(Lay_g_3slid);
+  Lay_main0->addWidget(Widg_3slid);
   
   QWidget *Widg_rotMill = new QWidget(DWidg_dock);
   QHBoxLayout *Lay_h_rotMill = new QHBoxLayout;
@@ -409,109 +356,145 @@ void MainWindow::createDockWindows ()
   
   QWidget *Widg_add = new QWidget(DWidg_dock);
   QVBoxLayout *Lay_v_add = new QVBoxLayout;
-  
-  Butt_disloc = new QPushButton(tr("Dislocation pointed by mouse"));
+
+  Butt_disloc = new QPushButton(tr("Dislocation set by mouse"));
   Lay_v_add->addWidget(Butt_disloc);
-  Butt_sf = new QPushButton(tr("Dislocation by number of atom"));
+
+  Butt_sf = new QPushButton(tr("Dislocation set in atom"));
   Lay_v_add->addWidget(Butt_sf);
-  Butt_qd = new QPushButton(tr("Add displacements"));
+
+  Butt_qd = new QPushButton (tr ("Quantum dot"));
   Lay_v_add->addWidget(Butt_qd);
+
   Widg_add->setLayout(Lay_v_add);
   Lay_main0->addWidget(Widg_add);
   
   DWidg_dock->setWidget(Lay_main0);
   addDockWidget(Qt::RightDockWidgetArea, DWidg_dock);
-  menu_view->addAction(DWidg_dock->toggleViewAction());
+  viewMenu->addAction(DWidg_dock->toggleViewAction());
   
-  connect (Butt_rotMiller, SIGNAL (clicked ()), this, SLOT (SL_millerAct ()));
-  connect (Butt_disloc,    SIGNAL (clicked ()), this, SLOT (SL_dislocAct ()));
-  connect (Butt_sf,        SIGNAL (clicked ()), this, SLOT (SL_dislAct ()));  
-  connect (Butt_qd,        SIGNAL (clicked ()), this, SLOT (SL_addCoordAct ()));
+  connect(Butt_rotMiller, SIGNAL(clicked()), this, SLOT(SL_millerAct()));
   
-  connect (Widg_modesTab, SIGNAL(currentChanged (int)), this, SLOT (SL_changeMode (int)));
-  connect (Widg_modesTab, SIGNAL(currentChanged (int)), Lay_main0, SLOT (setCurrentIndex (int)));
+  connect(this, SIGNAL(SIG_prepareRotation()), mview1, SLOT(SL_rotate()));
+  
+  connect(Butt_disloc, SIGNAL(clicked()), this, SLOT(SL_dislocAct()));
+  
+  connect(Butt_sf, SIGNAL(clicked()), this, SLOT(SL_dislAct()));
+  
+  connect(Widg_modesTab, SIGNAL(currentChanged(int)),
+                               this, SLOT(SL_changeMode(int)));
+ 
+  connect(Widg_modesTab, SIGNAL(currentChanged(int)),
+                             Lay_main0, SLOT(setCurrentIndex(int)));
+ 
+  connect(phiSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
+  connect(phiSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_dophiRotation()));
+  connect(mview1, SIGNAL(SIG_phiRotationChanged(int)), phiSlider, SLOT(setValue(int)));
 
-  connect (slider_rangle_phi, SIGNAL(valueChanged (int)), this, SLOT (SL_setSliderValue (int)));
-  connect (slider_rangle_phi, SIGNAL(sliderReleased ()), vecds_main_viewer, SLOT (SL_dophiRotation ()));
-  connect (vecds_main_viewer, SIGNAL(SIG_phiRotationChanged (int)), slider_rangle_phi, SLOT (setValue (int)));
+  connect(thetaSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
+  connect(thetaSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_dothetaRotation()));
+  connect(mview1, SIGNAL(SIG_thetaRotationChanged(int)), thetaSlider, SLOT(setValue(int)));
 
-  connect (slider_rangle_theta, SIGNAL(valueChanged (int)), this, SLOT (SL_setSliderValue (int)));
-  connect (slider_rangle_theta, SIGNAL(sliderReleased ()), vecds_main_viewer, SLOT (SL_dothetaRotation ()));
-  connect (vecds_main_viewer, SIGNAL(SIG_thetaRotationChanged (int)), slider_rangle_theta, SLOT (setValue (int)));
+  connect(psiSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
+  connect(psiSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_dopsiRotation()));
+  connect(mview1, SIGNAL(SIG_psiRotationChanged(int)), psiSlider, SLOT(setValue(int)));
 
-  connect (slider_rangle_psi, SIGNAL(valueChanged (int)), this, SLOT (SL_setSliderValue (int)));
-  connect (slider_rangle_psi, SIGNAL(sliderReleased ()), vecds_main_viewer, SLOT (SL_dopsiRotation ()));
-  connect (vecds_main_viewer, SIGNAL(SIG_psiRotationChanged (int)), slider_rangle_psi, SLOT (setValue (int)));
+  connect(mxSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
+  connect(mxSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_doXMovement()));
+  connect(mview1, SIGNAL(SIG_xMovementChanged(int)), mxSlider, SLOT(setValue(int)));
 
-  connect (slider_mx, SIGNAL(valueChanged (int)), this, SLOT (SL_setSliderValue(int)));
-  connect (slider_mx, SIGNAL(sliderReleased ()), vecds_main_viewer, SLOT (SL_doXMovement()));
-  connect (vecds_main_viewer, SIGNAL (SIG_xMovementChanged (int)), slider_mx, SLOT (setValue(int)));
+  connect(mySlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
+  connect(mySlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_doYMovement()));
+  connect(mview1, SIGNAL(SIG_yMovementChanged(int)), mySlider, SLOT(setValue(int)));
 
-  connect (slider_my, SIGNAL(valueChanged (int)), this, SLOT (SL_setSliderValue (int)));
-  connect (slider_my, SIGNAL(sliderReleased ()), vecds_main_viewer, SLOT (SL_doYMovement ()));
-  connect (vecds_main_viewer, SIGNAL(SIG_yMovementChanged (int)), slider_my, SLOT (setValue(int)));
-
-  connect (slider_zoom, SIGNAL(valueChanged (int)), this, SLOT (SL_setSliderValue (int)));
-  connect (slider_zoom, SIGNAL(sliderReleased ()), vecds_main_viewer, SLOT (SL_doZMovement()));
-  connect (vecds_main_viewer, SIGNAL(SIG_zMovementChanged (int)), slider_zoom, SLOT (setValue(int)));
+  connect(distSlider, SIGNAL(valueChanged(int)), this, SLOT(SL_setSliderValue(int)));
+  connect(distSlider, SIGNAL(sliderReleased()), mview1, SLOT(SL_doZMovement()));
+  connect(mview1, SIGNAL(SIG_zMovementChanged(int)), distSlider, SLOT(setValue(int)));
 
 }
 
 // ====================    S L O T S    ===========================
 
-
-void MainWindow::SL_actPoint (QVector3D res)
+void MainWindow::SL_saveAtomsAs()
 {
-  QString str1;
-  ActualData->actPoint = res;
-
-  int ix = vecds_main_viewer->lastPos.x();
-  int iy = vecds_main_viewer->lastPos.y();
-
-  str1.sprintf("act point coordinates: ix=%d, iy=%d, x=%g, y=%g, z=%g", ix, iy, res.x(), res.y(), res.z());
-  statusBar()->showMessage(str1);
-
-  if (ActualData->Mode==2)
-    {
-      ActualData->SL_singleDisl (vecds::to_dvec3 (res));
-      emit SIG_repaint ();
-      qWarning("SL_actPoint  --  ndisl=%d", ActualData->ndisl);
-    }
+  bool ok;
+  QString current_dir1 = ActualData->current_dir;
+  QString text = QInputDialog::getText(this, "Save coordinates",
+                     "File name:", QLineEdit::Normal, "newAtoms.xyz", &ok);
+// qWarning("file: %s", text.toAscii().data());
+  if ( !ok || text.isEmpty()) return;
+//  if ( Actual->num_choosedAtoms==0 ) saveAtoms(current_dir1.append("/V_atoms/").append(text));
+//  else                               saveChoosedAtoms(current_dir.append("/V_atoms/").append(text));
+  ActualData->saveAtoms(current_dir1.append("/data/atoms/").append(text));
+  return;
 }
 
-void MainWindow::SL_actPosition (QVector3D res)
+void MainWindow::SL_saveMarkedAtomsAs()
 {
- qWarning("SL_actPosition");
+  bool ok;
+  QString cur_dir1 = ActualData->current_dir;
+  QString text = QInputDialog::getText(this, "Save coordinates",
+                     "File name:", QLineEdit::Normal, "n_Atoms.xyz", &ok);
+// qWarning("file: %s", text.toAscii().data());
+  if ( !ok || text.isEmpty()) return;
+//  if ( Actual->num_markedAtoms==0 ) saveAtoms(cur_dir1.append("/V_atoms/").append(text));
+//  else                               saveMarkedAtoms(cur_dir.append("/V_atoms/").append(text));
+  ActualData->saveMarkedAtoms(cur_dir1.append("/atoms/").append(text));
+  return;
+}
+
+void MainWindow::SL_actPoint(QVector3D res)
+{
+  QString str1;
+// qWarning("SL_actPoint");
+  ActualData->actPoint = res;
+  int ix = mview1->lastPos.x();
+  int iy = mview1->lastPos.y();
+  str1.sprintf("act point coordinates: ix=%d, iy=%d, x=%g, y=%g, z=%g",
+                                               ix, iy, res.x(), res.y(), res.z());
+  statusBar()->showMessage(str1);
+  if ( ActualData->Mode==2 ){
+      ActualData->SL_singleDisl(res);
+      emit SIG_repaint();
+ qWarning("SL_actPoint  --  n_dislocationsl=%d", ActualData->n_dislocations);
+  }
+}
+
+void MainWindow::SL_actPosition(QVector3D res)
+{
+  qWarning("SL_actPosition");
   QString str1;
   ActualData->actPoint = res;
-
-  int i0 = ActualData->atomize (vecds::to_dvec3 (res), 0);
-  int ix = vecds_main_viewer->lastPos.x ();
-  int iy = vecds_main_viewer->lastPos.y ();
+  int i0 = ActualData->atomize(res, 0);
+  int ix = mview1->lastPos.x();
+  int iy = mview1->lastPos.y();
   
-  qWarning ("mainwindow:position: ix=%d, iy=%d, x=%g, y=%g, z=%g, i0=%d", ix, iy, res.x(), res.y(), res.z(), i0);
-  statusBar()->showMessage (str1);
+  str1.sprintf("position: ix=%d, iy=%d, x=%g, y=%g, z=%g, i0=%d",
+	       ix, iy, res.x(), res.y(), res.z(), i0);
+  qWarning("mainwindow:position: ix=%d, iy=%d, x=%g, y=%g, z=%g, i0=%d", ix, iy, res.x(), res.y(), res.z(), i0);
+  statusBar()->showMessage(str1);
+  //  emit SIG_repaint();
 }
 
 
 void MainWindow::SL_chooseStructure()
 {
-
+  
   QStringList items;
   for (int i=0; i<ActualData->numbcrstr; i++) 
-               items << ActualData->crstr[i].structure_name;
+    items << ActualData->crstr[i].struct_name;
   bool ok;
   QString item = QInputDialog::getItem(this, "Choose structure", 
                      "structure:", items, ActualData->numbcrstr, false, &ok);
   if ( ok && !items.isEmpty() ) 
      for (int i=0; i<ActualData->numbcrstr; i++) 
-        if ( item==ActualData->crstr[i].structure_name ) {
-           ActualData->actcrstr = &(ActualData->crstr[i]);
-           infotxt0.sprintf ("Structure: %s%sMiller indices: %s", 
-			     ActualData->actcrstr->structure_name.toAscii ().data (),
-			     infsepar.toAscii().data(), 
-			     toRichText (ActualData->act_mill).toAscii ().data ());
-	   
+        if ( item==ActualData->crstr[i].struct_name ) {
+           ActualData->actcrcell = &(ActualData->crstr[i]);
+           infotxt0.sprintf("Structure: %s%sMiller indices: %s", 
+               ActualData->actcrcell->struct_name.toAscii().data(),
+               infsepar.toAscii().data(), 
+               toRichText(ActualData->act_mill).toAscii().data());
+
            InfoDisplay();
            return;
         }
@@ -521,25 +504,72 @@ void MainWindow::SL_chooseStructure()
 
 void MainWindow::SL_defineStructure()
 {
-  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
-
-  QString title       = "Atomic structure definition";
-  QString description = "<h5>a, b, c - in &Aring;<br>alpha, beta, gamma - in degrees</h5>";
-  QStringList questions;
-  QStringList suggestions;
-  QStringList answers;
-
-  questions << "<h6>name=</h6>" << "a=" << "b=" << "c=" << "alpha=" << "beta=" << "gamma=" << "numb. of atoms";
-  suggestions << "B4_GaN" << "3.180" << "3.180" << "5.166" << "90.0" << "90.0" << "120.0"<< "4";
-
-  (*this_question_form).set_title (title);
-  (*this_question_form).set_question_list (questions);
-  (*this_question_form).set_suggestion_list (suggestions);
-  (*this_question_form).set_description (description);
-  (*this_question_form).show_question (answers);
-
-  if (!(*this_question_form).is_sane ())
+  QStringList quest, sug, ans, fields;
+  QString aa;
+  bool ok;
+  QString descr = ("<h5>a, b, c - in &Aring;<br>alpha, beta, gamma - in degrees</h5>");
+  quest << "<h6>name=</h6>" << "a="    << "b="    << "c=" 
+	<< "alpha=" << "beta=" << "gamma=" << "number of atoms";
+  sug   << "B4_GaN"         << "3.180" << "3.180" << "5.166" 
+	<< "90.0"   << "90.0"  << "120.0"  << "4";
+  QuestionForm("Atomic structure definition", descr, quest, sug, ans, ok);
+  if ( !ok ) 
     return;
+/*
+  int at_dat_num1 = at_dat_num+1;
+  Atoms[at_dat_num1].struct_name = ans.at(0);
+  Atoms[at_dat_num1].a = ans.at(1).toFloat();
+  Atoms[at_dat_num1].b = ans.at(2).toFloat();
+  Atoms[at_dat_num1].c = ans.at(3).toFloat();
+  Atoms[at_dat_num1].alpha = ans.at(4).toFloat();
+  Atoms[at_dat_num1].beta = ans.at(5).toFloat();
+  Atoms[at_dat_num1].gamma = ans.at(6).toFloat();
+  int nat = Atoms[at_dat_num1].nchem = ans.at(7).toInt();
+
+  descr.sprintf("<h5>%d atom's kind and coordinates x, y, z</h5>", nat);
+  quest.clear();
+  sug.clear();
+  ans.clear();
+  for (int i=0; i<nat; i++) {
+     aa.sprintf("<h5>Atom nr. %d</h5>", i+1);
+     quest << aa;
+     switch (i) {
+      case 0:
+       sug << "N 0.0 0.0 0.0";
+       break;
+      case 1:
+       sug << "N 2/3 1/3 1/2";
+       break;
+      case 2:
+       sug << "Ga 2/3 1/3 1/8";
+       break;
+      case 3:
+       sug << "Ga 0.0 0.0 5/8";
+       break;
+      default:
+       sug << "atom? ? ? ?";
+       break;
+     }
+  }
+  QuestionForm1("Atom's kinds and coordinates", descr, quest, sug, ans);
+  if ( !qf_ok ) return;
+  for (int i=0; i<nat; i++) {
+     fields = ans.at(i).split(QRegExp("\\s+"), QString::SkipEmptyParts);
+     if ( fields.size()!=4 ) qWarning("Error - Atom coordinates %d", i);
+     Atoms[at_dat_num1].cr_kind[i] = which_atom(fields.takeFirst());
+     Atoms[at_dat_num1].cryst[i].x = read_fraction(fields.takeFirst());
+     Atoms[at_dat_num1].cryst[i].y = read_fraction(fields.takeFirst());
+     Atoms[at_dat_num1].cryst[i].z = read_fraction(fields.takeFirst());
+  }
+  at_dat_num = num_at_dat = at_dat_num1;
+  At = Atoms[at_dat_num1];
+  structureDefined = true;
+  infotxt0.sprintf("Structure: %s%sMiller indices: %s", 
+                   At.struct_name.toAscii().data(), infsepar.toAscii().data(),
+                   toRichText(act_mill).toAscii().data());
+  InfoDisplay();
+*/
+// qWarning ("SLOT define %d", at_dat_num);
 }
 
 
@@ -547,295 +577,321 @@ void MainWindow::SL_defineStructure()
 // ------------------- G E N E R A T I O N ---------------------
 // -------------------------------------------------------------
 
-void MainWindow::SL_generate_atoms_by_cell ()
+void MainWindow::SL_genAtoms()
 {
-  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
-
-  QString title       = "nx, ny, nz";
-  QString description = "<h5>How many repetitions in<br>x, y, z direction</h5>";
+  QString descr = "<h5>How many repetitions in<br>x, y, z direction</h5>";
   QStringList questions;
-  QStringList suggestions;
+  QStringList sugestions;
   QStringList answers;
+  bool ok;
 
   questions << "Number X" <<"Number Y" << "Number Z";
-  suggestions << "6" << "5" << "3";
+  sugestions << "6" << "5" << "3";
 
-  (*this_question_form).set_title (title);
-  (*this_question_form).set_question_list (questions);
-  (*this_question_form).set_suggestion_list (suggestions);
-  (*this_question_form).set_description (description);
-  (*this_question_form).show_question (answers);
+  QuestionForm("nx, ny, nz", descr, questions, sugestions, answers, ok);
+  if ( !ok ) return;
 
-  if (!(*this_question_form).is_sane ())
-    return;
-
-  int nx   = answers.at (0).toInt ();
-  int ny   = answers.at (1).toInt ();
-  int nz   = answers.at (2).toInt ();
-  int nmax = nx*ny*nz * ActualData->actcrstr->n_materials;
-
-  ActualData->atoms->coordinates = new glm::dvec3[nmax];
-  ActualData->atoms->u           = new glm::dvec3[nmax];
-  ActualData->atoms->atom_type   = new unsigned int[nmax];
-
-  ActualData->atoms->n_atoms     = ActualData->lattice(nx, ny, nz);
-  qWarning("+++++++++ n_atoms=%d", ActualData->atoms->n_atoms);
-
+  int nx = answers.at(0).toInt();
+  int ny = answers.at(1).toInt();
+  int nz = answers.at(2).toInt();
+// qWarning("nx, ny, nz: %d %d %d", nx, ny, nz);
+  int nmax = nx*ny*nz * ActualData->actcrcell->nchem;
+  ActualData->atoms->coord = new QVector3D[nmax];
+  ActualData->atoms->u = new QVector3D[nmax];
+  ActualData->atoms->type = new int[nmax];
+  ActualData->atoms->marked = new bool[nmax];
+  ActualData->atoms->n_atoms = ActualData->lattice(nx, ny, nz);
+ qWarning("+++++++++ n_atoms=%d", ActualData->atoms->n_atoms);
+//  ActualData->atoms->n_atoms = nmax;
   ActualData->atoms->n_bonds = 0;
-  ActualData->minmax3(ActualData->atoms->coordinates, ActualData->atoms->n_atoms, ActualData->a_min_, ActualData->a_max_);
+  ActualData->minmax3(ActualData->atoms->coord, ActualData->atoms->n_atoms, ActualData->a_min_, ActualData->a_max_);
   ActualData->atoms_loaded = QString("neW_atoms.xyz");
-
+//  ActualData->INT_nn = ActualData->atoms->n_atoms;
   InfoDisplay();
-//  emit SIG_needDraw();
-  vecds_main_viewer->updateGL ();
+  emit SIG_needDraw();
+
 }
 
 
-void MainWindow::SL_generate_atoms_by_length ()
+void MainWindow::SL_gen1Atoms()
 {
-  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
-
-  QString title       = "size x, size y, size z";
-  QString description = "<h5>Which sizes (in &Aring;) in<br>x, y direction</h5>";
+  QString descr = "<h5>Which sizes (in &Aring;) in<br>x, y direction</h5>";
   QStringList questions;
-  QStringList suggestions;
+  QStringList sugestions;
   QStringList answers;
+  bool ok;
 
   questions << "Size X" <<"Size Y" << "Number Z";
-  suggestions << "50" << "50" << "3";
+  sugestions << "50" << "50" << "3";
 
-  (*this_question_form).set_title (title);
-  (*this_question_form).set_question_list (questions);
-  (*this_question_form).set_suggestion_list (suggestions);
-  (*this_question_form).set_description (description);
-  (*this_question_form).show_question (answers);
-
-  if (!(*this_question_form).is_sane ())
-    return;
+  QuestionForm("size x, size y, nz", descr, questions, sugestions, answers, ok);
+  if ( !ok ) return;
 
   double x_size = answers.at(0).toDouble();
   double y_size = answers.at(1).toDouble();
   int nz = answers.at(2).toInt();
 
-  double sg = sin (vecds::constant::deg2rad*ActualData->actcrstr->gamma);
-  int nmax  = ActualData->actcrstr->n_materials * nz * 
-    (int(x_size/ActualData->actcrstr->a)+1) *
-    (int(y_size/(ActualData->actcrstr->b*sg))+1);
-
-  ActualData->atoms->coordinates = new glm::dvec3[nmax];
-  ActualData->atoms->u           = new glm::dvec3[nmax];
-  ActualData->atoms->atom_type   = new unsigned int[nmax];
+  double sg = sin(constant::deg2rad*ActualData->actcrcell->gamma);
+  int nmax = ActualData->actcrcell->nchem * nz* 
+             (int(x_size/ActualData->actcrcell->a)+1) *
+             (int(y_size/(ActualData->actcrcell->b*sg))+1);
+  ActualData->atoms->coord = new QVector3D[nmax];
+  ActualData->atoms->u = new QVector3D[nmax];
+  ActualData->atoms->type = new int[nmax];
+  ActualData->atoms->marked = new bool[nmax];
 
   ActualData->atoms->n_atoms = ActualData->lattice2(x_size, y_size, nz);
   ActualData->atoms->n_bonds = 0;
-  ActualData->minmax3(ActualData->atoms->coordinates, ActualData->atoms->n_atoms, ActualData->a_min_, ActualData->a_max_);
+  ActualData->minmax3(ActualData->atoms->coord, ActualData->atoms->n_atoms, ActualData->a_min_, ActualData->a_max_);
   ActualData->atoms_loaded = QString("neW_atoms.xyz");
 //  ActualData->INT_nn = ActualData->atoms->n_atoms;
   InfoDisplay();
-//  emit SIG_needDraw();
-  vecds_main_viewer->updateGL ();
+  emit SIG_needDraw();
+
 }
 
 //----------------------------------------------------------
 //----------------------------------------------------------
 
-
-void MainWindow::SL_setSliderValue (int val)
-//void MainWindow::SL_setSliderValue (double val)
+//void MainWindow::SL_setSliderValue(double val)
+void MainWindow::SL_setSliderValue(int val)
 {
+// qWarning ("SLIDER Val=%g", val);
   ActualData->sliderValue = val;
-  ActualData->sliderMove  = true;
+  ActualData->sliderMove = true;
 }
 
-                                 // Display the "about page" for vecds.
-void MainWindow::SL_about ()
+void MainWindow::SL_about()
 {
-                                 // Create a help browser.
-  vecds::HelpBrowser *about = new vecds::HelpBrowser (); 
-
-                                 // The first help page is always
-                                 // "about.html".
-  (*about).show_page ("about.html");
+  HelpBrowser::showPage("index.html");
 }
 
-                                 // Display the "documentation page"
-                                 // for vecds.
-void MainWindow::SL_documentation ()
+void MainWindow::SL_openAtoms()
 {
-                                 // Create a documentation browser.
-  vecds::DocBrowser *documentation = new vecds::DocBrowser (); 
+  QString current_dir1 = ActualData->current_dir;
+ qWarning("SL_openAtoms");//, current_dir1.toAscii().data() );
+  QString aname1 = QFileDialog::getOpenFileName(this, "Select atoms", 
+                current_dir1.append("/data/atoms"), "Molecules (*.xyz *.alc)");
+  if ( aname1.isEmpty()  || aname1==ActualData->atoms_loaded ) return;
+  ActualData->atoms_loaded = aname1;
+  if (!(aname1.contains(".xyz")) && 
+      !(aname1.contains(".alc")))
+    qWarning ("openAtoms -- unknown file format");
+  else 
+    {
+      ActualData->atoms_loaded = aname1;
 
-                                 // The first documentation page is
-                                 // always "documentation.html".
-#if HAVE_DOXYGEN_H 
-  (*documentation).show_page ("documentation.html");
-#else
-  (*documentation).show_page ("no_documentation.html");
-#endif
+      // Read in an alchemy file:
+      ActualData->read_alchemy_xyz (aname1);
+      emit SIG_needDraw();
+      qWarning("sig needDraw");
+    }
+//  infotxtat.sprintf("%s", aname.toAscii().data());
+  InfoDisplay();
 }
 
+void MainWindow::SL_openImg()
+{
+  QString cdir = ActualData->current_dir;
+  QString iname = QFileDialog::getOpenFileName(this, "Select an image",
+    cdir.append("/data/images"), "Images (*.png *.xpm *.jpg *.tif)");
 
+  if ( iname.isEmpty() ) return;
 
+  ActualData->img_loaded = iname;
+//  ActualData->imgChanged = (ActualData->img_loaded!=iname);
+  ActualData->read_img(iname);
+  emit SIG_prepareImg();
+//  infotxtimg.sprintf("%s", iname.toAscii().data());
+  InfoDisplay();
+}
+
+void MainWindow::SL_closeImg()
+{
+  ActualData->img_loaded = "none";
+//    delete &img;
+  InfoDisplay();
+}
 
 void MainWindow::SL_millerAct()
 {
- vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
+ qWarning("----   SL_millerAct");
+  QString descr = "<h4>Miller indices;<br>e.g. 1/3[10-10](11-20)<br>&nbsp;or&nbsp;[100](001)</h4>";
+  QStringList quest, sug, ans;
+  QString s;//, result_text;
+  bool ok;
+  s.sprintf("%s", ActualData->act_mill.toAscii().data());
+  quest << "Miller indices";
+   
+  sug << s;
 
-  QString title       = "Size of structure";
-  QString description = "<h4>Miller indices;<br>e.g. 1/3[10-10](11-20)<br>&nbsp;or&nbsp;[100](001)</h4>";
-  QStringList questions;
-  // QStringList suggestions;
-  QStringList answers;
-
-  questions << "Miller indices";
-
-                                 // This was written without a suggestion...
-  (*this_question_form).set_title (title);
-  (*this_question_form).set_question_list (questions);
-  // (*this_question_form).set_suggestion_list (suggestions);
-  (*this_question_form).set_description (description);
-  (*this_question_form).show_question (answers);
-
-  if (!(*this_question_form).is_sane ())
-    return;
-
-  ActualData->act_mill = answers.at (0);
+  QuestionForm("Size of structure", descr, quest, sug, ans, ok);
+  if ( !ok ) return;
+  ActualData->act_mill = ans.at(0);
+//  act_mill = result_text = ans.at(0);
   ActualData->processMiller(1, ActualData->act_mill);
   InfoDisplay();
-  vecds_main_viewer->updateGL ();
+//  statusBar()->showMessage(QString("Rotation ").append(ActualData->act_mill));
+//  emit SIG_needDraw();
+  emit SIG_prepareRotation();
 //  emit SIG_repaint();
 }
 
 void MainWindow::SL_dislocAct()
 {
+//  QString title = "Dislocation parameters";
+  QString descr = "<h4>Dislocation parameters</h4>";
   QString s1, s2;
+  QStringList quest, sug, ans;
+  bool ok;
+ qWarning("----   SL_dislocAct");
+  
+//  ActualData->kindOfDisl = 0;
+
   ActualData->act_core.sprintf("4");
-
-  s1.sprintf ("%s", ActualData->act_disl.toAscii().data());
-  s2.sprintf ("%s", ActualData->act_core.toAscii().data());
-
-  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
-
-  QString title       = "Dislocation parameters";
-  QString description = "<h4>Dislocation parameters</h4>";
-  QStringList questions;
-  QStringList suggestions;
-  QStringList answers;
-
-  questions << "Size X" <<"Size Y" << "Number Z";
-  suggestions << s1 << s2;
-
-  (*this_question_form).set_title (title);
-  (*this_question_form).set_question_list (questions);
-  (*this_question_form).set_suggestion_list (suggestions);
-  (*this_question_form).set_description (description);
-  (*this_question_form).show_question (answers);
-
-  if (!(*this_question_form).is_sane ())
+  quest <<"Miller indices" << "disl. core";
+  s1.sprintf("%s", ActualData->act_disl.toAscii().data());
+  s2.sprintf("%s", ActualData->act_core.toAscii().data());
+  sug << s1 << s2;
+  QuestionForm("Dislocation parameters", descr, quest, sug, ans, ok);
+  if ( !ok ) {
+  qWarning("tu");
     return;
-
-  s1 = answers.at (0);
-  s2 = answers.at (1);
-
-  ActualData->processMiller (2, s1, s2);
+}
+  s1 = ans.at(0);
+  s2 = ans.at(1);
+//  dialogDislWindow(title, prompt, act_disl, act_core);
+  ActualData->processMiller(2, s1, s2);
   ActualData->act_disl = s1;
   ActualData->act_core = s2;
-  InfoDisplay ();
-  vecds_main_viewer->updateGL ();
-}
-
-void MainWindow::SL_dislAct ()
-{
-  ActualData->act_core.sprintf("none");
-
-  QString s1;
-  s1.sprintf ("%s", ActualData->act_disl.toAscii().data());
-
-  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
-
-  QString title       = "Dislocation parameters";
-  QString description = "<h4>Dislocation parameters</h4>";
-  QStringList questions;
-  QStringList suggestions;
-  QStringList answers;
-
-  questions << "Miller indices" << "number of atom";
-  suggestions << s1 << QString (" ");
-
-  (*this_question_form).set_title (title);
-  (*this_question_form).set_question_list (questions);
-  (*this_question_form).set_suggestion_list (suggestions);
-  (*this_question_form).set_description (description);
-  (*this_question_form).show_question (answers);
-
-  if (!(*this_question_form).is_sane ())
-    return;
-
-  s1 = answers.at (0);
-  int n_a = answers.at (1).toInt ();
-  ActualData->processMiller(1, s1, QString("none"));
-  qWarning("SL_dislAct -- 1");
-  
-  ActualData->newdisl(n_a, true);
-  qWarning("SL_dislAct -- 2");
-  ActualData->act_disl = s1;
-  qWarning("SL_dislAct -- 3");
   InfoDisplay();
-  vecds_main_viewer->updateGL();
+//  statusBar()->showMessage
+//  (QString("Dislocation ").append(ActualData->act_disl).append(" _ ").append(ActualData->act_core));
 }
 
-void MainWindow::SL_addCoordAct()
+void MainWindow::SL_dislAct()
 {
-  ActualData->addDisplacements();
-  emit SIG_repaint();
-  vecds_main_viewer->updateGL();
-//  qWarning("SL_addCoordAct");
+//  QString title = "Dislocation parameters";
+  QString descr = "<h4>Disl0 parameters</h4>";
+  QString s1;
+  QStringList quest, sug, ans;
+  bool ok;
+ qWarning("----   SL_dislocAct");
+//  ActualData->kindOfDisl = 1;
+  ActualData->act_core.sprintf("none");
+  quest <<"Miller indices" << "number of atom";
+  s1.sprintf("%s", ActualData->act_disl.toAscii().data());
+//  s2.sprintf("%s", ActualData->act_core.toAscii().data());
+  sug << s1 << QString("164__");
+  QuestionForm("Disloc parameters", descr, quest, sug, ans, ok);
+//  if ( !ok ) return;
+  if ( !ok ) {
+  qWarning("tu -");
+    return;
 }
 
+  s1 = ans.at(0);
+  int n_a = ans.at(1).toInt();
+//  dialogDislWindow(title, prompt, act_disl, act_core);
+  ActualData->processMiller(1, s1, QString("none"));
+ qWarning("SL_dislAct -- 1");
+ 
+ 
+  ActualData->newdisl(n_a);
+ qWarning("SL_dislAct -- 2");
+  ActualData->act_disl = s1;
+ qWarning("SL_dislAct -- 3");
+  InfoDisplay();
+//  statusBar()->showMessage
+//  (QString("Dislocation ").append(ActualData->act_disl).append(" _ ").append(ActualData->act_core));
+}
+/*
+void MainWindow::SL_performActions()
+{
+//  QString title = "Dislocation parameters";
+  s1 = ans.at(0);
+  int n_a = ans.at(1).toInt();
+//  dialogDislWindow(title, prompt, act_disl, act_core);
+  ActualData->processMiller(1, s1, QString("none"));
+ qWarning("SL_dislAct -- 1");
+ 
+ 
+  ActualData->newdisl(n_a);
+ qWarning("SL_dislAct -- 2");
+  ActualData->act_disl = s1;
+ qWarning("SL_dislAct -- 3");
+  InfoDisplay();
+//  statusBar()->showMessage
+//  (QString("Dislocation ").append(ActualData->act_disl).append(" _ ").append(ActualData->act_core));
+}
+*/
 
 void MainWindow::SL_changeMode(int mode)
 {
-  if ( mode!=ActualData->Mode ) 
-    {
-      qWarning("+++++           MODE = %d", mode);
-      ActualData->Mode = mode;
-    }
+  if ( mode!=ActualData->Mode ) {
+ qWarning("+++++           MODE = %d", mode);
+     ActualData->Mode = mode;
+  }
+  if ( ActualData->Mode==2 ) mview1->setCursor(Qt::CrossCursor);
+  else  mview1->setCursor(Qt::ArrowCursor);
 
-  if (ActualData->Mode==2) 
-    {
-      vecds_main_viewer->setCursor(Qt::CrossCursor);
-    }
-  else  
-    {
-      vecds_main_viewer->setCursor(Qt::ArrowCursor);
-    }
 }
 
-                                 // TODO: If we knew what this did, we
-                                 // could hack the Question class much
-                                 // better!
-void MainWindow::SL_sett ()
+void MainWindow::SL_openFems()
 {
-  vecds::Question *this_question = new vecds::Question (); 
+  QString current_dir1 = ActualData->current_dir;
+ qWarning("SL_openFems -- %s", current_dir1.toAscii().data() );
+//  QString* fname1 = new QString();
+  QString fname1 = QFileDialog::getOpenFileName(this, "Select fems", 
+                        current_dir1.append("/data/fems"), "Fem data (*.fem)");
+  if ( fname1.isEmpty() ) return;// || aname1==aname || aname=="none" ) return;
+  fname = fname1;
+  fname1.clear();
+  if ( !(fname.contains(".fem")) )
+     qWarning ("openFems -- unknown file format");
+  else {
+  qWarning("openfems 1");
+     ActualData->fems_loaded = fname;
+  qWarning("openfems 2");
+     ActualData->read_fems(fname);
+  qWarning("openfems 3");
+     emit SIG_needDraw();
+  }
+  qWarning("openfems 4");
+}
 
-  QString title = "Visibility";
+void MainWindow::SL_openRes()
+{
+  QString current_dir1 = ActualData->current_dir;
+// qWarning("open fems"); //, current_dir1.toAscii().data() );
+  QString fname1 = QFileDialog::getOpenFileName(this, "Select results", 
+                current_dir1.append("/data/results"), "Fem result data (*.o)");
+  if ( fname1.isEmpty() ) return;// || aname1==aname || aname=="none" ) return;
+//  fname = fname1;
+  if ( !(fname1.contains(".o")) )
+     qWarning ("openResults -- unknown file format");
+  else {
+     ActualData->res_loaded = fname1;
+     ActualData->read_res(fname1);
+//     emit SIG_spectrcreate();
+//  qWarning ("openResults -- SIG_spectrcreate");
+//     emit SIG_needDraw();
+  }
 
+}
+
+void MainWindow::SL_sett()
+{ 
   QStringList questions;
-  questions << "face_0" << "face_f" 
-   	    << "nodes_0" << "nodes_f" 
-   	    << "int.lines" << "ext_lines" 
-   	    << "spectrograms" << "arrows"  << "axis";
-  
-  (*this_question).set_title (title);
-  (*this_question).set_question_list (questions);
-  (*this_question).show_question (ActualData->visible);
-
+  bool ok;
+  questions << "face_0" << "face_f" << "nodes_0" << "nodes_f" << "int.lines" << "ext_lines" << "spectrograms"
+            << "arrows"  << "axis";
+  Questions("Visibility", questions, ActualData->visible, ok);
   emit SIG_repaint();
 }
 
-                                 // TODO: Same goes for this crap
 void MainWindow::SL_mult()
-{
+{ 
   bool ok;
   double d = QInputDialog::getDouble(this, tr("Mult. factor"),
                                        tr("factor:"), 10.00, -10000, 10000, 2, &ok);
@@ -843,115 +899,118 @@ void MainWindow::SL_mult()
   emit SIG_repaint();
 }
 
+
 //---------------------------------------------------------------------
 
-void MainWindow::SL_make_cubic_bbox ()
+void MainWindow::SL_cubBox()
 {
-  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
-
-  QString title       = "Size of structure";
-  QString description = "<h4>Write sizes of structure;<br> ( in &Aring; )</h4>";
-  QStringList questions;
-  QStringList suggestions;
-  QStringList answers;
-
-  questions << "Size X" << "Size Y" << "Size Z";
-  suggestions << "20" << "20" << "20";
-
-  (*this_question_form).set_title (title);
-  (*this_question_form).set_question_list (questions);
-  (*this_question_form).set_suggestion_list (suggestions);
-  (*this_question_form).set_description (description);
-  (*this_question_form).show_question (answers);
-
-  if (!(*this_question_form).is_sane ())
-    return;
-
   QVector3D box;
-  box.setX (0.5 * answers.at (0).toDouble ());
-  box.setY (0.5 * answers.at (1).toDouble ());
-  box.setZ (0.5 * answers.at (2).toDouble ());
+  QString descr = "<h4>Write sizes of structure;<br> ( in &Aring; )</h4>";
+  QStringList quest, sug, ans;
+  bool ok;
+  quest << "Size X" << "Size Y" << "Size Z";
+  sug << "20" << "20" << "20";
+
+  QuestionForm("Size of structure", descr, quest, sug, ans, ok);
+  if ( !ok ) return;
+  
+  box.setX(0.5 * ans.at(0).toDouble());
+  box.setY(0.5 * ans.at(1).toDouble());
+  box.setZ(0.5 * ans.at(2).toDouble());
+
+  ActualData->atoms->n_marked = ActualData->cubBox(box, ActualData->cent_);
+ qWarning("cubBox: num_ch = %d", ActualData->atoms->n_marked);
+ 
+  emit SIG_needDraw();
 }
 
-void MainWindow::SL_make_hexagonal_bbox ()
+void MainWindow::SL_hexBox()
 {
-  vecds::QuestionForm *this_question_form = new vecds::QuestionForm (); 
 
-  QString title       = "Size of structure";
-  QString description = "<h4>Write sizes of structure;<br> ( in &Aring; )</h4>";
-  QStringList questions;
-  QStringList suggestions;
-  QStringList answers;
+  QString descr = "<h4>Write sizes of structure;<br> ( in &Aring; )</h4>";
+  QStringList quest, sug, ans;
+  bool ok;
+  quest << "Hex radius" << "Size Z";
+  sug << "30" << "25";
 
-  questions << "Hex radius" << "Size Z";
-  suggestions << "30" << "25";
+  QuestionForm ("Size of structure", descr, quest, sug, ans, ok);
 
-  (*this_question_form).set_title (title);
-  (*this_question_form).set_question_list (questions);
-  (*this_question_form).set_suggestion_list (suggestions);
-  (*this_question_form).set_description (description);
-  (*this_question_form).show_question (answers);
-
-  if (!(*this_question_form).is_sane ())
+  if (!ok) 
     return;
+
+  double hex_r = ans.at(0).toDouble();
+  double hex_h = ans.at(1).toDouble();
+
+  ActualData->atoms->n_marked = ActualData->hexBox(hex_r, hex_h, ActualData->cent_);
+ qWarning("hexBox: num_ch = %d", ActualData->atoms->n_marked);
+  emit SIG_needDraw();
+
 }
 
-void MainWindow::InfoDisplay ()
+void MainWindow::InfoDisplay()
 {
   QString inftxt;
-
   infoLabel->clear();
-  infotxt0.sprintf ("Structure: %s%sMiller indices: %s", 
-		    ActualData->actcrstr->structure_name.toAscii ().data (),
-		    infsepar.toAscii ().data (), toRichText (ActualData->act_mill ).toAscii ().data ());
+  infotxt0.sprintf("Structure: %s%sMiller indices: %s", 
+          ActualData->actcrcell->struct_name.toAscii().data(),
+          infsepar.toAscii().data(), toRichText(ActualData->act_mill).toAscii().data());
+  infotxtat.sprintf("<br/>Atoms loaded: %s", 
+                               ActualData->atoms_loaded.toAscii().data());
+  infotxtimg.sprintf("<br/>Image loaded: %s", 
+                               ActualData->img_loaded.toAscii().data());
 
-  infotxtat.sprintf ("<br/>Atoms loaded: %s", 
-		     ActualData->atoms_loaded.toAscii ().data ());
-  infotxtimg.sprintf ("<br/>Image loaded: %s", 
-		      ActualData->img_loaded.toAscii ().data ());
-  
   inftxt.sprintf("%s%s%s", infotxt0.toAscii().data(), 
                            infotxtat.toAscii().data(), 
                            infotxtimg.toAscii().data());
-
+// qWarning("INFO: %s", inftxt.toAscii().data());
    infoLabel->setText(inftxt);
 }
 
-                                 // Register a key event
-void MainWindow::keyPressEvent(const QKeyEvent *keyEv)
+
+void MainWindow::keyPressEvent(QKeyEvent *keyEv)
 {
-  const int k = keyEv->key ();
-  emit SIG_keypress (k);
-
-#ifdef DEBUG
-  qWarning("class MainWindow: Key pressed was \"%d\"", k);
-
-  if (vecds_main_viewer->isActiveWindow ()) 
-    qWarning ("class MainWindow: vecds_main_viewer is now the active window");
-
-  else                      
-    qWarning ("class MainWindow: vecds_main_viewer is not the active window");
-#endif
+  int k = keyEv->key();
+  emit SIG_keypress(k);
+  qWarning("--------key=%d", k);
+  if ( mview1->isActiveWindow() ) qWarning("____________ 1");
+  else                      qWarning("____________ 2");
 }
 
-QSlider *MainWindow::createSlider (const unsigned int minimum, 
-				   const unsigned int maximum, 
-				   const unsigned int step, 
-				   const unsigned int value)
+QSlider *MainWindow::createSlider
+                      (int from, int to, int step, int val)
 {
-  QSlider* slider = new QSlider (Qt::Horizontal);
+  QSlider* slider = new QSlider(Qt::Horizontal);
 
-  slider->setTickInterval (step);
-  slider->setMinimum (minimum);
-  slider->setMaximum (maximum); // paging disabled
-  slider->setValue(value);
-
+  slider->setTickInterval(step);
+  slider->setMaximum(to); // paging disabled
+  slider->setMinimum(from);
+//  slider->setScaleMaxMinor(10);
+  slider->setValue(val);
   return slider;
 }
 
-QString MainWindow::toRichText (QString txt)
+QString MainWindow::toRichText(QString txt)
 {
   QString txt1;
-  txt1 = txt.replace ("<", "&lt;").replace(">", "&gt;");
+  txt1 = txt.replace("<", "&lt;").replace(">", "&gt;");
   return txt1;
 }
+
+
+//---------------------------------------------------------------------
+/*
+QwtSlider *MainWindow::createSlider
+                      (double from, double to, double step, double val, bool logaritmic)
+{
+  QwtSlider* slider = new QwtSlider(this, 
+                   Qt::Horizontal, QwtSlider::TopScale, QwtSlider::BgTrough);
+  if ( logaritmic ) slider->setScaleEngine(new QwtLog10ScaleEngine);
+  slider->setThumbWidth(10);
+  slider->setRange(from, to); // paging disabled
+  slider->setScale(from, to, step);
+//  slider->setScaleMaxMinor(10);
+  slider->setValue(val);
+  return slider;
+}
+*/
+
