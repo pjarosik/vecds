@@ -3,24 +3,11 @@
 
 To compile vecds:
 
-$ cd CMakeBuild
-$ cmake ..
+$ qmake
 $ make
-
-Note, by default vecds will compile in debug mode. To change that to
-release (optimized) mode, try:
-
-$ cmake -DCMAKE_BUILD_TYPE=Release ..
 
 To run vecds with a GUI, go to the bin directory and run:
 
 $ cd bin
 $ ./vecds
 
-To "distclean" vecds, just remove everything in the CMakeBuild
-directory.
-
-$ cd CMakeBuild
-$ rm -rf ./*
-
------
