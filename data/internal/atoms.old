@@ -1,0 +1,124 @@
+  0 Unk.  0.33  0.0  0.0  0.0   unknown
+  1   H  1.200  1.00 1.00 1.00  Hydrogen
+  2  He  1.400  0.85 1.00 1.00  Helium
+  3  Li  2.200  0.80 0.50 1.00  Lithium
+  4  Be  1.900  0.76 1.00 0.00  Beryllium
+  5   B  1.800  1.00 0.71 0.71  Boron
+  6   C  1.700  0.50 0.50 0.50  Carbon
+  7   N  1.600  0.05 0.05 1.00  Nitrogen
+  8   O  1.550  1.00 0.05 0.05  Oxygen
+  9   F  1.500  0.70 1.00 1.00  Fluorine
+ 10  Ne  1.540  0.70 0.89 0.96  Neon
+ 11  Na  2.400  0.67 0.36 0.95  Sodium
+ 12  Mg  2.200  0.54 1.00 0.00  Magnesium
+ 13  Al  2.100  0.75 0.65 0.65  Aluminium
+ 14  Si  2.100  0.50 0.60 0.60  Silicon
+ 15   P  1.950  1.00 0.50 0.00  Phosphorus
+ 16   S  1.800  1.00 1.00 0.19  Sulfur
+ 17  Cl  1.800  0.12 0.94 0.12  Chlorine
+ 18  Ar  1.880  0.50 0.82 0.89  Argon
+ 19   K  2.800  0.56 0.25 0.83  Potassium
+ 20  Ca  2.400  0.24 1.00 0.00  Calcium
+ 21  Sc  2.300  0.90 0.90 0.90  Scandium
+ 22  Ti  2.150  0.75 0.76 0.78  Titanium
+ 23   V  2.050  0.65 0.65 0.67  Vanadium
+ 24  Cr  2.050  0.54 0.60 0.78  Chromium
+ 25  Mn  2.050  0.61 0.48 0.78  Manganese
+ 26  Fe  2.050  0.50 0.48 0.78  Iron
+ 27  Co  2.000  0.44 0.48 0.78  Cobalt
+ 28  Ni  2.000  0.36 0.48 0.76  Nickel
+ 29  Cu  2.000  1.00 0.48 0.38  Copper
+ 30  Zn  2.100  0.49 0.50 0.69  Zinc
+ 31  Ga  2.100  0.76 0.56 0.56  Gallium
+ 32  Ge  2.100  0.40 0.56 0.56  Germanium
+ 33  As  2.050  0.74 0.50 0.89  Arsenic
+ 34  Se  1.900  1.00 0.63 0.00  Selenium
+ 35  Br  1.900  0.65 0.16 0.16  Bromine
+ 36  Kr  2.020  0.36 0.72 0.82  Krypton
+ 37  Rb  2.900  0.44 0.18 0.69  Rubidium
+ 38  Sr  2.550  0.00 1.00 0.00  Strontium
+ 39   Y  2.400  0.58 1.00 1.00  Yttrium
+ 40  Zr  2.300  0.58 0.88 0.88  Zirconium
+ 41  Nb  2.150  0.45 0.76 0.79  Niobium
+ 42  Mo  2.100  0.33 0.71 0.71  Molybdenum
+ 43  Tc  2.050  0.23 0.62 0.62  Technetium
+ 44  Ru  2.050  0.14 0.56 0.56  Ruthenium
+ 45  Rh  2.000  0.04 0.49 0.55  Rhodium
+ 46  Pd  2.050  0.00 0.41 0.52  Palladium
+ 47  Ag  2.100  0.88 0.88 1.00  Silver
+ 48  Cd  2.200  1.00 0.85 0.56  Cadmium
+ 49  In  2.200  0.65 0.46 0.45  Indium
+ 50  Sn  2.250  0.40 0.50 0.50  Tin
+ 51  Sb  2.200  0.62 0.39 0.71  Antimony
+ 52  Te  2.100  0.83 0.48 0.00  Tellurium
+ 53   J  2.100  0.58 0.00 0.58  Iodine
+ 54  Xe  2.160  0.26 0.62 0.69  Xenon
+ 55  Cs  3.000  0.34 0.09 0.56  Caesium
+ 56  Ba  2.700  0.00 0.79 0.00  Barium
+ 57  La  2.500  0.44 0.83 1.00  Lanthanum
+ 58  Ce  2.480  1.00 1.00 0.78  Cerium
+ 59  Pr  2.470  0.85 1.00 0.78  Praseodymium
+ 60  Nd  2.450  0.78 1.00 0.78  Neodymium
+ 61  Pm  2.430  0.64 1.00 0.78  Promethium
+ 62  Sm  2.420  0.56 1.00 0.78  Samarium
+ 63  Eu  2.400  0.38 1.00 0.78  Europium
+ 64  Gd  2.380  0.27 1.00 0.78  Gadolinium
+ 65  Tb  2.370  0.19 1.00 0.78  Terbium
+ 66  Dy  2.350  0.12 1.00 0.78  Dysprosium
+ 67  Ho  2.330  0.00 1.00 0.61  Holmium
+ 68  Er  2.320  0.00 0.90 0.46  Erbium
+ 69  Tm  2.300  0.00 0.83 0.32  Thulium
+ 70  Yb  2.280  0.00 0.75 0.22  Ytterbium
+ 71  Lu  2.270  0.00 0.67 0.14  Lutetium
+ 72  Hf  2.250  0.30 0.76 1.00  Hafnium
+ 73  Ta  2.200  0.30 0.65 1.00  Tantalum
+ 74   W  2.100  0.13 0.58 0.84  Tungsten
+ 75  Re  2.050  0.15 0.49 0.67  Rhenium
+ 76  Os  2.000  0.15 0.40 0.59  Osmium
+ 77  Ir  2.000  0.09 0.33 0.53  Iridium
+ 78  Pt  2.050  0.96 0.93 0.82  Platinum
+ 79  Au  2.100  0.80 0.82 0.12  Gold
+ 80  Hg  2.050  0.71 0.71 0.76  Mercury
+ 81  Tl  2.200  0.65 0.33 0.30  Thallium
+ 82  Pb  2.300  0.34 0.35 0.38  Lead
+ 83  Bi  2.300  0.62 0.31 0.71  Bismuth
+ 84  Po  2.000  0.67 0.36 0.00  Polonium
+ 85  At  2.000  0.46 0.31 0.27  Astatine
+ 86  Rn  2.000  0.26 0.51 0.59  Radon
+ 87  Fr  2.000  0.26 0.00 0.40  Francium
+ 88  Ra  2.000  0.00 0.49 0.00  Radium
+ 89  Ac  2.000  0.44 0.67 0.98  Actinium
+ 90  Th  2.400  0.00 0.73 1.00  Thorium
+ 91  Pa  2.000  0.00 0.63 1.00  Protactinium
+ 92   U  2.300  0.00 0.56 1.00  Uranium
+ 93  Np  2.000  0.00 0.50 1.00  Neptunium
+ 94  Pu  2.000  0.00 0.42 1.00  Plutonium
+ 95  Am  2.000  0.33 0.36 0.95  Americium
+ 96  Cm  2.000  0.47 0.36 0.89  Curium
+ 97  Bk  2.000  0.54 0.31 0.89  Berkelium
+ 98  Cf  2.000  0.63 0.21 0.83  Californium
+ 99  Es  2.000  0.70 0.12 0.83  Einsteinium
+100  Fm  2.000  0.70 0.12 0.73  Fermium
+101  Md  2.000  0.70 0.05 0.65  Mendelevium
+102  No  2.000  0.74 0.05 0.53  Nobelium
+103  Lr  2.000  0.78 0.00 0.40  Lawrencium
+104  Rf  2.000  0.80 0.00 0.35  Rutherfordium
+105  Db  2.000  0.82 0.00 0.31  Dubnium
+106  Sg  2.000  0.85 0.00 0.27  Seaborgium
+107  Bh  2.000  0.88 0.00 0.22  Bohrium
+108  Hs  2.000  0.90 0.00 0.18  Hassium
+109  Mt  2.000  0.92 0.00 0.15  Meitnerium
+110  Ds  2.000  0.93 0.00 0.14  Darmstadtium
+111  Rg  2.000  0.94 0.00 0.13  Roentgenium
+112 Uub  2.000  0.95 0.00 0.12  Ununbium
+113 Uut  2.000  0.96 0.00 0.11  Ununtrium
+114 Uuq  2.000  0.97 0.00 0.10  Ununquadium
+115 Uup  2.000  0.98 0.00 0.09  Ununpentium
+116 Uuh  2.000  0.99 0.00 0.08  Ununhexium
+117 Add1 0.5    1.0  0.0  0.0   additional1
+118 Add2 0.5    1.0  1.0  0.0   additional2
+119 Add3 0.5    0.0  1.0  0.0   additional3
+120 Add4 0.5    0.0  1.0  1.0   additional4
+121 Add5 0.5    0.0  0.0  1.0   additional5
+119 Add6 0.5    1.0  0.0  1.0   additional6
+120 inv  0.0    1.0  1.0  1.0   invisible

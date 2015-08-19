@@ -1,0 +1,35 @@
+//  bgColor = colWhite;
+!! bgColor 1.0 1.0 1.0 1.0
+//  bondColor = colLGray;
+!! bondColor 0.85 0.85 0.85 1.0
+//  optim = true;
+!! optim T
+//  fov = 10.0;
+!! fov 30.0
+//  radFactor = 0.33;
+!! radFactor 0.43
+//  alphaAt = 1.0;
+!! alphaAt 1.0
+//  bondFactor = 0.005;
+!! bondWidth 0.005
+//  axINd = 0 axPr1 = 0.15; axPr2=1.5; axL = 0.25; axRad = 0.02; alphaAx = 1.0;
+!! axis 0 0.15 1.5 0.25 0.02 1.0
+//  lightOn = true; materialOn = true; showNum = false;
+!! switches T T F
+//  sizeTxt = 0.4;
+!! sizeNumb 0.4
+!! matDiffuse  0.6  0.4  0.3  1.0
+!! matSpecular 0.6  0.6  0.5  1.0
+!! matShiness 15.0
+!! sphere 16 16
+!! ls1Ambient   0.4  0.4  0.4  1.0
+!! ls1Diffuse   0.45  0.45  0.45  1.0
+!! ls1Specular  0.6  0.6  0.6  1.0
+!! ls1Position  0.9  -0.9  0.8  0.0
+!! ls2Ambient   0.4  0.4  0.4  1.0
+!! ls2Diffuse   0.45  0.45  0.45  1.0
+!! ls2Specular  0.6  0.6  0.6  1.0
+!! ls2Position  1. -0.7  0.5  0.0
+!! alphaIm   0.5
+// atom  31  Ga  2.260 0.076 0.56 0.56  Gallium
+!! detRatio  1.0

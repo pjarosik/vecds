@@ -1,0 +1,11 @@
+// in first line:   name, a, b, c, alpha, beta, gamma
+!! structDef 3C_SiC 4.3596 4.3596 4.3596 90. 90. 90.
+// next lines:  atom, cell coords (x, y, z) - as fractions or real numbers
+!! structAtom Si 0 0 0
+!! structAtom C 1/4 1/4 1/4
+!! structAtom Si 1/2 1/2 0
+!! structAtom C 3/4 3/4 1/4
+!! structAtom Si 1/2 0 1/2
+!! structAtom C 3/4 1/4 3/4
+!! structAtom Si 0 1/2 1/2
+!! structAtom C 1/4 3/4 3/4

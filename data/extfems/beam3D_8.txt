@@ -1,0 +1,76 @@
+title beam
+atoms atoms.dat
+atom  type=h coords : {
+	1 4 5
+	3 5 6
+	5 6 2 
+}
+
+
+
+mesh	type = cubic 
+	domain = d1 
+	elemtype = Lagrange8  
+	numbering=default
+	x1 = < 0.0, 0.0, 0.0 > 
+   	x2 = < 5.0, 2.0, 2.0 > 
+        dim = { 4, 2, 2 }
+
+material 	name = mat1 	
+		type = Isotropic : { E=210000, nu=0.3, k=10, c=1.0, ro=1.0, k=10E-3 }
+
+equation 	name = LinearElasticity
+		type = linear_equation 
+		matrixtypes : { K = SkylineCholesky } 
+		nthreads=12
+
+elemdef		name 	= elemdef1 
+		type 	= LE_SOLID  
+		domains : { d1 }  
+		material = mat1
+		equation = LinearElasticity
+		
+
+dofs bandwidth = none
+
+bc 	inplanes : { x = 0.0 } 
+	values :   { ux = 0.0, uy = 0.0, uz = 0.0 }
+
+bc 	nearest : { < 5.0, 2.0, 2.0 > }
+	values : { Pz=-100 }
+
+output 	name	=  beam3D_results 
+	types : { txt, xml }
+	eqs 	: { LinearElasticity }
+	stages	: { Analysis }		
+	dataecho : { stat, nodes, feinst, felems, materials, loads, model, output }
+	nodes numbers : { all } 
+	elems numbers : { all } 
+
+plot 	name	= beam3D_image_wire
+	types 	: { ps, svg, prm }	
+	eqs 	: { LinearElasticity }
+	content	: { nodes, edges }
+
+plot 	name	= beam3D_image_ux
+	types 	: { ps, svg, prm }	
+	eqs 	: { LinearElasticity }
+	content	: { nodes, edges, faces }
+	map: { value=ux }
+
+plot 	name	= beam3D_image_uy
+	types 	: { ps, svg, prm }	
+	eqs 	: { LinearElasticity }
+	content	: { nodes, edges, faces }
+	map: { value=uy }
+
+plot 	name	= beam3D_image_uz
+	types 	: { ps, svg, prm }	
+	eqs 	: { LinearElasticity }
+	content	: { nodes, edges, faces }
+	map: { value=uz }
+
+solve  
+
+
+

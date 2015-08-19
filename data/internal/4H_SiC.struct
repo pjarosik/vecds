@@ -1,0 +1,11 @@
+// in first line:   name, a, b, c, alpha, beta, gamma
+!! structDef 4H_SiC 3.073 3.073 10.053 90. 90. 120.
+//
+!! structAtom Si 0 0 0
+!! structAtom C 0 0 3/16
+!! structAtom Si 2/3 1/3 1/4
+!! structAtom C 2/3 1/3 7/16
+!! structAtom Si 1/3 2/3 1/2
+!! structAtom C 1/3 2/3 11/16
+!! structAtom Si 2/3 1/3 3/4
+!! structAtom C 2/3 1/3 15/16
