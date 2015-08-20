@@ -801,9 +801,8 @@ void MainWindow::SL_performDislCalc(QString ff)
      if ( line.isEmpty() || (line.at(0)=='/' && line.at(1)=='/') ) continue;
      if ( line.at(0)=='!' && line.at(1)=='!' ) {
         QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-	QString BV = fields.at(2); glm::dvec3 point = glm::dvec3(fields.at(3).toDouble(), fields.at(4).toDouble(), fields.at(5).toDouble());
-  //std::cout << " BV=" << BV.toStdString() << "  coords=(" << point.x << ", " << point.y << ", " << point.z << ")\n";
-        int k = fields.at(1).toInt();
+	std::string s = fields.at(1).toStdString();
+	int k = MiscFunc::toInt(s);
         glm::dvec3 pos = MiscFunc::convert(ADDS->pos.get()->at(k));//MiscFunc::convert
         glm::dmat3 rt = ADDS->rotTens.at(k);
         glm::dmat3 rtInv = glm::transpose(rt);
@@ -814,18 +813,13 @@ void MainWindow::SL_performDislCalc(QString ff)
         for (int i=0; i<LATT->n_atoms; i++ ) {
            glm::dvec3 coord1 = rt * MiscFunc::convert(LATT->coords.get()->at(i));
            glm::dvec3 dist1 = coord1 - cd;
-           //if ( <
-           glm::dvec3 du0 = rtInv * Calc::mixed_u(dist1, be, bz);
-           //LATT->du.push_back(du0);//(MiscFunc::convert(du0));
-	   (LATT->du)[i] = du0;
-	   //glm::dvec3 du1 = LATT->du.at(i);//if ( i<10 ) qWarning(" i=%d du0=(%f, %f, %f), du1=(%f, %f, %f)", i, du0.x, du0.y, du0.z, du1.x, du1.y, du1.z);
+           if ( glm::length2(dist1)<1.e-8 ) {  std::cout << " ERROR  atom nr " << i+1 << "  is too close to disl core" << std::endl; return; }
+           (LATT->du)[i] = rtInv * Calc::mixed_u(dist1, be, bz);
         }
 	for (int i=0; i<LATT->n_atoms; i++ ) {
            glm::dvec3 u0 = LATT->u.at(i) + LATT->du.at(i);
-           //LATT->u.push_back(u0);
 	   (LATT->u)[i] = u0;
-	   //glm::dvec3 u1 = LATT->u.at(i);
-  if ( i<10 ) qWarning(" i=%d  u0=(%f, %f, %f)", i, u0.x, u0.y, u0.z);
+//  if ( i<10 ) qWarning(" i=%d  u0=(%f, %f, %f)", i, u0.x, u0.y, u0.z);
         }
      } // line.at(0)=='!' && line.at(1)=='!'
   }
