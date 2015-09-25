@@ -31,38 +31,6 @@ int main(int argc, char *argv[])
   return app.exec ();	
 }
 /*
-bool rect_box(glm::dvec3 pos)
-{
-  pos -= center;
-  return (pos.x>-0.5*size_x && pos.x<0.5*size_x &&
-          pos.y>-0.5*size_y && pos.y<0.5*size_x &&
-          pos.z>-0.5*size_z && pos.z<0.5*size_z);
-}
-
-bool hex_box(glm::dvec3 pos)
-{
-  double hr = hexRad*cos30;
-  pos -= center;
-  if ( pos.z>0.5*size_z || pos.z<-0.5*size_z ) return false;
-  double rad = sqrt(pos.x*pos.x+pos.y*pos.y);
-  if ( rad>hexRad ) return false;
-  if ( rad<hr ) return true;
-  if ( pos.x<=0.5*hexRad && pos.x>=-0.5*hexRad ) return ( pos.y<=hr && pos.y>=-hr );
-  double ca = ((pos.y>=0. && pos.x>0.) || (pos.y<0. && pos.x<0.))?  -0.5 : 0.5;
-  double  cx = pos.y*ca - pos.x*cos30;
-  return ( cx<=hr && cx>=-hr );
-}
-
-bool romb_box(glm::dvec3 pos)
-{
-  pos -= center;
-  if ( pos.z>0.5*size_z || pos.z<-0.5*size_z ) return false;
-  if ( pos.y<0. || pos.y>cos30*size_x ) return false;
-  double tg = -sqrt(3.);
-  if ( pos.x<0. && pos.y<tg*pos.x ) return false;
-  if ( pos.x>0.5*size_x && pos.y>tg*(pos.x-size_x) ) return false;
-  return true;
-}
      if ( switch_hex || switch_rect || switch_romb ) {
         if ( switch_rect ) {
            cout << "switch_rect";

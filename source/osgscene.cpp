@@ -68,16 +68,16 @@ OsgScene::~OsgScene()
 osg::ref_ptr<osg::Group> OsgScene::createScene()
 {
 qWarning("createScene 0");
-    if ( INT->refrAtoms  && !INT->atName.empty() )	INT->m_worldAt = createAtoms();
+    if ( !INT->refrMarked && INT->refrAtoms  && !INT->atName.empty() )	INT->m_worldAt = createAtoms();
     
-    if ( INT->refrFem && (!INT->fem.empty() || !INT->compFem.empty()) ) INT->m_fem = createFem();    
+    //if ( INT->refrFem && (!INT->fem.empty() || !INT->compFem.empty()) ) INT->m_fem = createFem();    
 
     if ( INT->refrImage && !INT->image.empty() ) INT->m_image = createImage();
     
 //    if ( INT->refrAdds && ADDS->n_adds>0 ) INT->m_worldAdds = createAdds();	
         
     if ( !INT->atName.empty() || !INT->fem.empty() || !INT->compFem.empty() ) {
-        
+ qWarning("-------------------------   createScene  - 1  +++++++++++++++++++++++++++++++ ");       
 	if ( !INT->atName.empty() )                            m_worldReferenceFrame.get()->addChild(INT->m_worldAt.get());
 	if ( !INT->fem.empty() || !INT->compFem.empty() )      m_worldReferenceFrame.get()->addChild(INT->m_fem.get());
 	if ( !INT->image.empty() )                             m_worldReferenceFrame.get()->addChild(INT->m_image.get());
@@ -85,30 +85,46 @@ qWarning("createScene 0");
  	if ( INT->showNum && !INT->atName.empty() )            m_worldReferenceFrame.get()->addChild(createNum().get());
     //qWarning("-------------------------   +++++++++++++++++++++++++++++++     1");
 	if ( (!INT->fem.empty() || !INT->compFem.empty()) && INT->refrRes && !INT->choosen_value.empty() )  m_worldReferenceFrame.get()->addChild(createRes().get());
-    //qWarning("-------------------------   +++++++++++++++++++++++++++++++     2");
     }
-    m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
     if ( INT->optim ) {
        osgUtil::Optimizer optimizer;
        optimizer.optimize( m_switchRoot.get() );
     }
-    if ( INT->showAdds && ADDS->n_adds>0 )                 displayAdds(true);        
+    m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
+    if ( INT->showAdds && ADDS->n_adds>0 )   displayAdds(true);        
  qWarning("-------------------------   createScene  - END  +++++++++++++++++++++++++++++++ ");
     return m_switchRoot.get();
+}
+
+void OsgScene::displayMarked()
+{
+      m_worldReferenceFrame.get()->removeChild(m_worldAt.get());
+   qWarning("displayMarked 1");
+       INT->m_worldAt = createAtoms();
+   qWarning("displayMarked 2");
+//       m_worldReferenceFrame.get()->addChild(INT->m_worldAt.get());
+   m_worldReferenceFrame.get()->addChild(m_worldAt.get());
+  qWarning("displayMarked 3");
+   m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
+qWarning("displayMarked 4");
+       INT->refrMarked = false;
+ 
 }
 
 osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
 {
  qWarning("createAtoms 0");
-    osg::ref_ptr<osg::MatrixTransform> m_worldAt = new osg::MatrixTransform;
+    //osg::ref_ptr<osg::MatrixTransform> m_worldAt = new osg::MatrixTransform;
+    m_worldAt = new osg::MatrixTransform;
     osg::StateSet* set = m_worldAt->getOrCreateStateSet();
     set->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
     set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA ,GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON); 
-    if ( INT->fem.empty() ) {
+    //if ( INT->fem.empty() ) {
        INT->xMin = LATT->xMin;  INT->xMax = LATT->xMax;
        INT->yMin = LATT->yMin;  INT->yMax = LATT->yMax;
        INT->zMin = LATT->zMin;  INT->zMax = LATT->zMax;
-    } /*
+    //} 
+    /*
     } else {
        INT->xMin = std::min(fxMin, LATT->xMin);  INT->xMax = std::max(fxMax, LATT->xMax);
        INT->yMin = std::min(fyMin, LATT->yMin);  INT->yMax = std::max(fyMax, LATT->yMax);
@@ -124,11 +140,13 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
        for (int i=0; i<LATT->n_bonds; i++) {
          int i1 = LATT->bond1.get()->at(i) - 1;
 	 int i2 = LATT->bond2.get()->at(i) - 1;
+	 if ( LATT->marked.at(i1)<0 || LATT->marked.at(i2)<0 ) continue;
  	 osg::Vec3 p1 = LATT->coords.get()->at(i1);
          osg::Vec3 p2 = LATT->coords.get()->at(i2);
          m_worldAt->addChild(drawBond(p1, p2, rCyl, color));
        }
     }  
+ qWarning("createAtoms 1");
     for (int i=0; i<LATT->n_k; i++) {
         int ak = LATT->nK.get()->at(i);
     	float r = INT->radFactor * AT->a_rad1[ak];
@@ -138,6 +156,7 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
      //std::cout << " ak=" << ak << "   r=" << r << "     red=" << color.x() << "     alfa=" << color.w() << std::endl;
 	osg::ref_ptr<osg::Geometry> draw = makeSphere(r, INT->sphSlices, INT->sphStacks, color);
 	for (int j=0; j<LATT->n_atoms; j++) {
+	     if ( LATT->marked.at(j)<0 ) continue;
 	     int akk = LATT->nAt.get()->at(j);
 	     if ( akk==ak ) {
 	         osg::ref_ptr<osg::Geode> geo = new osg::Geode;
@@ -155,8 +174,10 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
 	}
     }
     INT->refrAtoms = false;
-    INT->m_worldAt = m_worldAt;
+    //INT->m_worldAt = m_worldAt;
+ qWarning("createAtoms END");
     return m_worldAt.get();
+    //return m_worldAt.release();
 }
 
 void OsgScene::displayAdds(bool sw)
@@ -250,7 +271,7 @@ void OsgScene::displayPlane(glm::dmat3 rotTens, int nA)
    m_worldReferenceFrame.get()->addChild(geode0.get());
 
    m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
- std::cout << " ++==++==++  displayPlane 6" << std::endl;
+ std::cout << " ++==++==++  displayPlane - END" << std::endl;
 }
 
 void OsgScene::showOneAtom(int ind)

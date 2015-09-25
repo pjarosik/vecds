@@ -8,9 +8,9 @@ const double camFact = 0.15;
 extern Internal *INT;
 extern MainWindow mainwindow;
 
-    OsgViewerQt::OsgViewerQt(osg::Group *scene1, double fovy) : QGLWidget(), 
+OsgViewerQt::OsgViewerQt(OsgScene *scene1, double fovy) : QGLWidget(), 
                                                 m_refreshPeriod(defaultRefreshPeriod)
-    {
+{
         setThreadingModel(osgViewer::ViewerBase::SingleThreaded);
 	setAttribute(Qt::WA_DeleteOnClose);
         //osgViewer::ViewerBase::CullDrawThreadPerContext
@@ -23,12 +23,12 @@ extern MainWindow mainwindow;
 	QGLWidget::makeCurrent();
 	unsigned int contextID = m_gw->getState()->getContextID();
 	bool goodGraph = osg::isGLExtensionSupported(contextID, "GL_EXT_draw_instanced");
-	if ( goodGraph ) std::cout << "graph OK" << std::endl;
-        else {
-	  if ( !INT->msgGraph ) {
+	//if ( goodGraph ) std::cout << "graph OK" << std::endl;
+        //else {
+	  if ( !goodGraph && !INT->msgGraph ) {
              QMessageBox::information(0, "For your information", "Because of missing OpenGL extensions 'GL_EXT_draw_instanced'\n"  "the program will work poorly on your system.");
 	     INT->msgGraph = true;
-	} }     
+	} //}     
 	
         QWidget* widget1 = addViewWidget( scene1, fovy );
         addView( m_view );
@@ -53,10 +53,10 @@ extern MainWindow mainwindow;
 	std::cout << "VIEWER    _centr0=" << _centr0.x() << ",  "  << _centr0.y() << ",  "  << _centr0.z() << std::endl;
 	_timer.start( m_refreshPeriod );
         connect( &_timer, SIGNAL(timeout()), this, SLOT(my_update()) ); //SLOT(update()));
-	 
-    }
+        std::cout << "OsgViewerQt OK" << std::endl;
+}
 
-    QWidget* OsgViewerQt::addViewWidget( osg::Group* scene1, double fovy )
+    QWidget* OsgViewerQt::addViewWidget( OsgScene* scene1, double fovy )
     {
         m_view = new osgViewer::View;
 //        addView( m_view );
@@ -73,7 +73,7 @@ extern MainWindow mainwindow;
         if ( fovy==0.0 )   m_camera->setProjectionMatrixAsOrtho(-camFact*m_width, camFact*m_width, -camFact*m_height, camFact*m_height, 1.0, 1000000.0 ); //m_zNear, m_zFar );
         else               m_camera->setProjectionMatrixAsPerspective(fovy, m_ratio, 1.0, 10000000.0 ); // m_zNear, m_zFar );
 
-        m_view->setSceneData( scene1 );
+        m_view->setSceneData( scene1->getScene() );
         m_view->addEventHandler( new osgViewer::StatsHandler );
         m_view->addEventHandler( new PickHandler );
         m_trackballManipulator = new osgGA::TrackballManipulator;
@@ -176,11 +176,9 @@ extern MainWindow mainwindow;
 	}
 
         if ( INT->pressed ) {
-            //INT->pressed = false;
+            INT->pressed = false;
           std::cout << " ++==++==++   my_Update    X:" << INT->actPoint.x << ",   Y:" << INT->actPoint.y << ",   Z:" << INT->actPoint.z << std::endl;
             emit SIG_actPoint(INT->actPoint);
-	    INT->pressed = false;
-	    //::mainwindow.SL_actPoint(INT->actPoint);
         }
 
         update();

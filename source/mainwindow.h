@@ -71,7 +71,8 @@ public:
     osg::Quat rotQuat;
     QString strBvect;
     QString strAtom;
-    QString strCore;
+    QString strPoint;
+    QString strName;
     QString iAt;
     QString iStr;
     
@@ -79,19 +80,26 @@ private:
    
     osg::ref_ptr<OsgViewerQt> mview1;
     osg::ref_ptr<OsgScene> scene;
-    osg::ref_ptr<osg::Group> intscene;
+    //osg::ref_ptr<osg::Group> intscene;
     //CFEMAppInterface *FEMi;
     double valTh, valPh, valPs, valDist, valCx, valCy;
     osg::Quat YtoZ;
     osg::Quat ZtoY;
     
     int mode;
-    QString ansBurgers;
+    QString ansBurgers, ansPlane;
+    glm::dvec3 size;
 
     QTextEdit *textEdit;
     QWidget *window;
     QString line1;
     SimplePad *eee;
+
+    void cutPlane();
+    void cutBox(glm::dvec3 size);
+    bool rect_box(glm::dvec3 pos, glm::dvec3 size);
+    bool hex_box(glm::dvec3 pos, glm::dvec3 size);
+    bool romb_box(glm::dvec3 pos, glm::dvec3 size);
 
     void createActions();
     void createMenus();
@@ -99,7 +107,7 @@ private:
     void setSliders(double v1, double v2, double v3, double v4, double v5, double v6);//(int v1, int v2, int v3);
     void keyPressEvent(QKeyEvent *keyEv);
     //void contextMenuEvent(QContextMenuEvent *event);
-    
+    void addADDS(int nr);
     void readAlcXyz(QString aname1);
     void refreshScene();
     void refreshViewer();
@@ -125,7 +133,8 @@ private:
 
     QAction *planeAct;
     QAction *cubBoxAct;
-    QAction *hexBoxAct;
+    QAction *hexBoxAct;    
+    QAction *rombBoxAct;
   
     QAction *defnewAct;
     QAction *chooseAct;
@@ -233,6 +242,10 @@ private slots:
     void SL_update();
     void SL_bondsAct();
     void SL_saveAtoms();
+    void SL_plane();
+    void SL_box();
+    void SL_hexBox();
+    void SL_rombBox();
 };
 
 #endif // MAINWINDOW_H

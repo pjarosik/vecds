@@ -17,8 +17,10 @@ extern Atoms *AT;
                          mxsxm.y, mxs.y, m.y,
                          mxsxm.z, mxs.z, m.z);
     } else {
-      //rotTens = MiscFunc::quat2rot((mview1->getQuat()*ZtoY).conj())
-      std::cout << "Rotation not defined" << std::endl;
+       return glm::dmat3(1.0, 0.0, 0.0,
+                          0.0, 1.0, 0.0,
+                          0.0, 0.0, 1.0); //rotTens = MiscFunc::quat2rot((mview1->getQuat()*ZtoY).conj())
+       std::cout << "Rotation not defined" << std::endl;
     }  
   }  
     
@@ -79,6 +81,17 @@ extern Atoms *AT;
        INT->hklDefined = true;   
        return true;
   }
+  
+  glm::dvec3 Calc::plane1(const std::string line)//, glm::dvec3 point)
+  {
+       int mill[4];
+       std::string line1 = MiscFunc::stripBlanks(line);//  cout << "line1=" <<  line1 << endl;
+       size_t i_left2 = line1.find('(');
+       size_t i_right2 = line1.find(')');
+       std::string line2 = MiscFunc::stripBlanks(line1.substr(i_left2+1, i_right2-i_left2-1));//  cout << "line2 (2)= " <<  line2 << endl;
+       if ( internal_miller(line2, 1, mill) )  return glm::dvec3(mill[0], mill[1], mill[2]);
+       else { std::cout << "ERROR Plane" << std::endl;   return glm::dvec3(0., 0., 0.); }
+  }
     
   int Calc::identAtom(glm::dvec3 point)
   {
@@ -108,3 +121,37 @@ extern Atoms *AT;
      return glm::dvec3(ux, uy, bz/(2.*osg::PI)*atan2(y, x));
   } // mixed_u
 
+/*
+bool rect_box(glm::dvec3 pos)
+{
+  pos -= center;
+  return (pos.x>-0.5*size_x && pos.x<0.5*size_x &&
+          pos.y>-0.5*size_y && pos.y<0.5*size_x &&
+          pos.z>-0.5*size_z && pos.z<0.5*size_z);
+}
+
+bool hex_box(glm::dvec3 pos)
+{
+  double hr = hexRad*cos30;
+  pos -= center;
+  if ( pos.z>0.5*size_z || pos.z<-0.5*size_z ) return false;
+  double rad = sqrt(pos.x*pos.x+pos.y*pos.y);
+  if ( rad>hexRad ) return false;
+  if ( rad<hr ) return true;
+  if ( pos.x<=0.5*hexRad && pos.x>=-0.5*hexRad ) return ( pos.y<=hr && pos.y>=-hr );
+  double ca = ((pos.y>=0. && pos.x>0.) || (pos.y<0. && pos.x<0.))?  -0.5 : 0.5;
+  double  cx = pos.y*ca - pos.x*cos30;
+  return ( cx<=hr && cx>=-hr );
+}
+
+bool romb_box(glm::dvec3 pos)
+{
+  pos -= center;
+  if ( pos.z>0.5*size_z || pos.z<-0.5*size_z ) return false;
+  if ( pos.y<0. || pos.y>cos30*size_x ) return false;
+  double tg = -sqrt(3.);
+  if ( pos.x<0. && pos.y<tg*pos.x ) return false;
+  if ( pos.x>0.5*size_x && pos.y>tg*(pos.x-size_x) ) return false;
+  return true;
+}
+*/

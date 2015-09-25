@@ -23,11 +23,11 @@ class OsgViewerQt : public QGLWidget, public osgViewer::CompositeViewer
     Q_OBJECT
 
 public:
-    OsgViewerQt(osg::Group *scene1, double fovy); //(OsgScene *scene);
+    OsgViewerQt(OsgScene *scene1, double fovy); //(OsgScene *scene);
     
     virtual void paintEvent( QPaintEvent* event )  { frame(); }
 
-    QWidget *addViewWidget( osg::Group *scene1, double fovy );
+    QWidget *addViewWidget( OsgScene *scene1, double fovy );
     void removeViewWidget();
     osg::ref_ptr<osgQt::GraphicsWindowQt> createGraphicsWindow( int x, int y, int w, int h, const std::string& name="", bool windowDecoration=false );
     void setRefreshPeriod(unsigned int period);

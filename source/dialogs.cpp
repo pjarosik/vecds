@@ -9,9 +9,7 @@ QuestionForm1::QuestionForm1(QString title, QString descr, QStringList quest,
 {
    int numQuest = quest.count();
    setWindowTitle(title);
-  std::cout << "SL_genAtoms **1" << std::endl;
-   //setAttribute(Qt::WA_DeleteOnClose);
-//   this->setStyleSheet("QLineEdit { background-color: yellow }");
+   //setAttribute(Qt::WA_DeleteOnClose);//   this->setStyleSheet("QLineEdit { background-color: yellow }");
    for (int i=0; i<numQuest; i++)  {
       qEdit.push_back(new QLineEdit(sug.at(i)));
       QLabel *label = new QLabel(quest.at(i));
@@ -19,7 +17,6 @@ QuestionForm1::QuestionForm1(QString title, QString descr, QStringList quest,
       label->setTextFormat(Qt::RichText);
       labels.push_back(label);
    }
- std::cout << "SL_genAtoms **2" << std::endl;
    QDialogButtonBox *buttonBox = new QDialogButtonBox;
    buttonBox->addButton(tr("Accept"), QDialogButtonBox::AcceptRole);
    buttonBox->addButton(tr("Reject"), QDialogButtonBox::RejectRole);

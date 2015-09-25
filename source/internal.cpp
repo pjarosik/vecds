@@ -22,6 +22,7 @@ Internal::Internal()
   colGray  = osg::Vec4(0.5, 0.5, 0.5, 1.0);
   colDGray  = osg::Vec4(0.2, 0.2, 0.2, 1.0);
   colLGray  = osg::Vec4(0.8, 0.8, 0.8, 1.0);
+  outLog.open("vecds_log.txt", std::ofstream::app);
   image = "";
   atName = "";
   fem = "";
@@ -30,6 +31,8 @@ Internal::Internal()
   choosen_value = "";
   nu = 0.35;
   r0_fact = 1.0;
+  ndisl = 0;
+  npoints = 0;
   //points = " a b \n c";
   nr = -1;
   refrAtoms = false;
@@ -41,7 +44,8 @@ Internal::Internal()
   msgGraph = false;
   hklDefined = false;
   atomDefined = false;
-  coreDefined = false;
+  pointDefined = false;
+  refrMarked = false;
   dist0 = -1.;
   centr0 = osg::Vec3d(0., 0., 0.);
   currDir = QApplication::applicationDirPath();//QDir::currentPath();
@@ -85,14 +89,9 @@ void Internal::initStructures()
         delete crC;
 	crCDefined = false;
      } else {
-        //structList << *bad;
-	//structDesc[i++] = 0;
 	QString str = QString("Structure %1 is not defined").arg(one);
-	//str.sprintf("Structure %s is not defined", one.toLatin1().data());
 	QMessageBox::warning(0, "PROBLEM", str);
      }
-// std::cout << " Structure " << i << "   desc=" << structDesc[i-1] << std::endl;
-  //delete bad;
   }  
   std::cout << "+++++++++++++  Structures initialized" << std::endl;
 }
@@ -108,7 +107,7 @@ std::cout << " file=" << sett.toStdString() << std::endl;
   while (!in.atEnd()) {
      QString line = in.readLine();
      ++nl;
-  std::cout << line.toStdString() << std::endl;
+//  std::cout << line.toStdString() << std::endl;
      if ( line.isEmpty() || (line.at(0)=='/' && line.at(1)=='/') ) continue;
      if ( line.at(0)=='!' && line.at(1)=='!' ) {
         QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);//line.split(' ', QString::SkipEmptyParts); 

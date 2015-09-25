@@ -17,6 +17,7 @@ class Calc
 //  static const double deg2rad = 0.01745329251994329576;
   static glm::dmat3 rotation_tensor();
   static bool parse_miller(const std::string line);
+  static glm::dvec3 plane1(const std::string line);
   static bool internal_miller(std::string line2, int which, int *mill);//spradzenie poprawności danych i zamiana układu cztero na trójwsk.
   static int identAtom(glm::dvec3 point);
   static glm::dvec3 mixed_u(glm::dvec3 rotdist, double be, double bz);

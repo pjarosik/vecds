@@ -22,6 +22,8 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
+#include <fstream>      // std::ofstream
+
 //#include "../FEMApp/FEMAppLib/FEMAppInterface.h"
 
 struct CrysCell
@@ -62,6 +64,8 @@ class Internal
   osg::ref_ptr<osg::MatrixTransform> m_fem;
   osg::ref_ptr<osg::MatrixTransform> m_worldRes;
 */ 
+  std::ofstream outLog;//("vecds_log.txt");
+
   QStringList results;
  
   QString currDir;
@@ -82,7 +86,7 @@ class Internal
   bool refrRes;
   bool newcalc;
   bool optim;
-  //bool refresh;
+  bool refrMarked;
 
   osg::ref_ptr<osg::MatrixTransform> m_worldAt;
   osg::ref_ptr<osg::MatrixTransform> m_worldAdds;
@@ -99,7 +103,7 @@ class Internal
 
   CrysCell *crC;
   int crCNum;
-  glm::dvec3 millerV, millerP;
+  glm::dvec3 millerV, millerP, plane;
   double fract;
 
   glm::dvec3 actPoint;
@@ -111,7 +115,9 @@ class Internal
 //  bool planeDispl;
   bool hklDefined;
   bool atomDefined;
-  bool coreDefined;
+  bool pointDefined;
+  int ndisl;
+  int npoints;
   
   QString points;
   double dist0;

@@ -14,6 +14,8 @@ int Gener::genLattice(const int nx0, const int ny0, const int nz0, const int nx1
     LATT->kName.clear();
     LATT->marked.clear();
     LATT->coords.get()->clear();
+    LATT->du.clear();
+    LATT->u.clear();
     LATT->nAt.get()->clear();
     LATT->nK.get()->clear();
     LATT->bond1.get()->clear();
@@ -33,7 +35,8 @@ int Gener::genLattice(const int nx0, const int ny0, const int nz0, const int nx1
        for (int j=ny0; j<ny1; j++) {
           for (int i=nx0; i<nx1; i++) {
              for (int an=0; an<INT->crC->numCellAt; an++) {
-	        LATT->marked << count++;
+	        LATT->marked.push_back(0); 
+		count++;
 		glm::dvec3 hic = glm::dvec3(double(i)+INT->crC->cellCoord.at(an).x, double(j)+INT->crC->cellCoord.at(an).y, double(k)+INT->crC->cellCoord.at(an).z);
 		glm::dvec3 pos = INT->crC->c2o * hic;
 		double x = pos.x;  double y = pos.y;  double z = pos.z;
@@ -48,5 +51,10 @@ int Gener::genLattice(const int nx0, const int ny0, const int nz0, const int nx1
     }  }  }  }
     LATT->scDim = std::max(LATT->xMax-LATT->xMin, std::max(LATT->yMax-LATT->yMin, LATT->zMax-LATT->zMin));
     LATT->n_bonds = 0;    
+    for (int i=0; i<count; i++) {
+       LATT->marked.push_back(0);
+       LATT->u.push_back(glm::dvec3(0., 0., 0.));
+       LATT->du.push_back(glm::dvec3(0., 0., 0.));
+    }
     return count;
 }

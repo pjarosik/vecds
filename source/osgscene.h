@@ -73,6 +73,7 @@ public:
     void displayPlane(glm::dmat3 rotTens, int nA);
     void showOneAtom(int ind);
     void displayAdds(bool sw);
+    void displayMarked();
     
 private:
    
@@ -107,9 +108,8 @@ private:
     osg::StateSet* makeStateSet(float size);
     
     osg::ref_ptr<osg::MatrixTransform> m_worldReferenceFrame;
-    osg::ref_ptr<osg::MatrixTransform> m_worldRes;
-    //osg::Switch *m_switchRoot;
-    osg::ref_ptr<osg::Group> m_switchRoot;
+    osg::ref_ptr<osg::MatrixTransform> m_worldAt;
+    osg::ref_ptr<osg::Group> m_switchRoot;//osg::Switch *m_switchRoot;
 
     osg::TessellationHints *hints;
     osg::ref_ptr<osg::Group> m_scene;

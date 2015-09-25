@@ -22,12 +22,13 @@ class Adds
  private: 
 
   osg::ref_ptr<osg::Vec3Array> pos;
-  osg::ref_ptr<osg::IntArray> nMark;
+  osg::ref_ptr<osg::IntArray> nKind;
 
   std::vector<glm::dvec3> millerVs;
   std::vector<glm::dvec3> millerPs;
   std::vector<double> fracts;
   std::vector<glm::dmat3> rotTens;
+  std::vector<QString> strName;
   std::vector<QString> strBV;
   std::vector<int> crCNum;
   int n_adds;
