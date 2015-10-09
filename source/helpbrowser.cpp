@@ -1,5 +1,5 @@
 #include <QtGui>
-#include "helpbrowser.h" 
+#include "../include/helpbrowser.h" 
 
 extern Internal *INT;
 // pomocnicza klasa - przeglądarka plików pomocy

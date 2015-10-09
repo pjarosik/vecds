@@ -1,6 +1,6 @@
-#include "adds.h"
-#include "atoms.h"
-#include "internal.h"
+#include "../include/adds.h"
+#include "../include/atoms.h"
+#include "../include/internal.h"
 
 extern Atoms *AT;
 extern Internal *INT;

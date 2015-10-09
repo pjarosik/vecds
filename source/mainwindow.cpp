@@ -17,7 +17,7 @@
 // <http://www.gnu.org/licenses/>.
 //					 
 // -------------------------------------------------------------------
-#include "mainwindow.h"
+#include "../include/mainwindow.h"
 #include <iostream>
 
 extern Atoms *AT;

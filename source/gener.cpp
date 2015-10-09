@@ -1,4 +1,4 @@
-#include "gener.h"
+#include "../include/gener.h"
 #include <iostream>
 
 extern Internal *INT;

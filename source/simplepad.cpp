@@ -1,6 +1,6 @@
 #include <QtGui>
-#include "simplepad.h"
-#include "internal.h"
+#include "../include/simplepad.h"
+#include "../include/internal.h"
 #include <iostream>
 
 extern Internal *INT;

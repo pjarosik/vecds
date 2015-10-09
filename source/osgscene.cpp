@@ -18,10 +18,8 @@
 //					 
 // -------------------------------------------------------------------
 
-#include "osgscene.h"
+#include "../include/osgscene.h"
 //#include "osgv.h"
-
-//namespace M_SC {
 
 extern Atoms *AT;
 extern Lattice *LATT;

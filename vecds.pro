@@ -9,9 +9,9 @@ message($$PWD)
 
 
 
-HEADERS      = $$files(./source/*.h)
+HEADERS      = $$files(./include/*.h)
 SOURCES      = $$files(./source/*.cpp)
-RESOURCES    = ./source/vecds.qrc
+RESOURCES    = ./include/vecds.qrc
 
 OBJECTS_DIR  = tmp
 MOC_DIR      = tmp

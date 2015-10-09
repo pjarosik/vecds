@@ -1,4 +1,4 @@
-#include "lattice.h"
+#include "../include/lattice.h"
 
 Lattice::Lattice()
 {

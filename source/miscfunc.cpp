@@ -1,6 +1,6 @@
-#include "miscfunc.h"
-#include "atoms.h"
-#include "lattice.h"
+#include "../include/miscfunc.h"
+#include "../include/atoms.h"
+#include "../include/lattice.h"
 
 extern Atoms *AT;
 extern Internal *INT;

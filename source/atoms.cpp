@@ -1,4 +1,4 @@
-#include "atoms.h"
+#include "../include/atoms.h"
 
 extern Internal *INT;
 
