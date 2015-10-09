@@ -3,14 +3,18 @@
 
 #include "internal.h"
 
+/**
+ * This is a class that describes a crystal lattice.
+ */
 class Lattice
 {
-	
+  
  public:	
+
   /**
    * Constructor.
    */
-Lattice();
+  Lattice();
   
   friend class MainWindow;
   friend class OsgScene;
