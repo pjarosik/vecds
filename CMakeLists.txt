@@ -58,7 +58,7 @@ include_directories (${OPENSCENEGRAPH_INCLUDE_DIRS})
 # "add_subdirectory (source)" and done things in a CMakeFile.txt
 # there.
 set (SOURCES
-  source/adds.cpp   
+  source/points.cpp   
   source/calc.cpp     
   source/gener.cpp        
   source/internal.cpp  
