@@ -1,6 +1,6 @@
-#include "../include/osgscene.h"
-#include "../include/osgv.h"
-#include "../include/mainwindow.h"
+#include "osgscene.h"
+#include "osgv.h"
+#include "mainwindow.h"
 
 const unsigned int defaultRefreshPeriod = 50;//30;
 const unsigned int idleRefreshPeriod = 150;
@@ -56,7 +56,11 @@ OsgViewerQt::OsgViewerQt(OsgScene *scene1, double fovy) : QGLWidget(),
         std::cout << "OsgViewerQt OK" << std::endl;
 }
 
-    QWidget* OsgViewerQt::addViewWidget( OsgScene* scene1, double fovy )
+OsgViewerQt::~OsgViewerQt()
+{
+}
+
+    QWidget* OsgViewerQt::addViewWidget(OsgScene* scene1, double fovy)
     {
         m_view = new osgViewer::View;
 //        addView( m_view );
@@ -85,10 +89,10 @@ OsgViewerQt::OsgViewerQt(OsgScene *scene1, double fovy) : QGLWidget(),
     
     void OsgViewerQt::removeViewWidget()
     {
-		removeView(m_view);
+	removeView(m_view);
     }
 
-    osg::ref_ptr<osgQt::GraphicsWindowQt> OsgViewerQt::createGraphicsWindow( int x, int y, int w, int h, const std::string& name, bool windowDecoration )
+    osg::ref_ptr<osgQt::GraphicsWindowQt> OsgViewerQt::createGraphicsWindow(int x, int y, int w, int h, const std::string& name, bool windowDecoration)
     {
         osg::ref_ptr<osg::DisplaySettings> ds = osg::DisplaySettings::instance().get();
         osg::ref_ptr<osg::GraphicsContext::Traits> traits = new osg::GraphicsContext::Traits;

@@ -1,4 +1,4 @@
-#include "../include/calc.h"
+#include "calc.h"
 #include <iostream>
 
 extern Internal *INT;
@@ -101,10 +101,15 @@ extern Atoms *AT;
        for (int i=0; i<LATT->n_atoms; i++) {
            int ak = LATT->nAt.get()->at(i);
            double r = INT->radFactor * AT->a_rad1[ak];
-           osg::Vec3 p2 = LATT->coords.get()->at(i);
-           if ( px>(p2.x() - r) && px<=(p2.x() + r) &&
-                py>(p2.y() - r) && py<=(p2.y() + r) &&
-                pz>(p2.z() - r) && pz<=(p2.z() + r) )   return i;
+           //osg::Vec3 p2 = LATT->coords.get()->at(i);
+	   glm::dvec3 p2 = LATT->coords[i];
+//           if ( px>(p2.x() - r) && px<=(p2.x() + r) &&
+//                py>(p2.y() - r) && py<=(p2.y() + r) &&
+//                pz>(p2.z() - r) && pz<=(p2.z() + r) )   return i;
+           if ( px>(p2.x - r) && px<=(p2.x + r) &&
+                py>(p2.y - r) && py<=(p2.y + r) &&
+                pz>(p2.z - r) && pz<=(p2.z + r) )   return i;
+
        }
        return -666;
   }
@@ -120,6 +125,121 @@ extern Atoms *AT;
      double uy = -be /(8.*osg::PI*(1.-INT->nu)) * ((1.-2.*INT->nu)*log(r2/r02) + (x+y)*(x-y));
      return glm::dvec3(ux, uy, bz/(2.*osg::PI)*atan2(y, x));
   } // mixed_u
+  
+  bool Calc::rect_box(glm::dvec3 pos, glm::dvec3 size)
+  {
+  pos -= INT->actPoint;
+  return (pos.x>-0.5*size.x && pos.x<0.5*size.x &&
+           pos.y>-0.5*size.y && pos.y<0.5*size.y &&
+           pos.z>-0.5*size.z && pos.z<0.5*size.z);
+  }
+
+  bool Calc::hex_box(glm::dvec3 pos, glm::dvec3 size)
+  {
+  double cos30 = 0.5*sqrt(3.);
+  double hr = size.x*cos30;
+  pos -= INT->actPoint;
+  if ( pos.z>0.5*size.z || pos.z<-0.5*size.z ) return false;
+  double rad = sqrt(pos.x*pos.x+pos.y*pos.y);
+  if ( rad>size.x ) return false;
+  if ( rad<hr ) return true;
+  if ( pos.x<=0.5*size.x && pos.x>=-0.5*size.x ) return ( pos.y<=hr && pos.y>=-hr );
+  double ca = ((pos.y>=0. && pos.x>0.) || (pos.y<0. && pos.x<0.))?  -0.5 : 0.5;
+  double  cx = pos.y*ca - pos.x*cos30;
+  return ( cx<=hr && cx>=-hr );
+  }
+
+  bool Calc::romb_box(glm::dvec3 pos, glm::dvec3 size)
+  {
+  double cos30 = 0.5*sqrt(3.);
+  pos -= INT->actPoint;
+  if ( pos.z>0.5*size.z || pos.z<-0.5*size.z ) return false;
+  if ( pos.y<0. || pos.y>cos30*size.x ) return false;
+  double tg = -sqrt(3.);
+  if ( pos.x<0. && pos.y<tg*pos.x ) return false;
+  if ( pos.x>0.5*size.x && pos.y>tg*(pos.x-size.x) ) return false;
+  return true;
+  }
+
+int Calc::Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct) {
+
+  double rad_fact = 1.0;
+  double nu          = 0.35;
+  
+  double be = ((struct params *) par)->be;
+  double bz = ((struct params *) par)->bz;
+  double u0x = ((struct params *) par)->u0x;
+  double u0y = ((struct params *) par)->u0y;
+  double u0z = ((struct params *) par)->u0z;
+  const double distx = gsl_vector_get(x, 0);
+  const double disty = gsl_vector_get(x, 1);
+//const double distz = gsl_vector_get(x, 2);
+  double r2 = distx*distx+disty*disty;
+  double r = sqrt(r2);
+  double xx = distx/r;
+  double yy = disty/r;
+  double r02 = rad_fact*be*be; // radius of inmobile ring relative to which the atoms in the core move up
+  const double ux =  u0x - be /(2.*osg::PI)*(atan2(yy,xx)+xx*yy/(2.*(1.-nu)));// - 0.5*be;
+  const double uy = u0y + be /(8.*osg::PI*(1.-nu)) * ((1.-nu-nu)*log(r2/r02) + (xx+yy)*(xx-yy));
+  const double uz = u0z - bz/(2.*osg::PI)*atan2(yy, xx);
+  gsl_vector_set(result_funct, 0, ux);
+  gsl_vector_set(result_funct, 1, uy);
+  gsl_vector_set(result_funct, 2, uz);
+  return GSL_SUCCESS;
+}
+
+int Calc::Beta_function(const gsl_vector *x, void *par, gsl_matrix *jac) {
+ 
+  double nu          = 0.35;
+  
+  double be = ((struct params *) par)->be;
+  double bz = ((struct params *) par)->bz;
+  const double xx = gsl_vector_get(x, 0);
+  const double yy = gsl_vector_get(x, 1);
+//const double zz = gsl_vector_get(x, 2);
+  const double y2 = yy*yy;
+  const double x2 = xx*xx;
+  const double r2 = x2+y2;
+//  cout << "  beta " << xx << "      " << yy << endl;
+  if ( r2<1.e-15 ) {
+    cout << " Atom  in the center of dislocation core" << endl;
+    gsl_matrix_set(jac, 0, 0, 1.);
+    gsl_matrix_set(jac, 0, 1, 0.);
+    gsl_matrix_set(jac, 0, 2, 0.);
+    gsl_matrix_set(jac, 1, 0, 0.);
+    gsl_matrix_set(jac, 1, 1, 1.);
+    gsl_matrix_set(jac, 1, 2, 0.);
+    gsl_matrix_set(jac, 2, 0, 0.);
+    gsl_matrix_set(jac, 2, 1, 0.);
+    gsl_matrix_set(jac, 2, 2, 1.);
+  } else {
+    const double a = be/(4. * osg::PI * (1.-nu) * r2*r2);                  // a = bx/(4. * osg::PI * (1.-n) * r2*r2)
+    const double bxx = 1. + a * yy * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2); // u(4) = -a * y * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xx 
+    const double byx = a * xx * ((1.-2.*nu)*x2 + (3.-2.*nu)*y2);      // u(5) = -a * x * ((1.-2.*n)*x*x + (3.-2.*n)*y*y) !yx
+    const double bzx = bz/(2.*osg::PI) * yy/r2;                            // u(6) = -bz/(2.*osg::PI) * y/r2                       !zx
+    const double bxy = -a * xx * ((3.-2.*nu)*x2 + (1.-2.*nu)*y2);     // u(7) =  a * x * ((3.-2.*n)*x*x + (1.-2.*n)*y*y) !xy
+    const double byy = 1. - a * yy * ((1.+2.*nu)*x2 - (1.-2.*nu)*y2); // u(8) =  a * y * ((1.+2.*n)*x*x - (1.-2.*n)*y*y) !yy
+    const double bzy = bz/(2.*osg::PI) * xx/r2;                            // u(9) = -bz/(2.*osg::PI) * x/r2                       !zy
+    gsl_matrix_set(jac, 0, 0, bxx);
+    gsl_matrix_set(jac, 0, 1, bxy);
+    gsl_matrix_set(jac, 0, 2, 0.);
+    gsl_matrix_set(jac, 1, 0, byx);
+    gsl_matrix_set(jac, 1, 1, byy);
+    gsl_matrix_set(jac, 1, 2, 0.);
+    gsl_matrix_set(jac, 2, 0, bzx);
+    gsl_matrix_set(jac, 2, 1, bzy);
+    gsl_matrix_set(jac, 2, 2, 1.); }
+  return GSL_SUCCESS;
+}
+
+int Calc::Love_fdf(const gsl_vector *x, void *par, gsl_vector *result_funct, gsl_matrix *jac) {
+  Love_function(x, par, result_funct);
+  Beta_function(x, par, jac);
+  return GSL_SUCCESS;
+}
+
+
+
 
 /*
 bool rect_box(glm::dvec3 pos)

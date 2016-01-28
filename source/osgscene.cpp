@@ -18,13 +18,15 @@
 //					 
 // -------------------------------------------------------------------
 
-#include "../include/osgscene.h"
+#include "osgscene.h"
 //#include "osgv.h"
+
+//namespace M_SC {
 
 extern Atoms *AT;
 extern Lattice *LATT;
 extern Internal *INT;
-extern Adds *ADDS;
+extern Points *POINTS;
 
 //geom->setUseDisplayList(false);
 //geom->setUseVertexBufferObjects(true); 
@@ -68,11 +70,11 @@ osg::ref_ptr<osg::Group> OsgScene::createScene()
 qWarning("createScene 0");
     if ( !INT->refrMarked && INT->refrAtoms  && !INT->atName.empty() )	INT->m_worldAt = createAtoms();
     
-    //if ( INT->refrFem && (!INT->fem.empty() || !INT->compFem.empty()) ) INT->m_fem = createFem();    
+    if ( INT->refrFem && (!INT->fem.empty() || !INT->compFem.empty()) ) INT->m_fem = createFem();    
 
     if ( INT->refrImage && !INT->image.empty() ) INT->m_image = createImage();
     
-//    if ( INT->refrAdds && ADDS->n_adds>0 ) INT->m_worldAdds = createAdds();	
+//    if ( INT->refrPoints && POINTS->n_points>0 ) INT->m_worldPoints = createPoints();	
         
     if ( !INT->atName.empty() || !INT->fem.empty() || !INT->compFem.empty() ) {
  qWarning("-------------------------   createScene  - 1  +++++++++++++++++++++++++++++++ ");       
@@ -89,7 +91,7 @@ qWarning("createScene 0");
        optimizer.optimize( m_switchRoot.get() );
     }
     m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
-    if ( INT->showAdds && ADDS->n_adds>0 )   displayAdds(true);        
+    if ( INT->showPoints && POINTS->n_points>0 )   displayPoints(true);        
  qWarning("-------------------------   createScene  - END  +++++++++++++++++++++++++++++++ ");
     return m_switchRoot.get();
 }
@@ -117,17 +119,15 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
     osg::StateSet* set = m_worldAt->getOrCreateStateSet();
     set->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
     set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA ,GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON); 
-    //if ( INT->fem.empty() ) {
+    if ( INT->fem.empty() ) {
        INT->xMin = LATT->xMin;  INT->xMax = LATT->xMax;
        INT->yMin = LATT->yMin;  INT->yMax = LATT->yMax;
        INT->zMin = LATT->zMin;  INT->zMax = LATT->zMax;
-    //} 
-    /*
     } else {
        INT->xMin = std::min(fxMin, LATT->xMin);  INT->xMax = std::max(fxMax, LATT->xMax);
        INT->yMin = std::min(fyMin, LATT->yMin);  INT->yMax = std::max(fyMax, LATT->yMax);
        INT->zMin = std::min(fzMin, LATT->zMin);  INT->zMax = std::max(fzMax, LATT->zMax);
-    } */
+    }
     INT->scDim = std::max(INT->xMax-INT->xMin, std::max(INT->yMax-INT->yMin, INT->zMax-INT->zMin));    
     osg::Vec4 color = INT->bondColor;
     if ( INT->alphaAt<1.0 ) color.w() = INT->alphaAt;
@@ -139,8 +139,8 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
          int i1 = LATT->bond1.get()->at(i) - 1;
 	 int i2 = LATT->bond2.get()->at(i) - 1;
 	 if ( LATT->marked.at(i1)<0 || LATT->marked.at(i2)<0 ) continue;
- 	 osg::Vec3 p1 = LATT->coords.get()->at(i1);
-         osg::Vec3 p2 = LATT->coords.get()->at(i2);
+ 	 osg::Vec3 p1 = MiscFunc::convert(LATT->coords[i1]);//(LATT->coords.get()->at(i1);
+         osg::Vec3 p2 = MiscFunc::convert(LATT->coords[i2]);//LATT->coords.get()->at(i2);
          m_worldAt->addChild(drawBond(p1, p2, rCyl, color));
        }
     }  
@@ -163,7 +163,7 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
 	         str1.setNum(j+1);
 	         QString str = QString("%1.%2").arg(aN).arg(str1);
 		 geo->setName(str.toStdString());
-		 osg::Vec3 pos = LATT->coords.get()->at(j);
+		 osg::Vec3 pos = MiscFunc::convert(LATT->coords[j]);//LATT->coords.get()->at(j);
 		 osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
 		 mt->setMatrix(osg::Matrix::translate(pos));
 		 mt->addChild(geo.get());
@@ -178,32 +178,32 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
     //return m_worldAt.release();
 }
 
-void OsgScene::displayAdds(bool sw)
+void OsgScene::displayPoints(bool sw)
 {
     if ( !sw ) {
-   std::cout << "Remove m_worldAdds" << std::endl;
-      m_worldReferenceFrame.get()->removeChild(m_worldAdds.get());
+   std::cout << "Remove m_worldPoints" << std::endl;
+      m_worldReferenceFrame.get()->removeChild(m_worldPoints.get());
       m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
       return;  
     }
-    m_worldAdds = new osg::MatrixTransform;
-    osg::StateSet* set = m_worldAdds->getOrCreateStateSet();
+    m_worldPoints = new osg::MatrixTransform;
+    osg::StateSet* set = m_worldPoints->getOrCreateStateSet();
     set->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
     set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA ,GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON); 
-    for (int i=0; i<ADDS->n_adds; i++) {
-       //glm::dvec3 bV = ADDS->rotTens.at(i) * ADDS->fracts.at(i) * (&(INT->structList[ADDS->crCNum.at(i)]))->c2o * ADDS->millerVs.at(i);
-       glm::dvec3 bV = ADDS->rotTens.at(i) * ADDS->fracts.at(i) * (INT->structList[ADDS->crCNum.at(i)]).c2o * ADDS->millerVs.at(i);
+    for (int i=0; i<POINTS->n_points; i++) {
+       //glm::dvec3 bV = POINTS->rotTens.at(i) * POINTS->fracts.at(i) * (&(INT->structList[POINTS->crCNum.at(i)]))->c2o * POINTS->millerVs.at(i);
+       glm::dvec3 bV = POINTS->rotTens.at(i) * POINTS->fracts.at(i) * (INT->structList[POINTS->crCNum.at(i)]).c2o * POINTS->millerVs.at(i);
        float length = glm::length(bV); 
        float radius = INT->axRad * length;
        //osg::ref_ptr<osg::Geode> geod = new osg::Geode;
-       //geod->addDrawable(ADDS->markers[0].get());
-       osg::Vec3 pos = ADDS->pos.get()->at(i);//MiscFunc::convert(a.pos);
+       //geod->addDrawable(POINTS->markers[0].get());
+       osg::Vec3 pos = POINTS->pos.get()->at(i);//MiscFunc::convert(a.pos);
        //osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
        //mt->setMatrix(osg::Matrix::translate(pos));
-       m_worldAdds->addChild(drawArrow(pos, osg::X_AXIS, length, radius, INT->axPr1, INT->axPr2, osg::Vec4(0.5, 0.5, 0.5, 0.5))); //(geod.get());
-//       m_worldAdds->addChild(mt.get());
+       m_worldPoints->addChild(drawArrow(pos, osg::X_AXIS, length, radius, INT->axPr1, INT->axPr2, osg::Vec4(0.5, 0.5, 0.5, 0.5))); //(geod.get());
+//       m_worldPoints->addChild(mt.get());
    }
-   m_worldReferenceFrame.get()->addChild(m_worldAdds.get());
+   m_worldReferenceFrame.get()->addChild(m_worldPoints.get());
    m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
 }
 
@@ -227,7 +227,7 @@ void OsgScene::displayPlane(glm::dmat3 rotTens, int nA)
    glm::dvec3 pp3 = p3 * rotTens;
    glm::dvec3 pp4 = p4 * rotTens; 
    glm::dvec3 ppCentr = 0.25*(pp1+pp2+pp3+pp4);
-   glm::dvec3 pp0 = MiscFunc::convert(LATT->coords.get()->at(nA)) *  rotTens;//INT->actPoint * rotTens;
+   glm::dvec3 pp0 = LATT->coords[nA] *  rotTens;//MiscFunc::convert(LATT->coords.get()->at(nA)) *  rotTens;//INT->actPoint * rotTens;
    int ak = LATT->nAt.get()->at(nA); //std::cout << "DisplayPlane:   ak=" << ak << std::endl;//float r = INT->radFactor * AT->a_rad1[ak];   
    double fact = double(2.85 * INT->radFactor * AT->a_rad1[ak]) / glm::length(pp1-pp3);
    glm::dvec3 pp11 = pp0 + fact*(pp1-ppCentr);
@@ -277,7 +277,7 @@ void OsgScene::showOneAtom(int ind)
    osg::ref_ptr<osg::MatrixTransform> m_worldNum = new osg::MatrixTransform;
    int ak = LATT->nAt.get()->at(ind);
    float r = INT->radFactor * AT->a_rad1[ak];
-   osg::Vec3 pos1 = LATT->coords.get()->at(ind) + osg::Vec3d(r, 0.0, r);
+   osg::Vec3d pos1 = MiscFunc::convert(LATT->coords[ind]) + osg::Vec3d(r, 0.0, r);//LATT->coords.get()->at(ind) + osg::Vec3d(r, 0.0, r);
    QString str1;
    str1.setNum(ind+1);
    osg::ref_ptr<osgText::Text> text = createText(pos1, str1.toStdString(), INT->sizeTxt, INT->colBlack);
@@ -344,7 +344,7 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createNum()
 	int ak = LATT->nAt.get()->at(ind);
         float r = INT->radFactor * AT->a_rad1[ak];
         QString aN = AT->namea.at(ak);
-        osg::Vec3 pos1 = LATT->coords.get()->at(ind) + osg::Vec3d(r, 0.0, r);
+        osg::Vec3 pos1 = MiscFunc::convert(LATT->coords[ind]) + osg::Vec3d(r, 0.0, r);//LATT->coords.get()->at(ind) + osg::Vec3d(r, 0.0, r);
         QString str1;
         str1.setNum(ind+1);
         QString str = QString("%1.%2").arg(aN).arg(str1);	
@@ -552,9 +552,7 @@ osg::StateSet* OsgScene::makeStateSet(float size)
 osg::ref_ptr<osg::MatrixTransform> OsgScene::createFem()
 {
   qWarning("....createFem 0");  
-/*  
    osg::ref_ptr<osg::Vec3Array> vertices (new osg::Vec3Array());
-     
    if ( INT->newcalc ) {
       INT->results.clear();
       INT->Femi = new CFEMAppInterface;    
@@ -665,13 +663,11 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createFem()
     m_fem->addChild(geode.get());
     INT->m_fem = m_fem;
     return m_fem.get();
-*/
 }
 
 osg::ref_ptr<osg::MatrixTransform> OsgScene::createRes()
 {
   qWarning("....createRes 0    choosen_value=%s",  INT->choosen_value.c_str());  
-/*  
     //CFEMProject FP;       
     osg::ref_ptr<osg::MatrixTransform> m_res = new osg::MatrixTransform;
     osg::StateSet* set = m_res->getOrCreateStateSet();
@@ -748,7 +744,6 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createRes()
     INT->refrRes = false;
     m_res->addChild(geo.get());
     return m_res.get();
-*/
 }
 /*
 Copyright (c) 1996-1997 Nicholas Yue
@@ -796,7 +791,7 @@ MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
 //     starts from zero (0)
 //
 //=============================================================================
-/*
+
 int OsgScene::conrec(double **d,     // matrix of data to contour
 	   int imax,                 // ilb,iub,jlb,jub ! index bounds of data matrix
 	   double *t,                // data matrix row and column coordinates
@@ -852,7 +847,7 @@ int OsgScene::conrec(double **d,     // matrix of data to contour
           colorQ->push_back(INT->mapColors.get()->at(k));
           osg::ref_ptr<osg::Vec4Array> colorT = new osg::Vec4Array;
 	  osg::ref_ptr<osg::Vec4Array> colorT1 = new osg::Vec4Array;
-	  osg::ref_ptr<osg::Vec4Array> colorT2 = new osg::Vec4Array;vertP
+	  osg::ref_ptr<osg::Vec4Array> colorT2 = new osg::Vec4Array;//vertP
 	  osg::ref_ptr<osg::Vec4Array> colorP = new osg::Vec4Array;
 
 	  if ( dmin>=zk && dmax<=zk1 ) {
@@ -1135,7 +1130,6 @@ int OsgScene::conrec(double **d,     // matrix of data to contour
   fout.close();
   return 0;
 }
-*/
 
 //================================================================================================================================================================================
 /*
@@ -1916,32 +1910,32 @@ std::cout << " ++==++==++  displayPlane 1" << std::endl;
 }
 
 
-osg::ref_ptr<osg::MatrixTransform> OsgScene::createAdds()
+osg::ref_ptr<osg::MatrixTransform> OsgScene::createPoints()
 {
-    //if ( ADDS->n_adds<=0 ) 
- qWarning("createAdds 0");
-    osg::ref_ptr<osg::MatrixTransform> m_worldAdds = new osg::MatrixTransform;
-    osg::StateSet* set = m_worldAdds->getOrCreateStateSet();
+    //if ( POINTS->n_points<=0 ) 
+ qWarning("createPoints 0");
+    osg::ref_ptr<osg::MatrixTransform> m_worldPoints = new osg::MatrixTransform;
+    osg::StateSet* set = m_worldPoints->getOrCreateStateSet();
     set->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
     set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA ,GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON); 
-  qWarning("createAdds 1   ADDS->n_adds=%d", ADDS->n_adds);
+  qWarning("createPoints 1   POINTS->n_points=%d", POINTS->n_points);
    //osg::ref_ptr<osg::Geometry> draw = makeSphere(0.2, INT->sphSlices, INT->sphStacks, osg::Vec4(1.0, 0.0, 0.0, 0.5));
     //float length = static_cast<float>(INT->axL * INT->scDim);
   //std::cout << " length=" << length << std::endl;
     //float radius = INT->axRad * length;   
-    for (int i=0; i<ADDS->n_adds; i++) {
+    for (int i=0; i<POINTS->n_points; i++) {
        osg::ref_ptr<osg::Geode> geod = new osg::Geode;
-       geod->addDrawable(ADDS->markers[0].get());
-  qWarning("createAdds 2     i=%d", i);
-       osg::Vec3 pos = ADDS->pos.get()->at(i);//MiscFunc::convert(a.pos);
+       geod->addDrawable(POINTS->markers[0].get());
+  qWarning("createPoints 2     i=%d", i);
+       osg::Vec3 pos = POINTS->pos.get()->at(i);//MiscFunc::convert(a.pos);
        osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
        mt->setMatrix(osg::Matrix::translate(pos));
        mt->addChild(geod.get());
-       m_worldAdds->addChild(mt.get());
-  qWarning("createAdds 2.5     i=%d", i);
+       m_worldPoints->addChild(mt.get());
+  qWarning("createPoints 2.5     i=%d", i);
     }
-    //INT->refrAdds = false;
-    //INT->m_worldAdds = m_worldAdds;
-    return m_worldAdds.get();
+    //INT->refrPoints = false;
+    //INT->m_worldPoints = m_worldPoints;
+    return m_worldPoints.get();
 }
 */

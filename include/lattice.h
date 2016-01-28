@@ -3,18 +3,15 @@
 
 #include "internal.h"
 
-/**
- * This is a class that describes a crystal lattice.
- */
 class Lattice
 {
-  
+	
  public:	
-
   /**
    * Constructor.
    */
   Lattice();
+  ~Lattice();
   
   friend class MainWindow;
   friend class OsgScene;
@@ -23,8 +20,11 @@ class Lattice
   friend class Calc;
   
  private: 
-
-  osg::ref_ptr<osg::Vec3Array> coords;
+  
+  void init(QString atname, int numbAt);
+  void clearL();
+  //osg::ref_ptr<osg::Vec3Array> coords;
+  std::vector<glm::dvec3> coords;
   //osg::ref_ptr<osg::Vec3Array> u;
   //osg::ref_ptr<osg::Vec3Array> du;
   std::vector<glm::dvec3> u;

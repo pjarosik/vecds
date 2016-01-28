@@ -25,7 +25,7 @@
 #include "osgv.h"
 #include "miscfunc.h"
 #include "atoms.h"
-//#include "adds.h"
+//#include "points.h"
 #include "internal.h"
 #include "dialogs.h"
 #include "gener.h"
@@ -88,7 +88,9 @@ private:
     
     int mode;
     QString ansBurgers, ansPlane;
+    int numMeth;
     glm::dvec3 size;
+    glm::dvec3 sumU;
 
     QTextEdit *textEdit;
     QWidget *window;
@@ -97,9 +99,6 @@ private:
 
     void cutPlane();
     void cutBox(glm::dvec3 size);
-    bool rect_box(glm::dvec3 pos, glm::dvec3 size);
-    bool hex_box(glm::dvec3 pos, glm::dvec3 size);
-    bool romb_box(glm::dvec3 pos, glm::dvec3 size);
 
     void createActions();
     void createMenus();
@@ -107,7 +106,7 @@ private:
     void setSliders(double v1, double v2, double v3, double v4, double v5, double v6);//(int v1, int v2, int v3);
     void keyPressEvent(QKeyEvent *keyEv);
     //void contextMenuEvent(QContextMenuEvent *event);
-    void addADDS(int nr);
+    void addPOINTS(int nr);
     void readAlcXyz(QString aname1);
     void refreshScene();
     void refreshViewer();
@@ -161,7 +160,7 @@ private:
     QAction *numAct;
     QAction *lightAct;
     QAction *materialAct;
-    QAction *showAddsAct;
+    QAction *showPointsAct;
     QAction *nsAct;
     QAction *bsAct;
     QAction *bcAct;
@@ -212,7 +211,7 @@ private slots:
     void SL_setNum();
     void SL_setLight();
     void SL_setMaterial();
-    void SL_setAdds();
+    void SL_setPoints();
     void SL_setAx();
     void SL_setFov();
 
@@ -243,7 +242,7 @@ private slots:
     void SL_bondsAct();
     void SL_saveAtoms();
     void SL_plane();
-    void SL_box();
+    void SL_rectBox();
     void SL_hexBox();
     void SL_rombBox();
 };

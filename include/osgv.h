@@ -24,8 +24,9 @@ class OsgViewerQt : public QGLWidget, public osgViewer::CompositeViewer
 
 public:
     OsgViewerQt(OsgScene *scene1, double fovy); //(OsgScene *scene);
+    ~OsgViewerQt();
     
-    virtual void paintEvent( QPaintEvent* event )  { frame(); }
+    virtual void paintEvent(QPaintEvent* event)  { frame(); }
 
     QWidget *addViewWidget( OsgScene *scene1, double fovy );
     void removeViewWidget();

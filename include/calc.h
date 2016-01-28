@@ -21,6 +21,13 @@ class Calc
   static bool internal_miller(std::string line2, int which, int *mill);//spradzenie poprawności danych i zamiana układu cztero na trójwsk.
   static int identAtom(glm::dvec3 point);
   static glm::dvec3 mixed_u(glm::dvec3 rotdist, double be, double bz);
+  static bool rect_box(glm::dvec3 pos, glm::dvec3 size);
+  static bool hex_box(glm::dvec3 pos, glm::dvec3 size);
+  static bool romb_box(glm::dvec3 pos, glm::dvec3 size);
+  static int Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct);
+  static int Beta_function(const gsl_vector *x, void *par, gsl_matrix *jac);
+  static int Love_fdf(const gsl_vector *x, void *par, gsl_vector *result_funct, gsl_matrix *jac);
+  
 };
 #endif // CALC_H
 

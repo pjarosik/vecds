@@ -43,7 +43,7 @@ class QuestionForm2 : public QDialog
 
   public:
     QuestionForm2(QString title, QString descr, QStringList quest,
-                  QStringList sug, QStringList &ans, QWidget *parent = 0);
+                  QStringList sug, QStringList &ans, QStringList combo, int indC = 0, QWidget *parent = 0);
     bool ok;
     //int numQuest;
     int indCombo;

@@ -15,7 +15,7 @@ class Atoms
 Atoms();
   
   friend class MainWindow;
-  friend class Adds;
+  friend class Points;
   friend class OsgScene;
   friend class MiscFunc;
   friend class Gener;

@@ -1,17 +1,18 @@
-#ifndef ADDs_H
-#define ADDS_H
+#ifndef POINTS_H
+#define POINTS_H
 
 #include "internal.h"
 #include "miscfunc.h"
 
-class Adds
+class Points
 {
 	
  public:	
   /**
    * Constructor.
    */
-  Adds();
+  Points();
+  ~Points();
   
   friend class MainWindow;
   friend class OsgScene;
@@ -19,8 +20,9 @@ class Adds
   //friend class Gener;
   //friend class Calc;
   
- private: 
-
+ private:
+  
+  void clearP();
   osg::ref_ptr<osg::Vec3Array> pos;
   osg::ref_ptr<osg::IntArray> nKind;
 
@@ -31,9 +33,10 @@ class Adds
   std::vector<QString> strName;
   std::vector<QString> strBV;
   std::vector<int> crCNum;
-  int n_adds;
+  std::vector<int> numMeth;
+  int n_points;
   int n_markers;
   //void initAdds();   
   osg::ref_ptr<osg::Geometry> markers[6];
 };  
-#endif //ADDS_H
+#endif //POINTS_H

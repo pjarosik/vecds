@@ -44,10 +44,13 @@ class MiscFunc
   static std::string stripBlanks(const std::string StringToModify);
   static QString fileName(QString path);
   //static CrysCell *readStruct(QTextStream &in);
-  static void ComputeSizes(const osg::ref_ptr<osg::Vec3Array> nodes, double& minX, double& maxX, double& minY, double& maxY, double& minZ, double& maxZ);
+  //static void ComputeSizes(const osg::ref_ptr<osg::Vec3Array> nodes, double& minX, double& maxX, double& minY, double& maxY, double& minZ, double& maxZ);
+  static void ComputeSizes(const std::vector <glm::dvec3> nodes, double& minX, double& maxX, double& minY, double& maxY, double& minZ, double& maxZ);
+  static void ComputePlane(const std::vector <glm::dvec3> nodes, const glm::dmat3 rotTens, double& minX, double& maxX, double& minY, double& maxY, double& minZ, int nA);
+  static void ComputeRect(const std::vector <glm::dvec3> nodes, const glm::dmat3 rotTens, const int nA, glm::dvec3& p1, glm::dvec3& p2, glm::dvec3& p3, glm::dvec3& p4);  
 //  static void ComputeBottom(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, double& minX, double& maxX, double& minY, double& maxY, double& minZ);
-  static void ComputePlane(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, double& minX, double& maxX, double& minY, double& maxY, double& minZ, int nA);
-  static void ComputeRect(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, const int nA, glm::dvec3& p1, glm::dvec3& p2, glm::dvec3& p3, glm::dvec3& p4);  
+//  static void ComputePlane(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, double& minX, double& maxX, double& minY, double& maxY, double& minZ, int nA);
+//  static void ComputeRect(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, const int nA, glm::dvec3& p1, glm::dvec3& p2, glm::dvec3& p3, glm::dvec3& p4);  
   //static void ComputeBottom(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, int& minX, int& maxX, int& minY, int& maxY, int& minZ);
   //static void readDefaults(QTextStream &in);
   static void printVecPrec(const std::string str, const osg::Vec3d vec);

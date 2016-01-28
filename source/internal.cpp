@@ -1,6 +1,6 @@
-#include "../include/internal.h"
-#include "../include/miscfunc.h"
-#include "../include/atoms.h"
+#include "internal.h"
+#include "miscfunc.h"
+#include "atoms.h"
  
 extern Atoms *AT;
 //extern CFEMAppInterface *Femi;
@@ -23,6 +23,7 @@ Internal::Internal()
   colDGray  = osg::Vec4(0.2, 0.2, 0.2, 1.0);
   colLGray  = osg::Vec4(0.8, 0.8, 0.8, 1.0);
   outLog.open("vecds_log.txt", std::ofstream::app);
+  calcLog.open("calc_log.txt", std::ofstream::app);
   image = "";
   atName = "";
   fem = "";
@@ -36,8 +37,8 @@ Internal::Internal()
   //points = " a b \n c";
   nr = -1;
   refrAtoms = false;
-  refrAdds = false;
-  addsDisplay = false;
+  refrPoints = false;
+  pointsDisplay = false;
   refrImage = false;
   refrFem = false;
   refrRes = false;
@@ -69,6 +70,10 @@ Internal::Internal()
   //calcLog = "";
   //calcLog.clear();
 
+}
+
+Internal::~Internal()
+{
 }
 
 void Internal::initStructures()
@@ -132,7 +137,7 @@ std::cout << " file=" << sett.toStdString() << std::endl;
 	 case 7: // axis
 	    axInd = fields.at(2).toInt(); axPr1 = fields.at(3).toFloat(); axPr2 = fields.at(4).toFloat(); axL = fields.at(5).toFloat(); axRad = fields.at(6).toFloat();  alphaAx = fields.at(7).toFloat(); break;
 	 case 8: // switches
-	    lightOn = ( fields.at(2).compare("T")==0 );  materialOn = ( fields.at(3).compare("T")==0 ); showNum = ( fields.at(4).compare("T")==0 ); showAdds = ( fields.at(5).compare("T")==0 );  break;
+	    lightOn = ( fields.at(2).compare("T")==0 );  materialOn = ( fields.at(3).compare("T")==0 ); showNum = ( fields.at(4).compare("T")==0 ); showPoints = ( fields.at(5).compare("T")==0 );  break;
 	 case 9: // sizeNumb
             sizeTxt = fields.at(2).toFloat();  break;
 	 case 10:  // matDiffuse
@@ -195,8 +200,8 @@ std::cout << " file=" << sett.toStdString() << std::endl;
 	    break;
 	 case 26:  // structAtom
      	    if ( !crCDefined )  {  std::cout << " ERROR: structure not defined - line nr. " << nl << std::endl;  return false;  }
-	    crC->cellAt << MiscFunc::whichAtom(fields.at(2));
-	    crC->cellCoord << glm::dvec3(MiscFunc::readFraction(fields.at(3)), MiscFunc::readFraction(fields.at(4)), MiscFunc::readFraction(fields.at(5)));
+	    crC->cellAt.push_back(MiscFunc::whichAtom(fields.at(2)));
+	    crC->cellCoord.push_back(glm::dvec3(MiscFunc::readFraction(fields.at(3)), MiscFunc::readFraction(fields.at(4)), MiscFunc::readFraction(fields.at(5))));
 	    ++crC->numCellAt;
 	    break;
 	 case 27:  // alphaFem

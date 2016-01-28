@@ -24,16 +24,24 @@
 
 #include <fstream>      // std::ofstream
 
-//#include "../FEMApp/FEMAppLib/FEMAppInterface.h"
+#include "../FEMApp/FEMAppLib/FEMAppInterface.h"
 
 struct CrysCell
 {
   QString crCName;
   double a, b, c, alpha, beta, gamma;
   glm::dmat3 c2o, o2c;
-  QVector<glm::dvec3> cellCoord;
-  QVector<int> cellAt;
+  std::vector <glm::dvec3> cellCoord;
+  std::vector <int> cellAt;
   int numCellAt;
+};
+
+struct params {
+  double be;
+  double bz;
+  double u0x;
+  double u0y;
+  double u0z;
 };
 
 class Internal
@@ -44,6 +52,9 @@ class Internal
    * Constructor.
    */
   Internal();
+  ~Internal();
+  
+  CFEMAppInterface *Femi;
   
   friend class MainWindow;
   friend class OsgScene;
@@ -65,6 +76,7 @@ class Internal
   osg::ref_ptr<osg::MatrixTransform> m_worldRes;
 */ 
   std::ofstream outLog;//("vecds_log.txt");
+  std::ofstream calcLog;//("calc_log.txt");
 
   QStringList results;
  
@@ -79,8 +91,8 @@ class Internal
 
   //QStringList calcLog;
   bool refrAtoms;
-  bool refrAdds;
-  bool addsDisplay;
+  bool refrPoints;
+  bool pointsDisplay;
   bool refrImage;
   bool refrFem;
   bool refrRes;
@@ -89,7 +101,7 @@ class Internal
   bool refrMarked;
 
   osg::ref_ptr<osg::MatrixTransform> m_worldAt;
-  osg::ref_ptr<osg::MatrixTransform> m_worldAdds;
+  osg::ref_ptr<osg::MatrixTransform> m_worldPoints;
   osg::ref_ptr<osg::MatrixTransform> m_fem;
   osg::ref_ptr<osg::MatrixTransform> m_image;
   
@@ -150,7 +162,7 @@ class Internal
   bool lightOn;
   bool materialOn;
   bool showNum;
-  bool showAdds;
+  bool showPoints;
   float sizeTxt;
   osg::Vec4 matDiffuse, matSpecular, ls1Ambient, ls1Diffuse, ls1Specular, ls1Position, ls2Ambient, ls2Diffuse, ls2Specular, ls2Position;
   float matShiness;

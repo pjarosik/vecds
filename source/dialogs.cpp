@@ -1,5 +1,5 @@
-#include "../include/dialogs.h"
-#include "../include/internal.h"
+#include "dialogs.h"
+#include "internal.h"
 
 extern Internal *INT;
 // Pomocnicze klasy - okienka dialogowe
@@ -49,7 +49,7 @@ QuestionForm1::QuestionForm1(QString title, QString descr, QStringList quest,
 }
 
 QuestionForm2::QuestionForm2(QString title, QString descr, QStringList quest,
-               QStringList sug, QStringList &ans, QWidget *parent) : QDialog(parent)
+               QStringList sug, QStringList &ans, QStringList combo, int indC, QWidget *parent) : QDialog(parent)
 {
    indCombo = -1;  
    int numQuest = quest.count();
@@ -78,15 +78,15 @@ QuestionForm2::QuestionForm2(QString title, QString descr, QStringList quest,
    for (int i=0; i<numQuest; i++) layout->addRow(labels.at(i), qEdit.at(i));
    QVBoxLayout *mainLayout = new QVBoxLayout;
    if ( !(descr.isEmpty()) ) mainLayout->addWidget(lab0);
-   QComboBox *combo = new QComboBox;
-   combo->addItem("No axes");
-   combo->addItem("Axes at the center");
-   combo->addItem("Axes at the corner");
-   combo->setCurrentIndex(INT->axInd);
-   indCombo = INT->axInd;
-   connect(combo, SIGNAL(activated(int)), this, SLOT(res(int)));
-   mainLayout->addWidget(combo);
+   QComboBox *comboB = new QComboBox;
+   comboB->addItem(combo.at(0));//("No axes");
+   comboB->addItem(combo.at(1));//("Axes at the center");
+   comboB->addItem(combo.at(2));//("Axes at the corner");
+   indCombo = indC;//INT->axInd;
+   comboB->setCurrentIndex(indCombo); //(INT->axInd);
+   connect(comboB, SIGNAL(activated(int)), this, SLOT(res(int)));
    mainLayout->addLayout(layout);
+   mainLayout->addWidget(comboB);
    mainLayout->addWidget(buttonBox);
    setLayout(mainLayout);
 
@@ -207,7 +207,7 @@ void SaveDialog::checkBox2Changed(bool state)
 void SaveDialog::setSaveFileName()
 {
   QString cd0 = INT->currDir;
-  fileName = QFileDialog::getSaveFileName(this, "Save atoms", cd0.append("/data/atoms"), "Molecules (*.xyz)");
+  fileName = QFileDialog::getSaveFileName(this, "Save atoms", cd0.append("/data/atoms/").append(QString::fromStdString(INT->atName)), "Molecules (*.xyz)");
   if ( !fileName.isEmpty() )  ok = true;  
 //  qWarning("SD:   file: %s", fileName.toAscii().data());
   close();

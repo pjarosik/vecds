@@ -1,6 +1,6 @@
-#include "../include/miscfunc.h"
-#include "../include/atoms.h"
-#include "../include/lattice.h"
+#include "miscfunc.h"
+#include "atoms.h"
+#include "lattice.h"
 
 extern Atoms *AT;
 extern Internal *INT;
@@ -43,9 +43,9 @@ osg::Quat MiscFunc::quatFromEuler(const double h, const double e, const double b
     const double c1c2 = c1*c2;
     const double s1s2 = s1*s2;
     return osg::Quat( c1c2*s3  + s1s2*c3, 
-	              s1*c2*c3 + c1*s2*s3, 
-		      c1*s2*c3 - s1*c2*s3,
-		      c1c2*c3  - s1s2*s3 );
+	               s1*c2*c3 + c1*s2*s3, 
+		       c1*s2*c3 - s1*c2*s3,
+		       c1c2*c3  - s1s2*s3 );
 }    
 
 osg::Vec3d MiscFunc::convert(const QVector3D &vecIn)
@@ -198,21 +198,23 @@ void MiscFunc::printMat(const std::string str, const glm::dmat3 m)
   std::cout << " row 2 = " << std::setw(15) << m[0][2] << std::setw(15) << m[1][2] << std::setw(15) << m[2][2] << std::endl;
 }   
 
-void MiscFunc::ComputeSizes(const osg::ref_ptr<osg::Vec3Array>nodes, double& minX, double& maxX, double& minY, double& maxY, double& minZ, double& maxZ)
+//void MiscFunc::ComputeSizes(const osg::ref_ptr<osg::Vec3Array>nodes, double& minX, double& maxX, double& minY, double& maxY, double& minZ, double& maxZ)
+void MiscFunc::ComputeSizes(const std::vector <glm::dvec3> nodes, double& minX, double& maxX, double& minY, double& maxY, double& minZ, double& maxZ)
 {
     minX = 1e300; maxX = -1e300;
     minY = 1e300; maxY = -1e300;
     minZ = 1e300; maxZ = -1e300;
-    for (unsigned k=0; k<nodes.get()->size(); k++ ) {
-        double valx = double(nodes.get()->at(k).x()); double valy = double(nodes.get()->at(k).y()); double valz = double(nodes.get()->at(k).z());
+    for (unsigned k=0; k<nodes.size(); k++ ) {
+        double valx = double(nodes[k].x); double valy = double(nodes[k].y); double valz = double(nodes[k].z);
         if ( valx < minX ) minX = valx;  if ( valx > maxX ) maxX = valx;
         if ( valy < minY ) minY = valy;  if ( valy > maxY ) maxY = valy;
         if ( valz < minZ ) minZ = valz;  if ( valz > maxZ ) maxZ = valz;
     }
 }  
 
-void MiscFunc::ComputePlane(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, double& minX, double& maxX, double& minY, double& maxY, double& minZ, int nA)
+//void MiscFunc::ComputePlane(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, double& minX, double& maxX, double& minY, double& maxY, double& minZ, int nA)
 //void MiscFunc::ComputeBottom(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, int& imnx, int& imxx, int& imny, int& imxy, int& iz)
+void MiscFunc::ComputePlane(const std::vector <glm::dvec3> nodes, const glm::dmat3 rotTens, double& minX, double& maxX, double& minY, double& maxY, double& minZ, int nA)
 {
 /*
     double minX = 1e300; double maxX = -1e300;
@@ -224,8 +226,8 @@ void MiscFunc::ComputePlane(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::
     //minZ = 1e300;
     int imnx, imxx, imny, imxy;// iz,
     imnx = imxx = imny = imxy = -666;// iz = 
-    for (unsigned k=0; k<nodes.get()->size(); k++ ) {
-        glm::dvec3 pos = MiscFunc::convert(LATT->coords.get()->at(k));
+    for (unsigned k=0; k<nodes.size(); k++ ) {
+        glm::dvec3 pos = LATT->coords[k];//MiscFunc::convert(LATT->coords.get()->at(k));
         osg::Vec3d v = MiscFunc::convert(rotTens * pos);
         double valx = v.x(); double valy = v.y();// double valz = v.z();
         if ( valx < minX ) { minX = valx;   imnx = int(k); } 
@@ -239,13 +241,14 @@ void MiscFunc::ComputePlane(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::
     //minZ = (LATT->coords.get()->at(nA)).z();
 }
 
-void MiscFunc::ComputeRect(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, const int nA,  glm::dvec3& p1, glm::dvec3& p2, glm::dvec3& p3, glm::dvec3& p4)
+//void MiscFunc::ComputeRect(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, const int nA,  glm::dvec3& p1, glm::dvec3& p2, glm::dvec3& p3, glm::dvec3& p4)
+void MiscFunc::ComputeRect(const std::vector <glm::dvec3> nodes, const glm::dmat3 rotTens, const int nA,  glm::dvec3& p1, glm::dvec3& p2, glm::dvec3& p3, glm::dvec3& p4)
 {
     double minX = 1e300; double maxX = -1e300;
     double minY = 1e300; double maxY = -1e300;
     double minZ = 1e300;
-    for (unsigned k=0; k<nodes.get()->size(); k++ ) {
-        glm::dvec3 pos = MiscFunc::convert(LATT->coords.get()->at(k));
+    for (unsigned k=0; k<nodes.size(); k++ ) {
+        glm::dvec3 pos = LATT->coords[k];//MiscFunc::convert(LATT->coords.get()->at(k));
         osg::Vec3d v = MiscFunc::convert(rotTens * pos);
         double valx = v.x(); double valy = v.y();// double valz = v.z();
         if ( valx < minX )  minX = valx;
