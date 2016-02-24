@@ -77,7 +77,9 @@ public:
     double fxMin, fxMax, fyMin, fyMax, fzMin, fzMax;
     
 private:
-   
+
+    osg::ref_ptr<osg::Group> m_scene;
+    
     osg::ref_ptr<osg::Geode> geode0;
     osg::ref_ptr<osg::MatrixTransform> m_worldPoints;
     osg::ref_ptr<osg::Group> createScene();
@@ -87,8 +89,6 @@ private:
     osg::ref_ptr<osg::MatrixTransform> createFem();
     osg::ref_ptr<osg::MatrixTransform> createRes();
     
-    //int conrec(double **d, int ilb, int iub, int jlb, int jub, double *x, double *y, int nc, double *z);
-    //int conrec(double **d, int ilb, int iub, int jlb, int jub, double *x, double *y, int nc, double *z, osg::ref_ptr<osg::Vec3Array> vertL, osg::ref_ptr<osg::Vec3Array> vertT, osg::ref_ptr<osg::Vec4Array> colorT, CGeometricObjectShapeNodal* face);
     int conrec(double **d, int imax, double *t, int nc, double *z, CGeometricObjectShapeNodal* face);
     
     inline double xsect(int p1, int p2) {
@@ -113,7 +113,6 @@ private:
     osg::ref_ptr<osg::Group> m_switchRoot;//osg::Switch *m_switchRoot;
 
     osg::TessellationHints *hints;
-    osg::ref_ptr<osg::Group> m_scene;
     double scDim;
     
     osg::ref_ptr<osg::Vec4Array> colorL;

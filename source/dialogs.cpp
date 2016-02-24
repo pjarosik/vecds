@@ -199,7 +199,7 @@ void SaveDialog::checkBox1Changed(bool state)
   
 void SaveDialog::checkBox2Changed(bool state)
 {
-//   std::cout << "CB2 - " << state << std::endl;
+   //std::cout << "CB2 - " << state << std::endl;
    marked = state;
 }
 

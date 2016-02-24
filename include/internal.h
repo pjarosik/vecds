@@ -145,11 +145,6 @@ class Internal
   
   osg::Vec4 colRed, colGreen, colBlue, colBlack, colWhite, colGray, colLGray, colDGray;
 
-  //osg::ref_ptr<osg::MatrixTransform> m_worldReferenceFrame;
-  osg::ref_ptr<osg::Vec4Array> mapColors;  
-  
-  //bool block;
-  
   double fov;
   float radFactor;
   float alphaAt, alphaB, alphaIm;
@@ -168,6 +163,7 @@ class Internal
   float matShiness;
   int sphSlices, sphStacks;
   float detRatio;
+  osg::ref_ptr<osg::Vec4Array> mapColors;  
   
   QVector<CrysCell> structList;
   //QVector<int> structDesc;
@@ -175,8 +171,6 @@ class Internal
     
   void initStructures();
   bool readDefaults(QString sett);
-//  int nr;
-//  QString name;
   osg::Vec4 ColorL, ColorP, ColorResL;
   float pointSize;
   int ndiv, ncol;

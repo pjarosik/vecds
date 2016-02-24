@@ -21,12 +21,9 @@ class Lattice
   
  private: 
   
-  void init(QString atname, int numbAt);
+  void init(QString atname, int numbAt); //, int nB);
   void clearL();
-  //osg::ref_ptr<osg::Vec3Array> coords;
-  std::vector<glm::dvec3> coords;
-  //osg::ref_ptr<osg::Vec3Array> u;
-  //osg::ref_ptr<osg::Vec3Array> du;
+  std::vector<glm::dvec3> coords;  //osg::ref_ptr<osg::Vec3Array> coords;
   std::vector<glm::dvec3> u;
   std::vector<glm::dvec3> du;
   std::vector<int> marked;
@@ -42,6 +39,7 @@ class Lattice
   int n_atoms;
   int n_bonds;
   int n_k;
+  int n_marked;
   QString name;
   
 };  

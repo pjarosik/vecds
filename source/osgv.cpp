@@ -53,6 +53,9 @@ OsgViewerQt::OsgViewerQt(OsgScene *scene1, double fovy) : QGLWidget(),
 	std::cout << "VIEWER    _centr0=" << _centr0.x() << ",  "  << _centr0.y() << ",  "  << _centr0.z() << std::endl;
 	_timer.start( m_refreshPeriod );
         connect( &_timer, SIGNAL(timeout()), this, SLOT(my_update()) ); //SLOT(update()));
+	//setFocus();
+	//viewer.
+	setKeyEventSetsDone(0);
         std::cout << "OsgViewerQt OK" << std::endl;
 }
 
@@ -80,6 +83,7 @@ OsgViewerQt::~OsgViewerQt()
         m_view->setSceneData( scene1->getScene() );
         m_view->addEventHandler( new osgViewer::StatsHandler );
         m_view->addEventHandler( new PickHandler );
+	//m_view->setKeyEventSetsDone(0);
         m_trackballManipulator = new osgGA::TrackballManipulator;
 	m_trackballManipulator->setAutoComputeHomePosition(true); // nowa wstawka * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * + + +
         m_view->setCameraManipulator( m_trackballManipulator );
@@ -122,7 +126,6 @@ OsgViewerQt::~OsgViewerQt()
        if ( val )  _timer.start(idleRefreshPeriod);
        else        _timer.start(defaultRefreshPeriod);
     }
-
 
     void OsgViewerQt::my_update()
     {
@@ -182,9 +185,8 @@ OsgViewerQt::~OsgViewerQt()
         if ( INT->pressed ) {
             INT->pressed = false;
           std::cout << " ++==++==++   my_Update    X:" << INT->actPoint.x << ",   Y:" << INT->actPoint.y << ",   Z:" << INT->actPoint.z << std::endl;
-            emit SIG_actPoint(INT->actPoint);
+            emit SIG_actPoint();//INT->actPoint);
         }
-
         update();
       } //    ---- first "if"
     }

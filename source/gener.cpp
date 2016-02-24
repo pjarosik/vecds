@@ -11,8 +11,6 @@ int Gener::genLattice(const int nx0, const int ny0, const int nz0, const int nx1
     QList<int> numbers;
     numbers.clear();
     LATT->clearL();
- //std::cout << "Generator" << std::endl;    
-    LATT->xMin = LATT->yMin = LATT->zMin = 1.e30;  LATT->xMax = LATT->yMax = LATT->zMax = -1.e30;
     for (int i=0; i<INT->crC->numCellAt; i++) {
        ak = INT->crC->cellAt.at(i);
        numbers << ak;

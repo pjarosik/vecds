@@ -75,7 +75,7 @@ signals:
     void SIG_distChanged(QString);//(int);
     void SIG_cxChanged(QString);
     void SIG_cyChanged(QString);
-    void SIG_actPoint(glm::dvec3);
+    void SIG_actPoint();//glm::dvec3);
 
     
 public slots:

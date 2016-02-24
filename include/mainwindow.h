@@ -64,7 +64,7 @@ class MainWindow :  public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow();
+    MainWindow();
     ~MainWindow();
     osg::Quat qrot;
     glm::dmat3 rotTens;
@@ -75,13 +75,17 @@ public:
     QString strName;
     QString iAt;
     QString iStr;
+    QDateTime dateTime; // = dateTime.currentDateTime();
+    QString dateTimeString; // = dateTime.toString("dd-MM-yyyy hh:mm:ss");//.toStdString();
+    
+    
+protected:    
+    void keyPressEvent(QKeyEvent *keyEv);
     
 private:
    
     osg::ref_ptr<OsgViewerQt> mview1;
     osg::ref_ptr<OsgScene> scene;
-    //osg::ref_ptr<osg::Group> intscene;
-    //CFEMAppInterface *FEMi;
     double valTh, valPh, valPs, valDist, valCx, valCy;
     osg::Quat YtoZ;
     osg::Quat ZtoY;
@@ -89,7 +93,7 @@ private:
     int mode;
     QString ansBurgers, ansPlane;
     int numMeth;
-    glm::dvec3 size;
+    glm::dvec3 sizeB;
     glm::dvec3 sumU;
 
     QTextEdit *textEdit;
@@ -97,20 +101,23 @@ private:
     QString line1;
     SimplePad *eee;
 
-    void cutPlane();
-    void cutBox(glm::dvec3 size);
+    void cutPlane(glm::dvec3 point);
+    void cutBox();
+
+ bool eventFilter(QObject *obj, QEvent *event);
 
     void createActions();
     void createMenus();
     void createDockWindows();
     void setSliders(double v1, double v2, double v3, double v4, double v5, double v6);//(int v1, int v2, int v3);
-    void keyPressEvent(QKeyEvent *keyEv);
+    //void keyPressEvent(QKeyEvent *keyEv);
     //void contextMenuEvent(QContextMenuEvent *event);
     void addPOINTS(int nr);
     void readAlcXyz(QString aname1);
     void refreshScene();
     void refreshViewer();
     void infoDisplay();
+    void process(glm::dvec3 pos);
     
     QWidget *MainWidget;
     QGridLayout *MainLayout;
@@ -197,7 +204,7 @@ public slots:
     void SL_setDistSlider();//(int);
     void SL_setMxSlider();
     void SL_setMySlider();
-    void SL_actPoint(glm::dvec3);
+    void SL_actPoint();
     void SL_keypress(int k);
     void SL_performDislCalc(QString ff);
     

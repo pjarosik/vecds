@@ -1,4 +1,4 @@
-#include "../include/picking.h"
+#include "picking.h"
 
 #include  <iostream>
 
@@ -8,6 +8,9 @@ extern Internal *INT;
 bool PickHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
 {
 //    if ( (ea.getModKeyMask() & osgGA::GUIEventAdapter::MODKEY_CTRL)  && ea.getEventType()==osgGA::GUIEventAdapter::RELEASE ) {
+    if ( ea.getEventType()==osgGA::GUIEventAdapter::KEYDOWN ) {
+       if (ea.getKey()=='s') std::cout << " +++ === *** PRESSED ***   's'" << std::endl;
+    }
     if ( (ea.getModKeyMask() & ( osgGA::GUIEventAdapter::MODKEY_CTRL | osgGA::GUIEventAdapter::MODKEY_SHIFT ) )  && ea.getEventType()==osgGA::GUIEventAdapter::RELEASE ) {
          left = ea.getButton() & osgGA::GUIEventAdapter::LEFT_MOUSE_BUTTON;
          right = ea.getButton() & osgGA::GUIEventAdapter::RIGHT_MOUSE_BUTTON;
@@ -65,6 +68,11 @@ void PickHandler::doUserOperations(osgUtil::LineSegmentIntersector::Intersection
                  //int nA = Calc::identAtom(glm::dvec3(r2.x(), r2.z(), -r2.y()));
 		 std::cout << "*** PRESSED ***  RIGHT  SHIFT  "  << r2.x() << ",  " << r2.z() << ",  " << -r2.y() << std::endl; // "    nA=" << INT->nA <<
               }
+	     /*
+	      if ( left ) { //&& !ctrl && !shift) {
+                 std::cout << "*** PRESSED ***  LEFT  "  << r2.x() << ",  " << r2.z() << ",  " << -r2.y() << std::endl;
+              }
+	      */
 	      if ( left && ctrl ) {
                  std::cout << "*** PRESSED ***  LEFT  CTRL  "  << r2.x() << ",  " << r2.z() << ",  " << -r2.y() << std::endl;
               }

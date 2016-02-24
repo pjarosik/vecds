@@ -101,11 +101,7 @@ extern Atoms *AT;
        for (int i=0; i<LATT->n_atoms; i++) {
            int ak = LATT->nAt.get()->at(i);
            double r = INT->radFactor * AT->a_rad1[ak];
-           //osg::Vec3 p2 = LATT->coords.get()->at(i);
 	   glm::dvec3 p2 = LATT->coords[i];
-//           if ( px>(p2.x() - r) && px<=(p2.x() + r) &&
-//                py>(p2.y() - r) && py<=(p2.y() + r) &&
-//                pz>(p2.z() - r) && pz<=(p2.z() + r) )   return i;
            if ( px>(p2.x - r) && px<=(p2.x + r) &&
                 py>(p2.y - r) && py<=(p2.y + r) &&
                 pz>(p2.z - r) && pz<=(p2.z + r) )   return i;
@@ -126,12 +122,12 @@ extern Atoms *AT;
      return glm::dvec3(ux, uy, bz/(2.*osg::PI)*atan2(y, x));
   } // mixed_u
   
-  bool Calc::rect_box(glm::dvec3 pos, glm::dvec3 size)
+  bool Calc::rect_box(glm::dvec3 pos, glm::dvec3 sizeB)
   {
   pos -= INT->actPoint;
-  return (pos.x>-0.5*size.x && pos.x<0.5*size.x &&
-           pos.y>-0.5*size.y && pos.y<0.5*size.y &&
-           pos.z>-0.5*size.z && pos.z<0.5*size.z);
+  return ( pos.x>-0.5*sizeB.x && pos.x<0.5*sizeB.x &&
+           pos.y>-0.5*sizeB.y && pos.y<0.5*sizeB.y &&
+           pos.z>-0.5*sizeB.z && pos.z<0.5*sizeB.z );
   }
 
   bool Calc::hex_box(glm::dvec3 pos, glm::dvec3 size)

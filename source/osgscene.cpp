@@ -57,6 +57,7 @@ OsgScene::OsgScene()
     m_worldReferenceFrame->setMatrix(osg::Matrix::rotate(osg::Y_AXIS, osg::Z_AXIS));
   qWarning("osgScene 0-2"); 
     m_scene = createScene();
+    //this->setFocus();
  qWarning("osgScene - END");
 }
 
@@ -119,6 +120,7 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
     osg::StateSet* set = m_worldAt->getOrCreateStateSet();
     set->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
     set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA ,GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON); 
+ //qWarning("createAtoms 0 - 1");
     if ( INT->fem.empty() ) {
        INT->xMin = LATT->xMin;  INT->xMax = LATT->xMax;
        INT->yMin = LATT->yMin;  INT->yMax = LATT->yMax;
@@ -128,38 +130,44 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
        INT->yMin = std::min(fyMin, LATT->yMin);  INT->yMax = std::max(fyMax, LATT->yMax);
        INT->zMin = std::min(fzMin, LATT->zMin);  INT->zMax = std::max(fzMax, LATT->zMax);
     }
+ //qWarning("createAtoms 0 - 2");
     INT->scDim = std::max(INT->xMax-INT->xMin, std::max(INT->yMax-INT->yMin, INT->zMax-INT->zMin));    
     osg::Vec4 color = INT->bondColor;
     if ( INT->alphaAt<1.0 ) color.w() = INT->alphaAt;
+ //qWarning("createAtoms 0 - 3");
     if ( INT->bondFactor>0. && INT->alphaB>0. ) {
        color[3] = INT->alphaB;
        float rCyl = static_cast<float>(INT->bondFactor * AT->a_rad1[0]*INT->radFactor);  //---------------------------------
-    //std::cout << " rCyl=" << rCyl << std::endl;
+    //std::cout << " rCyl=" << rCyl << "     n_bonds=" << LATT->n_bonds << std::endl;
        for (int i=0; i<LATT->n_bonds; i++) {
          int i1 = LATT->bond1.get()->at(i) - 1;
 	 int i2 = LATT->bond2.get()->at(i) - 1;
-	 if ( LATT->marked.at(i1)<0 || LATT->marked.at(i2)<0 ) continue;
+       //if ( i<5 ) { std::cout << "i=" << i << "     i1=" << i1 << "     i2=" << i2 << std::endl;
+    //std::cout << "LATT->coords[i1].x=" << LATT->coords[i1].x << "     LATT->marked[i1]=" << LATT->marked[i1] << std::endl; }
+	 if ( LATT->marked[i1]<0 || LATT->marked[i2]<0 ) continue;
  	 osg::Vec3 p1 = MiscFunc::convert(LATT->coords[i1]);//(LATT->coords.get()->at(i1);
          osg::Vec3 p2 = MiscFunc::convert(LATT->coords[i2]);//LATT->coords.get()->at(i2);
          m_worldAt->addChild(drawBond(p1, p2, rCyl, color));
        }
     }  
- qWarning("createAtoms 1");
+// qWarning("createAtoms 1");
     for (int i=0; i<LATT->n_k; i++) {
         int ak = LATT->nK.get()->at(i);
     	float r = INT->radFactor * AT->a_rad1[ak];
 	QString aN = AT->namea.at(ak);
+    //std::cout << " i=" << i << "     ak=" << ak << "   namea " << aN.toStdString() << std::endl;
 	osg::Vec4 color = AT->a_colors[ak];
 	if ( INT->alphaAt<1.0 ) color.w() = INT->alphaAt;
      //std::cout << " ak=" << ak << "   r=" << r << "     red=" << color.x() << "     alfa=" << color.w() << std::endl;
 	osg::ref_ptr<osg::Geometry> draw = makeSphere(r, INT->sphSlices, INT->sphStacks, color);
 	for (int j=0; j<LATT->n_atoms; j++) {
-	     if ( LATT->marked.at(j)<0 ) continue;
+	     if ( LATT->marked[j]<0 )  continue;
 	     int akk = LATT->nAt.get()->at(j);
+         //std::cout << " j=" << j << "     akk=" << akk << std::endl;
 	     if ( akk==ak ) {
 	         osg::ref_ptr<osg::Geode> geo = new osg::Geode;
 	         geo->addDrawable(draw.get());
-	         QString str1;
+		 QString str1;
 	         str1.setNum(j+1);
 	         QString str = QString("%1.%2").arg(aN).arg(str1);
 		 geo->setName(str.toStdString());
@@ -339,15 +347,15 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createNum()
 {
     osg::ref_ptr<osg::MatrixTransform> m_worldNum = new osg::MatrixTransform;
 //std::cout << "   marked.size() = " << LATT->marked.size() << std::endl;    
-    for (int i=0; i<LATT->marked.size(); i++ ) {
-        int ind = LATT->marked.at(i);
-	int ak = LATT->nAt.get()->at(ind);
+    for (int i=0; i<LATT->n_atoms; i++ ) {
+        if ( LATT->marked[i]<0 )  continue;
+	int ak = LATT->nAt.get()->at(i);
         float r = INT->radFactor * AT->a_rad1[ak];
         QString aN = AT->namea.at(ak);
-        osg::Vec3 pos1 = MiscFunc::convert(LATT->coords[ind]) + osg::Vec3d(r, 0.0, r);//LATT->coords.get()->at(ind) + osg::Vec3d(r, 0.0, r);
+        osg::Vec3 pos1 = MiscFunc::convert(LATT->coords[i]) + osg::Vec3d(r, 0.0, r);//LATT->coords.get()->at(ind) + osg::Vec3d(r, 0.0, r);
         QString str1;
-        str1.setNum(ind+1);
-        QString str = QString("%1.%2").arg(aN).arg(str1);	
+        str1.setNum(i+1);
+        QString str = QString("%1 %2").arg(aN).arg(str1);	
         osg::ref_ptr<osgText::Text> text = createText(pos1, str.toStdString(), INT->sizeTxt, INT->colBlack);
         osg::ref_ptr<osg::Geode> textGeode = new osg::Geode;
         textGeode->addDrawable(text);//(text.get());
@@ -426,7 +434,9 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createImage()
 
 osg::ref_ptr<osgText::Text> OsgScene::createText(const osg::Vec3& pos, const std::string& content, float size, osg::Vec4 color)
 {
+  osg::ref_ptr<osgText::Font> font = osgText::readRefFontFile("arial.ttf");//("DejaVuSans.ttf");
   osg::ref_ptr<osgText::Text> text = new osgText::Text;
+  text->setFont(font);
   text->setDataVariance(osg::Object::DYNAMIC);
   //text->setFont( g_font.get() );
   text->setCharacterSize(size);

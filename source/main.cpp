@@ -1,9 +1,9 @@
-#include "../include/mainwindow.h"
+#include "mainwindow.h"
 
 Atoms *AT;
 Lattice *LATT;
 Internal *INT;
-Adds *ADDS;
+Points *POINTS;
 
 int main(int argc, char *argv[])
 {
@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
   AT = new Atoms();
   INT = new Internal();
   LATT = new Lattice();
-  ADDS = new Adds();  
+  POINTS = new Points();  
   
   if ( argc>1 ) INT->atName = std::string(argv[1]);
 

@@ -1,5 +1,5 @@
-
 -----
+Before compiling vecds you should unpack and compile "FEMApp.tar.gz"
 
 To compile vecds with qmake:
 
