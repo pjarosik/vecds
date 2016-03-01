@@ -9,14 +9,16 @@ message($$PWD)
 
 
 
-HEADERS      = $$files(./include/*.h)
+HEADERS      = $$files(./source/*.h)
 SOURCES      = $$files(./source/*.cpp)
-RESOURCES    = ./include/vecds.qrc
+RESOURCES    = ./source/vecds.qrc
 
 OBJECTS_DIR  = tmp
 MOC_DIR      = tmp
 #RCC_DIR = tmp
 #UI_DIR = tmp
+
+CONFIG += qt warn_on
 
 QMAKE_LFAGS += -O2
 
@@ -32,4 +34,28 @@ macx:LIBS += -framework osgQt -framework osgWidget -frameworks osgViewer -framew
         -framework osgGA -framework osgDB -framework osgUtil \
         -losg \ #-framework osg
         -lOpenThreads #libOpenThreads.dylib
+
+INCLUDEPATH += $$PWD/FEMApp/FEMAppLib
+INCLUDEPATH += $$PWD/FEMApp/FEMGraphLib
+INCLUDEPATH += $$PWD/FEMApp/FEMLib
+INCLUDEPATH += $$PWD/FEMApp/CoupledFields
+INCLUDEPATH += $$PWD/FEMApp/GraphLib
+INCLUDEPATH += $$PWD/FEMApp/XMLLib
+INCLUDEPATH += $$PWD/FEMApp/MolecularLib
+INCLUDEPATH += $$PWD/FEMApp/LangLib
+INCLUDEPATH += $$PWD/FEMApp/MathLib
+
+QMAKE_LIBDIR+= $$PWD/FEMApp/Release
+
+LIBS += -L$$PWD/FEMApp/FEMAppLib/ -lFEMAppLibRelease
+LIBS += -L$$PWD/FEMApp/FEMGraphLib/ -lFEMGraphLibRelease
+LIBS += -L$$PWD/FEMApp/FEMLib/ -lFEMLibRelease
+LIBS += -L$$PWD/FEMApp/CoupledFields/ -lCoupledFieldsRelease
+LIBS += -L$$PWD/FEMApp/GraphLib/ -lGraphLibRelease
+LIBS += -L$$PWD/FEMApp/XMLLib/ -lXMLLibRelease
+LIBS += -L$$PWD/FEMApp/MolecularLib/ -lMolecularLibRelease
+LIBS += -L$$PWD/FEMApp/LangLib/ -lLangLibRelease
+LIBS += -L$$PWD/FEMApp/MathLib/ -lMathLibRelease
+
+LIBS +=  -ldl -lX11 -llapack -lpthread -lgfortran -lm -fopenmp
 
