@@ -9,7 +9,7 @@ message($$PWD)
 
 
 
-HEADERS      = $$files(./source/*.h)
+HEADERS      = $$files(./include/*.h)
 SOURCES      = $$files(./source/*.cpp)
 RESOURCES    = ./source/vecds.qrc
 
