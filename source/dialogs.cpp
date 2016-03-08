@@ -7,6 +7,7 @@ extern Internal *INT;
 QuestionForm1::QuestionForm1(QString title, QString descr, QStringList quest,
         QStringList sug, QStringList &ans, QWidget *parent) : QDialog(parent)
 {
+   this->setStyleSheet("QLineEdit { background-color: yellow }");
    int numQuest = quest.count();
    setWindowTitle(title);
    //setAttribute(Qt::WA_DeleteOnClose);//   this->setStyleSheet("QLineEdit { background-color: yellow }");
@@ -51,6 +52,7 @@ QuestionForm1::QuestionForm1(QString title, QString descr, QStringList quest,
 QuestionForm2::QuestionForm2(QString title, QString descr, QStringList quest,
                QStringList sug, QStringList &ans, QStringList combo, int indC, QWidget *parent) : QDialog(parent)
 {
+   this->setStyleSheet("QLineEdit { background-color: yellow }");
    indCombo = -1;  
    int numQuest = quest.count();
    setWindowTitle(title);
@@ -110,6 +112,7 @@ void QuestionForm2::res(int i)
 OneQuestion::OneQuestion(QString title, QString descr, QString quest, QString sug, QString &ans, QWidget *parent) : QDialog(parent)
 {
 //  qWarning("oneQ 0");
+   this->setStyleSheet("QLineEdit { background-color: yellow }");
    setWindowTitle(title);
   // setAttribute(Qt::WA_DeleteOnClose);
    if ( !(descr.isEmpty()) ) {
@@ -223,3 +226,66 @@ QuestionMessageDialog::QuestionMessageDialog(QString str1, QString str2)
         ok = false;
 } 
 */
+
+MoveDialog::MoveDialog(QString title, QWidget *parent)
+{
+   setWindowTitle(title);
+   ok = marked = rotated = false;
+   QGroupBox *horizontalGroupBox = new QGroupBox("Options");
+   QHBoxLayout *layoutH = new QHBoxLayout;
+   QCheckBox *checkBox1 = new QCheckBox("rotated atoms");
+   QCheckBox *checkBox2 = new QCheckBox("only marked atoms");
+   layoutH->addWidget(checkBox1);
+   layoutH->addWidget(checkBox2);
+   horizontalGroupBox->setLayout(layoutH);
+
+   QLineEdit *qEditX = new QLineEdit("0.0");
+   QLabel *labelX = new QLabel("Vector X");
+   QLineEdit *qEditY = new QLineEdit("0.0");
+   QLabel *labelY = new QLabel("Vector Y");
+   QLineEdit *qEditZ = new QLineEdit("0.0");
+   QLabel *labelZ = new QLabel("Vector Z");
+   //label->setFrameStyle(QFrame::NoFrame);
+   //label->setTextFormat(Qt::RichText);
+   QDialogButtonBox *buttonBox = new QDialogButtonBox;
+   buttonBox->addButton(tr("Accept"), QDialogButtonBox::AcceptRole);
+   buttonBox->addButton(tr("Reject"), QDialogButtonBox::RejectRole);
+//   buttonBox->addButton(QDialogButtonBox::Reset);
+   connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+   connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+
+   QFormLayout *layoutF = new QFormLayout;
+   layoutF->addRow(labelX, qEditX);
+   layoutF->addRow(labelY, qEditY);
+   layoutF->addRow(labelZ, qEditZ);      
+   QVBoxLayout *mainLayout = new QVBoxLayout;
+   //mainLayout->addLayout(layoutH);
+   mainLayout->addWidget(horizontalGroupBox);
+   mainLayout->addLayout(layoutF);
+   mainLayout->addWidget(buttonBox);
+   setLayout(mainLayout);
+
+   connect(checkBox1, SIGNAL(clicked(bool)), this, SLOT(checkBox1Changed(bool))); // clicked(bool)  stateChanged(int)
+   connect(checkBox2, SIGNAL(clicked(bool)), this, SLOT(checkBox2Changed(bool)));
+
+   this->exec();
+   if ( this->result()==1 ) {
+      vectX = qEditX->text().toDouble();
+      vectY = qEditY->text().toDouble();
+      vectZ = qEditZ->text().toDouble();
+      ok = true;
+   } else                     ok = false;
+}
+
+
+void MoveDialog::checkBox1Changed(bool state)
+{
+//   std::cout << "CB1 - " << state << std::endl;
+   rotated = state;
+}
+  
+void MoveDialog::checkBox2Changed(bool state)
+{
+   //std::cout << "CB2 - " << state << std::endl;
+   marked = state;
+}

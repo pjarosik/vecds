@@ -72,7 +72,7 @@ public:
     const osg::ref_ptr<osg::Group> getScene() const { return m_scene.get(); }
     void displayPlane(glm::dmat3 rotTens, int nA);
     void showOneAtom(int ind);
-    void displayPoints(bool sw);
+    void displayBvect(bool sw);
     void displayMarked();
     double fxMin, fxMax, fyMin, fyMax, fzMin, fzMax;
     

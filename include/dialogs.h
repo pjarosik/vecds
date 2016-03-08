@@ -70,7 +70,6 @@ class OneQuestion : public QDialog
         
 };
 
-
 class SaveDialog : public QDialog
 {
   Q_OBJECT
@@ -90,6 +89,23 @@ class SaveDialog : public QDialog
    void checkBox2Changed(bool);  
    void setSaveFileName();  
   
+};
+
+class MoveDialog : public QDialog
+{
+  Q_OBJECT
+  
+  public:
+  
+    MoveDialog(QString title, QWidget *parent = 0);
+    bool ok;
+    bool rotated;
+    bool marked;
+    double vectX, vectY, vectZ;
+
+  private slots:
+    void checkBox1Changed(bool);
+    void checkBox2Changed(bool);  
 };
 /*
 class QuestionMessageDialog : public Dialog

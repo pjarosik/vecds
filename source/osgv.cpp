@@ -56,6 +56,7 @@ OsgViewerQt::OsgViewerQt(OsgScene *scene1, double fovy) : QGLWidget(),
 	//setFocus();
 	//viewer.
 	setKeyEventSetsDone(0);
+	this->setStyleSheet("background-color: white");
         std::cout << "OsgViewerQt OK" << std::endl;
 }
 

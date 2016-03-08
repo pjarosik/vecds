@@ -28,6 +28,7 @@ class Points
 
   std::vector<glm::dvec3> millerVs;
   std::vector<glm::dvec3> millerPs;
+  std::vector<glm::dvec3> vectors;
   std::vector<double> fracts;
   std::vector<glm::dmat3> rotTens;
   std::vector<QString> strName;

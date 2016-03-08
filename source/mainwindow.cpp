@@ -31,7 +31,7 @@ MainWindow::MainWindow()
     setMinimumSize(800, 600);
     setContentsMargins(0, 0, 0, 0);
     setAutoFillBackground(true);
-    //setStyleSheet("background-color:white");    
+    setStyleSheet("border: none");//("background-color:white");    
     setBackgroundRole(QPalette::Base);//Window);//(QColor(255, 255, 255, 255));
     //setForegroundRole(QPalette::Base);//Window);//(QColor(255, 255, 255, 255));
     setWindowTitle("Visual Editor of Crystal Defects");
@@ -105,6 +105,8 @@ MainWindow::MainWindow()
     INT->outLog << "=========== B E G I N ===========    MainWindow created at " << dateTimeString << "   ========== B E G I N =============" << std::endl;
     INT->calcLog << "=========== B E G I N ===========    MainWindow created at " << dateTimeString << "    ========== B E G I N =============" << std::endl;
     mode = 0;
+    moreFiles = false;
+    screw = false;
     refreshViewer();
     //qApp->processEvents();
 }
@@ -259,6 +261,10 @@ void MainWindow::createActions()
   rombBoxAct->setStatusTip(tr("Romboidal bounding box"));
   connect(rombBoxAct, SIGNAL(triggered()), this, SLOT(SL_rombBox()));
 
+  cylindAct = new QAction(tr("Cylinder"), this);
+  hexBoxAct->setStatusTip(tr("Cyliner bounding box"));
+  connect(cylindAct, SIGNAL(triggered()), this, SLOT(SL_cylinder()));
+
   MillerAct = new QAction(tr("Rotation by Miller indices"), this);
   //    MillerAct->setShortcut(tr("Ctrl+M"));
   MillerAct->setStatusTip(tr("input Miller indices"));
@@ -268,17 +274,17 @@ void MainWindow::createActions()
   dislocAct->setStatusTip(tr("input Miller indices"));
   connect(dislocAct, SIGNAL(triggered()), this, SLOT(SL_dislocAct()));
 
-  calcDislAct = new QAction(tr("Calculate displacement field for single dislocation"), this);
-  calcDislAct->setStatusTip(tr("Calculate displacement field for single dislocation"));
+  calcDislAct = new QAction(tr("Calculate displacement field for dislocations"), this);
+  calcDislAct->setStatusTip(tr("Calculate displacement field for dislocations"));
   connect(calcDislAct, SIGNAL(triggered()), this, SLOT(SL_calcDisl()));
 
   updateAct = new QAction("Add displacement field to coordinates", this);
   updateAct->setStatusTip("Add displacement field to coordinates");
   connect(updateAct, SIGNAL(triggered()), this, SLOT(SL_update()));
 
-  moveAct = new QAction("Move marked atoms", this);
-  moveAct->setStatusTip("Move marked atoms");
-  //connect(moveAct, SIGNAL(triggered()), this, SLOT(SL_move()));
+  moveAct = new QAction("Move atoms", this);
+  moveAct->setStatusTip("Move atoms");
+  connect(moveAct, SIGNAL(triggered()), this, SLOT(SL_move()));
 
   editSettAct = new QAction("Edit settings", this);
   editSettAct->setStatusTip("Edit settings");
@@ -409,6 +415,8 @@ void MainWindow::createMenus()
   boxMenu->addAction(hexBoxAct);
   boxMenu->addSeparator();
   boxMenu->addAction(rombBoxAct);
+  boxMenu->addSeparator();
+  boxMenu->addAction(cylindAct);
 
   toolsMenu->addSeparator();
   toolsMenu->addAction(moveAct);
@@ -522,14 +530,14 @@ void MainWindow::SL_actPoint()
      pos = LATT->coords[nA];
      strPoint = QString(" coordinates = { %1, %2, %3 }").arg(pos.x, 0, 'f', 4).arg(pos.y, 0, 'f', 4).arg(pos.z, 0, 'f', 4);
      INT->outLog << " mode=" << mode << strAtom.toStdString() << strPoint.toStdString() << std::endl;
-  std::cout << " mode=" << mode << strAtom.toStdString() << strPoint.toStdString() << " right left ctrl shift " << INT->right << "  " << INT->left << "  " << INT->ctrl << "  " << INT->shift << std::endl;
+  //std::cout << " mode=" << mode << strAtom.toStdString() << strPoint.toStdString() << " right left ctrl shift " << INT->right << "  " << INT->left << "  " << INT->ctrl << "  " << INT->shift << std::endl;
      if ( INT->right && mode<2 ) { // info
         mview1->setDone(true);
         QMessageBox::information(this, strAtom, strPoint);
 	mview1->setDone(false);  
 	return;
      }
-     if ( mode>=2 && mode<=6 ) {
+     if ( mode>=2 && mode<=7 ) {
         if ( !INT->hklDefined ) {  QMessageBox::warning(this, "PROBLEM", "You should define orientation of the lattice"); return;  }
         mview1->setDone(true);
         if (  INT->left && INT->ctrl ) {
@@ -554,10 +562,11 @@ void MainWindow::SL_actPoint()
         } // INT->left && INT->shift
      } // mode>=2 && mode<=6
   } else {  // nA<0 
-     if ( mode>=2 && mode<=6 && INT->atomDefined && INT->left && INT->shift ) {
+     if ( mode>=2 && mode<=7 && INT->atomDefined && INT->left && INT->shift ) {
         mview1->setDone(true);
         pos = INT->actPoint;
         process(pos);
+	mview1->setDone(false);
      }
   }
 }
@@ -569,8 +578,8 @@ void MainWindow::process(glm::dvec3 pos)
 	statusBar()->clearMessage();qApp->processEvents();
 	statusBar()->showMessage(QString("%1 %2 %3").arg(strBvect, strAtom, strPoint));
      }
-     addPOINTS(1);
-     scene->displayPoints(true);//std::cout << " POINTS->n_points=" << POINTS->n_points << std::endl;	   
+     addPOINTS();
+     scene->displayBvect(true);//std::cout << " POINTS->n_points=" << POINTS->n_points << std::endl;	   
      mview1->setQuat(rotQuat);
      mview1->setDone(false);
      mode = 0;
@@ -596,6 +605,7 @@ void MainWindow::process(glm::dvec3 pos)
                                                                                                           .arg(pos.x, 0, 'f', 4).arg(pos.y, 0, 'f', 4).arg(pos.z, 0, 'f', 4);
      if ( mode==5 ) qs = QString("Hexagonal box  length=%1, size Z=%2 at point (%3, %4, %5)").arg(sizeB.x, 0, 'f', 4).arg(sizeB.z, 0, 'f', 4).arg(pos.x, 0, 'f', 4).arg(pos.y, 0, 'f', 4).arg(pos.z, 0, 'f', 4);
      if ( mode==6 ) qs = QString("Romboidal box  length=%1, size Z=%2 at point (%3, %4, %5)").arg(sizeB.x, 0, 'f', 4).arg(sizeB.z, 0, 'f', 4).arg(pos.x, 0, 'f', 4).arg(pos.y, 0, 'f', 4).arg(pos.z, 0, 'f', 4);
+     if ( mode==7 ) qs = QString("Cylinder  radius=%1, size Z=%2 at point (%3, %4, %5)").arg(sizeB.x, 0, 'f', 4).arg(sizeB.z, 0, 'f', 4).arg(pos.x, 0, 'f', 4).arg(pos.y, 0, 'f', 4).arg(pos.z, 0, 'f', 4); 
      INT->outLog << qs.toStdString() << std::endl;
      statusBar()->showMessage(qs);
      scene->displayMarked();//     qApp->processEvents();
@@ -626,7 +636,7 @@ void MainWindow::SL_millerAct()
      strBvect = QString("Burger's vector: %1       ").arg(ansBurgers);
      strAtom = "";
      strPoint = "";
-     rotTens = Calc::rotation_tensor();//  glm::dmat3 rotInv = glm::transpose(rotTens);
+     rotTens = Calc::rotation_tensor(INT->millerV, INT->millerP);//  glm::dmat3 rotInv = glm::transpose(rotTens);
      INT->rotTens = rotTens;
      glm::dquat qq = glm::quat_cast(rotTens);
      osg::Quat qq1 = osg::Quat(qq.x, qq.y, qq.z, qq.w);
@@ -664,17 +674,29 @@ void MainWindow::SL_dislocAct()
      strBvect = QString("Burger's vector: %1       ").arg(ansBurgers);
      strAtom = "";
      strPoint = "";
-     INT->hklDefined = true;
      INT->atomDefined = false;
-     rotTens = Calc::rotation_tensor();
-     INT->rotTens = rotTens;
-     //mode = 2;
+     //INT->hklDefined = true;
+     if ( INT->hklDefined) INT->rotTens = rotTens = Calc::rotation_tensor(INT->millerV, INT->millerP);
+     else {
+        screw = true;
+        mview1->setDone(true);
+        QString descr = "Miller indices";
+        QString quest = "[hkl]";
+        QString sug = "";
+	QString ans1;
+        OneQuestion *oq = new OneQuestion("Additional rotation parameters", descr, quest, sug, ans1);
+        if ( !oq->ok ) return;
+	direction = Calc::plane1(ans1.toStdString());
+	INT->rotTens = rotTens = Calc::rotation_tensor(direction, INT->millerP);
+        INT->hklDefined = true;
+     }
      glm::dquat qq = glm::quat_cast(rotTens);
      osg::Quat qq1 = osg::Quat(qq.x, qq.y, qq.z, qq.w);
      rotQuat = qq1.conj()*YtoZ;
+     mview1->setDone(false);
      refreshScene();
      mview1->setQuat(rotQuat);          
-     mview1->setDone(false);
+     //mview1->setDone(false);
      statusBar()->clearMessage();//showMessage("AAA");
      statusBar()->showMessage(strBvect);
   } // else { ERROR
@@ -682,12 +704,13 @@ void MainWindow::SL_dislocAct()
      mview1->setDone(true);
      INT->actPoint = glm::dvec3(ans.at(2).toDouble(), ans.at(3).toDouble(), ans.at(4).toDouble());
      INT->pointDefined = true;
-     strPoint = QString("       point coordinates = { %1, %2, %3 }").arg(INT->actPoint.x, 0, 'f', 4).arg(INT->actPoint.y, 0, 'f', 4).arg(INT->actPoint.z, 0, 'f', 4);
+     strPoint = QString("  point coordinates = { %1, %2, %3 }").arg(INT->actPoint.x, 0, 'f', 4).arg(INT->actPoint.y, 0, 'f', 4).arg(INT->actPoint.z, 0, 'f', 4);
      INT->outLog << strPoint.toStdString() << std::endl;
      statusBar()->clearMessage();
-     statusBar()->showMessage(QString("%1  *****  %3").arg(strBvect, strPoint));
-     addPOINTS(1);
-     scene->displayPoints(true);//std::cout << " POINTS->n_points=" << POINTS->n_points << std::endl;	   
+     statusBar()->showMessage(QString("%1  *****  %2").arg(strBvect, strPoint));
+     addPOINTS();
+     screw = false;
+     scene->displayBvect(true);//std::cout << " POINTS->n_points=" << POINTS->n_points << std::endl;	   
      mview1->setDone(false);
      mview1->setQuat(rotQuat);
      mode = 0;
@@ -862,6 +885,47 @@ void MainWindow::SL_rombBox()
   return;
 } 
 
+void MainWindow::SL_cylinder()
+{
+  mode = 7;
+  INT->outLog << "SL_cylinder:  mode=" << mode << "    ";
+  //if ( !INT->structureDefined ) { QMessageBox::warning(this, "PROBLEM", "You should define structure first");  return; }
+  mview1->setDone(true);
+  ++(INT->npoints);
+  QString descr = "";
+  QStringList quest, sug, ans;
+  QString name = QString("point nr %1").arg(INT->npoints);
+  quest << "Name" << "point X" << "point Y" << "point Z" << "radius" << "size Z";
+  sug << name << "" << "" << "" << "" << "";
+  QuestionForm1 *qf = new QuestionForm1("Cylinder", descr, quest, sug, ans);
+  mview1->setDone(false);
+  if ( !qf->ok ) {  delete qf;  --(INT->npoints);  return;  }  
+  INT->hklDefined = true;//qApp->processEvents();
+  INT->atomDefined = false;
+  rotQuat = mview1->getQuat();
+  INT->rotTens = rotTens = MiscFunc::quat2rot((rotQuat*ZtoY).conj());
+  sizeB = glm::dvec3(ans.at(4).toDouble(), 0., ans.at(5).toDouble());
+  statusBar()->clearMessage();
+  QString qs= QString("Cylinder  radius=%1, size Z=%2").arg(ans.at(4)).arg(ans.at(5));
+  statusBar()->showMessage(qs);
+  INT->outLog << "name=" << name.toStdString() << " --- " << qs.toStdString() << std::endl;
+  if (  !ans.at(1).isEmpty() && !ans.at(2).isEmpty() && !ans.at(3).isEmpty() ) {
+     INT->actPoint = glm::dvec3(ans.at(1).toDouble(), ans.at(2).toDouble(), ans.at(3).toDouble());
+     cutBox();
+     statusBar()->clearMessage();
+     QString qs= QString("Cylinder  radius=%1, size Z=%2 at point (%3, %4, %5)").arg(ans.at(4)).arg(ans.at(5)).arg(ans.at(1)).arg(ans.at(2)).arg(ans.at(3));
+     statusBar()->showMessage(qs);
+     INT->outLog << qs.toStdString() << std::endl;
+     INT->refrAtoms = true;
+     refreshScene();
+     mview1->setQuat(rotQuat); 
+     mview1->setDone(false);
+     mode = 0;
+  }
+  return;
+  
+}
+
 void MainWindow::cutPlane(glm::dvec3 point)
 {
   glm::dvec3 c1 = glm::normalize(INT->plane * INT->crC->o2c);
@@ -878,27 +942,35 @@ void MainWindow::cutBox()
   if  ( mode==4 ) for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] =((Calc::rect_box(LATT->coords[i], sizeB))? 1 : -1);// std::cout << LATT->coords[i].x << ",   " << LATT->coords[i].y << " :  " << LATT->marked[i] << std::endl;}
   if  ( mode==5 ) for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] =((Calc::hex_box(LATT->coords[i], sizeB))? 1 : -1);
   if  ( mode==6 ) for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] =((Calc::romb_box(LATT->coords[i], sizeB))? 1 : -1);
+  if  ( mode==7 ) for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] =((Calc::cylinder(LATT->coords[i], sizeB))? 1 : -1);
   qApp->processEvents();
   return;
 }
 
-void MainWindow::addPOINTS(int nr)
+void MainWindow::addPOINTS()
 {
-  POINTS->pos->push_back(MiscFunc::convert(INT->actPoint));qApp->processEvents();
+  int nr = screw? 2 : 1;
+ std::cout << "------ ADD point nr=" << nr << std::endl;
+  POINTS->pos->push_back(MiscFunc::convert(INT->actPoint));
   POINTS->nKind->push_back(nr);
   POINTS->n_points = POINTS->pos.get()->size();
+  POINTS->millerVs.push_back(INT->millerV);
+  POINTS->millerPs.push_back(INT->millerP);
+  POINTS->fracts.push_back(INT->fract);
+  POINTS->rotTens.push_back(INT->rotTens);
+  POINTS->crCNum.push_back(INT->crCNum);
+  POINTS->strBV.push_back(ansBurgers);
+  POINTS->strName.push_back(strName);
   if ( nr==1 ) {
-     POINTS->millerVs.push_back(INT->millerV);
-     POINTS->millerPs.push_back(INT->millerP);
-     POINTS->fracts.push_back(INT->fract);
-     POINTS->rotTens.push_back(INT->rotTens);
-     POINTS->crCNum.push_back(INT->crCNum);
-     POINTS->strBV.push_back(ansBurgers);
-     POINTS->strName.push_back(strName);
      POINTS->numMeth.push_back(numMeth);
-  } else {
-     POINTS->millerVs.push_back(INT->plane);  
+     POINTS->vectors.push_back(glm::dvec3(0., 0., 0.));
+  } //else {
+  if ( nr==2 ) {
+     POINTS->numMeth.push_back(0);
+     POINTS->vectors.push_back(direction);
   }
+  qApp->processEvents();
+  //std::cout << "------ point nr=" << nr << std::endl;
 }
 
 void MainWindow::SL_update()
@@ -906,17 +978,9 @@ void MainWindow::SL_update()
   mview1->setDone(true);
   INT->outLog << "SL_update()" << std::endl;
 
-    stringstream sss;
-    sss << "wynik" << ".coord";
-    ofstream f_numb(sss.str().c_str());  
-
-  for (int i=0; i<LATT->n_atoms; i++ ) {
-     LATT->coords[i] += LATT->u[i];
-   f_numb << i << "    " << LATT->coords[i].x << "    " << LATT->coords[i].y << "    " << LATT->coords[i].z << std::endl;
-  }
-  f_numb.close();
+  for (int i=0; i<LATT->n_atoms; i++ )  LATT->coords[i] += LATT->u[i];
   mview1->setDone(false);  
-  scene->displayPoints(false);
+  scene->displayBvect(false);
   INT->refrAtoms = true;
   INT->showPoints = false;
   osg::Matrixd mat = mview1->getMatrix();
@@ -936,16 +1000,27 @@ void MainWindow::SL_calcDisl()
   if ( !file.open(QIODevice::WriteOnly|QIODevice::Text) )   QMessageBox::warning(this, "PROBLEM", QString(" ERROR writing %1").arg(cd1));
   else {//      file.write(editor->toPlainText().toUtf8());
      QString str;
+     QString str1 = QString::fromStdString("\n");
      str.append("Leave only the lines that are necessary\nLines startitng with // are comments\n");
      for ( int i=0; i<POINTS->n_points; i++ ) {
         glm::dvec3 point = MiscFunc::convert(POINTS->pos.get()->at(i));
+     std::cout << "POINTS kind=" << POINTS->nKind.get()->at(i) << std::endl;
 	//str.append(QString("!! single_disl class %1, ").arg(i));
-	str.append(QString("!! single_disl nr= %1 method= %2 ").arg(i).arg(POINTS->numMeth[i]));
-        str.append(POINTS->strBV[i]);
-	str.append(QString(" %1 %2 %3").arg(point.x, 0, 'f', 8).arg(point.y, 0, 'f', 8).arg(point.z, 0, 'f', 8));
-        QString str1 = QString::fromStdString("\n");
-        str.append(str1);
-     }
+	if ( POINTS->nKind.get()->at(i)==1 ) {   // normal dislocation
+ 	   str.append(QString("!! single_disl nr= %1 method= %2 ").arg(i).arg(POINTS->numMeth[i]));
+           str.append(POINTS->strBV[i]);
+	   str.append(QString(" %1 %2 %3").arg(point.x, 0, 'f', 8).arg(point.y, 0, 'f', 8).arg(point.z, 0, 'f', 8));
+           str.append(str1);
+        }
+	if ( POINTS->nKind.get()->at(i)==2 ) {   // pure screw dislocation
+ 	   str.append(QString("!! screw_disl nr= %1 ").arg(i));
+           str.append(POINTS->strBV[i]);
+	   str.append(QString(" %1 %2 %3 ").arg(point.x, 0, 'f', 8).arg(point.y, 0, 'f', 8).arg(point.z, 0, 'f', 8));
+	   glm::dvec3 dir = POINTS->vectors[i];
+	   str.append(QString(" direction %1 %2 %3 ").arg(dir.x, 0, 'f', 8).arg(dir.y, 0, 'f', 8).arg(dir.z, 0, 'f', 8));
+           str.append(str1);
+        }
+     } // for
      file.write(str.toUtf8());
      file.close();
   }
@@ -961,48 +1036,36 @@ void MainWindow::SL_performDislCalc(QString ff)
   if ( !file.open(QIODevice::ReadOnly|QIODevice::Text) )   { QMessageBox::warning(this, "PROBLEM", QString(" ERROR opening %1").arg(ff)); return; }
   QTextStream in(&file);//int nl = 0;
   INT->outLog << "SL_performDislCalc(QString ff)" << std::endl;
-  
-    stringstream sss;
-    sss << "wynik" << ".du";
-//  extPrint(sss.str(), atoms->n_atoms, coord1);
-    ofstream f_numb(sss.str().c_str());  
-  
+ 
+    //int nl =0;
   while (!in.atEnd()) {
-     QString line = in.readLine();// ++nl;  std::cout << " nl=" << nl << "   " << line.toStdString() << std::endl;
+     QString line = in.readLine(); //++nl;  std::cout << " nl=" << nl << "   " << line.toStdString() << std::endl;
      if ( line.isEmpty() || (line.at(0)=='/' && line.at(1)=='/') ) continue;
      if ( line.at(0)=='!' && line.at(1)=='!' ) {
         QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-
-	int nf = fields.size();
-	for (int i=0; i<nf; i++) std::cout << i << ":" << fields.at(i).toStdString() << "   $$   ";
-	std::cout << std::endl;
-
-	std::string s = fields.at(3).toStdString();
+	//int nf = fields.size(); for (int i=0; i<nf; i++) std::cout << i << ":" << fields.at(i).toStdString() << "   $$   "; std::cout << std::endl;//std::string s = fields.at(3).toStdString();
+	int nm = 0;
 	int k = fields.at(3).toInt(); //MiscFunc::toInt(s);// std::cout << " nl=" << nl << "   s=" << s << "    k=" << k << std::endl;
-	int nm = fields.at(5).toInt();
-     std::cout << "   s=" << s << "    k=" << k << "   fields[5]=" << nm << std::endl;
-	if ( POINTS->nKind.get()->at(k)!=1 ) continue;
-        glm::dvec3 pos = MiscFunc::convert(POINTS->pos.get()->at(k));
-        glm::dmat3 rt = POINTS->rotTens.at(k);
-        glm::dmat3 rtInv = glm::transpose(rt);
+	if ( POINTS->nKind.get()->at(k)==1 ) nm = fields.at(5).toInt();
+        glm::dvec3 pos = MiscFunc::convert(POINTS->pos.get()->at(k)); // std::cout << " pos = ( " << pos.x << ", " << pos.y << ", " << pos.z << ")" << std::endl;
+        glm::dmat3 rt = POINTS->rotTens.at(k); // MiscFunc::printMat("rt", rt);
+        glm::dmat3 rtInv = glm::transpose(rt); // MiscFunc::printMat("rtInv", rtInv);
         glm::dvec3 bV = rt * POINTS->fracts.at(k) * (INT->structList[POINTS->crCNum.at(k)]).c2o * POINTS->millerVs.at(k);
-        glm::dvec3 cd = rt * pos;
+        glm::dvec3 cd = rt * pos; //  std::cout << " cd = ( " << cd.x << ", " << cd.y << ", " << cd.z << ")" << std::endl;
         double be=sqrt(bV.x*bV.x+bV.y*bV.y);
-        double bz = bV.z;// std::cout << " be=" << be << "  bz=" << bz << std::endl;
+        double bz = bV.z; //  std::cout << "  nm=" << nm << "  be=" << be << "  bz=" << bz << std::endl;
 	LATT->du.clear();
 	LATT->du.resize(LATT->n_atoms);
 
 	if ( nm==0 ) {  // classical
            for (int i=0; i<LATT->n_atoms; i++ ) {
-	      glm::dvec3 coord1 = rt * LATT->coords[i];//MiscFunc::convert(LATT->coords.get()->at(i));
+	      glm::dvec3 coord1 = rt * LATT->coords[i];
 	      glm::dvec3 dist1 = coord1 - cd;
               if ( glm::length2(dist1)<1.e-8 ) {  QMessageBox::warning(this, "PROBLEM", QString(" ERROR  atom nr %1 is too close to disl core").arg(i+1));  return;  }
               LATT->du[i] = rtInv * Calc::mixed_u(dist1, be, bz);
            }
 	}
-
 	if ( nm>0 ) { // iterations
-	   //double rad_fact = 1.0;
 	   int count_moved = 0;
 	   int n_Errors = 0;
 	   int n_errors = 0;
@@ -1016,18 +1079,14 @@ void MainWindow::SL_performDislCalc(QString ff)
            const gsl_multiroot_fdfsolver_type *T;
            if ( nm==2 ) T = gsl_multiroot_fdfsolver_hybridsj;
            else         T = gsl_multiroot_fdfsolver_newton;
-	//std::cout << "=======1==========" << std::endl;
 	   for (int i=0; i<LATT->n_atoms; i++ ) {
-	      glm::dvec3 coord1 = rt * LATT->coords[i];//MiscFunc::convert(LATT->coords.get()->at(i));
+	      glm::dvec3 coord1 = rt * LATT->coords[i];
 	      glm::dvec3 dist1 = coord1 - cd;
               if ( glm::length2(dist1)<1.e-8 ) {  QMessageBox::warning(this, "PROBLEM", QString(" ERROR  atom nr %1 is too close to disl core").arg(i+1));  return;  }
-	//if ( i<2 ) std::cout << "=======2==========      i=" << i << std::endl;
 	      count = 0;
-              //dist1 = coord1[i] - cd;
               glm::dvec3 du0 = Calc::mixed_u(dist1, be, bz);
               double duNorm = 0.8*glm::length(du0);
               double ddd = 0.;
-      
               do {
                  gsl_multiroot_fdfsolver *s; // = gsl_multiroot_fdfsolver_alloc(T, 3);
                  gsl_vector *x; // = gsl_vector_alloc(3);		  
@@ -1053,8 +1112,7 @@ void MainWindow::SL_performDislCalc(QString ff)
                  diff.x = gsl_vector_get(s->f, 0);
                  diff.y = gsl_vector_get(s->f, 1);
                  diff.z = gsl_vector_get(s->f, 2);
-                 LATT->du[i] -= diff;
-   ///std::cout << "=1=   i=" << i << "   count=" << count << " ------    du=  " << LATT->du[i].x << "   " << LATT->du[i].y << "    " << LATT->du[i].z << std::endl;	   
+                 LATT->du[i] -= diff; //std::cout << "=1=   i=" << i << "   count=" << count << " ------    du=  " << LATT->du[i].x << "   " << LATT->du[i].y << "    " << LATT->du[i].z << std::endl;	   
                  ddd = glm::distance(du0, LATT->du[i]); 
 
                  status = gsl_multiroot_test_residual(s->f, crit_stop);
@@ -1067,7 +1125,6 @@ void MainWindow::SL_performDislCalc(QString ff)
 		 std::cout << " i=" << i << "   count=" << count << "   diff  " << diff.x << "   " << diff.y << "    " << diff.z << std::endl;
                  std::cout << "  du0  = " << du0.x << ",  " << du0.y << ",  " << du0.z << std::endl;
                  std::cout << "  du  = " << LATT->du[i].x << ",  " << LATT->du[i].y << ",  " << LATT->du[i].z << std::endl;  //glm::dvec3 point = MiscFunc::convert(POINTS->pos.get()->at(i));
-		 //osg::Vec3d ac = LATT->coords.get()->at(i);
 		 glm::dvec3 ac = LATT->coords[i];
                  std::cout << " duNorm = " << duNorm << "        ddd = " << ddd << "       coord X = " << ac.x << "       coord Y = " << ac.y << std::endl;
                  double rrr = sqrt(ac.x*ac.x + ac.y*ac.y);
@@ -1094,13 +1151,30 @@ void MainWindow::SL_performDislCalc(QString ff)
 	for (int i=0; i<LATT->n_atoms; i++ ) {
 	   LATT->du[i] -= sumU;
 	   LATT->u[i] += LATT->du[i];//u0;
-  f_numb << i << "    " << LATT->du[i].x << "    " << LATT->du[i].y << "    " << LATT->du[i].z << std::endl;
+//  f_numb << i << " ***2****    " << LATT->du[i].x << "    " << LATT->du[i].y << "    " << LATT->du[i].z << std::endl;
         }
      } // line.at(0)=='!' && line.at(1)=='!'
   }
-  f_numb.close();  
+//  f_numb.close();  
   file.close();
 } 
+
+void MainWindow::SL_move()
+{
+  qWarning("SL_move"); 
+  mview1->setDone(true);
+  MoveDialog *md = new MoveDialog("Vector coordinates:");
+  if ( md->ok ) {//std::cout << "SL_MoveAtoms:  x=" << md->vectX << "   y=" << md->vectY << "   z=" << md->vectZ << std::endl;
+     if ( md->rotated )  rotTens = MiscFunc::quat2rot((mview1->getQuat()*ZtoY).conj());
+     for (int i=0; i<LATT->n_atoms; i++) {
+        if ( md->marked && LATT->marked[i]<0 ) continue;
+        glm::dvec3 p1 = ( md->rotated )? rotTens * LATT->coords[i] : LATT->coords[i];
+        p1 += glm::dvec3(md->vectX, md->vectY, md->vectZ); 
+        LATT->coords[i] = p1;
+     }
+  } //else std::cout << "SL_MoveAtoms:  DUPA" << std::endl;  
+  mview1->setDone(false);
+}
 
 void MainWindow::SL_setPoints()
 {
@@ -1360,6 +1434,16 @@ void MainWindow::SL_setNS()
 void MainWindow::SL_openAtoms()
 {
   mview1->setDone(true);
+  if ( !INT->atName.empty() ) {
+     QString quest = QString("You have opened %1 file. Do you want to close it?").arg(QString::fromStdString(INT->atName).section('/', -1)); // QString::fromStdString(str)
+     if ( QMessageBox::Yes == QMessageBox(QMessageBox::Information, "WARNING", quest, QMessageBox::Yes|QMessageBox::No).exec() ) {
+     std::cout << "YES\n";//{
+        moreFiles = false;
+     } else {
+     std::cout << "NO\n";
+        moreFiles = true;
+     }
+  }
   QString cd0 = INT->currDir;//AT->
   QFileDialog *qf = new QFileDialog(this, "Select atoms", cd0.append("/data/atoms"), "Molecules (*.xyz *.alc)");
   qf->exec();                                  
@@ -1373,9 +1457,13 @@ void MainWindow::SL_openAtoms()
   if ( aname1.isEmpty() )  {  mview1->setDone(false);  return; }
   if ( !(aname1.contains(".xyz")) && !(aname1.contains(".alc")) )  {  QMessageBox::warning(this, "PROBLEM", QString("openAtoms -- unknown file format")); mview1->setDone(false);  return;  }
   else {
-      INT->atName = aname1.toStdString();
-      readAlcXyz(aname1);
-      iAt = QString("   file: %1  %2 atoms  ").arg(aname1.section('/', -1)).arg(LATT->n_atoms);
+      if ( moreFiles ) {
+      
+      } else {
+         INT->atName = aname1.toStdString();
+         readAlcXyz(aname1);
+         iAt = QString("   file: %1  %2 atoms  ").arg(aname1.section('/', -1)).arg(LATT->n_atoms);
+      }
       infoDisplay();
       mview1->setDone(false);
   }
@@ -1457,7 +1545,7 @@ void MainWindow::SL_closeImage()
 void MainWindow::SL_reset()
 {
   mview1->setDone(false);  
-  scene->displayPoints(false);
+  scene->displayBvect(false);
   INT->refrAtoms = true;
   INT->showPoints = false;
   osg::Matrixd mat = mview1->getMatrix();

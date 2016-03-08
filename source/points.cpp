@@ -32,6 +32,7 @@ extern Internal *INT;
     this->nKind.get()->clear();
     this->millerVs.clear();
     this->millerPs.clear();
+    this->vectors.clear();
     this->fracts.clear();
     this->rotTens.clear();
     this->strName.clear();

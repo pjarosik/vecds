@@ -15,7 +15,7 @@ class Calc
 { 
  public:
 //  static const double deg2rad = 0.01745329251994329576;
-  static glm::dmat3 rotation_tensor();
+  static glm::dmat3 rotation_tensor(glm::dvec3 mV, glm::dvec3 mP);
   static bool parse_miller(const std::string line);
   static glm::dvec3 plane1(const std::string line);
   static bool internal_miller(std::string line2, int which, int *mill);//spradzenie poprawności danych i zamiana układu cztero na trójwsk.
@@ -24,6 +24,7 @@ class Calc
   static bool rect_box(glm::dvec3 pos, glm::dvec3 size);
   static bool hex_box(glm::dvec3 pos, glm::dvec3 size);
   static bool romb_box(glm::dvec3 pos, glm::dvec3 size);
+  static bool cylinder(glm::dvec3 pos, glm::dvec3 size);
   static int Love_function(const gsl_vector *x, void *par, gsl_vector *result_funct);
   static int Beta_function(const gsl_vector *x, void *par, gsl_matrix *jac);
   static int Love_fdf(const gsl_vector *x, void *par, gsl_vector *result_funct, gsl_matrix *jac);

@@ -92,7 +92,7 @@ qWarning("createScene 0");
        optimizer.optimize( m_switchRoot.get() );
     }
     m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
-    if ( INT->showPoints && POINTS->n_points>0 )   displayPoints(true);        
+    if ( INT->showPoints && POINTS->n_points>0 )   displayBvect(true);        
  qWarning("-------------------------   createScene  - END  +++++++++++++++++++++++++++++++ ");
     return m_switchRoot.get();
 }
@@ -186,7 +186,7 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
     //return m_worldAt.release();
 }
 
-void OsgScene::displayPoints(bool sw)
+void OsgScene::displayBvect(bool sw)
 {
     if ( !sw ) {
    std::cout << "Remove m_worldPoints" << std::endl;
@@ -200,7 +200,7 @@ void OsgScene::displayPoints(bool sw)
     set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA ,GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON); 
     for (int i=0; i<POINTS->n_points; i++) {
        //glm::dvec3 bV = POINTS->rotTens.at(i) * POINTS->fracts.at(i) * (&(INT->structList[POINTS->crCNum.at(i)]))->c2o * POINTS->millerVs.at(i);
-       glm::dvec3 bV = POINTS->rotTens.at(i) * POINTS->fracts.at(i) * (INT->structList[POINTS->crCNum.at(i)]).c2o * POINTS->millerVs.at(i);
+       glm::dvec3 bV = POINTS->fracts.at(i) * (INT->structList[POINTS->crCNum.at(i)]).c2o * POINTS->millerVs.at(i); // glm::transpose(POINTS->rotTens.at(i)) *
        float length = glm::length(bV); 
        float radius = INT->axRad * length;
        //osg::ref_ptr<osg::Geode> geod = new osg::Geode;
@@ -208,7 +208,7 @@ void OsgScene::displayPoints(bool sw)
        osg::Vec3 pos = POINTS->pos.get()->at(i);//MiscFunc::convert(a.pos);
        //osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
        //mt->setMatrix(osg::Matrix::translate(pos));
-       m_worldPoints->addChild(drawArrow(pos, osg::X_AXIS, length, radius, INT->axPr1, INT->axPr2, osg::Vec4(0.5, 0.5, 0.5, 0.5))); //(geod.get());
+       m_worldPoints->addChild(drawArrow(pos, MiscFunc::convert(glm::normalize(bV)), length, radius, INT->axPr1, INT->axPr2, osg::Vec4(0.5, 0.5, 0.5, 0.5))); //(geod.get());//osg::X_AXIS
 //       m_worldPoints->addChild(mt.get());
    }
    m_worldReferenceFrame.get()->addChild(m_worldPoints.get());
@@ -227,21 +227,15 @@ void OsgScene::displayPlane(glm::dmat3 rotTens, int nA)
    osg::ref_ptr<osg::Geometry> square = new osg::Geometry();
    osg::Vec3Array* squareVertices = new osg::Vec3Array;
    osg::ref_ptr<osg::Geometry> square1 = new osg::Geometry();
-   osg::Vec3Array* squareVertices1 = new osg::Vec3Array;//std::cout << " ++==++==++  displayPlane 1" << std::endl;
+   //osg::Vec3Array* squareVertices1 = new osg::Vec3Array;//std::cout << " ++==++==++  displayPlane 1" << std::endl;
    glm::dvec3 p1, p2, p3, p4;
    MiscFunc::ComputeRect(LATT->coords, rotTens, nA, p1, p2, p3, p4);
    glm::dvec3 pp1 = p1 * rotTens;
    glm::dvec3 pp2 = p2 * rotTens;
    glm::dvec3 pp3 = p3 * rotTens;
    glm::dvec3 pp4 = p4 * rotTens; 
-   glm::dvec3 ppCentr = 0.25*(pp1+pp2+pp3+pp4);
-   glm::dvec3 pp0 = LATT->coords[nA] *  rotTens;//MiscFunc::convert(LATT->coords.get()->at(nA)) *  rotTens;//INT->actPoint * rotTens;
-   int ak = LATT->nAt.get()->at(nA); //std::cout << "DisplayPlane:   ak=" << ak << std::endl;//float r = INT->radFactor * AT->a_rad1[ak];   
-   double fact = double(2.85 * INT->radFactor * AT->a_rad1[ak]) / glm::length(pp1-pp3);
-   glm::dvec3 pp11 = pp0 + fact*(pp1-ppCentr);
-   glm::dvec3 pp12 = pp0 + fact*(pp2-ppCentr);
-   glm::dvec3 pp13 = pp0 + fact*(pp3-ppCentr);
-   glm::dvec3 pp14 = pp0 + fact*(pp4-ppCentr);
+   //int ak = LATT->nAt.get()->at(nA); //std::cout << "DisplayPlane:   ak=" << ak << std::endl;//float r = INT->radFactor * AT->a_rad1[ak];   
+   //double fact = double(2.85 * INT->radFactor * AT->a_rad1[ak]) / glm::length(pp1-pp3);
 // std::cout << " fxMin=" << fxMin << " fyMin=" << fyMin << " fzMin=" << fzMin << std::endl;//std::cout << " fxMax=" << fxMax << " fyMax=" << fyMax << std::endl;
    squareVertices->push_back(MiscFunc::convert(pp1));
    squareVertices->push_back(MiscFunc::convert(pp2));
@@ -253,7 +247,13 @@ void OsgScene::displayPlane(glm::dmat3 rotTens, int nA)
    color0->push_back(osg::Vec4(1.0, 1.0, 0.5, 0.35));    
    square->setColorArray(color0);
    square->setColorBinding(osg::Geometry::BIND_OVERALL);
-
+/*
+   glm::dvec3 ppCentr = 0.25*(pp1+pp2+pp3+pp4);
+   glm::dvec3 pp0 = LATT->coords[nA] *  rotTens;//MiscFunc::convert(LATT->coords.get()->at(nA)) *  rotTens;//INT->actPoint * rotTens;
+   glm::dvec3 pp11 = pp0 + fact*(pp1-ppCentr);
+   glm::dvec3 pp12 = pp0 + fact*(pp2-ppCentr);
+   glm::dvec3 pp13 = pp0 + fact*(pp3-ppCentr);
+   glm::dvec3 pp14 = pp0 + fact*(pp4-ppCentr);
    squareVertices1->push_back(MiscFunc::convert(pp11));
    squareVertices1->push_back(MiscFunc::convert(pp12));
    squareVertices1->push_back(MiscFunc::convert(pp13));
@@ -264,7 +264,7 @@ void OsgScene::displayPlane(glm::dmat3 rotTens, int nA)
    color1->push_back(osg::Vec4(1.0, 0.5, 1.0, 0.35));    
    square1->setColorArray(color1);
    square1->setColorBinding(osg::Geometry::BIND_OVERALL);
-   
+*/
    osg::ref_ptr<osg::StateSet> stateset = square->getOrCreateStateSet();//qWarning("osgScene 0");
    stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
     // enable texture transparency

@@ -77,7 +77,9 @@ public:
     QString iStr;
     QDateTime dateTime; // = dateTime.currentDateTime();
     QString dateTimeString; // = dateTime.toString("dd-MM-yyyy hh:mm:ss");//.toStdString();
-    
+    bool moreFiles;
+    bool screw;
+    glm::dvec3 direction;
     
 protected:    
     void keyPressEvent(QKeyEvent *keyEv);
@@ -112,7 +114,7 @@ private:
     void setSliders(double v1, double v2, double v3, double v4, double v5, double v6);//(int v1, int v2, int v3);
     //void keyPressEvent(QKeyEvent *keyEv);
     //void contextMenuEvent(QContextMenuEvent *event);
-    void addPOINTS(int nr);
+    void addPOINTS(); //int nr);
     void readAlcXyz(QString aname1);
     void refreshScene();
     void refreshViewer();
@@ -141,6 +143,7 @@ private:
     QAction *cubBoxAct;
     QAction *hexBoxAct;    
     QAction *rombBoxAct;
+    QAction *cylindAct;
   
     QAction *defnewAct;
     QAction *chooseAct;
@@ -209,7 +212,8 @@ public slots:
     void SL_performDislCalc(QString ff);
     
 private slots:
-    
+
+    void SL_move(); 
     void SL_openAtoms();
     void SL_image();
     void SL_closeImage();
@@ -252,6 +256,7 @@ private slots:
     void SL_rectBox();
     void SL_hexBox();
     void SL_rombBox();
+    void SL_cylinder();
 };
 
 #endif // MAINWINDOW_H
