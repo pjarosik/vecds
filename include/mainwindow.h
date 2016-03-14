@@ -75,8 +75,6 @@ public:
     QString strName;
     QString iAt;
     QString iStr;
-    QDateTime dateTime; // = dateTime.currentDateTime();
-    QString dateTimeString; // = dateTime.toString("dd-MM-yyyy hh:mm:ss");//.toStdString();
     bool moreFiles;
     bool screw;
     glm::dvec3 direction;
@@ -144,6 +142,7 @@ private:
     QAction *hexBoxAct;    
     QAction *rombBoxAct;
     QAction *cylindAct;
+    QAction *togglemarkAct;
   
     QAction *defnewAct;
     QAction *chooseAct;
@@ -257,6 +256,7 @@ private slots:
     void SL_hexBox();
     void SL_rombBox();
     void SL_cylinder();
+    void SL_togglemark();
 };
 
 #endif // MAINWINDOW_H

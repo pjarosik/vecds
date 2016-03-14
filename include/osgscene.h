@@ -59,8 +59,6 @@
 #include "../FEMApp/FEMLib/FEException.h"
 #include "../FEMApp/MolecularLib/MException.h"
 #include "../FEMApp/LangLib/LangException.h"
-//#define xsect(p1,p2) (h[p2]*xh[p1]-h[p1]*xh[p2])/(h[p2]-h[p1]) // inline double xsect(int p1, int p2) { return (h[p2]*xh[p1]-h[p1]*xh[p2])/(h[p2]-h[p1]);  }
-//#define ysect(p1,p2) (h[p2]*yh[p1]-h[p1]*yh[p2])/(h[p2]-h[p1]) // inline double ysect(int p1, int p2) { return (h[p2]*yh[p1]-h[p1]*yh[p2])/(h[p2]-h[p1];  }
 
 class OsgScene : public QObject, public osg::Group
 {
@@ -122,12 +120,5 @@ private:
     int ndiv;
     double *wart;
     osg::ref_ptr<osg::Geode> geo;
-/*      
-public slots:
-
-    void SL_doRotation(osg::Matrix *mat);
-*/
 };
-
-
 #endif // OSGSCENE_H

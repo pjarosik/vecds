@@ -68,13 +68,7 @@ class Internal
   friend class HelpBrowser;
   friend class PickHandler;
  //private:
-/*
-  osg::ref_ptr<osg::Camera> camera1;
-  osg::ref_ptr<osg::MatrixTransform> m_worldAt;
-  osg::ref_ptr<osg::MatrixTransform> m_image;
-  osg::ref_ptr<osg::MatrixTransform> m_fem;
-  osg::ref_ptr<osg::MatrixTransform> m_worldRes;
-*/ 
+
   std::ofstream outLog;//("vecds_log.txt");
   std::ofstream calcLog;//("calc_log.txt");
 
@@ -88,7 +82,6 @@ class Internal
     
   double xMin, xMax, yMin, yMax, zMin, zMax;
   double scDim;
-
   //QStringList calcLog;
   bool refrAtoms;
   bool refrPoints;
@@ -176,10 +169,3 @@ class Internal
   int ndiv, ncol;
 }; 
 #endif //SETTINGS_H
-/*
-   lightSource->getLight()->setAmbient(osg::Vec4(0.4, 0.4, 0.4, 1.0));//(0.8, 0.8, 0.8, 1.0));
-    lightSource->getLight()->setDiffuse(osg::Vec4(0.45, 0.45, 0.45, 1.0));//(0.6, 0.6, 0.6, 1.0));
-    lightSource->getLight()->setSpecular(osg::Vec4(0.6, 0.6, 0.6, 1.0));//(1., 1., 1., 1.)); 
-    lightSource->getLight()->setPosition(osg::Vec4(1., 0., 1., 0.));
-    grp->addChild(lightSource); 
-*/

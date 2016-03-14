@@ -45,17 +45,15 @@ OsgScene::OsgScene()
 // Just use the object's primary color for ambient and
 //   diffuse (uses the OpenGL color material feature).
   //qWarning("Scene 1");
-  qWarning("osgScene 0-1");
     mat->setColorMode(osg::Material::AMBIENT_AND_DIFFUSE);
     mat->setDiffuse(osg::Material::FRONT, INT->matDiffuse);//osg::Vec4( .6f, .4f, 0.3f, 1.f ) );
     mat->setSpecular(osg::Material::FRONT, INT->matSpecular);//osg::Vec4( .6f, .6f, .5f, 1.f ) );
     mat->setShininess(osg::Material::FRONT, INT->matShiness);//15.f);//20.f );    
     if ( INT->materialOn ) state->setAttribute( mat.get() );    
 //    state->setMode( GL_LIGHTING,osg::StateAttribute::OFF |osg::StateAttribute::PROTECTED );
-    state->setMode( GL_BLEND, osg::StateAttribute::ON );
+    state->setMode(GL_BLEND, osg::StateAttribute::ON);
     m_worldReferenceFrame = new osg::MatrixTransform;
-    m_worldReferenceFrame->setMatrix(osg::Matrix::rotate(osg::Y_AXIS, osg::Z_AXIS));
-  qWarning("osgScene 0-2"); 
+    m_worldReferenceFrame->setMatrix(osg::Matrix::rotate(osg::Y_AXIS, osg::Z_AXIS));//  qWarning("osgScene 0-2"); 
     m_scene = createScene();
     //this->setFocus();
  qWarning("osgScene - END");
@@ -99,17 +97,11 @@ qWarning("createScene 0");
 
 void OsgScene::displayMarked()
 {
-      m_worldReferenceFrame.get()->removeChild(m_worldAt.get());
-   qWarning("displayMarked 1");
-       INT->m_worldAt = createAtoms();
-   qWarning("displayMarked 2");
-//       m_worldReferenceFrame.get()->addChild(INT->m_worldAt.get());
-   m_worldReferenceFrame.get()->addChild(m_worldAt.get());
-  qWarning("displayMarked 3");
-   m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
-qWarning("displayMarked 4");
-       INT->refrMarked = false;
- 
+   m_worldReferenceFrame.get()->removeChild(m_worldAt.get()); //qWarning("displayMarked 1");
+   INT->m_worldAt = createAtoms();//   qWarning("displayMarked 2");
+   m_worldReferenceFrame.get()->addChild(m_worldAt.get());//  qWarning("displayMarked 3");
+   m_switchRoot.get()->addChild(m_worldReferenceFrame.get()); //qWarning("displayMarked 4");
+   INT->refrMarked = false;
 }
 
 osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
@@ -150,7 +142,6 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
          m_worldAt->addChild(drawBond(p1, p2, rCyl, color));
        }
     }  
-// qWarning("createAtoms 1");
     for (int i=0; i<LATT->n_k; i++) {
         int ak = LATT->nK.get()->at(i);
     	float r = INT->radFactor * AT->a_rad1[ak];
@@ -161,9 +152,8 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms()
      //std::cout << " ak=" << ak << "   r=" << r << "     red=" << color.x() << "     alfa=" << color.w() << std::endl;
 	osg::ref_ptr<osg::Geometry> draw = makeSphere(r, INT->sphSlices, INT->sphStacks, color);
 	for (int j=0; j<LATT->n_atoms; j++) {
-	     if ( LATT->marked[j]<0 )  continue;
-	     int akk = LATT->nAt.get()->at(j);
-         //std::cout << " j=" << j << "     akk=" << akk << std::endl;
+	     if ( LATT->marked[j]<0 )  continue; //{ std::cout << "++++++++  i=" << i << "   j=" << j << std::endl; continue; }
+	     int akk = LATT->nAt.get()->at(j);//std::cout << " j=" << j << "     akk=" << akk << std::endl;
 	     if ( akk==ak ) {
 	         osg::ref_ptr<osg::Geode> geo = new osg::Geode;
 	         geo->addDrawable(draw.get());
@@ -199,17 +189,11 @@ void OsgScene::displayBvect(bool sw)
     set->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
     set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA ,GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON); 
     for (int i=0; i<POINTS->n_points; i++) {
-       //glm::dvec3 bV = POINTS->rotTens.at(i) * POINTS->fracts.at(i) * (&(INT->structList[POINTS->crCNum.at(i)]))->c2o * POINTS->millerVs.at(i);
        glm::dvec3 bV = POINTS->fracts.at(i) * (INT->structList[POINTS->crCNum.at(i)]).c2o * POINTS->millerVs.at(i); // glm::transpose(POINTS->rotTens.at(i)) *
        float length = glm::length(bV); 
        float radius = INT->axRad * length;
-       //osg::ref_ptr<osg::Geode> geod = new osg::Geode;
-       //geod->addDrawable(POINTS->markers[0].get());
        osg::Vec3 pos = POINTS->pos.get()->at(i);//MiscFunc::convert(a.pos);
-       //osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
-       //mt->setMatrix(osg::Matrix::translate(pos));
        m_worldPoints->addChild(drawArrow(pos, MiscFunc::convert(glm::normalize(bV)), length, radius, INT->axPr1, INT->axPr2, osg::Vec4(0.5, 0.5, 0.5, 0.5))); //(geod.get());//osg::X_AXIS
-//       m_worldPoints->addChild(mt.get());
    }
    m_worldReferenceFrame.get()->addChild(m_worldPoints.get());
    m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
@@ -233,10 +217,7 @@ void OsgScene::displayPlane(glm::dmat3 rotTens, int nA)
    glm::dvec3 pp1 = p1 * rotTens;
    glm::dvec3 pp2 = p2 * rotTens;
    glm::dvec3 pp3 = p3 * rotTens;
-   glm::dvec3 pp4 = p4 * rotTens; 
-   //int ak = LATT->nAt.get()->at(nA); //std::cout << "DisplayPlane:   ak=" << ak << std::endl;//float r = INT->radFactor * AT->a_rad1[ak];   
-   //double fact = double(2.85 * INT->radFactor * AT->a_rad1[ak]) / glm::length(pp1-pp3);
-// std::cout << " fxMin=" << fxMin << " fyMin=" << fyMin << " fzMin=" << fzMin << std::endl;//std::cout << " fxMax=" << fxMax << " fyMax=" << fyMax << std::endl;
+   glm::dvec3 pp4 = p4 * rotTens;  //int ak = LATT->nAt.get()->at(nA);
    squareVertices->push_back(MiscFunc::convert(pp1));
    squareVertices->push_back(MiscFunc::convert(pp2));
    squareVertices->push_back(MiscFunc::convert(pp3));
@@ -247,24 +228,6 @@ void OsgScene::displayPlane(glm::dmat3 rotTens, int nA)
    color0->push_back(osg::Vec4(1.0, 1.0, 0.5, 0.35));    
    square->setColorArray(color0);
    square->setColorBinding(osg::Geometry::BIND_OVERALL);
-/*
-   glm::dvec3 ppCentr = 0.25*(pp1+pp2+pp3+pp4);
-   glm::dvec3 pp0 = LATT->coords[nA] *  rotTens;//MiscFunc::convert(LATT->coords.get()->at(nA)) *  rotTens;//INT->actPoint * rotTens;
-   glm::dvec3 pp11 = pp0 + fact*(pp1-ppCentr);
-   glm::dvec3 pp12 = pp0 + fact*(pp2-ppCentr);
-   glm::dvec3 pp13 = pp0 + fact*(pp3-ppCentr);
-   glm::dvec3 pp14 = pp0 + fact*(pp4-ppCentr);
-   squareVertices1->push_back(MiscFunc::convert(pp11));
-   squareVertices1->push_back(MiscFunc::convert(pp12));
-   squareVertices1->push_back(MiscFunc::convert(pp13));
-   squareVertices1->push_back(MiscFunc::convert(pp14));
-   square1->setVertexArray(squareVertices1);
-   square1->addPrimitiveSet(new osg::DrawArrays(GL_POLYGON, 0, 4));
-   osg::ref_ptr<osg::Vec4Array> color1 = new osg::Vec4Array;
-   color1->push_back(osg::Vec4(1.0, 0.5, 1.0, 0.35));    
-   square1->setColorArray(color1);
-   square1->setColorBinding(osg::Geometry::BIND_OVERALL);
-*/
    osg::ref_ptr<osg::StateSet> stateset = square->getOrCreateStateSet();//qWarning("osgScene 0");
    stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
     // enable texture transparency
@@ -346,7 +309,6 @@ osg::ref_ptr<osg::Geometry> OsgScene::makeSphere(double radius, int slices, int 
 osg::ref_ptr<osg::MatrixTransform> OsgScene::createNum()
 {
     osg::ref_ptr<osg::MatrixTransform> m_worldNum = new osg::MatrixTransform;
-//std::cout << "   marked.size() = " << LATT->marked.size() << std::endl;    
     for (int i=0; i<LATT->n_atoms; i++ ) {
         if ( LATT->marked[i]<0 )  continue;
 	int ak = LATT->nAt.get()->at(i);
@@ -374,9 +336,7 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createImage()
     osg::ref_ptr<osg::Geode> geode = new osg::Geode();
     osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
     // protect from being optimized away as static state
-    texture->setUnRefImageDataAfterApply(true);
-    //texture->setInternalFormat(GL_RGBA);
-    //texture->setDataVariance(osg::Object::DYNAMIC);
+    texture->setUnRefImageDataAfterApply(true); //texture->setInternalFormat(GL_RGBA); //texture->setDataVariance(osg::Object::DYNAMIC);
     texture->setImage(image);
 
     osg::ref_ptr<osg::Geometry> square = new osg::Geometry();
@@ -407,25 +367,17 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createImage()
             
     osg::ref_ptr<osg::StateSet> stateset = square->getOrCreateStateSet();//qWarning("osgScene 0");
 
-    stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    // enable texture transparency
-    stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
+    stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);  
+    stateset->setMode(GL_BLEND, osg::StateAttribute::ON);  // enable texture transparency
     stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-    
-    osg::Material* material = new osg::Material;
-    //material->setAmbient(osg::Material::FRONT_AND_BACK,osg::Vec4(1.0f, 1.0f, 1.0f, 0.5f));
-    //material->setDiffuse(osg::Material::FRONT_AND_BACK,osg::Vec4(1.0f, 1.0f, 1.0f, 0.5f));
+    osg::Material* material = new osg::Material; //material->setAmbient(osg::Material::FRONT_AND_BACK,osg::Vec4(1.0f, 1.0f, 1.0f, 0.5f));//material->setDiffuse(osg::Material::FRONT_AND_BACK,osg::Vec4(1.0f, 1.0f, 1.0f, 0.5f));
     material->setAlpha(osg::Material::FRONT_AND_BACK, INT->alphaIm);
     stateset->setAttribute(material,osg::StateAttribute::ON);    
-    
     stateset->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA ,GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON); 
-
     stateset->setTextureAttributeAndModes(0, texture, osg::StateAttribute::OVERRIDE|osg::StateAttribute::ON);
-
     stateset->setMode(GL_DEPTH_TEST,osg::StateAttribute::OFF);
     
     geode->addDrawable(square.get());
-
     m_image->addChild(geode.get());
     INT->refrImage = false;
     INT->m_image = m_image;
@@ -438,10 +390,8 @@ osg::ref_ptr<osgText::Text> OsgScene::createText(const osg::Vec3& pos, const std
   osg::ref_ptr<osgText::Text> text = new osgText::Text;
   text->setFont(font);
   text->setDataVariance(osg::Object::DYNAMIC);
-  //text->setFont( g_font.get() );
   text->setCharacterSize(size);
   text->setColor(color);
-  //text->setFontResolution(40,40);
   text->setAxisAlignment(osgText::TextBase::XY_PLANE);
   text->setAutoRotateToScreen(true);
   text->setPosition(pos);
@@ -480,8 +430,7 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAxis()
     set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON);     
     float length = static_cast<float>(INT->axL * INT->scDim);
   std::cout << " length=" << length << std::endl;
-    float radius = INT->axRad * length;
-    //float proportion = INT->axPr;
+    float radius = INT->axRad * length;  //float proportion = INT->axPr;
     osg::Vec3 point = (INT->axInd==1) ?
                  osg::Vec3(0.5*(INT->xMax+INT->xMin), 0.5*(INT->yMax+INT->yMin), 0.5*(INT->zMax+INT->zMin))  :
                  osg::Vec3(1.05 * INT->xMax, 1.05 * INT->yMin, 1.01 * INT->zMin);
@@ -523,35 +472,20 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::drawBond(osg::Vec3 point1, osg::Vec
     mt->addChild(geo.get());	
     return mt.get();
 }
-/*
-void OsgScene::SL_doRotation(osg::Matrix *mat)
-{
-    m_worldReferenceFrame->setMatrix(*mat);
-}
-*/
+
 osg::StateSet* OsgScene::makeStateSet(float size)
 {
     QString cd0 = INT->currDir;
     cd0.append("/data/internal/particle.rgb");
-    osg::Texture2D *tex = new osg::Texture2D();
-// The texture for the sprites
+    osg::Texture2D *tex = new osg::Texture2D();// The texture for the sprites
     tex->setImage(osgDB::readImageFile(cd0.toStdString()));
     if ( !tex ) { qWarning("-------- texture not found");  return 0; }
     osg::StateSet *set = new osg::StateSet();
-// Setup cool blending
-    //set->setMode(GL_BLEND, osg::StateAttribute::ON);
-    //osg::BlendFunc *fn = new osg::BlendFunc();
-    //fn->setFunction(osg::BlendFunc::SRC_ALPHA, osg::BlendFunc::DST_ALPHA);
-    //set->setAttributeAndModes(fn, osg::StateAttribute::ON);
-// Setup the point sprites
-    osg::PointSprite *sprite = new osg::PointSprite();
+    osg::PointSprite *sprite = new osg::PointSprite(); // Setup the point sprites
     set->setTextureAttributeAndModes(0, sprite, osg::StateAttribute::ON);
-// Give some size to the points to be able to see the sprite
     osg::Point *point = new osg::Point();
     point->setSize(size);
     set->setAttribute(point);
-    //point->setDistanceAttenuation(osg::Vec3(0.0, 1.00, 0.00000000));
-   //point->setDistanceAttenuation(_point->getDistanceAttenuation()*scale);
 // Disable depth test to avoid sort problems and Lighting
     set->setMode(GL_DEPTH_TEST, osg::StateAttribute::OFF);
     set->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
@@ -570,12 +504,11 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createFem()
       try{
          if ( INT->whichFem==2 )  INT->Femi->RunCalculations(INT->compFem);
          if ( INT->whichFem==1 )  INT->Femi->ImportFEAP(INT->fem);
-
- // qWarning("....createFem 2");         
+        
          unsigned nnodes = INT->Femi->GetNodes().size();  qWarning("  nnodes=%d", nnodes);
          vector<string> rnames = INT->Femi->GetElements()[0]->GetResultFieldsNames(); // pobranie nazw funkcji dla zerowego elementu.
          for ( unsigned i=0; i<rnames.size(); i++ ) INT->results << QString::fromStdString(rnames[i]); //cout << "  i=" << i << "    " << rnames[i] << endl;
-   //qWarning("....createFem 3");            
+/*
          int ixmin, iymin;
          for (unsigned k=0; k<nnodes; k++) {
             mvector xx(3);
@@ -588,6 +521,7 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createFem()
          }	 
          std::cout << "  fxMin=" << fxMin << "   fxMax=" << fxMax << "  fyMin=" << fyMin << "   fyMax=" << fyMax << "  fzMin=" << fzMin << "   fzMax=" << fzMax << std::endl; 
 	 std::cout << "  ixmin=" << ixmin << "   iymin=" << iymin << std::endl;
+*/
       } //try
       catch( CFEException &e )  {
         cout << "FEM EXCEPTION :" << e.GetMessage() << endl;
@@ -604,7 +538,6 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createFem()
       catch( CXML_Exception &e )  {
         cout << "XML EXCEPTION :" << e.GetExceptionMessage() << endl;
       }   // try - catch
-    //QString qstr = QString::fromStdString(str);
       if ( INT->atName.empty() ) {
          INT->xMin = fxMin;  INT->xMax = fxMax;
          INT->yMin = fyMin;  INT->yMax = fyMax;
@@ -615,9 +548,7 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createFem()
          INT->zMin = std::min(fzMin, LATT->zMin);  INT->zMax = std::max(fzMax, LATT->zMax);
       }
       INT->scDim = std::max(INT->xMax-INT->xMin, std::max(INT->yMax-INT->yMin, INT->zMax-INT->zMin));  std::cout << " INT->scDim=" << INT->scDim << std::endl;
-      
       INT->newcalc = false;      
-
     }   // newcalc
 
     osg::ref_ptr<osg::MatrixTransform> m_fem = new osg::MatrixTransform;
@@ -638,12 +569,11 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createFem()
     geometry->setStateSet(makeStateSet(INT->pointSize));   //(6.0f));
     geode->addDrawable (geometry.get());
 //-----------------------       
-    unsigned ne = INT->Femi->GetElements().size();
-  //qWarning("  ........ ne= %d", ne);
+    unsigned ne = INT->Femi->GetElements().size();  //qWarning("  ........ ne= %d", ne);
     //double vmin, vmax;
    // INT->choosen_value = rnames[0];
     //INT->Femi->GetNodalValuesMinMax(INT->choosen_value, vmin, vmax);
-  qWarning("  ........ ne= %d", ne);//       vmin=%g       vmax=%g", ne, vmin, vmax);
+
     int badEdges = 0;
     for (unsigned k=0; k<ne; k++)  {  // pętla po elementach
          vector< CGeometricObjectShapeNodal* > edges;       
@@ -687,20 +617,15 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createRes()
     unsigned ne = INT->Femi->GetElements().size();
     double vmin, vmax;
     INT->Femi->GetNodalValuesMinMax(INT->choosen_value, vmin, vmax);
-  qWarning("  ........ ne= %d       vmin=%g       vmax=%g", ne, vmin, vmax);
-    //void GetNodalValuesMinMax(const string &value, double &min, double &max, bool boundary = false );
+  qWarning("  ........ ne= %d       vmin=%g       vmax=%g", ne, vmin, vmax);//void GetNodalValuesMinMax(const string &value, double &min, double &max, bool boundary = false );
     geo = new osg::Geode;
-
     colorL = new osg::Vec4Array;
     colorL->push_back(INT->ColorResL); //colorL->push_back(osg::Vec4(0.0, 0.0, 0.0, 1.0));    //    ndiv = 16;//    ncol = 5;
- 
     tablica = new double[INT->ndiv];
     double stepdiv = 2. / double(INT->ndiv-1);
     for ( int i=0; i<INT->ndiv; i++ )  tablica[i] = -1. + i * stepdiv;
-    
     wart = new double[INT->ncol];
     double stepcol = (vmax - vmin) / double(INT->ncol-1);
-
     INT->mapColors = new osg::Vec4Array;
     osgSim::ColorRange* cr = new osgSim::ColorRange(float(vmin), float(vmax));//, INT->mapColors);
     for ( int i=0; i<INT->ncol; i++ )  {
@@ -725,8 +650,7 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createRes()
 		   x[0] = -1. + m * stepdiv;
 		   x[1] = -1 + n * stepdiv;
 		   value[m][n] = face_approx11.interpolate(x);
-	        }
-	    //  qWarning( "%g %g %g %g %g %g %g %g", value[m][0], value[m][1], value[m][2], value[m][3], value[m][4], value[m][5], value[m][6], value[m][7]);
+	        } //  qWarning( "%g %g %g %g %g %g %g %g", value[m][0], value[m][1], value[m][2], value[m][3], value[m][4], value[m][5], value[m][6], value[m][7]);
 	     }
 	   } // try
 	   catch( CFEException &e )  {
@@ -746,7 +670,6 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createRes()
            } // try - catch
 //	     qWarning(" +1++++++++ elem nr %d    face nr. %d", k, l);
 	   conrec(value, INT->ndiv-1, tablica, INT->ncol, wart, faces[l]);
-
            delete [] value;
 	} // for (unsigned l=0; l<faces.size(); l++) 
     } // for (unsigned k=0; k<ne; k++)  {  // pętla po elementach
@@ -1559,393 +1482,5 @@ int main (int argc, char *argv[])
     viewer->addEventHandler(new osgGA::StateSetManipulator(viewer->getCamera()->getOrCreateStateSet()));
     viewer->addEventHandler(new osgViewer::WindowSizeHandler());
     return viewer->run();
-}
-//    - - - - - - - - - - - - - - - - - -     C O N R E C  - - - - - - - - - - - - - - - - - - -
-
-
-*/
-/*
-Copyright (c) 1996-1997 Nicholas Yue
-
-This software is copyrighted by Nicholas Yue. This code is base on the work of
-Paul D. Bourke CONREC.F routine
-
-The authors hereby grant permission to use, copy, and distribute this
-software and its documentation for any purpose, provided that existing
-copyright notices are retained in all copies and that this notice is included
-verbatim in any distributions. Additionally, the authors grant permission to
-modify this software and its documentation for any purpose, provided that
-such modifications are not distributed without the explicit consent of the
-authors and that existing copyright notices are retained in all copies. Some
-of the algorithms implemented by this software are patented, observe all
-applicable patent law.
-
-IN NO EVENT SHALL THE AUTHORS OR DISTRIBUTORS BE LIABLE TO ANY PARTY FOR
-DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING OUT
-OF THE USE OF THIS SOFTWARE, ITS DOCUMENTATION, OR ANY DERIVATIVES THEREOF,
-EVEN IF THE AUTHORS HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-THE AUTHORS AND DISTRIBUTORS SPECIFICALLY DISCLAIM ANY WARRANTIES, INCLUDING,
-BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
-PARTICULAR PURPOSE, AND NON-INFRINGEMENT.  THIS SOFTWARE IS PROVIDED ON AN
-"AS IS" BASIS, AND THE AUTHORS AND DISTRIBUTORS HAVE NO OBLIGATION TO PROVIDE
-MAINTENANCE, SUPPORT, UPDATES, ENHANCEMENTS, OR MODIFICATIONS.
-*/
-/*	 FEMi->GetElements()[k]->GetFaces(faces, false);
-	 vector< CGeometricObjectShapeNodal* > faces;      // wektor zawierający ściany elementu
-         FEMi->GetElements()[k]->GetFaces(faces, false);      //pobranie brzegowych ścian ścian dla k-tego elementu ( do wektora o nazwie faces )
-         //vector< CGeometricObject* > faces;      // wektor zawierający ściany elementu
-         //FEMi->GetNodes()[k]->GetFaces(faces); //, true );      // pobranie brzegowych ścian ścian dla k-tego elementu ( do wektora o nazwie faces )
-      //qWarning( " faces.size()= %d", faces.size());
-         unsigned l;
-	 std::string choosen_value = rnames[0];
-         for (l=0; l<faces.size(); l++)    {     // pętla po widocznych krawędziach elementu;
-	  //qWarning(" element nr. %d,  face nr. %d", k, l );
-	    CScalarShapeSpaceApprox faprr = FEMi->GetElements()[k]->CreateResultApproximator(faces[l], choosen_value);
-            mvector x(2),X(3);
-            x[0] = 1.0; x[1] = 1.0;
-            double value = faprr.interpolate( x );
-            faces[l]->GetX(x,X);
-	    unsigned nr = faces[l]->GetNumber();
-	 if ( k<10 ) qWarning(" element nr. %d,  face nr. %d,   intern id=%d,      value=%g,   X=(%g, %g %g)", k, l, nr, value, X[0], X[1], X[2] );
-      }  }	     
-	     
-    } else { // GraphData
-//  Triangles
-      if ( adata->trs3D.size()>0 && INT->alphaFemT>0. ) {
-        for ( unsigned k=0; k<adata->trs3D.size(); k++ ) {
-	   osg::ref_ptr<osg::Geometry> trianglesGeom = new osg::Geometry();
-           osg::ref_ptr<osg::Vec3Array> vertT = new osg::Vec3Array;      
-           osg::ref_ptr<osg::Vec4Array> colorT = new osg::Vec4Array;
-           colorT->push_back(osg::Vec4(adata->trs3D[k].r, adata->trs3D[k].g, adata->trs3D[k].b, INT->alphaFemT));
-	   for (unsigned l=0; l<adata->trs3D[k].size; l++) {
-	      trig3D<double> &tr = adata->trs3D[k].data[l];
-	      vertT->push_back(osg::Vec3(tr.p1.x, tr.p1.y, tr.p1.z));
-	      vertT->push_back(osg::Vec3(tr.p2.x, tr.p2.y, tr.p2.z));
-	      vertT->push_back(osg::Vec3(tr.p3.x, tr.p3.y, tr.p3.z));
-	   }
-           trianglesGeom->setVertexArray (vertT.get()); 
-	   trianglesGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::TRIANGLES, 0, vertT->size())); // LINE_LOOP, 0, vertT->size()));
-           trianglesGeom->setColorArray(colorT.get());
-           trianglesGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-           geode->addDrawable (trianglesGeom.get());	 
-        }
-      }
-//  Lines
-      if ( adata->lns3D.size()>0 && INT->alphaFemL>0. ) {
-        for ( unsigned k=0; k<adata->lns3D.size(); k++ ) { //cout << "  lines=" << k << "   l=" << adata->lns3D[k].size << std::endl;
-           osg::ref_ptr<osg::Geometry> linesGeom = new osg::Geometry();
-           osg::ref_ptr<osg::Vec4Array> colorL = new osg::Vec4Array;
-           osg::ref_ptr<osg::Vec3Array> vertL = new osg::Vec3Array;
-           colorL->push_back(osg::Vec4(adata->lns3D[k].r, adata->lns3D[k].g, adata->lns3D[k].b, INT->alphaFemL));
-	   for (unsigned l=0; l<adata->lns3D[k].size; l++) {
-	      line3D<double> &ln = adata->lns3D[k].data[l];
-	      vertL->push_back(osg::Vec3(ln.p1.x, ln.p1.y, ln.p1.z));
-	      vertL->push_back(osg::Vec3(ln.p2.x, ln.p2.y, ln.p2.z));
-	   }
-           linesGeom->setVertexArray (vertL.get()); 
-           linesGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::LINES, 0, vertL->size()));
-           linesGeom->setColorArray(colorL.get());
-           linesGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-	   geode->addDrawable (linesGeom.get());
-        }
-      }  
-//  Points
-      if ( adata->pts3D.size()>0 && INT->alphaFemP>0. ) {
-           osg::ref_ptr<osg::Geometry> pointsGeom = new osg::Geometry();
-           osg::ref_ptr<osg::Vec4Array> colorP = new osg::Vec4Array;
-           osg::ref_ptr<osg::Vec3Array> vertP = new osg::Vec3Array;
-
-        for ( unsigned k=0; k<adata->pts3D.size(); k++ ) { //cout << "  points=" << k << "   l=" << adata->pts3D[k].size << std::endl;
-	   colorP->push_back(osg::Vec4(adata->pts3D[k].r, adata->pts3D[k].g, adata->pts3D[k].b, INT->alphaFemP));
-	   for (unsigned l=0; l<adata->pts3D[k].size; l++)
-	        vertP->push_back(osg::Vec3(adata->pts3D[k].data[l].x, adata->pts3D[k].data[l].y, adata->pts3D[k].data[l].z));
-           pointsGeom->setVertexArray (vertP.get()); 
-           pointsGeom->addPrimitiveSet(new osg::DrawArrays(osg::PrimitiveSet::POINTS, 0, vertP->size()));
-           pointsGeom->setColorArray(colorP.get());
-           pointsGeom->setColorBinding(osg::Geometry::BIND_OVERALL);
-           pointsGeom->setStateSet(makeStateSet(4.0f));
-           geode->addDrawable (pointsGeom.get());
-	}
-	MiscFunc::ComputeSizes(vertP, fxMin, fxMax, fyMin, fyMax, fzMin, fzMax);
-        if ( INT->atName.empty() ) {
-           INT->xMin = fxMin;  INT->xMax = fxMax;
-           INT->yMin = fyMin;  INT->yMax = fyMax;
-           INT->zMin = fzMin;  INT->zMax = fzMax;
-        } else {
-           INT->xMin = std::min(fxMin, LATT->xMin);  INT->xMax = std::max(fxMax, LATT->xMax);
-           INT->yMin = std::min(fyMin, LATT->yMin);  INT->yMax = std::max(fyMax, LATT->yMax);
-           INT->zMin = std::min(fzMin, LATT->zMin);  INT->zMax = std::max(fzMax, LATT->zMax);
-        }
-        INT->scDim = std::max(INT->xMax-INT->xMin, std::max(INT->yMax-INT->yMin, INT->zMax-INT->zMin)); 
-  //std::cout << " INT->scDim=" << INT->scDim << std::endl;     
-      }    
-      INT->refresh = false;
-      m_fem->addChild(geode.get()); 
-    }
----------------------------------------
-if ( !INT->imName.empty() ) m_worldReferenceFrame->addChild(openImage().get());//  m_worldReferenceFrame.get()->addChild(INT->camera1.get());
-
-    worldReferenceFrame->setAttitude(osg::Quat(osg::PI, osg::Z_AXIS, osg::PI_2, osg::X_AXIS, 0.0, osg::Y_AXIS));
-        
---------------------------------------
-osg::ref_ptr<osg::Camera> OsgScene::openImage()
-{    
-    osg::ref_ptr<osg::Texture2D> texture = new osg::Texture2D;
-    osg::ref_ptr<osg::Image> image = osgDB::readImageFile(INT->imName);
-    if ( !image.valid() ) std::cout << " Bad image" << std::endl;
-    texture->setImage( image.get() );
-    
-    osg::ref_ptr<osg::Drawable> quad = osg::createTexturedQuadGeometry(osg::Vec3(), osg::Vec3(1.0f, 0.0f, 0.0f), osg::Vec3(0.0f, 1.0f, 0.0f));
-    quad->getOrCreateStateSet()->setTextureAttributeAndModes( 0, texture.get() );
-    
-    osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-    geode->addDrawable( quad.get() );
-    
-    osg::ref_ptr<osg::Camera> camera1 = new osg::Camera;
-    camera1->setClearMask( 0 );
-    camera1->setCullingActive( false );
-    camera1->setAllowEventFocus( false );
-    camera1->setReferenceFrame( osg::Transform::ABSOLUTE_RF );
-    camera1->setRenderOrder( osg::Camera::POST_RENDER );
-    camera1->setProjectionMatrix( osg::Matrix::ortho2D(0.0, 1.0, 0.0, 1.0) );
-    camera1->addChild( geode.get() );
-    
-    osg::StateSet* ss = camera1->getOrCreateStateSet();
-    ss->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-    ss->setAttributeAndModes( new osg::Depth(osg::Depth::LEQUAL, 1.0, 1.0) );    
-    
-    INT->refrImage = false;
-    return camera1;
-}
----------------------------------------------------
-bool crysplane(glm::dvec3 coord, double point_x, double point_y, double point_z, int mill1, int mill2, int mill3)
-{
-  //cout << "coord=" << coord.x << ",  " << coord.y << ",  " << coord.z << endl;
-  double aa = 1./a * double(mill1);
-  double bb = 1./(sqrt(3.)*a) * double(mill1) + 2./(sqrt(3.)*b) * double(mill2);
-  double cc = 1./c * double(mill3);
-  glm::dvec3 c1 = glm::dvec3(double(mill1), double(mill2), double(mill3)) * o2c;// glm::inverse(c2o);
-// cout << "c1=" << c1.x << ",  " << c1.y << ",  " << c1.z << endl;
-  if ( abs(aa-c1.x)>1.e-8 || abs(bb-c1.y)>1.e-8 || abs(cc-c1.z)>1.e-8 ) cout << "coord=" << coord.x << ",  " << coord.y << ",  " << coord.z << endl;
-//cout << "abc=" << aa << ",  " << bb << ",  " << cc << endl;
-  double dd = sqrt(aa*aa+bb*bb+cc*cc);
-  aa /= dd;
-  bb /= dd;
-  cc /= dd;
-  dd = - aa*point_x - bb*point_y - cc*point_z;
-//  cout << "dd=" << dd << endl;
-  return (aa*coord.x+bb*coord.y+cc*coord.z+dd)<=0.;
-}
-
-void OsgScene::displayBottom() //osg::ref_ptr<osg::Camera>
-{
-    osg::ref_ptr<osg::Drawable> quad = osg::createTexturedQuadGeometry(osg::Vec3(), osg::Vec3(1.0f, 0.0f, 0.0f), osg::Vec3(0.0f, 1.0f, 0.0f));
-    //quad->getOrCreateStateSet()->setTextureAttributeAndModes( 0, texture.get() );
-    osg::ref_ptr<osg::Geode> geode = new osg::Geode;
-    geode->addDrawable( quad.get() );
-    
-    osg::ref_ptr<osg::Camera> camera1 = new osg::Camera;
-    camera1->setClearMask(0);
-    camera1->setCullingActive(false);
-    camera1->setAllowEventFocus(false);
-    camera1->setReferenceFrame(osg::Transform::ABSOLUTE_RF);
-    camera1->setRenderOrder( osg::Camera::POST_RENDER );
-    camera1->setProjectionMatrix( osg::Matrix::ortho2D(0.0, 1.0, 0.0, 1.0) );
-    camera1->addChild( geode.get() );
-    
-    osg::StateSet* ss = camera1->getOrCreateStateSet();
-    ss->setMode( GL_LIGHTING, osg::StateAttribute::OFF );
-    ss->setAttributeAndModes( new osg::Depth(osg::Depth::LEQUAL, 1.0, 1.0) );    
-    
-    //INT->refrImage = false;
-    //return camera1;
-    m_worldReferenceFrame.get()->addChild(camera1.get());
-
-}
-
-void OsgScene::displayBottom(glm::dmat3 rotTens)
-{
-   osg::ref_ptr<osg::MatrixTransform> m_worldAt = new osg::MatrixTransform;
-   osg::StateSet* set = m_worldAt->getOrCreateStateSet();
-   set->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-   set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA ,GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON); 
-   double fxMin, fxMax, fyMin, fyMax, fzMin;
-   int ixMin, ixMax, iyMin, iyMax, izMin;
-   osg::ref_ptr<osg::Geode> geode0 = new osg::Geode();
-   //osg::ref_ptr<osg::Billboard> geode0 = new osg::Billboard();
-   osg::ref_ptr<osg::Geometry> square = new osg::Geometry();
-    // draw the square
-   osg::Vec3Array* squareVertices = new osg::Vec3Array;
-       //glm::dmat3 rotTens = MiscFunc::quat2rot((mview1->getQuat()*ZtoY).conj());
-   MiscFunc::ComputeBottom(LATT->coords, rotTens, fxMin, fxMax, fyMin, fyMax, fzMin);
-   glm::dvec3 p1 = glm::dvec3(fxMin, fyMin, fzMin);
-   glm::dvec3 p2 = glm::dvec3(fxMax, fyMin, fzMin);
-   glm::dvec3 p3 = glm::dvec3(fxMax, fyMax, fzMin);
-   glm::dvec3 p4 = glm::dvec3(fxMin, fyMax, fzMin);
-   osg::Vec3 pp1 = MiscFunc::convert(p1 * rotTens);
-   osg::Vec3 pp2 = MiscFunc::convert(p2 * rotTens);
-   osg::Vec3 pp3 = MiscFunc::convert(p3 * rotTens);
-   osg::Vec3 pp4 = MiscFunc::convert(p4 * rotTens);
-   squareVertices->push_back(pp1);//  fxMin, fyMin, fzMin ) );
-   squareVertices->push_back(pp2);//  fxMax, fyMin, fzMin ) );
-   squareVertices->push_back(pp3);//  fxMax, fyMax, fzMin ) );
-   squareVertices->push_back(pp4);//  fxMin, fyMax, fzMin ) );
-   square->setVertexArray(squareVertices);
-   square->addPrimitiveSet(new osg::DrawArrays(GL_POLYGON, 0, 4));
-   osg::ref_ptr<osg::Vec4Array> color0 = new osg::Vec4Array;
-   color0->push_back(osg::Vec4(1.0, 1.0, 0.0, 0.2));    
-
-   square->setColorArray(color0);
-   square->setColorBinding(osg::Geometry::BIND_OVERALL);
-   geode0->addDrawable(square.get());
-//   m_worldAt->addChild(geode0.get());
-   m_worldReferenceFrame.get()->addChild(geode0.get());//(m_worldAt.get());
-   m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
-   //m_worldAt->addChild(geode0.get());
-}
-
-void OsgScene::displayBottom1(glm::dmat3 rotTens, int nA)
-{
-   //osg::ref_ptr<osg::MatrixTransform> m_worldAt = new osg::MatrixTransform;
-   osg::StateSet* set = m_worldReferenceFrame->getOrCreateStateSet();
-   set->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-   set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA ,GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON); 
-   double fxMin, fxMax, fyMin, fyMax, fzMin;
-   int ixMin, ixMax, iyMin, iyMax, izMin;
-   osg::ref_ptr<osg::Geode> geode0 = new osg::Geode();
-   //osg::ref_ptr<osg::Billboard> geode0 = new osg::Billboard();
-   osg::ref_ptr<osg::Geometry> square = new osg::Geometry();
-    // draw the square
-   osg::Vec3Array* squareVertices = new osg::Vec3Array;
-   MiscFunc::ComputePlane(LATT->coords, rotTens, fxMin, fxMax, fyMin, fyMax, fzMin, nA);
-   glm::dvec3 p1 = glm::dvec3(fxMin, fyMin, fzMin);
-   glm::dvec3 p2 = glm::dvec3(fxMax, fyMin, fzMin);
-   glm::dvec3 p3 = glm::dvec3(fxMax, fyMax, fzMin);
-   glm::dvec3 p4 = glm::dvec3(fxMin, fyMax, fzMin);
-   osg::Vec3 pp1 = MiscFunc::convert(p1 * rotTens);
-   osg::Vec3 pp2 = MiscFunc::convert(p2 * rotTens);
-   osg::Vec3 pp3 = MiscFunc::convert(p3 * rotTens);
-   osg::Vec3 pp4 = MiscFunc::convert(p4 * rotTens);
-   squareVertices->push_back(pp1);//  fxMin, fyMin, fzMin ) );
-   squareVertices->push_back(pp2);//  fxMax, fyMin, fzMin ) );
-   squareVertices->push_back(pp3);//  fxMax, fyMax, fzMin ) );
-   squareVertices->push_back(pp4);//  fxMin, fyMax, fzMin ) );
-   square->setVertexArray(squareVertices);
-   square->addPrimitiveSet(new osg::DrawArrays(GL_POLYGON, 0, 4));
-
-   osg::Vec3Array* normals = new osg::Vec3Array;
-   normals->push_back(osg::Vec3(0.0f, 0.0f, 1.0f));
-   square->setNormalArray(normals);
-   square->setNormalBinding(osg::Geometry::BIND_OVERALL);
-
-   osg::ref_ptr<osg::Vec4Array> color0 = new osg::Vec4Array;
-   color0->push_back(osg::Vec4(1.0, 1.0, 1.0, 0.15));    
-
-   square->setColorArray(color0);
-   square->setColorBinding(osg::Geometry::BIND_OVERALL);
-
-   geode0->addDrawable(square.get());
-//   m_worldAt->addChild(geode0.get());
-   m_worldReferenceFrame.get()->addChild(geode0.get());//(m_worldAt.get());
-   m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
-   //m_worldAt->addChild(geode0.get());
-}
-*/
-//}
-/*
-void OsgScene::displayPlane(glm::dmat3 rotTens, int nA)
-{
-   if ( nA<0 )  {
-   std::cout << "Remove geode0" << std::endl;
-      m_worldReferenceFrame.get()->removeChild(geode0.get());
-      m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
-      return;  
-   }
-   double fxMin, fxMax, fyMin, fyMax, fzMin;
-   geode0 = new osg::Geode();   //osg::ref_ptr<osg::Billboard> geode0 = new osg::Billboard();
-   osg::ref_ptr<osg::Geometry> square = new osg::Geometry();
-   osg::Vec3Array* squareVertices = new osg::Vec3Array;
-std::cout << " ++==++==++  displayPlane 1" << std::endl;
-   MiscFunc::ComputePlane(LATT->coords, rotTens, fxMin, fxMax, fyMin, fyMax, fzMin, nA);
-   //if ( nA>=0 ) fzMin = (LATT->coords.get()->at(nA)).z();
-   glm::dvec3 p1 = glm::dvec3(fxMin, fyMin, fzMin);
-   glm::dvec3 p2 = glm::dvec3(fxMax, fyMin, fzMin);
-   glm::dvec3 p3 = glm::dvec3(fxMax, fyMax, fzMin);
-   glm::dvec3 p4 = glm::dvec3(fxMin, fyMax, fzMin);
-//   osg::Vec3 pp1 = MiscFunc::convert(p1 * rotTens);
-//   osg::Vec3 pp2 = MiscFunc::convert(p2 * rotTens);
-//   osg::Vec3 pp3 = MiscFunc::convert(p3 * rotTens);
-//   osg::Vec3 pp4 = MiscFunc::convert(p4 * rotTens);
-   glm::dvec3 pp1 = p1 * rotTens;
-   glm::dvec3 pp2 = p2 * rotTens;
-   glm::dvec3 pp3 = p3 * rotTens;
-   glm::dvec3 pp4 = p4 * rotTens;   
-   //pp1.x() = fzMin;
-   //pp2.x() = fzMin;
-   //pp3.x() = fzMin;
-   //pp4.x() = fzMin;
- std::cout << " fxMin=" << fxMin << " fyMin=" << fyMin << " fzMin=" << fzMin << std::endl;
- std::cout << " fxMax=" << fxMax << " fyMax=" << fyMax << std::endl;
-//   squareVertices->push_back(pp1);//  fxMin, fyMin, fzMin ) );
-//   squareVertices->push_back(pp2);//  fxMax, fyMin, fzMin ) );
-//   squareVertices->push_back(pp3);//  fxMax, fyMax, fzMin ) );
-//   squareVertices->push_back(pp4);//  fxMin, fyMax, fzMin ) );
-   squareVertices->push_back(MiscFunc::convert(pp1));//  fxMin, fyMin, fzMin ) );
-   squareVertices->push_back(MiscFunc::convert(pp2));//  fxMax, fyMin, fzMin ) );
-   squareVertices->push_back(MiscFunc::convert(pp3));//  fxMax, fyMax, fzMin ) );
-   squareVertices->push_back(MiscFunc::convert(pp4));//  fxMin, fyMax, fzMin ) );
-   square->setVertexArray(squareVertices);
-   square->addPrimitiveSet(new osg::DrawArrays(GL_POLYGON, 0, 4));
-   osg::ref_ptr<osg::Vec4Array> color0 = new osg::Vec4Array;
-   color0->push_back(osg::Vec4(1.0, 1.0, 0.5, 0.35));    
-//std::cout << " ++==++==++  displayPlane 3" << std::endl;
-   square->setColorArray(color0);
-   square->setColorBinding(osg::Geometry::BIND_OVERALL);
-   
-   osg::ref_ptr<osg::StateSet> stateset = square->getOrCreateStateSet();//qWarning("osgScene 0");
-
-   stateset->setMode(GL_LIGHTING, osg::StateAttribute::OFF);
-    // enable texture transparency
-   stateset->setMode(GL_BLEND, osg::StateAttribute::ON);
-   stateset->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-
-   geode0->setStateSet(stateset);
-   geode0->addDrawable(square.get());
-   m_worldReferenceFrame.get()->addChild(geode0.get());//(m_worldAt.get());
-
-   m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
- std::cout << " ++==++==++  displayPlane 6" << std::endl;
-
-}
-
-
-osg::ref_ptr<osg::MatrixTransform> OsgScene::createPoints()
-{
-    //if ( POINTS->n_points<=0 ) 
- qWarning("createPoints 0");
-    osg::ref_ptr<osg::MatrixTransform> m_worldPoints = new osg::MatrixTransform;
-    osg::StateSet* set = m_worldPoints->getOrCreateStateSet();
-    set->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
-    set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA ,GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON); 
-  qWarning("createPoints 1   POINTS->n_points=%d", POINTS->n_points);
-   //osg::ref_ptr<osg::Geometry> draw = makeSphere(0.2, INT->sphSlices, INT->sphStacks, osg::Vec4(1.0, 0.0, 0.0, 0.5));
-    //float length = static_cast<float>(INT->axL * INT->scDim);
-  //std::cout << " length=" << length << std::endl;
-    //float radius = INT->axRad * length;   
-    for (int i=0; i<POINTS->n_points; i++) {
-       osg::ref_ptr<osg::Geode> geod = new osg::Geode;
-       geod->addDrawable(POINTS->markers[0].get());
-  qWarning("createPoints 2     i=%d", i);
-       osg::Vec3 pos = POINTS->pos.get()->at(i);//MiscFunc::convert(a.pos);
-       osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
-       mt->setMatrix(osg::Matrix::translate(pos));
-       mt->addChild(geod.get());
-       m_worldPoints->addChild(mt.get());
-  qWarning("createPoints 2.5     i=%d", i);
-    }
-    //INT->refrPoints = false;
-    //INT->m_worldPoints = m_worldPoints;
-    return m_worldPoints.get();
 }
 */

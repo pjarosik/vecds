@@ -19,6 +19,7 @@ Lattice::~Lattice()
 
 void Lattice::init(QString atname, int numbAt)//, int numbBond,
 {
+  std::cout << "LATT - init" << std::endl;
     name = atname;
     n_atoms = n_marked = numbAt;
     marked.assign(numbAt, 1);

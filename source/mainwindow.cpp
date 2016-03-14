@@ -100,8 +100,7 @@ MainWindow::MainWindow()
        refreshScene();
     }
     mview1->setKeyEventSetsDone(0);
-    QDateTime dateTime = dateTime.currentDateTime();
-    std::string dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss").toStdString();
+    std::string dateTimeString = MiscFunc::dateTime().toStdString();
     INT->outLog << "=========== B E G I N ===========    MainWindow created at " << dateTimeString << "   ========== B E G I N =============" << std::endl;
     INT->calcLog << "=========== B E G I N ===========    MainWindow created at " << dateTimeString << "    ========== B E G I N =============" << std::endl;
     mode = 0;
@@ -113,8 +112,7 @@ MainWindow::MainWindow()
 
 MainWindow::~MainWindow()
 {
-    QDateTime dateTime = dateTime.currentDateTime();
-    std::string dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss").toStdString();
+    std::string dateTimeString = MiscFunc::dateTime().toStdString();
     INT->outLog << "===========  E N D ===========    MainWindow destructed at " << dateTimeString << "    ========== E N D =============" << std::endl;
     INT->outLog.close();
     INT->calcLog << "===========  E N D ===========    MainWindow destructed  at " << dateTimeString << "    ========== E N D =============" << std::endl;
@@ -249,6 +247,10 @@ void MainWindow::createActions()
   planeAct->setStatusTip("Plane defined by Miller indices");
   connect(planeAct, SIGNAL(triggered()), this, SLOT(SL_plane()));
 
+  togglemarkAct = new QAction(tr("Toggle marked atoms"), this);
+  togglemarkAct->setStatusTip("Toggles marked atoms");
+  connect(togglemarkAct, SIGNAL(triggered()), this, SLOT(SL_togglemark()));
+
   cubBoxAct = new QAction(tr("Rectangular box"), this);
   cubBoxAct->setStatusTip(tr("Rectangular bounding box"));
   connect(cubBoxAct, SIGNAL(triggered()), this, SLOT(SL_rectBox()));
@@ -325,75 +327,54 @@ void MainWindow::createMenus()
   defstructMenu->addAction(chooseAct);
   defstructMenu->addSeparator();
   defstructMenu->addAction(edStructAct);
-  fileMenu->addSeparator();
  
+  fileMenu->addSeparator();
   fileMenu->addAction(openAct);
   fileMenu->addSeparator();
-  
   fileMenu->addAction(closeAct);
   fileMenu->addSeparator();  
-  
   fileMenu->addAction(imageAct);
   fileMenu->addSeparator();  
- 
   fileMenu->addAction(closeimgAct);
   fileMenu->addSeparator();
-
   fileMenu->addAction(openFemAct);
   fileMenu->addSeparator();  
- 
   fileMenu->addAction(computeFemAct);
   fileMenu->addSeparator();  
- 
   fileMenu->addAction(showResAct);
   fileMenu->addSeparator();  
-
   fileMenu->addAction(closeFemAct);
   fileMenu->addSeparator();
- 
   fileMenu->addAction(saveAct);
   fileMenu->addSeparator();
 
   displayMenu = menuBar()->addMenu("Display");
   displayMenu->addAction(resetAct);
   displayMenu->addSeparator();
-  
   displayMenu->addAction(fovAct);
   displayMenu->addSeparator();
-
   displayMenu->addAction(bgAct);
   displayMenu->addSeparator();
-  
   displayMenu->addAction(numAct);
   displayMenu->addSeparator();
-
   displayMenu->addAction(lightAct);
   displayMenu->addSeparator();
-  
   displayMenu->addAction(materialAct);
   displayMenu->addSeparator();
-  
   displayMenu->addAction(axAct);
   displayMenu->addSeparator();
-
   displayMenu->addAction(showPointsAct);
   displayMenu->addSeparator();
-  
   displayMenu->addAction(atomsAct);
   displayMenu->addSeparator();
-
   displayMenu->addAction(vectAct);
   displayMenu->addSeparator();
-
   displayMenu->addAction(nsAct);
   displayMenu->addSeparator();
-
   displayMenu->addAction(bsAct);
   displayMenu->addSeparator();
-
   displayMenu->addAction(bcAct);
   displayMenu->addSeparator();
-  
   displayMenu->addAction(visibAct);
 
   toolsMenu = menuBar()->addMenu("Tools");
@@ -407,6 +388,7 @@ void MainWindow::createMenus()
   toolsMenu->addSeparator();
   toolsMenu->addAction(updateAct);
   toolsMenu->addSeparator();
+
   boxMenu = toolsMenu->addMenu("Mark atoms");
   boxMenu->addAction(planeAct);
   boxMenu->addSeparator();
@@ -418,6 +400,8 @@ void MainWindow::createMenus()
   boxMenu->addSeparator();
   boxMenu->addAction(cylindAct);
 
+  toolsMenu->addSeparator();
+  toolsMenu->addAction(togglemarkAct);
   toolsMenu->addSeparator();
   toolsMenu->addAction(moveAct);
 
@@ -534,8 +518,6 @@ void MainWindow::SL_actPoint()
      if ( INT->right && mode<2 ) { // info
         mview1->setDone(true);
         QMessageBox::information(this, strAtom, strPoint);
-	mview1->setDone(false);  
-	return;
      }
      if ( mode>=2 && mode<=7 ) {
         if ( !INT->hklDefined ) {  QMessageBox::warning(this, "PROBLEM", "You should define orientation of the lattice"); return;  }
@@ -546,18 +528,10 @@ void MainWindow::SL_actPoint()
            scene->showOneAtom(nA);  
 	   statusBar()->clearMessage();
 	   statusBar()->showMessage(QString("%1 %2").arg(strBvect, strAtom));
-           mview1->setDone(false);  
-           return;
         } //  INT->ctrl && INT->left	
         if ( INT->left && INT->shift ) {
-	   if ( QMessageBox::Yes == QMessageBox(QMessageBox::Information, "WARNING", "Do you want to mark this atom?", QMessageBox::Yes|QMessageBox::No).exec() ) {
-	      INT->pointDefined = true;
-              //strPoint = QString(" coordinates = { %1, %2, %3 }").arg(INT->actPoint.x, 0, 'f', 4).arg(INT->actPoint.y, 0, 'f', 4).arg(INT->actPoint.z, 0, 'f', 4);
-	   } else { // !qm->ok
-              INT->pointDefined = false;
-	      mview1->setDone(false);  
-	      return;     
-	   } //QMessageBox
+	   if ( QMessageBox::Yes == QMessageBox(QMessageBox::Information, "WARNING", "Do you want to mark this atom?", QMessageBox::Yes|QMessageBox::No).exec() ) INT->pointDefined = true;
+	   else                                                                                                                                                   INT->pointDefined = false;
 	   process(pos);
         } // INT->left && INT->shift
      } // mode>=2 && mode<=6
@@ -566,9 +540,10 @@ void MainWindow::SL_actPoint()
         mview1->setDone(true);
         pos = INT->actPoint;
         process(pos);
-	mview1->setDone(false);
      }
   }
+  mview1->setDone(false);  
+  return;  
 }
 
 void MainWindow::process(glm::dvec3 pos)
@@ -580,9 +555,6 @@ void MainWindow::process(glm::dvec3 pos)
      }
      addPOINTS();
      scene->displayBvect(true);//std::cout << " POINTS->n_points=" << POINTS->n_points << std::endl;	   
-     mview1->setQuat(rotQuat);
-     mview1->setDone(false);
-     mode = 0;
   } //mode==2
   if ( mode==3 ) {
      glm::dvec3 point = INT->pointDefined ? LATT->coords[INT->nA] : INT->actPoint;
@@ -592,10 +564,7 @@ void MainWindow::process(glm::dvec3 pos)
      QString qs = QString("Plane %1 at point (%2, %3, %4)").arg(ansPlane).arg(INT->actPoint.x, 0, 'f', 4).arg(INT->actPoint.y, 0, 'f', 4).arg(INT->actPoint.z, 0, 'f', 4);
      statusBar()->showMessage(qs);
      INT->outLog << qs.toStdString() << std::endl;
-     scene->displayMarked();//   qApp->processEvents();
-     mview1->setQuat(rotQuat);           
-     mview1->setDone(false);
-     mode = 0;
+     scene->displayMarked();
   } //mode==3
   if ( mode>=4 ) {
      cutBox();
@@ -608,11 +577,13 @@ void MainWindow::process(glm::dvec3 pos)
      if ( mode==7 ) qs = QString("Cylinder  radius=%1, size Z=%2 at point (%3, %4, %5)").arg(sizeB.x, 0, 'f', 4).arg(sizeB.z, 0, 'f', 4).arg(pos.x, 0, 'f', 4).arg(pos.y, 0, 'f', 4).arg(pos.z, 0, 'f', 4); 
      INT->outLog << qs.toStdString() << std::endl;
      statusBar()->showMessage(qs);
-     scene->displayMarked();//     qApp->processEvents();
-     mview1->setQuat(rotQuat);           
-     mview1->setDone(false);
-     mode = 0;
+     scene->displayMarked();
   } //mode>=4
+  mview1->setQuat(rotQuat);
+  mview1->setDone(false);
+  mode = 0;
+  //qApp->processEvents();
+  
 }
 
 void MainWindow::SL_millerAct()
@@ -767,7 +738,6 @@ void MainWindow::SL_rectBox()
 {
   mode = 4;
   INT->outLog << "SL_rectBox:  mode=" << mode << "    ";
-  //if ( !INT->structureDefined ) { QMessageBox::warning(this, "PROBLEM", "You should define structure first");  return; }
   mview1->setDone(true);
   ++(INT->npoints);
   QString descr = "";
@@ -809,7 +779,6 @@ void MainWindow::SL_hexBox()
 {
   mode = 5;
   INT->outLog << "SL_hexBox:  mode=" << mode << "    ";
-  //if ( !INT->structureDefined ) { QMessageBox::warning(this, "PROBLEM", "You should define structure first");  return; }
   mview1->setDone(true);
   ++(INT->npoints);
   QString descr = "";
@@ -849,7 +818,6 @@ void MainWindow::SL_rombBox()
 {
   mode = 6;
   INT->outLog << "SL_rombBox:  mode=" << mode << "    ";
-  //if ( !INT->structureDefined ) { QMessageBox::warning(this, "PROBLEM", "You should define structure first");  return; }
   mview1->setDone(true);
   ++(INT->npoints);
   QString descr = "";
@@ -889,7 +857,6 @@ void MainWindow::SL_cylinder()
 {
   mode = 7;
   INT->outLog << "SL_cylinder:  mode=" << mode << "    ";
-  //if ( !INT->structureDefined ) { QMessageBox::warning(this, "PROBLEM", "You should define structure first");  return; }
   mview1->setDone(true);
   ++(INT->npoints);
   QString descr = "";
@@ -923,7 +890,6 @@ void MainWindow::SL_cylinder()
      mode = 0;
   }
   return;
-  
 }
 
 void MainWindow::cutPlane(glm::dvec3 point)
@@ -939,12 +905,24 @@ void MainWindow::cutPlane(glm::dvec3 point)
 void MainWindow::cutBox()
 {
   LATT->marked.clear();
-  if  ( mode==4 ) for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] =((Calc::rect_box(LATT->coords[i], sizeB))? 1 : -1);// std::cout << LATT->coords[i].x << ",   " << LATT->coords[i].y << " :  " << LATT->marked[i] << std::endl;}
-  if  ( mode==5 ) for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] =((Calc::hex_box(LATT->coords[i], sizeB))? 1 : -1);
-  if  ( mode==6 ) for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] =((Calc::romb_box(LATT->coords[i], sizeB))? 1 : -1);
-  if  ( mode==7 ) for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] =((Calc::cylinder(LATT->coords[i], sizeB))? 1 : -1);
+  if  ( mode==4 ) for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] = ((Calc::rect_box(LATT->coords[i], sizeB))? 1 : -1);// std::cout << LATT->coords[i].x << ",   " << LATT->coords[i].y << " :  " << LATT->marked[i] << std::endl;}
+  if  ( mode==5 ) for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] = ((Calc::hex_box(LATT->coords[i], sizeB))? 1 : -1);
+  if  ( mode==6 ) for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] = ((Calc::romb_box(LATT->coords[i], sizeB))? 1 : -1);
+  if  ( mode==7 ) for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] = ((Calc::cylinder(LATT->coords[i], sizeB))? 1 : -1);
   qApp->processEvents();
   return;
+}
+
+void MainWindow::SL_togglemark()
+{
+  mview1->setDone(true);
+  for (int i=0; i<LATT->n_atoms; i++ ) LATT->marked[i] *= -1;
+  INT->refrAtoms = true;
+  refreshScene(); //mview1->setQuat(rotQuat);
+  mview1->setDone(false);
+  mode = 0;
+  return;
+
 }
 
 void MainWindow::addPOINTS()
@@ -970,7 +948,6 @@ void MainWindow::addPOINTS()
      POINTS->vectors.push_back(direction);
   }
   qApp->processEvents();
-  //std::cout << "------ point nr=" << nr << std::endl;
 }
 
 void MainWindow::SL_update()
@@ -1005,7 +982,6 @@ void MainWindow::SL_calcDisl()
      for ( int i=0; i<POINTS->n_points; i++ ) {
         glm::dvec3 point = MiscFunc::convert(POINTS->pos.get()->at(i));
      std::cout << "POINTS kind=" << POINTS->nKind.get()->at(i) << std::endl;
-	//str.append(QString("!! single_disl class %1, ").arg(i));
 	if ( POINTS->nKind.get()->at(i)==1 ) {   // normal dislocation
  	   str.append(QString("!! single_disl nr= %1 method= %2 ").arg(i).arg(POINTS->numMeth[i]));
            str.append(POINTS->strBV[i]);
@@ -1036,7 +1012,9 @@ void MainWindow::SL_performDislCalc(QString ff)
   if ( !file.open(QIODevice::ReadOnly|QIODevice::Text) )   { QMessageBox::warning(this, "PROBLEM", QString(" ERROR opening %1").arg(ff)); return; }
   QTextStream in(&file);//int nl = 0;
   INT->outLog << "SL_performDislCalc(QString ff)" << std::endl;
- 
+//    stringstream sss;
+//    sss << "wynik" << ".txt";
+//    ofstream f_numb(sss.str().c_str());  
     //int nl =0;
   while (!in.atEnd()) {
      QString line = in.readLine(); //++nl;  std::cout << " nl=" << nl << "   " << line.toStdString() << std::endl;
@@ -1053,7 +1031,8 @@ void MainWindow::SL_performDislCalc(QString ff)
         glm::dvec3 bV = rt * POINTS->fracts.at(k) * (INT->structList[POINTS->crCNum.at(k)]).c2o * POINTS->millerVs.at(k);
         glm::dvec3 cd = rt * pos; //  std::cout << " cd = ( " << cd.x << ", " << cd.y << ", " << cd.z << ")" << std::endl;
         double be=sqrt(bV.x*bV.x+bV.y*bV.y);
-        double bz = bV.z; //  std::cout << "  nm=" << nm << "  be=" << be << "  bz=" << bz << std::endl;
+        double bz = bV.z;
+    std::cout << "  nm=" << nm << "  be=" << be << "  bz=" << bz << std::endl;
 	LATT->du.clear();
 	LATT->du.resize(LATT->n_atoms);
 
@@ -1146,12 +1125,13 @@ void MainWindow::SL_performDislCalc(QString ff)
 	sumU = glm::dvec3(0.0, 0.0, 0.0);
         for (int i=0; i<LATT->n_atoms; i++)  sumU += LATT->du[i];    
         sumU /= double(LATT->n_atoms);
-        std::cout << "Dislocation nr.  ----------     sumU = ( " << sumU.x << ", " << sumU.y << ", " << sumU.z << " )" << std::endl; // " << n_dislocations << "
+        std::cout << "Dislocation nr. " << k+1 << "     sumU = (" << sumU.x << ", " << sumU.y << ", " << sumU.z << ")" << std::endl; // " << n_dislocations << "
 
 	for (int i=0; i<LATT->n_atoms; i++ ) {
 	   LATT->du[i] -= sumU;
 	   LATT->u[i] += LATT->du[i];//u0;
-//  f_numb << i << " ***2****    " << LATT->du[i].x << "    " << LATT->du[i].y << "    " << LATT->du[i].z << std::endl;
+//  f_numb << i << " ***du****    " << LATT->du[i].x << "    " << LATT->du[i].y << "    " << LATT->du[i].z << std::endl;
+//  f_numb << i << " ***U****    " << LATT->u[i].x << "    " << LATT->u[i].y << "    " << LATT->u[i].z << std::endl;
         }
      } // line.at(0)=='!' && line.at(1)=='!'
   }
@@ -1236,7 +1216,7 @@ void MainWindow::SL_setAx()
   QString aA = QString("%1").arg(INT->alphaAx, 0, 'f', 3);
   quest << "Legth" << "Radius" << "Proportion1" << "Proportion2" << "Opacity";
   sug << aL << aR << aPr1 << aPr2 << aA;
-  combo << "No axes" << "Axes at the center" << "Axes at the corner";
+  combo << "No axis" << "Axis at the center" << "Axis at the corner";
   QuestionForm2 *qf = new QuestionForm2("Axis", descr, quest, sug, ans, combo, INT->axInd);
   mview1->setDone(false);
   if ( !qf->ok ) {  delete qf;  return;  }
@@ -1450,15 +1430,20 @@ void MainWindow::SL_openAtoms()
   if ( qf->result()!=1 ) {  mview1->setDone(false);  return;  }
   QString aname1 = qf->selectedFiles().at(0);
   delete qf;
-  QDateTime dateTime = dateTime.currentDateTime();
-  std::string dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss").toStdString();
-  INT->outLog <<  "SL_openAtoms aname1  :  " << aname1.toStdString() << " at " << dateTimeString << std::endl;
+  std::string dateTimeString = MiscFunc::dateTime().toStdString();
+  INT->outLog <<  "SL_openAtoms aname1  :  " << aname1.toStdString() << "   date & time is " << dateTimeString << std::endl;
   INT->calcLog <<  "!! read_atoms " << aname1.toStdString() << std::endl;                               
   if ( aname1.isEmpty() )  {  mview1->setDone(false);  return; }
   if ( !(aname1.contains(".xyz")) && !(aname1.contains(".alc")) )  {  QMessageBox::warning(this, "PROBLEM", QString("openAtoms -- unknown file format")); mview1->setDone(false);  return;  }
   else {
       if ( moreFiles ) {
-      
+         int oldN = LATT->n_atoms;
+	 //QString qstr = QString::fromStdString(INT->atName);//QString::fromUtf8(INT->atName.c_str());
+         INT->atName = (QString("%1 + %2").arg(QString::fromStdString(INT->atName)).arg(aname1.section('/', -1))).toStdString();
+	 readAlcXyz(aname1);
+	 iAt = QString("   file: %1   %2+%3=%4 atoms  ").arg(QString::fromStdString(INT->atName)).arg(oldN).arg(LATT->n_atoms-oldN).arg(LATT->n_atoms);
+	 moreFiles = false;
+	 INT->refrMarked = false;
       } else {
          INT->atName = aname1.toStdString();
          readAlcXyz(aname1);
@@ -1466,7 +1451,7 @@ void MainWindow::SL_openAtoms()
       }
       infoDisplay();
       mview1->setDone(false);
-  }
+  }//  std::cout << "NO--------------***\n";
   INT->refrAtoms = true;
   refreshScene();
 }
@@ -1474,8 +1459,7 @@ void MainWindow::SL_openAtoms()
 void MainWindow::SL_closeAtoms()
 {
   mview1->setDone(true);
-  QDateTime dateTime = dateTime.currentDateTime();
-  std::string dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss").toStdString();
+  std::string dateTimeString = MiscFunc::dateTime().toStdString();
   INT->outLog << strAtom.toStdString() << " closed  at " << dateTimeString << std::endl;
   strBvect = strAtom = strPoint = iAt = iStr = "";
   INT->atName = "";
@@ -1505,9 +1489,8 @@ void MainWindow::SL_image()
   if ( qf->result()!=1 ) {  mview1->setDone(false);  return;  }
   QString iname1 = qf->selectedFiles().at(0);
   delete qf;
-  QDateTime dateTime = dateTime.currentDateTime();
-  std::string dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss").toStdString();
-  INT->outLog <<  "SL_openImage iname1  :  " << iname1.toStdString() << " at " << dateTimeString << std::endl;                                                
+  std::string dateTimeString = MiscFunc::dateTime().toStdString();
+  INT->outLog <<  "SL_openImage iname1  :  " << iname1.toStdString() << "  date & time is " << dateTimeString << std::endl;                                                
   if ( iname1.isEmpty() )  {  mview1->setDone(false);  return;  }
   mview1->setDone(false);
   INT->image = iname1.toStdString();
@@ -1560,6 +1543,8 @@ void MainWindow::SL_reset()
 
 void MainWindow::readAlcXyz(QString aname1)
 {
+    int oldN = 0;
+    int oldB = 0;
     QFile file(aname1);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) { QString qstr = QString("***  ERROR  file  %1 not found").arg(aname1); 
                                                              INT->outLog <<  qstr.toStdString() << std::endl;  QMessageBox::warning(this, "PROBLEM", qstr);  return;  }
@@ -1571,17 +1556,31 @@ void MainWindow::readAlcXyz(QString aname1)
     if ( numbAt<=0 ) { QMessageBox::warning(this, "PROBLEM", "No defined atoms in this structure");  return; }
     bool alc_ = aname1.contains(".alc");
     if ( alc_ ) LATT->n_bonds = fields.at(2).toInt();
-    else  { LATT->n_bonds = -666;  line = in.readLine();  }
-    LATT->init(aname1, numbAt); //std::cout << "readAlc " << std::endl; 
+    else  { LATT->n_bonds = 0;  line = in.readLine();  }
+    if ( !moreFiles )  LATT->init(aname1, numbAt); //std::cout << "readAlc " << std::endl; 
+    else {
+       LATT->name = QString::fromStdString(INT->atName);//QString::fromUtf8(INT->atName.c_str());//QString(INT->atName);//
+       oldN = LATT->n_atoms;
+    std::cout << "oldN=" << oldN << std::endl;
+       oldB = LATT->n_bonds;
+       LATT->n_atoms += numbAt;
+       LATT->n_marked += numbAt;
+       LATT->coords.resize(LATT->n_atoms);
+       LATT->marked.resize(LATT->n_atoms);
+       LATT->du.resize(LATT->n_atoms);
+       LATT->u.resize(LATT->n_atoms);
+       LATT->u.assign(LATT->n_atoms, glm::dvec3(0., 0., 0.));
+       LATT->du.assign(LATT->n_atoms, glm::dvec3(0., 0., 0.));
+    } // moreFiles
     INT->outLog << " read_alc_xyz  - " << LATT->name.toStdString() << ", n_atoms=" << LATT->n_atoms << ", n_bonds=" << LATT->n_bonds << std::endl; 
-    LATT->n_atoms = LATT->n_marked = numbAt;
-    for (int i=0; i<numbAt; i++) {
+    //LATT->n_atoms = LATT->n_marked = numbAt;
+    for (int i=oldN; i<numbAt+oldN; i++) {
        line = in.readLine();
        fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
        if ( alc_ ) fields.removeFirst();
        QString nameA = fields.takeFirst();
        int ak = MiscFunc::whichAtom(nameA);
-       if ( ak<=0 ) {  ak = 0;   QMessageBox::warning(this, "PROBLEM", QString("Unidentified atom nr %1 - %2").arg(i+1).arg(nameA));   }
+       if ( ak<0 ) {  ak = 0;   QMessageBox::warning(this, "PROBLEM", QString("Unidentified atom nr %1 - %2").arg(i+1).arg(nameA));   }
        if ( LATT->n_k==0 ) { LATT->nK->push_back(ak); LATT->n_k=1; LATT->kName << nameA; }
        bool sw = true;
        for (int j=0; j<LATT->n_k; j++)  if ( ak==LATT->nK.get()->at(j) ) sw = false;
@@ -1595,20 +1594,24 @@ void MainWindow::readAlcXyz(QString aname1)
        if ( y>LATT->yMax ) LATT->yMax = y;
        if ( z<LATT->zMin ) LATT->zMin = z;
        if ( z>LATT->zMax ) LATT->zMax = z;
+       //LATT->coords.push_back(glm::dvec3(x, y, z));//(osg::Vec3d(x, y, z));//, static_cast<double>(ak)) );
+       //LATT->marked.push_back(1);
        LATT->coords[i] = glm::dvec3(x, y, z);//(osg::Vec3d(x, y, z));//, static_cast<double>(ak)) );
        LATT->marked[i] = 1;
        LATT->nAt->push_back(ak);//LATT->nAt[i] = ak;
      }
+    std::cout << " YYYY-XXXX\n";
      osg::Vec3d v = osg::Vec3d(0.5*(LATT->xMin+LATT->xMax), 0.5*(LATT->yMin+LATT->yMax), 0.5*(LATT->zMin+LATT->zMax));
-     dateTime = dateTime.currentDateTime();    dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss");
-     INT->outLog << " READ : centrum = (" << v.x() << ", " << v.y() << ", " << v.z() << ")     Date and time is " << dateTimeString.toStdString() << std::endl; //.toStdString();
+     std::string dateTimeString = MiscFunc::dateTime().toStdString();
+     INT->outLog << " READ : centrum = (" << v.x() << ", " << v.y() << ", " << v.z() << ")    Date & time is " << dateTimeString << std::endl; //.toStdString();
      LATT->scDim = std::max(LATT->xMax-LATT->xMin, std::max(LATT->yMax-LATT->yMin, LATT->zMax-LATT->zMin));
      if ( alc_ ) {      
-        for (int i=0; i<LATT->n_bonds; i++) {
+        for (int i=oldB; i<LATT->n_bonds+oldB; i++) {
            line = in.readLine();
            fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts); //int nf = fields.size();
            int i1 = fields.at(1).toInt();
            int i2 = fields.at(2).toInt();
+	   if ( moreFiles ) { i1 += oldN; i2 += oldN; }
 	   LATT->bond1->push_back(i1);
            LATT->bond2->push_back(i2);	   	   
         }
@@ -1661,8 +1664,8 @@ void MainWindow::SL_genAtoms()
    LATT->n_atoms = LATT->n_marked = Gener::genLattice(xb, yb, zb, xe, ye, ze);// std::cout << "SL_genAtoms   n_atoms=" << LATT->n_atoms << std::endl;   
    delete qf;
    iAt = QString(" file: %1  %2 atoms  ").arg(LATT->name).arg(LATT->n_atoms+1);
-   dateTime = dateTime.currentDateTime();    dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss");
-   INT->outLog << "Generated atoms " << iAt.toStdString() << std::endl;
+   std::string dateTimeString = MiscFunc::dateTime().toStdString();
+   INT->outLog << "Generated atoms " << iAt.toStdString() << " Date & time is " << dateTimeString << std::endl;
    LATT->name = ans.at(0);
    infoDisplay();
    INT->atName = LATT->name.toStdString();  //iAt = LATT->name.section('/', -1);
@@ -1685,8 +1688,8 @@ void MainWindow::SL_openFem()
   delete qf; // qWarning("SL_openF femname  :  %s", femname.toLatin1().data() );                                                
   if ( femname.isEmpty() )  {  mview1->setDone(false);  return;  }
   INT->fem = femname.toStdString();
-  dateTime = dateTime.currentDateTime();    dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss");
-  INT->outLog << "Opened FE " << INT->fem << "   date & time = " << dateTimeString.toStdString() << std::endl;
+  std::string dateTimeString = MiscFunc::dateTime().toStdString();
+  INT->outLog << "Opened FE " << INT->fem << "   date & time = " << dateTimeString << std::endl;
   INT->compFem = "";
   INT->refrFem = true;
   mview1->setDone(false);
@@ -1711,8 +1714,8 @@ void MainWindow::SL_computeFem()
 // qWarning("SL_computeFem femname  :  %s", femname.toLatin1().data() );                                                
   if ( femname.isEmpty() )  {  mview1->setDone(false);  return;  }
   INT->compFem = femname.toStdString();
-  dateTime = dateTime.currentDateTime();    dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss");
-  INT->outLog << "Computed FE " << INT->compFem << "   date & time = " << dateTimeString.toStdString() << std::endl;
+  std::string dateTimeString = MiscFunc::dateTime().toStdString();
+  INT->outLog << "Computed FE " << INT->compFem << "   date & time = " << dateTimeString << std::endl;
   INT->fem = "";
   INT->refrFem = true;
   mview1->setDone(false);
@@ -1735,8 +1738,8 @@ void MainWindow::SL_closeFem()
      INT->xMin = INT->yMin = INT->zMin = 1e300;
      INT->xMax = INT->yMax = INT->zMax = -1e300;
   }
-  dateTime = dateTime.currentDateTime();    dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss");
-  INT->outLog << "Closed FE " << "   date & time = " << dateTimeString.toStdString() << std::endl;
+  std::string dateTimeString = MiscFunc::dateTime().toStdString();
+  INT->outLog << "Closed FE " << "   date & time = " << dateTimeString << std::endl;
   osg::Quat q = mview1->getQuat();
   mview1->setDone(false);
   refreshScene();
@@ -1777,11 +1780,10 @@ std::cout << "SL_saveAtoms" << std::endl;
 	}     
      }
      out.close();
-  std::cout << "SL_saveAtoms  1" << std::endl;
-     dateTime = dateTime.currentDateTime();    dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss");
-     INT->outLog << "Saved atoms: " << sd->fileName.toStdString() << "   date & time = " << dateTimeString.toStdString() << std::endl;
+     std::string dateTimeString = MiscFunc::dateTime().toStdString();
+     INT->outLog << "Saved atoms: " << sd->fileName.toStdString() << "   date & time = " << dateTimeString << std::endl;
      delete sd;
-  std::cout << "SL_saveAtoms 2" << std::endl;
+  //std::cout << "SL_saveAtoms 2" << std::endl;
   } // sd->ok
   mview1->setDone(false);
 } 
@@ -1824,8 +1826,8 @@ void MainWindow::SL_chooseSettings()
               mview1->setQuat(q);
            }
      }  // if - else
-     dateTime = dateTime.currentDateTime();    dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss");
-     INT->outLog << " Settings:" << INT->sett.toStdString() << "   date & time = " << dateTimeString.toStdString() << std::endl;
+     std::string dateTimeString = MiscFunc::dateTime().toStdString();     
+     INT->outLog << " Settings:" << INT->sett.toStdString() << "   date & time = " << dateTimeString << std::endl;
      return; 	   
   }
 }
@@ -1858,8 +1860,8 @@ void MainWindow::SL_chooseStructure()
            iStr = QString(" Structure: %1").arg(item);
 	   if ( LATT->n_atoms<=0 ) iAt = " ---------- ";
 	   infoDisplay();
-           dateTime = dateTime.currentDateTime();    dateTimeString = dateTime.toString("dd-MM-yyyy hh:mm:ss");
-	   INT->outLog << iStr.toStdString() << "   date & time = " << dateTimeString.toStdString() << std::endl;
+           std::string dateTimeString = MiscFunc::dateTime().toStdString();
+	   INT->outLog << iStr.toStdString() << "   date & time = " << dateTimeString << std::endl;
            mview1->setDone(false);
            return;
         }

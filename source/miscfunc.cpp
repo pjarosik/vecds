@@ -6,9 +6,14 @@ extern Atoms *AT;
 extern Internal *INT;
 extern Lattice *LATT;
 
+QString MiscFunc::dateTime()
+{
+   QDateTime dateTime = dateTime.currentDateTime();
+   return dateTime.toString("dd-MM-yyyy hh:mm:ss");
+}
+
 void MiscFunc::getEulerFromQuat(const osg::Quat q, double& heading, double& elevation, double& bank)
 {
-//  std::cout << " ===== 0 =========" << std::endl;		
     double sqx = q.x()*q.x();
     double sqy = q.y()*q.y();
     double sqz = q.z()*q.z();
@@ -69,12 +74,7 @@ glm::dvec3 MiscFunc::convert(const osg::Vec3d &vecIn)
 {
   return glm::dvec3( vecIn.x(), vecIn.y(), vecIn.z() );
 }
-/*
-osg::Quat MiscFunc::convert(const glm::dquat)
-{
 
-}
-*/
 int MiscFunc::whichAtom(const QString atom)
 { 
   QString res;
@@ -110,6 +110,7 @@ double MiscFunc::readFraction(const std::string line) // czyta ułamek np. w zap
   ins.clear();
   ins.str(line);
   double result, temp; char c;
+  result = 1.;
   if ( i_fr==std::string::npos ) ins >> result;
   else                         { ins >> result >> c >> temp; result /= temp; }
   return result;
@@ -198,7 +199,6 @@ void MiscFunc::printMat(const std::string str, const glm::dmat3 m)
   std::cout << " row 2 = " << std::setw(15) << m[0][2] << std::setw(15) << m[1][2] << std::setw(15) << m[2][2] << std::endl;
 }   
 
-//void MiscFunc::ComputeSizes(const osg::ref_ptr<osg::Vec3Array>nodes, double& minX, double& maxX, double& minY, double& maxY, double& minZ, double& maxZ)
 void MiscFunc::ComputeSizes(const std::vector <glm::dvec3> nodes, double& minX, double& maxX, double& minY, double& maxY, double& minZ, double& maxZ)
 {
     minX = 1e300; maxX = -1e300;
@@ -212,36 +212,24 @@ void MiscFunc::ComputeSizes(const std::vector <glm::dvec3> nodes, double& minX, 
     }
 }  
 
-//void MiscFunc::ComputePlane(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, double& minX, double& maxX, double& minY, double& maxY, double& minZ, int nA)
-//void MiscFunc::ComputeBottom(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, int& imnx, int& imxx, int& imny, int& imxy, int& iz)
 void MiscFunc::ComputePlane(const std::vector <glm::dvec3> nodes, const glm::dmat3 rotTens, double& minX, double& maxX, double& minY, double& maxY, double& minZ, int nA)
 {
-/*
-    double minX = 1e300; double maxX = -1e300;
-    double minY = 1e300; double maxY = -1e300;
-    double minZ = 1e300;
-*/  
     minX = 1e300; maxX = -1e300;
-    minY = 1e300; maxY = -1e300;
-    //minZ = 1e300;
-    int imnx, imxx, imny, imxy;// iz,
-    imnx = imxx = imny = imxy = -666;// iz = 
+    minY = 1e300; maxY = -1e300;//int imnx, imxx, imny, imxy;// iz,//imnx = imxx = imny = imxy = -666;// iz = 
     for (unsigned k=0; k<nodes.size(); k++ ) {
         glm::dvec3 pos = LATT->coords[k];//MiscFunc::convert(LATT->coords.get()->at(k));
         osg::Vec3d v = MiscFunc::convert(rotTens * pos);
         double valx = v.x(); double valy = v.y();// double valz = v.z();
-        if ( valx < minX ) { minX = valx;   imnx = int(k); } 
-	if ( valx > maxX ) { maxX = valx;   imxx = int(k); }
-        if ( valy < minY ) { minY = valy;   imny = int(k); }
-	if ( valy > maxY ) { maxY = valy;   imxy = int(k); }
+        if ( valx < minX )  minX = valx;//   imnx = int(k); } 
+	if ( valx > maxX )  maxX = valx;//   imxx = int(k); }
+        if ( valy < minY )  minY = valy;//   imny = int(k); }
+	if ( valy > maxY )  maxY = valy;//   imxy = int(k); }
 	if ( int(k)==nA ) minZ = v.z();
         //if ( valz < minZ ) { minZ = valz;   iz = int(k); }
     }
-    std::cout << "   imnx=" << imnx << "   imxx=" << imxx <<  "   imny=" << imny <<  "   imxy=" << imxy << std::endl; // "   iz=" << iz << 
-    //minZ = (LATT->coords.get()->at(nA)).z();
+    //std::cout << "   imnx=" << imnx << "   imxx=" << imxx <<  "   imny=" << imny <<  "   imxy=" << imxy << std::endl; //minZ = (LATT->coords.get()->at(nA)).z();
 }
 
-//void MiscFunc::ComputeRect(const osg::ref_ptr<osg::Vec3Array>nodes, const glm::dmat3 rotTens, const int nA,  glm::dvec3& p1, glm::dvec3& p2, glm::dvec3& p3, glm::dvec3& p4)
 void MiscFunc::ComputeRect(const std::vector <glm::dvec3> nodes, const glm::dmat3 rotTens, const int nA,  glm::dvec3& p1, glm::dvec3& p2, glm::dvec3& p3, glm::dvec3& p4)
 {
     double minX = 1e300; double maxX = -1e300;
@@ -290,7 +278,6 @@ osg::ref_ptr<osg::Geometry> MiscFunc::makeSphere(double radius, int slices, int 
     osg::Vec3Array* nl = new osg::Vec3Array;
     osg::Vec4Array* cl = new osg::Vec4Array;
     cl->push_back(col);
-	
     /* build slices as quad strips */
     for (int i = 0; i < stacks; i++ ) {
       	rho = i * drho;
