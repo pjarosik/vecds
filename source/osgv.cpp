@@ -1,6 +1,6 @@
-#include "osgscene.h"
-#include "osgv.h"
-#include "mainwindow.h"
+#include "../include/osgscene.h"
+#include "../include/osgv.h"
+#include "../include/mainwindow.h"
 
 const unsigned int defaultRefreshPeriod = 50;//30;
 const unsigned int idleRefreshPeriod = 150;

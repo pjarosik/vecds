@@ -1,5 +1,5 @@
-#include "dialogs.h"
-#include "internal.h"
+#include "../include/dialogs.h"
+#include "../include/internal.h"
 
 extern Internal *INT;
 // Pomocnicze klasy - okienka dialogowe

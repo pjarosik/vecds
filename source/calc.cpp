@@ -1,4 +1,4 @@
-#include "calc.h"
+#include "../include/calc.h"
 #include <iostream>
 
 extern Internal *INT;

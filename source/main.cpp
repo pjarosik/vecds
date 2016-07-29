@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "../include/mainwindow.h"
 
 Atoms *AT;
 Lattice *LATT;

@@ -1,6 +1,6 @@
-#include "internal.h"
-#include "miscfunc.h"
-#include "atoms.h"
+#include "../include/internal.h"
+#include "../include/miscfunc.h"
+#include "../include/atoms.h"
  
 extern Atoms *AT;
 //extern CFEMAppInterface *Femi;
