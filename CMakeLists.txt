@@ -32,7 +32,7 @@
 ######################################################################
 # REQUIRE a reasonably recent version of CMake.
 cmake_minimum_required (VERSION 2.8.12)
-project (vecds)
+project (vecds LANGUAGES CXX Fortran)
 set (TARGET vecds)
 set (VECDS_INCLUDES ${CMAKE_SOURCE_DIR}/include)
 
@@ -47,11 +47,16 @@ include (FindPackageHandleStandardArgs)
 # find required system packages.
 find_package (OpenSceneGraph 3.2.0 REQUIRED osg osgDB osgGA osgManipulator osgSim osgText osgUtil osgViewer osgWidget osgQt)
 find_package (Qt4 4.8.6 REQUIRED QtGui QtOpenGL)
+find_package(GSL REQUIRED)
 
 ######################################################################
 # Include the subdirectory containing header files.
 include_directories (${VECDS_INCLUDES})
 include_directories (${OPENSCENEGRAPH_INCLUDE_DIRS})
+include_directories ("FEMApp")
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+
 
 ######################################################################
 # Manually add the sources; TODO: Alternatively we could have done
@@ -100,4 +105,16 @@ qt4_wrap_cpp (VECDS_INCLUDES_MOC ${VECDS_INCLUDES})
 # Indicate the entry point of the excecutable and libraries to include
 # during the link process.
 add_executable(${TARGET} ${SOURCES} ${VECDS_INCLUDES_MOC})
-target_link_libraries(${TARGET} ${OPENSCENEGRAPH_LIBRARIES} Qt4::QtGui Qt4::QtOpenGL)
+target_link_libraries(${TARGET} ${OPENSCENEGRAPH_LIBRARIES} Qt4::QtGui Qt4::QtOpenGL GSL::gsl 
+"${CMAKE_SOURCE_DIR}/FEMApp/Release/libFEMAppLibRelease.a"
+"${CMAKE_SOURCE_DIR}/FEMApp/Release/libFEMGraphLibRelease.a"
+"${CMAKE_SOURCE_DIR}/FEMApp/Release/libFEMLibRelease.a"
+"${CMAKE_SOURCE_DIR}/FEMApp/Release/libGraphLibRelease.a"
+"${CMAKE_SOURCE_DIR}/FEMApp/Release/libXMLLibRelease.a"
+"${CMAKE_SOURCE_DIR}/FEMApp/Release/libLangLibRelease.a"
+"${CMAKE_SOURCE_DIR}/FEMApp/Release/libMolecularLibRelease.a"
+"${CMAKE_SOURCE_DIR}/FEMApp/Release/libMathLibRelease.a"
+"${CMAKE_SOURCE_DIR}/FEMApp/Release/libCoupledFieldsRelease.a"
+-lgfortran
+-llapack
+	)
