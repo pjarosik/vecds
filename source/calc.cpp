@@ -1,5 +1,6 @@
 #include "../include/calc.h"
 #include <iostream>
+#include <glm/gtx/norm.hpp>
 
 extern Internal *INT;
 extern Lattice *LATT;

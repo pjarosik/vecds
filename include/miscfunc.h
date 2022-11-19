@@ -19,7 +19,7 @@
 class MiscFunc
 { 
  public:
-  static const double deg2rad = 0.01745329251994329576;
+  static constexpr double deg2rad = 0.01745329251994329576;
   static QString dateTime();
   static void getEulerFromQuat(const osg::Quat q, double& heading, double& elevation, double& bank);
   static osg::Quat quatFromEuler(const double h, const double e, const double b);

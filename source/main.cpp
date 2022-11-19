@@ -4,9 +4,9 @@ Atoms *AT;
 Lattice *LATT;
 Internal *INT;
 Points *POINTS;
-#include "../FEMLib/IntegrationManager.h"
-#include "../FEMLib/IntegrationPoints.h"
-#include "../FEMAppLib/FEMProject.h"
+#include "../FEMApp//FEMLib/IntegrationManager.h"
+#include "../FEMApp/FEMLib/IntegrationPoints.h"
+#include "../FEMApp/FEMAppLib/FEMProject.h"
 
 extern "C"
 {

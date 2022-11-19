@@ -18,6 +18,7 @@
 //					 
 // -------------------------------------------------------------------
 #include "../include/mainwindow.h"
+#include <glm/gtx/norm.hpp>
 #include <iostream>
 
 extern Atoms *AT;
