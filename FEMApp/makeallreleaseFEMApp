@@ -1,0 +1,53 @@
+#!/bin/bash
+
+./compilerelease FEMAppLib
+result=$?
+if [[ $result -ne 0 ]]; then
+	exit $result
+fi
+./compilerelease FEMGraphLib
+result=$?
+if [[ $result -ne 0 ]]; then
+	exit $result
+fi
+./compilerelease FEMGraphLib
+result=$?
+if [[ $result -ne 0 ]]; then
+	exit $result
+fi
+./compilerelease FEMLib
+result=$?
+if [[ $result -ne 0 ]]; then
+	exit $result
+fi
+./compilerelease GraphLib
+result=$?
+if [[ $result -ne 0 ]]; then
+	exit $result
+fi
+./compilerelease XMLLib
+result=$?
+if [[ $result -ne 0 ]]; then
+	exit $result
+fi
+./compilerelease MolecularLib
+result=$?
+if [[ $result -ne 0 ]]; then
+	exit $result
+fi
+./compilerelease LangLib
+result=$?
+if [[ $result -ne 0 ]]; then
+	exit $result
+fi
+./compilerelease MathLib
+result=$?
+if [[ $result -ne 0 ]]; then
+	exit $result
+fi
+./compilerelease CoupledFields
+result=$?
+if [[ $result -ne 0 ]]; then
+	exit $result
+fi
+

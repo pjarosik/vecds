@@ -1,0 +1,11 @@
+
+#include "Statement.h"
+
+
+CStatement::CStatement( ) 
+{
+}
+
+CStatement::~CStatement(void)
+{
+}

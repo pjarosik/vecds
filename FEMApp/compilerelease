@@ -1,0 +1,65 @@
+#!/bin/bash
+# MKLROOT=/opt/intel/mkl
+rm "Release/lib"$1"Release.a"
+cd $1
+echo -e "Making  :\e[01;32m$1\e[00m"
+for CPP in $(find . -name "*.cpp")
+do
+#	echo -e "g++ -I$MKLROOT/include -I/home/piotrek/programming/C++/Libs/boost/boost_1_54_0 -c -O2 -pipe ${libs[*]}\e[01;34m$CPP\e[00m"
+#	g++ -I$MKLROOT/include -I/home/piotrek/programming/C++/Libs/boost/boost_1_54_0 -c -O2 -pipe $CPP 2> compilation_error.txt
+	basename=${CPP:0:-4} 
+	objname=$basename".o" 
+	if [ ! -f $objname ] || [ $objname -ot $CPP ] 
+	then
+		echo -e "g++ -I/home/piotrek/programming/C++/Libs/boost/boost_1_54_0 -c -O2 -pipe ${libs[*]}\e[01;34m$CPP\e[00m"
+		g++ -I/home/piotrek/programming/C++/Libs/boost/boost_1_54_0 -DLINUX -c -O2 -pipe $CPP 2> compilation_error.txt
+		result=$?
+		if [[ $result -ne 0 ]]; then
+			echo -e "\e[01;31mERROR\e[00m compilation of \e[01;34m$CPP\e[00m failed"
+			while read line        
+			do        
+     				echo "$line" | grep -q "error"
+	     			if [ $? -eq 0 ]; then
+    					echo -e "\e[01;31m$line\e[00m"
+				else 
+					echo -e "\e[01;34m$line\e[00m"
+				fi
+			done < compilation_error.txt
+			rm compilation_error.txt 
+			cd ..
+                	exit $result
+        	fi 
+	fi
+done
+for F in $(find . -name "*.f")
+do
+	fbasename=${F:0:-2} 
+	fobjname=$fbasename".o" 
+	if ([ ! -f $fobjname ] || [[ "$fobjname" -ot "$F" ]])
+	then
+		echo -e "gfortran -c -O3 \e[01;34m$F\e[00m"
+		gfortran -c -O3 $F 2> compilation_error.txt
+		result=$?
+        	if [[ $result -ne 0 ]]; then
+			echo -e "\e[01;31mERROR\e[00m compilation of \e[01;34m$F\e[00m failed"
+			while read line        
+			do        
+     				echo "$line" | grep -q "Error"
+     				if [ $? -eq 0 ]; then
+    					echo -e "\e[01;31m$line\e[00m"
+				else 
+					echo -e "\e[01;34m$line\e[00m"
+				fi
+			done < compilation_error.txt
+			rm compilation_error.txt 
+			cd ..
+        	        exit $result
+        	fi 
+	fi
+done
+rm compilation_error.txt 
+cd ..
+echo -e "Making Library file >\e[01;32m../Release/lib"$1$2".a\e[00m"
+ar cr "Release/lib"$1"Release.a" $1/*.o
+
+

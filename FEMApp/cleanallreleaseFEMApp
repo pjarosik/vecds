@@ -1,0 +1,12 @@
+#!/bin/bash
+rm -rf FEMApp/*.o
+rm -rf FEMAppLib/*.o
+rm -rf FEMGraphLib/*.o
+rm -rf FEMGraphLib/*.o
+rm -rf FEMLib/*.o
+rm -rf GraphLib/*.o
+rm -rf XMLLib/*.o
+rm -rf MolecularLib/*.o
+rm -rf LangLib/*.o
+rm -rf MathLib/*.o
+rm -rf CoupledFields/*.o
