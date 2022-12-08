@@ -12,16 +12,15 @@ Before compiling vecds you should compile "FEMApp". Just change current director
 to the FEMApp and run `./makeallreleaseFEMApp.`
 
 
-
 To compile vecds with cmake:
 
-$ mkdir build
-$ cd build
+$ mkdir bin
+$ cd bin
 $ cmake ..
 $ make
 
 To run vecds with a GUI, go to the bin directory and run:
 
-$ cd build
+$ cd bin
 $ ./vecds
 
