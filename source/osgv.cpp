@@ -114,7 +114,7 @@ OsgViewerQt::~OsgViewerQt()
         traits->sampleBuffers = ds->getMultiSamples();
         traits->samples = ds->getNumMultiSamples();
 
-        return new osgQt::GraphicsWindowQt(traits.get());
+        return new osgQt::GraphicsWindowQt(traits.get(), nullptr, nullptr, Qt::WindowFlags());
     }
     
     void OsgViewerQt::setRefreshPeriod(unsigned int period)

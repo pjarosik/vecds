@@ -1,21 +1,6 @@
 #ifndef DIALOGS_H
 #define DIALOGS_H
-/*
-#include <QDialog>
-#include <QLineEdit>
-#include <QLabel>
-#include <QDialogButtonBox>
-#include <QString>
-#include <QFormLayout>
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QColor>
-#include <QColorDialog>
-#include <QComboBox>
-#include <QCheckBox>
-#include <QGroupBox>
-*/
-#include <QtGui>
+#include <QtWidgets>
 #include <iostream>
 
 class QuestionForm1 : public QDialog

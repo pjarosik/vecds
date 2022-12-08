@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 #include "../include/helpbrowser.h" 
 
 extern Internal *INT;

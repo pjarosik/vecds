@@ -11,8 +11,8 @@ do
 	objname=$basename".o" 
 	if [ ! -f $objname ] || [ $objname -ot $CPP ] 
 	then
-		echo -e "g++ -I/home/piotrek/programming/C++/Libs/boost/boost_1_54_0 -c -O2 -pipe ${libs[*]}\e[01;34m$CPP\e[00m"
-		g++ -I/home/piotrek/programming/C++/Libs/boost/boost_1_54_0 -DLINUX -c -O2 -pipe $CPP 2> compilation_error.txt
+		echo -e "g++  -c -O2 -pipe ${libs[*]}\e[01;34m$CPP\e[00m"
+		g++ -DLINUX -c -O2 -pipe $CPP 2> compilation_error.txt
 		result=$?
 		if [[ $result -ne 0 ]]; then
 			echo -e "\e[01;31mERROR\e[00m compilation of \e[01;34m$CPP\e[00m failed"

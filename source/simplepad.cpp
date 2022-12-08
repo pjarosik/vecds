@@ -1,4 +1,4 @@
-#include <QtGui>
+#include <QtWidgets>
 #include "../include/simplepad.h"
 #include "../include/internal.h"
 #include <iostream>

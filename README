@@ -1,10 +1,17 @@
------
-Before compiling vecds you should unpack and compile "FEMApp.tar.gz"
+## Prerequisites
 
-To compile vecds with qmake:
+- gfortran
+- openscenegraph 3.6.5, openscenegraph-qt 3.5.7
+- GSL (libgsl-dev on Ubuntu 22.04)
+- GLM (libglm-dev on Ubuntu 22.04)
+- Qt5
 
-$ qmake
-$ make
+## Building
+
+Before compiling vecds you should compile "FEMApp". Just change current directory
+to the FEMApp and run `./makeallreleaseFEMApp.`
+
+
 
 To compile vecds with cmake:
 
@@ -15,6 +22,6 @@ $ make
 
 To run vecds with a GUI, go to the bin directory and run:
 
-$ cd bin
+$ cd build
 $ ./vecds
 

@@ -1021,7 +1021,7 @@ void MainWindow::SL_performDislCalc(QString ff)
      QString line = in.readLine(); //++nl;  std::cout << " nl=" << nl << "   " << line.toStdString() << std::endl;
      if ( line.isEmpty() || (line.at(0)=='/' && line.at(1)=='/') ) continue;
      if ( line.at(0)=='!' && line.at(1)=='!' ) {
-        QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+        QStringList fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
 	//int nf = fields.size(); for (int i=0; i<nf; i++) std::cout << i << ":" << fields.at(i).toStdString() << "   $$   "; std::cout << std::endl;//std::string s = fields.at(3).toStdString();
 	int nm = 0;
 	int k = fields.at(3).toInt(); //MiscFunc::toInt(s);// std::cout << " nl=" << nl << "   s=" << s << "    k=" << k << std::endl;
@@ -1552,7 +1552,7 @@ void MainWindow::readAlcXyz(QString aname1)
     QTextStream in(&file);
     QString line = in.readLine();
     if ( line.isEmpty() ) {  QMessageBox::warning(this, "PROBLEM", "First line is empty!");  return;  }
-    QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+    QStringList fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
     int numbAt = fields.at(0).toInt();
     if ( numbAt<=0 ) { QMessageBox::warning(this, "PROBLEM", "No defined atoms in this structure");  return; }
     bool alc_ = aname1.contains(".alc");
@@ -1577,7 +1577,7 @@ void MainWindow::readAlcXyz(QString aname1)
     //LATT->n_atoms = LATT->n_marked = numbAt;
     for (int i=oldN; i<numbAt+oldN; i++) {
        line = in.readLine();
-       fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
+       fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
        if ( alc_ ) fields.removeFirst();
        QString nameA = fields.takeFirst();
        int ak = MiscFunc::whichAtom(nameA);
@@ -1609,7 +1609,7 @@ void MainWindow::readAlcXyz(QString aname1)
      if ( alc_ ) {      
         for (int i=oldB; i<LATT->n_bonds+oldB; i++) {
            line = in.readLine();
-           fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts); //int nf = fields.size();
+           fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts); //int nf = fields.size();
            int i1 = fields.at(1).toInt();
            int i2 = fields.at(2).toInt();
 	   if ( moreFiles ) { i1 += oldN; i2 += oldN; }

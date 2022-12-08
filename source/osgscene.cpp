@@ -734,7 +734,7 @@ int OsgScene::conrec(double **d,     // matrix of data to contour
 {
   int m1, m2, m3, case_value;
   double dmin, dmax, tmax, tmin, x1, x2, y1, y2;
-  register int i, j, k, m;
+  int i, j, k, m;
   int sh[5];
   mvector xx(2), XX(3);
   bool doneT;  

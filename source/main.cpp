@@ -10,7 +10,7 @@ Points *POINTS;
 
 extern "C"
 {
-    int int3d_(int *l, int *lint, double *sg);
+    void int3d_(int *l, int *lint, double *sg);
 }
 
 extern struct {
@@ -54,7 +54,7 @@ void CreateInfMatrices() {
 
 }
 
-int int3d_(int *l, int *lint, double *sg)
+void int3d_(int *l, int *lint, double *sg)
 {
     unsigned map[27] = { 0, 2, 8, 6, 18, 20, 26, 24, 1, 5, 7, 3, 19, 23,
 25, 21, 9, 11, 17, 15, 4, 22, 12, 14, 10, 16, 13 };

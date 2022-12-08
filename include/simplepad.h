@@ -1,7 +1,7 @@
 #ifndef SIMPLEPAD_H
 #define SIMPLEPAD_H
 
-#include <QtGui>
+#include <QtWidgets>
 
 class QGridLayout;
 class QPlainTextEdit;

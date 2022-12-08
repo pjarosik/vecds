@@ -6,7 +6,7 @@
 #include <QVector>
 #include <QStringList>
 #include <QList>
-#include <QtGui>
+#include <QtWidgets>
 #include <QString>
 
 #include <osg/MatrixTransform>

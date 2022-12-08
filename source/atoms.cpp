@@ -17,7 +17,7 @@ Atoms::Atoms()
   numbOfAtoms = 0;
   while (!in.atEnd()) {
       QString line = in.readLine();
-      QStringList fields = line.split(' ', QString::SkipEmptyParts); 
+      QStringList fields = line.split(' ', Qt::SkipEmptyParts);
       //         int ile = fields.size();
       namea << fields.at(1);
       a_rad1[numbOfAtoms] = fields.at(2).toFloat(); 

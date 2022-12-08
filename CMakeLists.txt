@@ -45,8 +45,8 @@ include (FindPackageHandleStandardArgs)
 
 ######################################################################
 # find required system packages.
-find_package (OpenSceneGraph 3.2.0 REQUIRED osg osgDB osgGA osgManipulator osgSim osgText osgUtil osgViewer osgWidget osgQt)
-find_package (Qt4 4.8.6 REQUIRED QtGui QtOpenGL)
+find_package (OpenSceneGraph 3.6.5 REQUIRED osg osgDB osgGA osgManipulator osgSim osgText osgUtil osgViewer osgWidget)
+find_package (Qt5 REQUIRED Widgets OpenGL)
 find_package(GSL REQUIRED)
 
 ######################################################################
@@ -98,14 +98,14 @@ set (VECDS_INCLUDES
   include/osgscene.h  
 #  include/picking.h
 )
-qt4_wrap_cpp (VECDS_INCLUDES_MOC ${VECDS_INCLUDES})
+qt_wrap_cpp (VECDS_INCLUDES_MOC ${VECDS_INCLUDES})
 
 
 ######################################################################
 # Indicate the entry point of the excecutable and libraries to include
 # during the link process.
 add_executable(${TARGET} ${SOURCES} ${VECDS_INCLUDES_MOC})
-target_link_libraries(${TARGET} ${OPENSCENEGRAPH_LIBRARIES} Qt4::QtGui Qt4::QtOpenGL GSL::gsl 
+target_link_libraries(${TARGET} ${OPENSCENEGRAPH_LIBRARIES} Qt5::Widgets Qt5::OpenGL GSL::gsl
 "${CMAKE_SOURCE_DIR}/FEMApp/Release/libFEMAppLibRelease.a"
 "${CMAKE_SOURCE_DIR}/FEMApp/Release/libFEMGraphLibRelease.a"
 "${CMAKE_SOURCE_DIR}/FEMApp/Release/libFEMLibRelease.a"
@@ -117,4 +117,5 @@ target_link_libraries(${TARGET} ${OPENSCENEGRAPH_LIBRARIES} Qt4::QtGui Qt4::QtOp
 "${CMAKE_SOURCE_DIR}/FEMApp/Release/libCoupledFieldsRelease.a"
 -lgfortran
 -llapack
-	)
+-losgQt5
+)
