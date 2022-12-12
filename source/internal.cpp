@@ -4,6 +4,7 @@
 
 #include <QApplication>
 #include <QMessageBox>
+#include <filesystem>
  
 extern Atoms *AT;
 //extern CFEMAppInterface *Femi;
@@ -52,8 +53,9 @@ Internal::Internal()
   refrMarked = false;
   dist0 = -1.;
   centr0 = osg::Vec3d(0., 0., 0.);
-  currDir = QApplication::applicationDirPath();//QDir::currentPath();
-  currDir.replace(QString("/bin"), QString(""));
+  std::filesystem::path cd = QApplication::applicationDirPath().toStdString();
+  std::filesystem::path currentDirPath = cd.parent_path();
+  currDir = currentDirPath.c_str();
 
   whichFem = 0;
 //std::cout << "fov=" << fov << "  sizeTxt=" << sizeTxt << "  axInd=" << axInd << "  alphaAx=" << alphaAx << "   alphaAt=" << alphaAt << std::endl;

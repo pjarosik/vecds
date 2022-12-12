@@ -1,13 +1,14 @@
+#include <filesystem>
+
 #include "../include/atoms.h"
 
 extern Internal *INT;
 
 Atoms::Atoms()
 {
-  QString cd0 = QApplication::applicationDirPath();//QDir::currentPath();
-  cd0.replace(QString("/bin"), QString(""));
-  //  qWarning("%s", cd0.toLatin1().data());
-  QFile file (cd0.append("/data/internal/atoms.babel"));
+  std::filesystem::path cd = QApplication::applicationDirPath().toStdString();
+  std::filesystem::path atomsP = cd.parent_path() / "data/internal/atoms.babel";
+  QFile file (atomsP.c_str());
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
       qWarning("atoms.babel not found");
       return;
