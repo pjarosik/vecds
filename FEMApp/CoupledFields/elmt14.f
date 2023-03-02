@@ -254,7 +254,7 @@ c           Constitutive equations (Kirhhoff stress)
                         enddo
                      endif
                      call conlump(sl1(1,0),8,sr1(1,0),8,p(ichy+k-1),
-     $                s(ichy+k-1,ichx+k-1),ul(ichx+k-1,1,4),cfac,ndf,nst)
+     $                s(ichy+k-1,ichx+k-1),ul(ichx+k-1,1,4),ndf,nst)
                      call divxvx(sl1(1,0),8,sr1(1,0),8,x(0,k),x(0,1),nch
      $                ,v(1,k),chch(nch*k,1),chchch(nch*nch*k,1,1),
      $                                         s(ichy+k-1,ichx),ndf,nst)
