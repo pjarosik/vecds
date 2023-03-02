@@ -285,7 +285,7 @@ c              call checksym(s(1,1),nst,ndf)
 c                 cfac = 1. ! constistent/lumpen mass matrix factor
                  do i = 1,ndm
                     call conlump(sl(1,0),nel,sr(1,0),nel,p(isy+i-1),
-     $              s(isy+i-1,isx+i-1),rho,cfac,ndf,nst)
+     $              s(isy+i-1,isx+i-1),rho,ndf,nst)
                  enddo
               endif
 
