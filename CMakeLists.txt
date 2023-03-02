@@ -83,20 +83,12 @@ set (SOURCES
 ######################################################################
 # Set up a bunch of targets for the meta-object code generator
 set (VECDS_INCLUDES
-#  include/adds.h   
-#  include/calc.h     
-#  include/gener.h        
-#  include/internal.h  
-#  include/miscfunc.h  
   include/osgv.h     
   include/simplepad.h
-#  include/atoms.h  
   include/dialogs.h  
   include/helpbrowser.h  
-#  include/lattice.h   
   include/mainwindow.h  
   include/osgscene.h  
-#  include/picking.h
 )
 qt_wrap_cpp (VECDS_INCLUDES_MOC ${VECDS_INCLUDES})
 
