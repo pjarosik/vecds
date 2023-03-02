@@ -111,3 +111,5 @@ target_link_libraries(${TARGET} ${OPENSCENEGRAPH_LIBRARIES} Qt5::Widgets Qt5::Op
 -llapack
 -losgQt5
 )
+
+install(TARGETS ${TARGET} DESTINATION .)

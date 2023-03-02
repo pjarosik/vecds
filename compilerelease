@@ -58,7 +58,7 @@ do
         	fi 
 	fi
 done
-rm compilation_error.txt 
+rm -f compilation_error.txt 
 cd -
 echo -e "Making Library file >\e[01;32m../Release/lib"$1$2".a\e[00m"
 ar cr "FEMApp/Release/lib${filename}Release.a" $1/*.o
