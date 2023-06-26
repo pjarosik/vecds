@@ -258,6 +258,7 @@ private:
   std::vector<int> nAt;
     // Each entry in the below vectors represents a state of a bond.
   // Atom bonds - 1st atom (index of nAt) note: the graph is undirected
+  // !!!!! NOTE: The assumption is that the numbering of atoms in the below bond1 and bond2 lists starts from 1!!!!!!
   std::vector<int> bond1;
   // Atom bonds - 2nd atom (index of nAt) note: the graph is undirected
   std::vector<int> bond2;

@@ -81,8 +81,12 @@ int MiscFunc::whichAtom(const QString atom)
   for (int i = 0; i < atom.size(); i++) {
       QChar ch = atom.at(i);
       if ( ch.isLetter() ) {
-          if ( i==0 )  ch.toUpper();
-          else         ch.toLower();
+          if ( i==0 )  {
+              ch = ch.toUpper();
+          }
+          else {
+              ch = ch.toLower();
+          }
           res.append(ch);
       }
   }
