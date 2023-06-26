@@ -1,12 +1,9 @@
 #include "../include/calc.h"
 #include <iostream>
 #include <glm/gtx/norm.hpp>
+#include "globals.h"
 
-extern Internal *INT;
-extern Lattice *LATT;
-extern Atoms *AT;
-    
-    
+
 glm::dmat3 Calc::rotation_tensor(glm::dvec3 mV, glm::dvec3 mP) 
 { // obliczanie tensora obrotu sztywnego na podstawie wskaźników Millera
    glm::dvec3 s = glm::normalize(INT->crC->c2o * mV); // std::cout << "s   " << s.x << "   " << s.y << "   " << s.z << std::endl;       
@@ -54,7 +51,7 @@ bool Calc::internal_miller(std::string line2, int which, int *mill)
    return true;
 }
 
-bool Calc::parse_miller(const std::string line) 
+bool Calc::parse_miller(const std::string& line)
 {
    int mill[4];
    std::string line1 = MiscFunc::stripBlanks(line);//  cout << "line1=" <<  line1 << endl;
@@ -76,7 +73,7 @@ bool Calc::parse_miller(const std::string line)
    return true;
 }
   
-glm::dvec3 Calc::plane1(const std::string line)//, glm::dvec3 point)
+glm::dvec3 Calc::plane1(const std::string& line)//, glm::dvec3 point)
 {
    int mill[4];
    std::string line1 = MiscFunc::stripBlanks(line);//  cout << "line1=" <<  line1 << endl;
@@ -97,8 +94,8 @@ int Calc::identAtom(glm::dvec3 point)
    double px = point.x;       
    double py = point.y;
    double pz = point.z;
-   for (int i=0; i<LATT->n_atoms; i++) {
-      int ak = LATT->nAt.get()->at(i);
+   for (int i=0; i<LATT->getNAtoms(); i++) {
+      int ak = LATT->nAt.at(i);
       double r = INT->radFactor * AT->a_rad1[ak];
       glm::dvec3 p2 = LATT->coords[i];
       if ( px>(p2.x - r) && px<=(p2.x + r) &&

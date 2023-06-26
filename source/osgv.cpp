@@ -2,14 +2,15 @@
 #include "../include/osgv.h"
 #include "../include/mainwindow.h"
 
+#include "globals.h"
+
 const unsigned int defaultRefreshPeriod = 50;//30;
 const unsigned int idleRefreshPeriod = 150;
 const double camFact = 0.15;
-extern Internal *INT;
+
 extern MainWindow mainwindow;
 
-OsgViewerQt::OsgViewerQt(OsgScene *scene1, double fovy) : QGLWidget(), 
-                                                m_refreshPeriod(defaultRefreshPeriod)
+OsgViewerQt::OsgViewerQt(OsgScene *scene1, double fovy) : QGLWidget(),  m_refreshPeriod(defaultRefreshPeriod)
 {
         setThreadingModel(osgViewer::ViewerBase::SingleThreaded);
 	setAttribute(Qt::WA_DeleteOnClose);

@@ -19,17 +19,7 @@
 // -------------------------------------------------------------------
 
 #include "../include/osgscene.h"
-//#include "osgv.h"
-
-//namespace M_SC {
-
-extern Atoms *AT;
-extern Lattice *LATT;
-extern Internal *INT;
-extern Points *POINTS;
-
-//geom->setUseDisplayList(false);
-//geom->setUseVertexBufferObjects(true); 
+#include "globals.h"
 
 OsgScene::OsgScene() {
     qWarning("osgScene 0");
@@ -111,19 +101,19 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms() {
     set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON);
     //qWarning("createAtoms 0 - 1");
     if (INT->fem.empty()) {
-        INT->xMin = LATT->xMin;
-        INT->xMax = LATT->xMax;
-        INT->yMin = LATT->yMin;
-        INT->yMax = LATT->yMax;
-        INT->zMin = LATT->zMin;
-        INT->zMax = LATT->zMax;
+        INT->xMin = LATT->getXMin();
+        INT->xMax = LATT->getXMax();
+        INT->yMin = LATT->getYMin();
+        INT->yMax = LATT->getYMax();
+        INT->zMin = LATT->getZMin();
+        INT->zMax = LATT->getZMax();
     } else {
-        INT->xMin = std::min(fxMin, LATT->xMin);
-        INT->xMax = std::max(fxMax, LATT->xMax);
-        INT->yMin = std::min(fyMin, LATT->yMin);
-        INT->yMax = std::max(fyMax, LATT->yMax);
-        INT->zMin = std::min(fzMin, LATT->zMin);
-        INT->zMax = std::max(fzMax, LATT->zMax);
+        INT->xMin = std::min(fxMin, LATT->getXMin());
+        INT->xMax = std::max(fxMax, LATT->getXMax());
+        INT->yMin = std::min(fyMin, LATT->getYMin());
+        INT->yMax = std::max(fyMax, LATT->getYMax());
+        INT->zMin = std::min(fzMin, LATT->getZMin());
+        INT->zMax = std::max(fzMax, LATT->getZMax());
     }
     //qWarning("createAtoms 0 - 2");
     INT->scDim = std::max(INT->xMax - INT->xMin, std::max(INT->yMax - INT->yMin, INT->zMax - INT->zMin));
@@ -135,9 +125,9 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms() {
         float rCyl = static_cast<float>(INT->bondFactor * AT->a_rad1[0] *
                                         INT->radFactor);  //---------------------------------
         //std::cout << " rCyl=" << rCyl << "     n_bonds=" << LATT->n_bonds << std::endl;
-        for (int i = 0; i < LATT->n_bonds; i++) {
-            int i1 = LATT->bond1.get()->at(i) - 1;
-            int i2 = LATT->bond2.get()->at(i) - 1;
+        for (int i = 0; i < LATT->getNBonds(); i++) {
+            int i1 = LATT->bond1.at(i) - 1;
+            int i2 = LATT->bond2.at(i) - 1;
             //if ( i<5 ) { std::cout << "i=" << i << "     i1=" << i1 << "     i2=" << i2 << std::endl;
             //std::cout << "LATT->coords[i1].x=" << LATT->coords[i1].x << "     LATT->marked[i1]=" << LATT->marked[i1] << std::endl; }
             if (LATT->marked[i1] < 0 || LATT->marked[i2] < 0) continue;
@@ -146,8 +136,7 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms() {
             m_worldAt->addChild(drawBond(p1, p2, rCyl, color));
         }
     }
-    for (int i = 0; i < LATT->n_k; i++) {
-        int ak = LATT->nK.get()->at(i);
+    for (auto &ak: LATT->nK) {
         float r = INT->radFactor * AT->a_rad1[ak];
         QString aN = AT->namea.at(ak);
         //std::cout << " i=" << i << "     ak=" << ak << "   namea " << aN.toStdString() << std::endl;
@@ -155,10 +144,10 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms() {
         if (INT->alphaAt < 1.0) color.w() = INT->alphaAt;
         //std::cout << " ak=" << ak << "   r=" << r << "     red=" << color.x() << "     alfa=" << color.w() << std::endl;
         osg::ref_ptr<osg::Geometry> draw = makeSphere(r, INT->sphSlices, INT->sphStacks, color);
-        for (int j = 0; j < LATT->n_atoms; j++) {
+        for (int j = 0; j < LATT->getNAtoms(); j++) {
             if (LATT->marked[j] < 0)
                 continue; //{ std::cout << "++++++++  i=" << i << "   j=" << j << std::endl; continue; }
-            int akk = LATT->nAt.get()->at(j);//std::cout << " j=" << j << "     akk=" << akk << std::endl;
+            int akk = LATT->nAt.at(j);//std::cout << " j=" << j << "     akk=" << akk << std::endl;
             if (akk == ak) {
                 osg::ref_ptr<osg::Geode> geo = new osg::Geode;
                 geo->addDrawable(draw.get());
@@ -251,7 +240,7 @@ void OsgScene::displayPlane(glm::dmat3 rotTens, int nA) {
 
 void OsgScene::showOneAtom(int ind) {
     osg::ref_ptr<osg::MatrixTransform> m_worldNum = new osg::MatrixTransform;
-    int ak = LATT->nAt.get()->at(ind);
+    int ak = LATT->nAt.at(ind);
     float r = INT->radFactor * AT->a_rad1[ak];
     osg::Vec3d pos1 = MiscFunc::convert(LATT->coords[ind]) +
                       osg::Vec3d(r, 0.0, r);//LATT->coords.get()->at(ind) + osg::Vec3d(r, 0.0, r);
@@ -313,9 +302,9 @@ osg::ref_ptr<osg::Geometry> OsgScene::makeSphere(double radius, int slices, int 
 
 osg::ref_ptr<osg::MatrixTransform> OsgScene::createNum() {
     osg::ref_ptr<osg::MatrixTransform> m_worldNum = new osg::MatrixTransform;
-    for (int i = 0; i < LATT->n_atoms; i++) {
+    for (int i = 0; i < LATT->getNAtoms(); i++) {
         if (LATT->marked[i] < 0) continue;
-        int ak = LATT->nAt.get()->at(i);
+        int ak = LATT->nAt.at(i);
         float r = INT->radFactor * AT->a_rad1[ak];
         QString aN = AT->namea.at(ak);
         osg::Vec3 pos1 = MiscFunc::convert(LATT->coords[i]) +
@@ -353,7 +342,7 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createImage() {
     osg::ref_ptr<osg::Geometry> square = new osg::Geometry();
     // draw the square
     osg::Vec3Array *squareVertices = new osg::Vec3Array;
-    double zCent = 0.5 * (LATT->zMin + LATT->zMax);
+    double zCent = 0.5 * (LATT->getZMin() + LATT->getZMax());
     squareVertices->push_back(osg::Vec3(INT->xMin, INT->yMin, zCent));
     squareVertices->push_back(osg::Vec3(INT->xMax, INT->yMin, zCent));
     squareVertices->push_back(osg::Vec3(INT->xMax, INT->yMax, zCent));
@@ -570,12 +559,12 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createFem() {
             INT->zMin = fzMin;
             INT->zMax = fzMax;
         } else {
-            INT->xMin = std::min(fxMin, LATT->xMin);
-            INT->xMax = std::max(fxMax, LATT->xMax);
-            INT->yMin = std::min(fyMin, LATT->yMin);
-            INT->yMax = std::max(fyMax, LATT->yMax);
-            INT->zMin = std::min(fzMin, LATT->zMin);
-            INT->zMax = std::max(fzMax, LATT->zMax);
+            INT->xMin = std::min(fxMin, LATT->getXMin());
+            INT->xMax = std::max(fxMax, LATT->getXMax());
+            INT->yMin = std::min(fyMin, LATT->getYMin());
+            INT->yMax = std::max(fyMax, LATT->getYMax());
+            INT->zMin = std::min(fzMin, LATT->getZMin());
+            INT->zMax = std::max(fzMax, LATT->getZMax());
         }
         INT->scDim = std::max(INT->xMax - INT->xMin, std::max(INT->yMax - INT->yMin, INT->zMax - INT->zMin));
         std::cout << " INT->scDim=" << INT->scDim << std::endl;

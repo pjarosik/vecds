@@ -20,11 +20,8 @@
 #include "../include/mainwindow.h"
 #include <glm/gtx/norm.hpp>
 #include <iostream>
-
-extern Atoms *AT;
-extern Lattice *LATT;
-extern Internal *INT;
-extern Points *POINTS;
+#include "../include/formats.h"
+#include "globals.h"
 
 MainWindow::MainWindow() {
     setMinimumSize(800, 600);
@@ -94,7 +91,7 @@ MainWindow::MainWindow() {
     //statusBar->show();
     //statusBar->setSizeGripEnabled(true);
     if(!INT->atName.empty()) {
-        readAlcXyz(QString::fromStdString(INT->atName));
+        readInputFile(QString::fromStdString(INT->atName));
         INT->refrAtoms = true;
         refreshScene();
     }
@@ -119,10 +116,10 @@ MainWindow::~MainWindow() {
     INT->calcLog << "===========  E N D ===========    MainWindow destructed  at " << dateTimeString
                  << "    ========== E N D =============" << std::endl;
     INT->calcLog.close();
-    delete AT;
-    delete LATT;
-    delete INT;
-    //delete STR;
+    // TODO avoid using globals
+    AT.reset();
+    LATT.reset();
+    INT.reset();
 }
 
 void MainWindow::createActions() {
@@ -202,14 +199,13 @@ void MainWindow::createActions() {
     resetAct->setStatusTip(tr("Reset"));
     connect(resetAct, SIGNAL(triggered()), this, SLOT(SL_reset()));
 
-// Open a file containing definitions of atomic structure in .xyz ot
-// .alc format
+// Open a file containing definitions of atomic structure
     openAct = new QAction(tr("Open atoms"), this);
-    openAct->setStatusTip(tr("Opens an existing file as .xyz or .alc"));
+    openAct->setStatusTip(tr("Opens an existing file as .xyz, .alc or sybyl mol2"));
     connect(openAct, SIGNAL (triggered()), this, SLOT(SL_openAtoms()));
 
     closeAct = new QAction(tr("Close atoms"), this);
-    closeAct->setStatusTip(tr("Closes an existing file as .xyz or .alc"));
+    closeAct->setStatusTip(tr("Closes an existing file"));
     connect(closeAct, SIGNAL (triggered()), this, SLOT(SL_closeAtoms()));
 
     openFemAct = new QAction(tr("Import external FE data"), this);
@@ -505,23 +501,20 @@ void MainWindow::SL_actPoint() {
     INT->outLog << "SL_actpoint  mode=" << mode << "   nA=" << nA << std::endl;
     if(nA >= 0) {
         INT->atomDefined = true;
-        strAtom = QString(" atom  %1 - %2").arg(nA + 1).arg(AT->namea.at(LATT->nAt.get()->at(nA)));
+        strAtom = QString(" atom  %1 - %2").arg(nA + 1).arg(AT->namea.at(LATT->nAt.at(nA)));
         pos = LATT->coords[nA];
-        strPoint = QString(" coordinates = { %1, %2, %3 }").arg(pos.x, 0, 'f', 4).arg(pos.y, 0, 'f', 4).arg(pos.z,
-                                                                                                            0,
-                                                                                                            'f',
-                                                                                                            4);
+        strPoint = QString(" coordinates = { %1, %2, %3 }")
+                        .arg(pos.x, 0, 'f', 4)
+                        .arg(pos.y, 0, 'f', 4)
+                        .arg(pos.z, 0, 'f', 4);
         INT->outLog << " mode=" << mode << strAtom.toStdString() << strPoint.toStdString() << std::endl;
-        //std::cout << " mode=" << mode << strAtom.toStdString() << strPoint.toStdString() << " right left ctrl shift " << INT->right << "  " << INT->left << "  " << INT->ctrl << "  " << INT->shift << std::endl;
         if(INT->right && mode < 2) { // info
             mview1->setDone(true);
             QMessageBox::information(this, strAtom, strPoint);
         }
         if(mode >= 2 && mode <= 7) {
             if(!INT->hklDefined) {
-                QMessageBox::warning(this,
-                                     "PROBLEM",
-                                     "You should define orientation of the lattice");
+                QMessageBox::warning(this, "PROBLEM", "You should define orientation of the lattice");
                 return;
             }
             mview1->setDone(true);
@@ -550,7 +543,6 @@ void MainWindow::SL_actPoint() {
         }
     }
     mview1->setDone(false);
-    return;
 }
 
 void MainWindow::process(glm::dvec3 pos) {
@@ -568,14 +560,11 @@ void MainWindow::process(glm::dvec3 pos) {
         cutPlane(point);    //
         INT->refrAtoms = true;
         statusBar()->clearMessage();//showMessage("AAA");
-        QString qs = QString("Plane %1 at point (%2, %3, %4)").arg(ansPlane).arg(INT->actPoint.x,
-                                                                                 0,
-                                                                                 'f',
-                                                                                 4).arg(INT->actPoint.y, 0, 'f', 4).arg(
-                INT->actPoint.z,
-                0,
-                'f',
-                4);
+        QString qs = QString("Plane %1 at point (%2, %3, %4)")
+                .arg(ansPlane)
+                .arg(INT->actPoint.x, 0, 'f', 4)
+                .arg(INT->actPoint.y, 0, 'f', 4)
+                .arg(INT->actPoint.z, 0, 'f', 4);
         statusBar()->showMessage(qs);
         INT->outLog << qs.toStdString() << std::endl;
         scene->displayMarked();
@@ -687,10 +676,7 @@ void MainWindow::SL_millerAct() {
         INT->rotTens = rotTens;
         glm::dquat qq = glm::quat_cast(rotTens);
         osg::Quat qq1 = osg::Quat(qq.x, qq.y, qq.z, qq.w);
-        rotQuat = qq1.conj()
-                * YtoZ; //  std::cout << " qrot1.x=" << qrot1.x() << " qrot1.y=" << qrot1.y() << " qrot1.z=" << qrot1.z() << " qrot1.w=" << qrot1.w() << std::endl;
-        //std::cout << " qrot.x=" << qrot.x() << " qrot.y=" << qrot.y() << " qrot.z=" << qrot.z() << " qrot.w=" << qrot.w() << std::endl;
-        //std::cout << " rotQuat.x=" << rotQuat.x() << " rotQuat.y=" << rotQuat.y() << " rotQuat.z=" << rotQuat.z() << " rotQuat.w=" << rotQuat.w() << std::endl;
+        rotQuat = qq1.conj() * YtoZ;
         refreshScene();
         mview1->setQuat(rotQuat);
     }
@@ -832,7 +818,6 @@ void MainWindow::SL_plane() {
         mview1->setDone(false);
         mode = 0;
     }
-    return;
 }
 
 void MainWindow::SL_rectBox() {
@@ -882,7 +867,6 @@ void MainWindow::SL_rectBox() {
         mview1->setDone(false);
         mode = 0;
     }
-    return;
 }
 
 void MainWindow::SL_hexBox() {
@@ -926,7 +910,6 @@ void MainWindow::SL_hexBox() {
         mview1->setDone(false);
         mode = 0;
     }
-    return;
 }
 
 void MainWindow::SL_rombBox() {
@@ -970,7 +953,6 @@ void MainWindow::SL_rombBox() {
         mview1->setDone(false);
         mode = 0;
     }
-    return;
 }
 
 void MainWindow::SL_cylinder() {
@@ -1014,40 +996,44 @@ void MainWindow::SL_cylinder() {
         mview1->setDone(false);
         mode = 0;
     }
-    return;
 }
 
 void MainWindow::cutPlane(glm::dvec3 point) {
     glm::dvec3 c1 = glm::normalize(INT->plane * INT->crC->o2c);
     double dd = glm::dot(c1, point);
     LATT->marked.clear();
-    for(int i = 0; i < LATT->n_atoms; i++) LATT->marked[i] = ((glm::dot(c1, LATT->coords[i]) > dd) ? -1 : 1);
+    for(int i = 0; i < LATT->nAt.size(); i++) LATT->marked[i] = ((glm::dot(c1, LATT->coords[i]) > dd) ? -1 : 1);
     qApp->processEvents();
-    return;
 }
 
 void MainWindow::cutBox() {
     LATT->marked.clear();
-    if(mode == 4)
-        for(int i = 0; i < LATT->n_atoms; i++)
-            LATT->marked[i] = ((Calc::rect_box(LATT->coords[i], sizeB)) ? 1
-                                                                        : -1);// std::cout << LATT->coords[i].x << ",   " << LATT->coords[i].y << " :  " << LATT->marked[i] << std::endl;}
-    if(mode == 5)
-        for(int i = 0; i < LATT->n_atoms; i++)
+    if(mode == 4) {
+        for(int i = 0; i < LATT->nAt.size(); i++) {
+            LATT->marked[i] = ((Calc::rect_box(LATT->coords[i], sizeB)) ? 1 : -1);
+        }
+    }
+    if(mode == 5) {
+        for(int i = 0; i < LATT->nAt.size(); i++) {
             LATT->marked[i] = ((Calc::hex_box(LATT->coords[i], sizeB)) ? 1 : -1);
-    if(mode == 6)
-        for(int i = 0; i < LATT->n_atoms; i++)
+        }
+    }
+    if(mode == 6) {
+        for(int i = 0; i < LATT->nAt.size(); i++) {
             LATT->marked[i] = ((Calc::romb_box(LATT->coords[i], sizeB)) ? 1 : -1);
-    if(mode == 7)
-        for(int i = 0; i < LATT->n_atoms; i++)
+        }
+    }
+    if(mode == 7) {
+        for(int i = 0; i < LATT->nAt.size(); i++)  {
             LATT->marked[i] = ((Calc::cylinder(LATT->coords[i], sizeB)) ? 1 : -1);
+        }
+    }
     qApp->processEvents();
-    return;
 }
 
 void MainWindow::SL_togglemark() {
     mview1->setDone(true);
-    for(int i = 0; i < LATT->n_atoms; i++) LATT->marked[i] *= -1;
+    for(int i = 0; i < LATT->nAt.size(); i++) LATT->marked[i] *= -1;
     INT->refrAtoms = true;
     refreshScene(); //mview1->setQuat(rotQuat);
     mview1->setDone(false);
@@ -1084,7 +1070,9 @@ void MainWindow::SL_update() {
     mview1->setDone(true);
     INT->outLog << "SL_update()" << std::endl;
 
-    for(int i = 0; i < LATT->n_atoms; i++) LATT->coords[i] += LATT->u[i];
+    for(int i = 0; i < LATT->nAt.size(); i++) {
+        LATT->coords[i] += LATT->u[i];
+    }
     mview1->setDone(false);
     scene->displayBvect(false);
     INT->refrAtoms = true;
@@ -1098,7 +1086,9 @@ void MainWindow::SL_calcDisl() {
     std::cout << "SL_calcDisl" << std::endl;
     INT->outLog << "SL_calcDisl()" << std::endl;
     mview1->setDone(true);
-    for(int i = 0; i < LATT->n_atoms; i++) LATT->u[i] = glm::dvec3(0., 0., 0.);
+    for(int i = 0; i < LATT->nAt.size(); i++) {
+        LATT->u[i] = glm::dvec3(0., 0., 0.);
+    }
     QString cd0 = INT->currDir;
     QString cd1 = cd0.append("/data/AAA");
     QFile file(cd1);
@@ -1182,10 +1172,10 @@ void MainWindow::SL_performDislCalc(QString ff) {
             double bz = bV.z;
             std::cout << "  nm=" << nm << "  be=" << be << "  bz=" << bz << std::endl;
             LATT->du.clear();
-            LATT->du.resize(LATT->n_atoms);
+            LATT->du.resize(LATT->nAt.size());
 
             if(nm == 0) {  // classical
-                for(int i = 0; i < LATT->n_atoms; i++) {
+                for(int i = 0; i < LATT->nAt.size(); i++) {
                     glm::dvec3 coord1 = rt * LATT->coords[i];
                     glm::dvec3 dist1 = coord1 - cd;
                     if(glm::length2(dist1) < 1.e-8) {
@@ -1213,7 +1203,7 @@ void MainWindow::SL_performDislCalc(QString ff) {
                 const gsl_multiroot_fdfsolver_type *T;
                 if(nm == 2) T = gsl_multiroot_fdfsolver_hybridsj;
                 else T = gsl_multiroot_fdfsolver_newton;
-                for(int i = 0; i < LATT->n_atoms; i++) {
+                for(int i = 0; i < LATT->nAt.size(); i++) {
                     glm::dvec3 coord1 = rt * LATT->coords[i];
                     glm::dvec3 dist1 = coord1 - cd;
                     if(glm::length2(dist1) < 1.e-8) {
@@ -1288,16 +1278,17 @@ void MainWindow::SL_performDislCalc(QString ff) {
             } // if ( nm>0 )
 
 
-            for(int i = 0; i < LATT->n_atoms; i++)
-                LATT->du[i] = rtInv
-                        * LATT->du[i];// atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;}
+            for(int i = 0; i < LATT->nAt.size(); i++)
+                LATT->du[i] = rtInv * LATT->du[i];// atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;}
             sumU = glm::dvec3(0.0, 0.0, 0.0);
-            for(int i = 0; i < LATT->n_atoms; i++) sumU += LATT->du[i];
-            sumU /= double(LATT->n_atoms);
+            for(int i = 0; i < LATT->nAt.size(); i++) {
+                sumU += LATT->du[i];
+            }
+            sumU /= double(LATT->nAt.size());
             std::cout << "Dislocation nr. " << k + 1 << "     sumU = (" << sumU.x << ", " << sumU.y << ", " << sumU.z
                       << ")" << std::endl; // " << n_dislocations << "
 
-            for(int i = 0; i < LATT->n_atoms; i++) {
+            for(int i = 0; i < LATT->nAt.size(); i++) {
                 LATT->du[i] -= sumU;
                 LATT->u[i] += LATT->du[i];//u0;
 //  f_numb << i << " ***du****    " << LATT->du[i].x << "    " << LATT->du[i].y << "    " << LATT->du[i].z << std::endl;
@@ -1315,7 +1306,7 @@ void MainWindow::SL_move() {
     MoveDialog *md = new MoveDialog("Vector coordinates:");
     if(md->ok) {//std::cout << "SL_MoveAtoms:  x=" << md->vectX << "   y=" << md->vectY << "   z=" << md->vectZ << std::endl;
         if(md->rotated) rotTens = MiscFunc::quat2rot((mview1->getQuat() * ZtoY).conj());
-        for(int i = 0; i < LATT->n_atoms; i++) {
+        for(int i = 0; i < LATT->nAt.size(); i++) {
             if(md->marked && LATT->marked[i] < 0) continue;
             glm::dvec3 p1 = (md->rotated) ? rotTens * LATT->coords[i] : LATT->coords[i];
             p1 += glm::dvec3(md->vectX, md->vectY, md->vectZ);
@@ -1576,27 +1567,23 @@ void MainWindow::SL_openAtoms() {
     mview1->setDone(true);
     if(!INT->atName.empty()) {
         QString quest =
-                QString("You have opened %1 file. Do you want to close it?").arg(QString::fromStdString(INT->atName).section(
-                        '/',
-                        -1)); // QString::fromStdString(str)
-        if(QMessageBox::Yes
-                == QMessageBox(QMessageBox::Information, "WARNING", quest, QMessageBox::Yes | QMessageBox::No).exec()) {
-            std::cout << "YES\n";//{
+                QString("You have opened %1 file. Do you want to close it?")
+                .arg(QString::fromStdString(INT->atName)
+                .section('/', -1)); // QString::fromStdString(str)
+        if(QMessageBox::Yes == QMessageBox(QMessageBox::Information, "WARNING", quest, QMessageBox::Yes | QMessageBox::No).exec()) {
             moreFiles = false;
         } else {
-            std::cout << "NO\n";
             moreFiles = true;
         }
     }
-    QString cd0 = INT->currDir;//AT->
-    QFileDialog *qf = new QFileDialog(this, "Select atoms", cd0.append("/data/atoms"), "Molecules (*.xyz *.alc)");
+    QString cd0 = INT->currDir;
+    auto qf = std::make_shared<QFileDialog>(this, "Select atoms", cd0.append("/data/atoms"), "Molecules (*.xyz *.alc *.mol2)");
     qf->exec();
     if(qf->result() != 1) {
         mview1->setDone(false);
         return;
     }
     QString aname1 = qf->selectedFiles().at(0);
-    delete qf;
     std::string dateTimeString = MiscFunc::dateTime().toStdString();
     INT->outLog << "SL_openAtoms aname1  :  " << aname1.toStdString() << "   date & time is " << dateTimeString
                 << std::endl;
@@ -1605,32 +1592,32 @@ void MainWindow::SL_openAtoms() {
         mview1->setDone(false);
         return;
     }
-    if(!(aname1.contains(".xyz")) && !(aname1.contains(".alc"))) {
-        QMessageBox::warning(this,
-                             "PROBLEM",
-                             QString("openAtoms -- unknown file format"));
+    if(!(aname1.contains(".xyz")) && !(aname1.contains(".alc")) && !(aname1.contains(".mol2"))) {
+        QMessageBox::warning(this, "PROBLEM", QString("openAtoms -- unknown file format"));
         mview1->setDone(false);
         return;
     }
     else {
         if(moreFiles) {
-            int oldN = LATT->n_atoms;
-            //QString qstr = QString::fromStdString(INT->atName);//QString::fromUtf8(INT->atName.c_str());
-            INT->atName = (QString("%1 + %2").arg(QString::fromStdString(INT->atName)).arg(aname1.section('/',
-                                                                                                          -1))).toStdString();
-            readAlcXyz(aname1);
-            iAt = QString("   file: %1   %2+%3=%4 atoms  ").arg(QString::fromStdString(INT->atName)).arg(oldN).arg(
-                    LATT->n_atoms - oldN).arg(LATT->n_atoms);
+            int oldN = LATT->getNAtoms();
+            INT->atName = (QString("%1 + %2")
+                            .arg(QString::fromStdString(INT->atName))
+                            .arg(aname1.section('/', -1))).toStdString();
+            readInputFile(aname1);
+            iAt = QString("   file: %1   %2+%3=%4 atoms  ")
+                    .arg(QString::fromStdString(INT->atName))
+                    .arg(oldN).arg(LATT->getNAtoms() - oldN)
+                    .arg(LATT->getNAtoms());
             moreFiles = false;
             INT->refrMarked = false;
         } else {
             INT->atName = aname1.toStdString();
-            readAlcXyz(aname1);
-            iAt = QString("   file: %1  %2 atoms  ").arg(aname1.section('/', -1)).arg(LATT->n_atoms);
+            readInputFile(aname1);
+            iAt = QString("   file: %1  %2 atoms  ").arg(aname1.section('/', -1)).arg(LATT->getNAtoms());
         }
         infoDisplay();
         mview1->setDone(false);
-    }//  std::cout << "NO--------------***\n";
+    }
     INT->refrAtoms = true;
     refreshScene();
 }
@@ -1642,7 +1629,7 @@ void MainWindow::SL_closeAtoms() {
     strBvect = strAtom = strPoint = iAt = iStr = "";
     INT->atName = "";
     INT->hklDefined = INT->atomDefined = INT->pointDefined = INT->structureDefined = false;
-    LATT->clearL();
+    LATT->clear();
     infoDisplay();
 
     POINTS->clearP();
@@ -1731,9 +1718,7 @@ void MainWindow::SL_reset() {
 */
 }
 
-void MainWindow::readAlcXyz(QString aname1) {
-    int oldN = 0;
-    int oldB = 0;
+void MainWindow::readInputFile(const QString& aname1) {
     QFile file(aname1);
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QString qstr = QString("***  ERROR  file  %1 not found").arg(aname1);
@@ -1742,102 +1727,26 @@ void MainWindow::readAlcXyz(QString aname1) {
         return;
     }
     QTextStream in(&file);
-    QString line = in.readLine();
-    if(line.isEmpty()) {
-        QMessageBox::warning(this, "PROBLEM", "First line is empty!");
+    FormatReadResult result;
+    if(aname1.endsWith(".alc")) {
+        result = readAlc(in, aname1);
+    } else if(aname1.endsWith(".xyz")) {
+        result = readXyz(in, aname1);
+    } else if(aname1.endsWith(".mol2")) {
+        result = readMol2(in, aname1);
+    }
+    else {
+        QMessageBox::warning(this, "PROBLEM", "Unsupported input format.");
+    }
+    if(! handleFormatResult(result.getResult())) {
         return;
     }
-    QStringList fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
-    int numbAt = fields.at(0).toInt();
-    if(numbAt <= 0) {
-        QMessageBox::warning(this, "PROBLEM", "No defined atoms in this structure");
-        return;
+    Lattice lattice = result.getLattice().value();
+    if(moreFiles) {
+        LATT->append(lattice);
     }
-    bool alc_ = aname1.contains(".alc");
-    if(alc_) {
-        LATT->n_bonds = fields.at(2).toInt();
-    } else {
-        LATT->n_bonds = 0;
-        line = in.readLine();
-    }
-    if(!moreFiles) {
-        LATT->init(aname1, numbAt); //std::cout << "readAlc " << std::endl;
-    } else {
-        LATT->name =
-                QString::fromStdString(INT->atName);//QString::fromUtf8(INT->atName.c_str());//QString(INT->atName);//
-        oldN = LATT->n_atoms;
-        std::cout << "oldN=" << oldN << std::endl;
-        oldB = LATT->n_bonds;
-        LATT->n_atoms += numbAt;
-        LATT->n_marked += numbAt;
-        LATT->coords.resize(LATT->n_atoms);
-        LATT->marked.resize(LATT->n_atoms);
-        LATT->du.resize(LATT->n_atoms);
-        LATT->u.resize(LATT->n_atoms);
-        LATT->u.assign(LATT->n_atoms, glm::dvec3(0., 0., 0.));
-        LATT->du.assign(LATT->n_atoms, glm::dvec3(0., 0., 0.));
-    } // moreFiles
-    INT->outLog << " read_alc_xyz  - " << LATT->name.toStdString() << ", n_atoms=" << LATT->n_atoms << ", n_bonds="
-                << LATT->n_bonds << std::endl;
-    //LATT->n_atoms = LATT->n_marked = numbAt;
-    for(int i = oldN; i < numbAt + oldN; i++) {
-        line = in.readLine();
-        fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
-        if(alc_) fields.removeFirst();
-        QString nameA = fields.takeFirst();
-        int ak = MiscFunc::whichAtom(nameA);
-        if(ak < 0) {
-            ak = 0;
-            QMessageBox::warning(this, "PROBLEM", QString("Unidentified atom nr %1 - %2").arg(i + 1).arg(nameA));
-        }
-        if(LATT->n_k == 0) {
-            LATT->nK->push_back(ak);
-            LATT->n_k = 1;
-            LATT->kName << nameA;
-        }
-        bool sw = true;
-        for(int j = 0; j < LATT->n_k; j++) if(ak == LATT->nK.get()->at(j)) sw = false;
-        if(sw) {
-            LATT->nK->push_back(ak);
-            ++LATT->n_k;
-            LATT->kName << nameA;
-        }  //qWarning("   ... i=%d,   ak = %d,  n_k = %d", i, ak, LATT->n_k);
-        double x = fields.takeFirst().toDouble();
-        double y = fields.takeFirst().toDouble();
-        double z = fields.takeFirst().toDouble();
-        if(x < LATT->xMin) LATT->xMin = x;
-        if(x > LATT->xMax) LATT->xMax = x;
-        if(y < LATT->yMin) LATT->yMin = y;
-        if(y > LATT->yMax) LATT->yMax = y;
-        if(z < LATT->zMin) LATT->zMin = z;
-        if(z > LATT->zMax) LATT->zMax = z;
-        //LATT->coords.push_back(glm::dvec3(x, y, z));//(osg::Vec3d(x, y, z));//, static_cast<double>(ak)) );
-        //LATT->marked.push_back(1);
-        LATT->coords[i] = glm::dvec3(x, y, z);//(osg::Vec3d(x, y, z));//, static_cast<double>(ak)) );
-        LATT->marked[i] = 1;
-        LATT->nAt->push_back(ak);//LATT->nAt[i] = ak;
-    }
-    std::cout << " YYYY-XXXX\n";
-    osg::Vec3d v = osg::Vec3d(0.5 * (LATT->xMin + LATT->xMax),
-                              0.5 * (LATT->yMin + LATT->yMax),
-                              0.5 * (LATT->zMin + LATT->zMax));
-    std::string dateTimeString = MiscFunc::dateTime().toStdString();
-    INT->outLog << " READ : centrum = (" << v.x() << ", " << v.y() << ", " << v.z() << ")    Date & time is "
-                << dateTimeString << std::endl; //.toStdString();
-    LATT->scDim = std::max(LATT->xMax - LATT->xMin, std::max(LATT->yMax - LATT->yMin, LATT->zMax - LATT->zMin));
-    if(alc_) {
-        for(int i = oldB; i < LATT->n_bonds + oldB; i++) {
-            line = in.readLine();
-            fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts); //int nf = fields.size();
-            int i1 = fields.at(1).toInt();
-            int i2 = fields.at(2).toInt();
-            if(moreFiles) {
-                i1 += oldN;
-                i2 += oldN;
-            }
-            LATT->bond1->push_back(i1);
-            LATT->bond2->push_back(i2);
-        }
+    else {
+        LATT = std::make_unique<Lattice>(lattice);
     }
     qApp->processEvents();
 }
@@ -1874,27 +1783,24 @@ void MainWindow::SL_genAtoms() {
     }
     mview1->setDone(true);
     QStringList quest, sug, ans, fields;
-    QString aa;
     QString descr = ("<h4>X, Y, Z ranges</h4><br>Cell nr.(0, 0, 0) is at coordinates(0, 0, 0)");
     quest << "Lattice name" << "X begin" << "X end" << "Y begin" << "Y end" << "Z begin" << "Z end";
     sug << "" << "0" << "" << "0" << "" << "0" << "";
-    QuestionForm1 *qf = new QuestionForm1("Generated structure definition", descr, quest, sug, ans);
+    auto qf = std::make_unique<QuestionForm1>("Generated structure definition", descr, quest, sug, ans);
     mview1->setDone(false);
-    if(!qf->ok) return;
+    if(!qf->ok) {
+        return;
+    }
     int xb = ans.at(1).toInt();
     int xe = ans.at(2).toInt();
     int yb = ans.at(3).toInt();
     int ye = ans.at(4).toInt();
     int zb = ans.at(5).toInt();
     int ze = ans.at(6).toInt();
-    LATT->n_atoms = LATT->n_marked = Gener::genLattice(xb,
-                                                       yb,
-                                                       zb,
-                                                       xe,
-                                                       ye,
-                                                       ze);// std::cout << "SL_genAtoms   n_atoms=" << LATT->n_atoms << std::endl;
-    delete qf;
-    iAt = QString(" file: %1  %2 atoms  ").arg(LATT->name).arg(LATT->n_atoms + 1);
+    auto generationResult = Gener::genLattice(xb, yb, zb, xe, ye, ze);
+    LATT = std::make_unique<Lattice>(generationResult);
+
+    iAt = QString(" file: %1  %2 atoms  ").arg(LATT->name).arg(LATT->getNAtoms() + 1);
     std::string dateTimeString = MiscFunc::dateTime().toStdString();
     INT->outLog << "Generated atoms " << iAt.toStdString() << " Date & time is " << dateTimeString << std::endl;
     LATT->name = ans.at(0);
@@ -1902,7 +1808,6 @@ void MainWindow::SL_genAtoms() {
     INT->atName = LATT->name.toStdString();  //iAt = LATT->name.section('/', -1);
     INT->refrAtoms = true;
     refreshScene();
-    return;
 }
 
 void MainWindow::SL_openFem() {
@@ -1941,8 +1846,7 @@ void MainWindow::SL_computeFem() {
     INT->whichFem = 2;
     mview1->setDone(true);
     QString cd0 = INT->currDir;
-    QFileDialog
-            *qf = new QFileDialog(this, "Select extern FEM data", cd0.append("/data/extfems"), "data (*.txt *.o *.i)");
+    QFileDialog *qf = new QFileDialog(this, "Select extern FEM data", cd0.append("/data/extfems"), "data (*.txt *.o *.i)");
     qf->exec();
     if(qf->result() != 1) {
         mview1->setDone(false);
@@ -1950,7 +1854,6 @@ void MainWindow::SL_computeFem() {
     }
     QString femname = qf->selectedFiles().at(0);
     delete qf;
-// qWarning("SL_computeFem femname  :  %s", femname.toLatin1().data() );                                                
     if(femname.isEmpty()) {
         mview1->setDone(false);
         return;
@@ -1968,7 +1871,6 @@ void MainWindow::SL_computeFem() {
 }
 
 void MainWindow::SL_closeFem() {
-//std::cout << "SL_closeFem" << std::endl;
     mview1->setDone(true);
     INT->whichFem = 0;
     INT->fem = "";
@@ -1988,67 +1890,43 @@ void MainWindow::SL_closeFem() {
 }
 
 void MainWindow::SL_saveAtoms() {
-    std::cout << "SL_saveAtoms" << std::endl;
-    if(LATT->n_atoms == 0) {
+    if(LATT->getNAtoms() == 0) {
         QMessageBox::warning(this, "PROBLEM", "No atoms in this structure!");
         return;
     }
     mview1->setDone(true);
-    QString fname;
-    SaveDialog *sd = new SaveDialog("File name:");
+    auto sd = std::make_unique<SaveDialog>("File name:");
     sd->exec();
-    if(sd->ok) {// std::cout << "SL_saveAtoms:  fname=" << sd->fileName.toStdString() << std::endl;
-        if(!(sd->fileName.contains(".xyz"))) {
-            QMessageBox::warning(this, "PROBLEM", "This is not '.xyz' file format");
-            mview1->setDone(false);
-            delete sd;
-            return;
-        }
-        std::ofstream out(sd->fileName.toStdString().c_str());//std::cout << "SL_saveAtoms:  out created" << std::endl;
+    if(sd->ok) {
+        std::ofstream out(sd->fileName.toStdString().c_str());
         if(!out.is_open()) {
-            QMessageBox::warning(this, "PROBLEM", QString("Cannot open file for writing"));
+            QMessageBox::warning(this, "PROBLEM", "Cannot open file for writing");
             mview1->setDone(false);
-            delete sd;
             return;
         }
-        if(sd->rotated) rotTens = MiscFunc::quat2rot((mview1->getQuat() * ZtoY).conj());
+        // Saving.
+        Lattice toSave(*LATT);
         if(sd->marked) {
-            int nAtoms = 0;
-            for(int i = 0; i < LATT->n_atoms; i++)
-                if(LATT->marked[i] > 0)
-                    nAtoms++;//std::cout <<  "   sd->marked   nAtoms=" << nAtoms << std::endl;
-            if(nAtoms == 0) {
-                QMessageBox::warning(this, "PROBLEM", "No marked atoms in this structure!");
-                mview1->setDone(false);
-                delete sd;
-                return;
-            }
-            out << nAtoms << std::endl << std::endl;
-            for(int i = 0; i < LATT->n_atoms; i++) {
-                if(LATT->marked[i] > 0) {
-                    int numbAt = LATT->nAt.get()->at(i);
-                    glm::dvec3 p1 = (sd->rotated) ? rotTens * LATT->coords[i] : LATT->coords[i];
-                    out << setw(5) << AT->namea.at(numbAt).toStdString() << setw(15) << p1.x << setw(15) << p1.y
-                        << setw(15) << p1.z << std::endl;
-                } // if
-            }   // for
-        } else {  // !sd->marked
-            out << LATT->n_atoms << std::endl << std::endl;
-            for(int i = 0; i < LATT->n_atoms; i++) {
-                int numbAt = LATT->nAt.get()->at(i);
-                glm::dvec3 p1 = (sd->rotated) ? rotTens * LATT->coords[i] : LATT->coords[i];
-                out << setw(5) << AT->namea.at(numbAt).toStdString() << setw(15) << p1.x << setw(15) << p1.y << setw(15)
-                    << p1.z << std::endl;
-            }
+            toSave = toSave.getMarkedOnly();
         }
-        out.close();
-        std::string dateTimeString = MiscFunc::dateTime().toStdString();
-        INT->outLog << "Saved atoms: " << sd->fileName.toStdString() << "   date & time = " << dateTimeString
-                    << std::endl;
-        delete sd;
-        //std::cout << "SL_saveAtoms 2" << std::endl;
-    } // sd->ok
-    mview1->setDone(false);
+        if(sd->rotated) {
+            rotTens = MiscFunc::quat2rot((mview1->getQuat() * ZtoY).conj());
+            toSave = toSave.rotate(rotTens);
+        }
+        if(sd->fileName.endsWith(".xyz")) {
+            writeXyz(out, toSave);
+        } else if(sd->fileName.endsWith(".mol2")) {
+            writeMol2(out, toSave);
+        } else {
+            QMessageBox::warning(this, "PROBLEM", ("Unsupported output format: " + sd->fileName.toStdString()).c_str());
+            mview1->setDone(false);
+            return;
+        }
+        INT->outLog << "Saved atoms: " << sd->fileName.toStdString() << std::endl;
+    }
+    else {
+        mview1->setDone(false);
+    }
 }
 
 void MainWindow::SL_chooseSettings() {
@@ -2069,8 +1947,7 @@ void MainWindow::SL_chooseSettings() {
         if(item.compare(QString("Default")) == 0) {
             INT->sett = "/data/internal/defaults0.txt";
             if(INT->settDefined) {
-                delete AT;
-                AT = new Atoms();
+                AT = std::make_unique<Atoms>();
                 INT->refrAtoms = true;
             }//&& INT->nr!=-1 )
             INT->readDefaults(INT->sett);
@@ -2131,7 +2008,9 @@ void MainWindow::SL_chooseStructure() {
                 INT->crCNum = i;
                 INT->structureDefined = true;
                 iStr = QString(" Structure: %1").arg(item);
-                if(LATT->n_atoms <= 0) iAt = " ---------- ";
+                if(LATT->nAt.size() <= 0) {
+                    iAt = " ---------- ";
+                }
                 infoDisplay();
                 std::string dateTimeString = MiscFunc::dateTime().toStdString();
                 INT->outLog << iStr.toStdString() << "   date & time = " << dateTimeString << std::endl;
@@ -2141,7 +2020,6 @@ void MainWindow::SL_chooseStructure() {
         }
     mview1->setDone(false);
     INT->structureDefined = false;
-    return;
 }
 
 void MainWindow::SL_editStruct() {
@@ -2205,11 +2083,9 @@ void MainWindow::setSliders(double v1, double v2, double v3, double v4, double v
     connect(mview1, SIGNAL(SIG_cyChanged(QString)), mySlider, SLOT(setText(QString)));
     connect(mySlider, SIGNAL(returnPressed()), this, SLOT(SL_setMySlider()));
 
-    if(!connect(mview1, SIGNAL(SIG_actPoint()), this, SLOT(SL_actPoint())))
-        QMessageBox::warning(this,
-                             "PROBLEM",
-                             "CONNECTION ERROR");
-
+    if(!connect(mview1, SIGNAL(SIG_actPoint()), this, SLOT(SL_actPoint()))) {
+        QMessageBox::warning(this, "PROBLEM", "CONNECTION ERROR");
+    }
     SL_setPsiSlider();
 }
 
@@ -2295,6 +2171,18 @@ bool MainWindow::eventFilter(QObject *obj, QEvent *event) {
     } else {
         return QObject::eventFilter(obj, event);
     }
+}
+
+bool MainWindow::handleFormatResult(const FormatResult &result) {
+    if(result.hasErrors()) {
+        QMessageBox::warning(this, "PROBLEM", ("Error: " + result.getErrorMessage()).c_str());
+        return false;
+    }
+    if(result.hasWarnings()) {
+        QMessageBox::warning(this, "PROBLEM", ("Warning: " + result.getWarningMessage()).c_str());
+        return true;
+    }
+    return true;
 }
 
 /*

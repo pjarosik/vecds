@@ -35,6 +35,7 @@ cmake_minimum_required (VERSION 2.8.12)
 project (vecds LANGUAGES CXX Fortran)
 set (TARGET vecds)
 set (VECDS_INCLUDES ${CMAKE_SOURCE_DIR}/include)
+set(CMAKE_CXX_STANDARD 17)
 
 include (FindPackageHandleStandardArgs)
 
@@ -74,10 +75,10 @@ set (SOURCES
   source/atoms.cpp  
   source/dialogs.cpp  
   source/helpbrowser.cpp  
-  source/lattice.cpp   
-  source/mainwindow.cpp  
+  source/mainwindow.cpp
   source/osgscene.cpp  
   source/picking.cpp
+  source/formats.cpp
 )
 
 ######################################################################
@@ -88,7 +89,8 @@ set (VECDS_INCLUDES
   include/dialogs.h  
   include/helpbrowser.h  
   include/mainwindow.h  
-  include/osgscene.h  
+  include/osgscene.h
+  include/formats.h
 )
 qt_wrap_cpp (VECDS_INCLUDES_MOC ${VECDS_INCLUDES})
 

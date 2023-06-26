@@ -1,7 +1,7 @@
 #include "../include/dialogs.h"
 #include "../include/internal.h"
+#include "globals.h"
 
-extern Internal *INT;
 // Pomocnicze klasy - okienka dialogowe
 
 QuestionForm1::QuestionForm1(QString title, QString descr, QStringList quest,

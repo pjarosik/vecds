@@ -1,9 +1,9 @@
 #include "../include/mainwindow.h"
 
-Atoms *AT;
-Lattice *LATT;
-Internal *INT;
-Points *POINTS;
+std::unique_ptr<Atoms> AT;
+std::unique_ptr<Lattice> LATT;
+std::unique_ptr<Internal> INT;
+std::unique_ptr<Points> POINTS;
 #include "../FEMApp//FEMLib/IntegrationManager.h"
 #include "../FEMApp/FEMLib/IntegrationPoints.h"
 #include "../FEMApp/FEMAppLib/FEMProject.h"
@@ -97,10 +97,10 @@ int main(int argc, char *argv[])
 
   QLocale::setDefault(QLocale::C);
   
-  AT = new Atoms();
-  INT = new Internal();
-  LATT = new Lattice();
-  POINTS = new Points();  
+  AT = std::make_unique<Atoms>();
+  INT = std::make_unique<Internal>();
+  LATT = std::make_unique<Lattice>();
+  POINTS = std::make_unique<Points>();
   
   if ( argc>1 ) INT->atName = std::string(argv[1]);
 

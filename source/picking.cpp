@@ -1,9 +1,9 @@
 #include "../include/picking.h"
 
 #include  <iostream>
+#include "globals.h"
 
 //extern osg::Vec4 colWhite;
-extern Internal *INT;
 
 bool PickHandler::handle( const osgGA::GUIEventAdapter& ea, osgGA::GUIActionAdapter& aa )
 {

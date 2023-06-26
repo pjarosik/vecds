@@ -32,6 +32,7 @@
 #include "calc.h"
 #include "simplepad.h"
 #include "helpbrowser.h"
+#include "formats.h"
 
 //#include "../FEMApp/FEMAppLib/FEMAppInterface.h"
 
@@ -113,7 +114,7 @@ private:
     //void keyPressEvent(QKeyEvent *keyEv);
     //void contextMenuEvent(QContextMenuEvent *event);
     void addPOINTS(); //int nr);
-    void readAlcXyz(QString aname1);
+    void readInputFile(const QString& aname1);
     void refreshScene();
     void refreshViewer();
     void infoDisplay();
@@ -257,6 +258,8 @@ private slots:
     void SL_rombBox();
     void SL_cylinder();
     void SL_togglemark();
+
+    bool handleFormatResult(const FormatResult &result);
 };
 
 #endif // MAINWINDOW_H

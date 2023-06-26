@@ -2,9 +2,8 @@
 #include "../include/atoms.h"
 #include "../include/lattice.h"
 
-extern Atoms *AT;
-extern Internal *INT;
-extern Lattice *LATT;
+#include "globals.h"
+
 
 QString MiscFunc::dateTime()
 {
@@ -79,7 +78,7 @@ int MiscFunc::whichAtom(const QString atom)
 { 
   QString res;
   res.clear();
-  for (int i=0; i<atom.size(); i++) {
+  for (int i = 0; i < atom.size(); i++) {
       QChar ch = atom.at(i);
       if ( ch.isLetter() ) {
           if ( i==0 )  ch.toUpper();
@@ -92,6 +91,7 @@ int MiscFunc::whichAtom(const QString atom)
 
 int MiscFunc::whichString(const QString str, const QStringList lst)
 {
+    // TODO map instead of linear search
   for (int i=0; i<lst.size(); i++) if ( str.compare(lst.at(i), Qt::CaseSensitive)==0 ) return i;
   return -666;
 }  

@@ -1,7 +1,7 @@
 #include <QtWidgets>
-#include "../include/helpbrowser.h" 
+#include "../include/helpbrowser.h"
+#include "globals.h"
 
-extern Internal *INT;
 // pomocnicza klasa - przeglądarka plików pomocy
 
 HelpBrowser::HelpBrowser(const QString &path, const QString &page, QWidget *parent)

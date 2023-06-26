@@ -3,7 +3,7 @@
 #include "../include/internal.h"
 #include <iostream>
 
-extern Internal *INT;
+#include "globals.h"
 
 SimplePad::SimplePad(QString s1, QString s2, QWidget *parent) : QWidget(parent)
 {

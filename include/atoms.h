@@ -9,9 +9,6 @@ class Atoms
  friend class Internal;
 	
  public:	
-  /**
-   * Constructor.
-   */
 Atoms();
   
   friend class MainWindow;
@@ -20,6 +17,10 @@ Atoms();
   friend class MiscFunc;
   friend class Gener;
   friend class Calc;
+
+  QString getName(unsigned number) {
+      return namea.at(number);
+  }
   
  private: 
   

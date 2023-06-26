@@ -2,8 +2,7 @@
 #include "../include/atoms.h"
 #include "../include/internal.h"
 
-extern Atoms *AT;
-extern Internal *INT;
+#include "globals.h"
 
 
  Points::Points()

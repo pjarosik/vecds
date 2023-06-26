@@ -1,8 +1,6 @@
-#include <filesystem>
-
 #include "../include/atoms.h"
-
-extern Internal *INT;
+#include <filesystem>
+#include "globals.h"
 
 Atoms::Atoms()
 {
