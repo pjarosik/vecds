@@ -1798,8 +1798,26 @@ void MainWindow::SL_genAtoms() {
     int zb = ans.at(5).toInt();
     int ze = ans.at(6).toInt();
     auto generationResult = Gener::genLattice(xb, yb, zb, xe, ye, ze);
-    LATT = std::make_unique<Lattice>(generationResult);
+    // Generate bonds using obabel.
+    std::stringstream xyzStream;
+    writeXyz(xyzStream, generationResult);
+    INT->outLog << "Starting obabel in order to generate bonds..." << std::endl;
 
+    QProcess echo, obabel;
+    obabel.setStandardOutputProcess(&echo);
+    echo.start(QString("echo '%1'").arg(xyzStream.str().c_str()));
+    obabel.start("obabel -ixyz -osy2");
+    echo.waitForFinished();
+    obabel.waitForFinished();
+    if(obabel.exitStatus() != QProcess::NormalExit) {
+        auto errorMsg = QString("The obabel program ended with the error code: %1, std err: %2. "
+                                "The lattice will have no bonds defined.")
+                                        .arg(obabel.exitCode()).arg(QString(obabel.readAllStandardOutput()));
+        QMessageBox::warning(this, "PROBLEM", errorMsg);
+    } else {
+        INT->outLog << "Properly executed obabel, output: " << QString(obabel.readAllStandardOutput()).toStdString() << std::endl;
+    }
+    LATT = std::make_unique<Lattice>(generationResult);
     iAt = QString(" file: %1  %2 atoms  ").arg(LATT->name).arg(LATT->getNAtoms() + 1);
     std::string dateTimeString = MiscFunc::dateTime().toStdString();
     INT->outLog << "Generated atoms " << iAt.toStdString() << " Date & time is " << dateTimeString << std::endl;
