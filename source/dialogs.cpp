@@ -40,7 +40,7 @@ QuestionForm1::QuestionForm1(QString title, QString descr, QStringList quest,
 
    this->exec();
    ok = true;
-   
+
    if ( this->result()==1 )
       for (int i=0; i<numQuest; i++) ans << qEdit.at(i)->text();
    else                     ok = false;
@@ -288,4 +288,59 @@ void MoveDialog::checkBox2Changed(bool state)
 {
    //std::cout << "CB2 - " << state << std::endl;
    marked = state;
+}
+
+CreateLatticeDialog::CreateLatticeDialog(QString title, QString descr, QStringList quest,
+                                         QStringList sug, QStringList &ans, QWidget *parent) : QDialog(parent)
+{
+    this->setStyleSheet("QLineEdit { background-color: yellow }");
+    int numQuest = quest.count();
+    setWindowTitle(title);
+    //setAttribute(Qt::WA_DeleteOnClose);//   this->setStyleSheet("QLineEdit { background-color: yellow }");
+    for (int i=0; i<numQuest; i++)  {
+        qEdit.push_back(new QLineEdit(sug.at(i)));
+        QLabel *label = new QLabel(quest.at(i));
+        label->setFrameStyle(QFrame::NoFrame);
+        label->setTextFormat(Qt::RichText);
+        labels.push_back(label);
+    }
+    QDialogButtonBox *buttonBox = new QDialogButtonBox;
+    buttonBox->addButton(tr("OK"), QDialogButtonBox::AcceptRole);
+    buttonBox->addButton(tr("Cancel"), QDialogButtonBox::RejectRole);
+    connect(buttonBox, SIGNAL(accepted()), this, SLOT(accept()));
+    connect(buttonBox, SIGNAL(rejected()), this, SLOT(reject()));
+
+    QVBoxLayout *mainLayout = new QVBoxLayout;
+    if ( !(descr.isEmpty()) ) {
+        QLabel *lab0 = new QLabel(descr);
+        lab0->setFrameStyle(QFrame::NoFrame);
+        lab0->setTextFormat(Qt::RichText);
+        mainLayout->addWidget(lab0);
+    }
+    QFormLayout *layout = new QFormLayout;
+    for (int i=0; i<numQuest; i++) layout->addRow(labels.at(i), qEdit.at(i));
+    // Create bonds checkbox
+    QLabel *createBondsLabel = new QLabel("Create bonds");
+    this->createBondsCheckBox = new QCheckBox();
+    createBondsCheckBox->setCheckState(Qt::Checked);
+    labels.push_back(createBondsLabel);
+    layout->addRow(createBondsLabel, createBondsCheckBox);
+    mainLayout->addLayout(layout);
+    mainLayout->addWidget(buttonBox);
+    setLayout(mainLayout);
+
+    this->exec();
+    ok = true;
+
+    if (this->result() == 1) {
+        for (int i=0; i<numQuest; i++) {
+            ans << qEdit.at(i)->text();
+        }
+        this->createBonds = createBondsCheckBox->checkState() == Qt::Checked;
+    }
+    else {
+        ok = false;
+    }
+    qEdit.clear();
+    labels.clear();
 }

@@ -92,6 +92,27 @@ class MoveDialog : public QDialog
     void checkBox1Changed(bool);
     void checkBox2Changed(bool);  
 };
+
+class CreateLatticeDialog : public QDialog
+{
+Q_OBJECT
+
+public:
+    CreateLatticeDialog(QString title, QString descr, QStringList quest,
+                  QStringList sug, QStringList &ans, QWidget *parent = 0);
+    bool ok;
+
+    bool isCreateBonds() const {
+        return createBonds;
+    }
+
+private:
+    QLabel *lab0;
+    std::vector<QLabel *> labels;
+    std::vector<QLineEdit *> qEdit;
+    QCheckBox *createBondsCheckBox;
+    bool createBonds;
+};
 /*
 class QuestionMessageDialog : public Dialog
 {

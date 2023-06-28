@@ -1786,7 +1786,7 @@ void MainWindow::SL_genAtoms() {
     QString descr = ("<h4>X, Y, Z ranges</h4><br>Cell nr.(0, 0, 0) is at coordinates(0, 0, 0)");
     quest << "Lattice name" << "X begin" << "X end" << "Y begin" << "Y end" << "Z begin" << "Z end";
     sug << "" << "0" << "" << "0" << "" << "0" << "";
-    auto qf = std::make_unique<QuestionForm1>("Generated structure definition", descr, quest, sug, ans);
+    auto qf = std::make_unique<CreateLatticeDialog>("Generated structure definition", descr, quest, sug, ans);
     mview1->setDone(false);
     if(!qf->ok) {
         return;
@@ -1798,26 +1798,48 @@ void MainWindow::SL_genAtoms() {
     int zb = ans.at(5).toInt();
     int ze = ans.at(6).toInt();
     auto generationResult = Gener::genLattice(xb, yb, zb, xe, ye, ze);
-    // Generate bonds using obabel.
-    std::stringstream xyzStream;
-    writeXyz(xyzStream, generationResult);
-    INT->outLog << "Starting obabel in order to generate bonds..." << std::endl;
-
-    QProcess echo, obabel;
-    obabel.setStandardOutputProcess(&echo);
-    echo.start(QString("echo '%1'").arg(xyzStream.str().c_str()));
-    obabel.start("obabel -ixyz -osy2");
-    echo.waitForFinished();
-    obabel.waitForFinished();
-    if(obabel.exitStatus() != QProcess::NormalExit) {
-        auto errorMsg = QString("The obabel program ended with the error code: %1, std err: %2. "
-                                "The lattice will have no bonds defined.")
-                                        .arg(obabel.exitCode()).arg(QString(obabel.readAllStandardOutput()));
-        QMessageBox::warning(this, "PROBLEM", errorMsg);
+    if(qf->isCreateBonds()) {
+        // Generate bonds using obabel.
+        std::ofstream xyzStream{"/tmp/vecds_obabel.xyz", std::ios::trunc};
+        writeXyz(xyzStream, generationResult);
+        xyzStream.close();
+        INT->outLog << "Starting obabel in order to generate bonds..." << std::endl;
+        QProcess obabel;
+        obabel.start("obabel /tmp/vecds_obabel.xyz -ixyz -osy2");
+        iStr = "Running babel to generate lattice bonds...";
+        iAt = "";
+        infoDisplay();
+        QApplication::processEvents();
+        // TODO avoid long running tasks in the main thread
+        obabel.waitForFinished(-1);
+        infoDisplay();
+        iStr = "";
+        iAt = "";
+        int exitCode = obabel.exitCode();
+        std::string err = QString(obabel.readAllStandardError()).trimmed().toStdString();
+        bool isError = err != "1 molecule converted";
+        if(obabel.exitStatus() != QProcess::NormalExit || isError || exitCode) {
+            std::string out = QString(obabel.readAllStandardOutput()).trimmed().toStdString();
+            auto errorMsg = QString("The obabel program ended with the error code: %1, std err: %2. "
+                                    "The lattice will have no bonds defined. Standard output: %3")
+                    .arg(exitCode)
+                    .arg(err.c_str())
+                    .arg(out.c_str());
+            QMessageBox::warning(this, "PROBLEM", errorMsg);
+            LATT = std::make_unique<Lattice>(std::move(generationResult));
+        } else {
+            auto inStream = QTextStream(obabel.readAllStandardOutput());
+            auto result = readMol2(inStream, QString("generated")); // TODO memory?
+            if(result.getResult().hasErrors()) {
+                QMessageBox::warning(this, "PROBLEM", "Babel generated incorrect SYBYL MOL2 file.");
+                return;
+            }
+            LATT = std::make_unique<Lattice>(result.getLattice().value());
+        }
     } else {
-        INT->outLog << "Properly executed obabel, output: " << QString(obabel.readAllStandardOutput()).toStdString() << std::endl;
+        LATT = std::make_unique<Lattice>(std::move(generationResult));
     }
-    LATT = std::make_unique<Lattice>(generationResult);
+
     iAt = QString(" file: %1  %2 atoms  ").arg(LATT->name).arg(LATT->getNAtoms() + 1);
     std::string dateTimeString = MiscFunc::dateTime().toStdString();
     INT->outLog << "Generated atoms " << iAt.toStdString() << " Date & time is " << dateTimeString << std::endl;
