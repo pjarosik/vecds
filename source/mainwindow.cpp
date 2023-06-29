@@ -20,6 +20,7 @@
 #include "../include/mainwindow.h"
 #include <glm/gtx/norm.hpp>
 #include <iostream>
+#include <memory>
 #include "../include/formats.h"
 #include "globals.h"
 
@@ -1154,7 +1155,7 @@ void MainWindow::SL_performDislCalc(QString ff) {
         QString line = in.readLine(); //++nl;  std::cout << " nl=" << nl << "   " << line.toStdString() << std::endl;
         if(line.isEmpty() || (line.at(0) == '/' && line.at(1) == '/')) continue;
         if(line.at(0) == '!' && line.at(1) == '!') {
-            QStringList fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+            QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
             //int nf = fields.size(); for (int i=0; i<nf; i++) std::cout << i << ":" << fields.at(i).toStdString() << "   $$   "; std::cout << std::endl;//std::string s = fields.at(3).toStdString();
             int nm = 0;
             int k =

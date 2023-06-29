@@ -35,7 +35,6 @@ cmake_minimum_required (VERSION 2.8.12)
 project (vecds LANGUAGES CXX Fortran)
 set (TARGET vecds)
 set (VECDS_INCLUDES ${CMAKE_SOURCE_DIR}/include)
-set(CMAKE_CXX_STANDARD 17)
 
 include (FindPackageHandleStandardArgs)
 

@@ -17,7 +17,7 @@ FormatReadResult readAlc(QTextStream &in, const QString &name) {
         return {std::nullopt, validationResultBuilder.build()};
     }
 
-    QStringList fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+    QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
     int nAtoms = fields.at(0).toInt();
     if(nAtoms <= 0) {
         validationResultBuilder.addError("No defined atoms in this structure");
@@ -27,7 +27,7 @@ FormatReadResult readAlc(QTextStream &in, const QString &name) {
     lattice.init(name, nAtoms);
     for(int i = 0; i < nAtoms; ++i) {
         line = in.readLine();
-        fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+        fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
         fields.removeFirst();
         QString nameA = fields.takeFirst();
         int ak = MiscFunc::whichAtom(nameA);
@@ -48,7 +48,7 @@ FormatReadResult readAlc(QTextStream &in, const QString &name) {
     }
     for(int i = 0; i < nBonds; ++i) {
         line = in.readLine();
-        fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+        fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
         int i1 = fields.at(1).toInt();
         int i2 = fields.at(2).toInt();
         lattice.addBond1(i1);
@@ -72,7 +72,7 @@ FormatReadResult readXyz(QTextStream &in, const QString &name) {
         return {std::nullopt, validationResultBuilder.build()};
     }
 
-    QStringList fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+    QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
     int nAtoms = fields.at(0).toInt();
     if(nAtoms <= 0) {
         validationResultBuilder.addError("No defined atoms in this structure");
@@ -84,7 +84,7 @@ FormatReadResult readXyz(QTextStream &in, const QString &name) {
     lattice.init(name, nAtoms);
     for(int i = 0; i < nAtoms; ++i) {
         line = in.readLine();
-        fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+        fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
         QString nameA = fields.takeFirst();
         int ak = MiscFunc::whichAtom(nameA);
         if(ak < 0) {
@@ -132,7 +132,7 @@ FormatReadResult readMol2(QTextStream &in, const QString &name) {
     in.readLine(); // Name, ignore.
 
     QString line = in.readLine();
-    QStringList fields = line.trimmed().split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+    QStringList fields = line.trimmed().split(QRegExp("\\s+"), QString::SkipEmptyParts);
     int nAtoms = fields.at(0).toInt();
     int nBonds = fields.at(1).toInt();
     if(nAtoms <= 0) {
@@ -148,7 +148,7 @@ FormatReadResult readMol2(QTextStream &in, const QString &name) {
     lattice.init(name, nAtoms);
     for(int i = 0; i < nAtoms; ++i) {
         line = in.readLine();
-        fields = line.trimmed().split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+        fields = line.trimmed().split(QRegExp("\\s+"), QString::SkipEmptyParts);
         QString nameA = fields.at(1);
         int ak = MiscFunc::whichAtom(nameA);
         if(ak < 0) {
@@ -167,7 +167,7 @@ FormatReadResult readMol2(QTextStream &in, const QString &name) {
     in.readLine(); // @<TRIPOS>BOND
     for(int i = 0; i < nBonds; ++i) {
         line = in.readLine();
-        fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);
+        fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
         // MOL2 has numbering starting from 1.
         int i1 = fields.at(1).toInt();
         int i2 = fields.at(2).toInt();

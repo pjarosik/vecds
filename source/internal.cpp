@@ -120,7 +120,7 @@ std::cout << " file=" << sett.toStdString() << std::endl;
 //  std::cout << line.toStdString() << std::endl;
      if ( line.isEmpty() || (line.at(0)=='/' && line.at(1)=='/') ) continue;
      if ( line.at(0)=='!' && line.at(1)=='!' ) {
-        QStringList fields = line.split(QRegExp("\\s+"), Qt::SkipEmptyParts);//line.split(' ', QString::SkipEmptyParts);
+        QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);//line.split(' ', QString::SkipEmptyParts);
         int what = MiscFunc::whichString(fields.at(1), words);
         if ( fields.size()<3 || what<0 ) {  std::cout << " readDefaults: error at line " << nl << std::endl; return false;  }
 	switch ( what ) {

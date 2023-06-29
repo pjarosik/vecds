@@ -1,7 +1,10 @@
 #ifndef INCLUDE_FORMATS_H
 #define INCLUDE_FORMATS_H
 
+#include <optional>
+
 #include "lattice.h"
+
 
 class FormatResult {
 public:
