@@ -72,6 +72,7 @@ public:
     void showOneAtom(int ind);
     void displayBvect(bool sw);
     void displayTBeam(bool sw);
+    void displayDisplacements();
     void displayMarked();
     double fxMin, fxMax, fyMin, fyMax, fzMin, fzMax;
     

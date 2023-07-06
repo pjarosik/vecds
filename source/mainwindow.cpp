@@ -1083,6 +1083,9 @@ void MainWindow::SL_update() {
     mview1->setMatrix(mat);
     scene->displayTBeam(true);
     scene->displayBvect(true);
+    // Show displacements
+    scene->displayDisplacements();
+
 }
 
 void MainWindow::SL_calcDisl() {

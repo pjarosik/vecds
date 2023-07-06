@@ -139,10 +139,8 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms() {
     for (auto &ak: LATT->nK) {
         float r = INT->radFactor * AT->a_rad1[ak];
         QString aN = AT->namea.at(ak);
-        //std::cout << " i=" << i << "     ak=" << ak << "   namea " << aN.toStdString() << std::endl;
         osg::Vec4 color = AT->a_colors[ak];
         if (INT->alphaAt < 1.0) color.w() = INT->alphaAt;
-        //std::cout << " ak=" << ak << "   r=" << r << "     red=" << color.x() << "     alfa=" << color.w() << std::endl;
         osg::ref_ptr<osg::Geometry> draw = makeSphere(r, INT->sphSlices, INT->sphStacks, color);
         for (int j = 0; j < LATT->getNAtoms(); j++) {
             if (LATT->marked[j] < 0)
@@ -208,6 +206,28 @@ void OsgScene::displayTBeam(bool sw) {
         m_worldPoints->addChild(
                 drawTBeam(pos, MiscFunc::convert(glm::normalize(dislocationLineVec)), 1, 0.1, beamLength,
                           osg::Vec4(90./255., 39./255., 41./255., 0.3)));
+    }
+    m_worldReferenceFrame.get()->addChild(m_worldPoints.get());
+    m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
+}
+
+void OsgScene::displayDisplacements() {
+    m_worldPoints = new osg::MatrixTransform;
+    osg::StateSet *set = m_worldPoints->getOrCreateStateSet();
+    set->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+    set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON);
+
+    for(int i = 0; i < LATT->nAt.size(); i++) {
+        glm::dvec3 u = LATT->u[i];
+        auto uNorm = glm::normalize(u);
+        glm::dvec3 pos = LATT->coords[i];
+        double length = glm::length(u);
+        double radius = INT->axRad*length;
+        int ak = LATT->nAt.at(i);
+        float atomRadius = INT->radFactor * AT->a_rad1[ak];
+        m_worldPoints->addChild(
+                drawArrow(MiscFunc::convert(pos-uNorm*(length+atomRadius)), MiscFunc::convert(uNorm), length, radius, INT->axPr1, INT->axPr2,
+                          osg::Vec4(1, 1, 0.0, 0.8)));
     }
     m_worldReferenceFrame.get()->addChild(m_worldPoints.get());
     m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
