@@ -71,6 +71,7 @@ public:
     void displayPlane(glm::dmat3 rotTens, int nA);
     void showOneAtom(int ind);
     void displayBvect(bool sw);
+    void displayTBeam(bool sw);
     void displayMarked();
     double fxMin, fxMax, fyMin, fyMax, fzMin, fzMax;
     

@@ -9,8 +9,10 @@ glm::dmat3 Calc::rotation_tensor(glm::dvec3 mV, glm::dvec3 mP)
    glm::dvec3 s = glm::normalize(INT->crC->c2o * mV); // std::cout << "s   " << s.x << "   " << s.y << "   " << s.z << std::endl;       
    glm::dvec3 m = glm::normalize(glm::transpose(INT->crC->o2c) * mP);//std::cout << "m   " << m.x << "   " << m.y << "   " << m.z << std::endl;              
    glm::dvec3 mxs = glm::normalize(glm::cross(m, s));// std::cout << mxs.x << " -1-  " << mxs.y << "   " << mxs.z << std::endl;
-   glm::dvec3 mxsxm = glm::cross(mxs, m);  std::cout << mxsxm.x << " -3-  " << mxsxm.y << "   " << mxsxm.z << std::endl;              
-   mxsxm = glm::normalize(mxsxm);  std::cout << mxsxm.x << " -4-  " << mxsxm.y << "   " << mxsxm.z << std::endl;              
+   glm::dvec3 mxsxm = glm::cross(mxs, m);
+   std::cout << mxsxm.x << " -3-  " << mxsxm.y << "   " << mxsxm.z << std::endl;
+   mxsxm = glm::normalize(mxsxm);
+   std::cout << mxsxm.x << " -4-  " << mxsxm.y << "   " << mxsxm.z << std::endl;
    return glm::dmat3( mxsxm.x, mxs.x, m.x,
                       mxsxm.y, mxs.y, m.y,
                       mxsxm.z, mxs.z, m.z );

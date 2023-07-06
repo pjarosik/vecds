@@ -1081,6 +1081,8 @@ void MainWindow::SL_update() {
     osg::Matrixd mat = mview1->getMatrix();
     refreshScene();
     mview1->setMatrix(mat);
+    scene->displayTBeam(true);
+    scene->displayBvect(true);
 }
 
 void MainWindow::SL_calcDisl() {

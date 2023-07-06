@@ -170,6 +170,49 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAtoms() {
     //return m_worldAt.release();
 }
 
+void OsgScene::displayTBeam(bool sw) {
+    if (!sw) {
+        std::cout << "Remove m_worldPoints" << std::endl;
+        m_worldReferenceFrame.get()->removeChild(m_worldPoints.get());
+        m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
+        return;
+    }
+    m_worldPoints = new osg::MatrixTransform;
+    osg::StateSet *set = m_worldPoints->getOrCreateStateSet();
+    set->setRenderingHint(osg::StateSet::TRANSPARENT_BIN);
+    set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON);
+    for (int i = 0; i < POINTS->n_points; i++) {
+        glm::dvec3 bV = POINTS->fracts.at(i) * (INT->structList[POINTS->crCNum.at(i)]).c2o *
+                        POINTS->millerVs.at(i);
+        glm::dvec3 n = glm::normalize(POINTS->millerPs.at(i));
+        glm::dvec3 dislocationLineVec = glm::cross(n, bV);
+
+        osg::Vec3 pos = POINTS->pos.get()->at(i);
+        std::vector<double> zCoords = LATT->getZCoords();
+        double minZCoord = *std::min_element(std::begin(zCoords), std::end(zCoords));
+        double maxZCoord = *std::max_element(std::begin(zCoords), std::end(zCoords));
+        double lattZLength = std::abs(maxZCoord-minZCoord);
+
+        std::vector<double> xCoords = LATT->getXCoords();
+        double minXCoord = *std::min_element(std::begin(xCoords), std::end(xCoords));
+        double maxXCoord = *std::max_element(std::begin(xCoords), std::end(xCoords));
+        double lattXLength = std::abs(maxXCoord-minXCoord);
+
+        std::vector<double> yCoords = LATT->getYCoords();
+        double minYCoord = *std::min_element(std::begin(yCoords), std::end(yCoords));
+        double maxYCoord = *std::max_element(std::begin(yCoords), std::end(yCoords));
+        double lattYLength = std::abs(maxYCoord-minYCoord);
+
+        double beamLength = std::max(std::max(lattYLength, lattXLength), lattZLength);
+
+        m_worldPoints->addChild(
+                drawTBeam(pos, MiscFunc::convert(glm::normalize(dislocationLineVec)), 1, 0.1, beamLength,
+                          osg::Vec4(90./255., 39./255., 41./255., 0.3)));
+    }
+    m_worldReferenceFrame.get()->addChild(m_worldPoints.get());
+    m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
+}
+
 void OsgScene::displayBvect(bool sw) {
     if (!sw) {
         std::cout << "Remove m_worldPoints" << std::endl;
@@ -190,14 +233,6 @@ void OsgScene::displayBvect(bool sw) {
         m_worldPoints->addChild(
                 drawArrow(pos, MiscFunc::convert(glm::normalize(bV)), length, radius, INT->axPr1, INT->axPr2,
                           osg::Vec4(0.5, 0.5, 0.5, 0.5)));
-
-        std::vector<double> zCoords = LATT->getZCoords();
-        double minZCoord = *std::min_element(std::begin(zCoords), std::end(zCoords));
-        double maxZCoord = *std::max_element(std::begin(zCoords), std::end(zCoords));
-        double lattZLength = std::abs(maxZCoord- minZCoord);
-
-        m_worldPoints->addChild(
-                drawTBeam(pos, MiscFunc::convert(glm::normalize(bV)), 2, 2, lattZLength, osg::Vec4(0.5, 0.5, 0.5, 0.5)));
     }
     m_worldReferenceFrame.get()->addChild(m_worldPoints.get());
     m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
@@ -462,9 +497,14 @@ OsgScene::drawTBeam(osg::Vec3 point, osg::Vec3 dir, float lx, float ly, float lz
     osg::ref_ptr<osg::ShapeDrawable> wider = new osg::ShapeDrawable(
             new osg::Box(osg::Vec3(0., 0., 0.5*lz), lx, ly, lz), hints);
     wider->setColor(color);
+    float narrowerly = 0.8*lx;
+    osg::ref_ptr<osg::ShapeDrawable> narrower = new osg::ShapeDrawable(
+            new osg::Box(osg::Vec3(0., narrowerly/2+ly/2, 0.5*lz), ly, narrowerly, lz), hints);
+    narrower->setColor(color);
     osg::ref_ptr<osg::Geode> geo = new osg::Geode;
     geo->addDrawable(wider.get());
-    mt->setMatrix(osg::Matrix::rotate(osg::Vec3(0.0, 0.0, 1.0), dir) * osg::Matrix::translate(point));
+    geo->addDrawable(narrower.get());
+    mt->setMatrix(osg::Matrix::rotate(osg::Vec3(0.0, 0.0, 1.0), dir) * osg::Matrix::translate(point) * osg::Matrix::translate(-dir*lz/2));
     mt->addChild(geo.get());
     return mt.get();
 }
