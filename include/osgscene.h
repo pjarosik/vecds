@@ -104,6 +104,7 @@ private:
     osg::ref_ptr<osg::MatrixTransform> createPoints();
     osg::ref_ptr<osg::MatrixTransform> drawArrow(osg::Vec3 point, osg::Vec3 dir, float l, float r, float prop1, float prop2, osg::Vec4 color);
     osg::ref_ptr<osg::MatrixTransform> drawBond(osg::Vec3 point1, osg::Vec3 point2, float r, osg::Vec4 color);
+    osg::ref_ptr<osg::MatrixTransform> drawTBeam(osg::Vec3 point, osg::Vec3 dir, float lx, float ly, float lz, osg::Vec4 color);
     osg::StateSet* makeStateSet(float size);
     
     osg::ref_ptr<osg::MatrixTransform> m_worldReferenceFrame;

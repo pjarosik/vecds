@@ -183,13 +183,21 @@ void OsgScene::displayBvect(bool sw) {
     set->setAttributeAndModes(new osg::BlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA), osg::StateAttribute::ON);
     for (int i = 0; i < POINTS->n_points; i++) {
         glm::dvec3 bV = POINTS->fracts.at(i) * (INT->structList[POINTS->crCNum.at(i)]).c2o *
-                        POINTS->millerVs.at(i); // glm::transpose(POINTS->rotTens.at(i)) *
+                        POINTS->millerVs.at(i);
         float length = glm::length(bV);
-        float radius = INT->axRad * length;
-        osg::Vec3 pos = POINTS->pos.get()->at(i);//MiscFunc::convert(a.pos);
+        float radius = INT->axRad*length;
+        osg::Vec3 pos = POINTS->pos.get()->at(i);
         m_worldPoints->addChild(
                 drawArrow(pos, MiscFunc::convert(glm::normalize(bV)), length, radius, INT->axPr1, INT->axPr2,
-                          osg::Vec4(0.5, 0.5, 0.5, 0.5))); //(geod.get());//osg::X_AXIS
+                          osg::Vec4(0.5, 0.5, 0.5, 0.5)));
+
+        std::vector<double> zCoords = LATT->getZCoords();
+        double minZCoord = *std::min_element(std::begin(zCoords), std::end(zCoords));
+        double maxZCoord = *std::max_element(std::begin(zCoords), std::end(zCoords));
+        double lattZLength = std::abs(maxZCoord- minZCoord);
+
+        m_worldPoints->addChild(
+                drawTBeam(pos, MiscFunc::convert(glm::normalize(bV)), 2, 2, lattZLength, osg::Vec4(0.5, 0.5, 0.5, 0.5)));
     }
     m_worldReferenceFrame.get()->addChild(m_worldPoints.get());
     m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
@@ -446,6 +454,21 @@ osg::ref_ptr<osg::MatrixTransform> OsgScene::createAxis() {
     m_worldAx->addChild(drawArrow(point, osg::X_AXIS, length, radius, INT->axPr1, INT->axPr2, colR));
     return m_worldAx.get();
 }
+
+osg::ref_ptr<osg::MatrixTransform>
+OsgScene::drawTBeam(osg::Vec3 point, osg::Vec3 dir, float lx, float ly, float lz, osg::Vec4 color) {
+    osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
+
+    osg::ref_ptr<osg::ShapeDrawable> wider = new osg::ShapeDrawable(
+            new osg::Box(osg::Vec3(0., 0., 0.5*lz), lx, ly, lz), hints);
+    wider->setColor(color);
+    osg::ref_ptr<osg::Geode> geo = new osg::Geode;
+    geo->addDrawable(wider.get());
+    mt->setMatrix(osg::Matrix::rotate(osg::Vec3(0.0, 0.0, 1.0), dir) * osg::Matrix::translate(point));
+    mt->addChild(geo.get());
+    return mt.get();
+}
+
 
 osg::ref_ptr<osg::MatrixTransform>
 OsgScene::drawArrow(osg::Vec3 point, osg::Vec3 dir, float l, float r, float prop1, float prop2, osg::Vec4 color) {
