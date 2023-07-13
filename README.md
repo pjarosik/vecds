@@ -17,3 +17,13 @@ To run vecds with a GUI, go to the bin directory and run:
 `$ cd bin`
 `$ ./vecds`
 
+## Examples
+
+### Generating custom lattice 
+
+![](docs/generating_lattice.gif "Generating lattice")
+
+### Adding dislocations
+
+![](docs/dislocations.gif "Adding dislocations")
+
