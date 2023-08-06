@@ -6,9 +6,11 @@
 
 glm::dmat3 Calc::rotation_tensor(glm::dvec3 mV, glm::dvec3 mP) 
 { // obliczanie tensora obrotu sztywnego na podstawie wskaźników Millera
-   glm::dvec3 s = glm::normalize(INT->crC->c2o * mV); // std::cout << "s   " << s.x << "   " << s.y << "   " << s.z << std::endl;       
-   glm::dvec3 m = glm::normalize(glm::transpose(INT->crC->o2c) * mP);//std::cout << "m   " << m.x << "   " << m.y << "   " << m.z << std::endl;              
-   glm::dvec3 mxs = glm::normalize(glm::cross(m, s));// std::cout << mxs.x << " -1-  " << mxs.y << "   " << mxs.z << std::endl;
+   glm::dvec3 s = glm::normalize(INT->crC->c2o * mV);
+   // s - wektor burgera w ukladzie krysztalu?
+   glm::dvec3 m = glm::normalize(glm::transpose(INT->crC->o2c) * mP);
+   // m - wektor plaszczyny w ukladzie kartezjanski
+   glm::dvec3 mxs = glm::normalize(glm::cross(m, s));
    glm::dvec3 mxsxm = glm::cross(mxs, m);
    std::cout << mxsxm.x << " -3-  " << mxsxm.y << "   " << mxsxm.z << std::endl;
    mxsxm = glm::normalize(mxsxm);
@@ -108,7 +110,8 @@ int Calc::identAtom(glm::dvec3 point)
 }
 
 glm::dvec3 Calc::mixed_u(glm::dvec3 rotdist, double be, double bz)
-{  
+{
+    // Wyglada bardzo podobnie do u
    if ( be==0. ) return glm::dvec3(0., 0., bz/(2.*osg::PI)*atan2(rotdist.y, rotdist.x));
    double r2 = rotdist.x*rotdist.x + rotdist.y*rotdist.y;//if ( r2<1e-15 )
    double r = sqrt(r2);

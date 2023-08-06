@@ -1151,49 +1151,41 @@ void MainWindow::SL_performDislCalc(QString ff) {
         return;
     }
     QTextStream in(&file);//int nl = 0;
-    INT->outLog << "SL_performDislCalc(QString ff)" << std::endl;
-//    stringstream sss;
-//    sss << "wynik" << ".txt";
-//    ofstream f_numb(sss.str().c_str());  
-    //int nl =0;
+
+    // IN: LINIE WEJSCIOWE == DYSLOKACJE
+
     while(!in.atEnd()) {
-        QString line = in.readLine(); //++nl;  std::cout << " nl=" << nl << "   " << line.toStdString() << std::endl;
+        QString line = in.readLine();
         if(line.isEmpty() || (line.at(0) == '/' && line.at(1) == '/')) continue;
         if(line.at(0) == '!' && line.at(1) == '!') {
             QStringList fields = line.split(QRegExp("\\s+"), QString::SkipEmptyParts);
-            //int nf = fields.size(); for (int i=0; i<nf; i++) std::cout << i << ":" << fields.at(i).toStdString() << "   $$   "; std::cout << std::endl;//std::string s = fields.at(3).toStdString();
             int nm = 0;
-            int k =
-                    fields.at(3).toInt(); //MiscFunc::toInt(s);// std::cout << " nl=" << nl << "   s=" << s << "    k=" << k << std::endl;
+            int k = fields.at(3).toInt();
             if(POINTS->nKind.get()->at(k) == 1) nm = fields.at(5).toInt();
-            glm::dvec3 pos =
-                    MiscFunc::convert(POINTS->pos.get()->at(k)); // std::cout << " pos = ( " << pos.x << ", " << pos.y << ", " << pos.z << ")" << std::endl;
-            glm::dmat3 rt = POINTS->rotTens.at(k); // MiscFunc::printMat("rt", rt);
-            glm::dmat3 rtInv = glm::transpose(rt); // MiscFunc::printMat("rtInv", rtInv);
-            glm::dvec3 bV =
-                    rt * POINTS->fracts.at(k) * (INT->structList[POINTS->crCNum.at(k)]).c2o * POINTS->millerVs.at(k);
-            glm::dvec3 cd =
-                    rt * pos; //  std::cout << " cd = ( " << cd.x << ", " << cd.y << ", " << cd.z << ")" << std::endl;
-            double be = sqrt(bV.x * bV.x + bV.y * bV.y);
-            double bz = bV.z;
-            std::cout << "  nm=" << nm << "  be=" << be << "  bz=" << bz << std::endl;
+            glm::dvec3 pos = MiscFunc::convert(POINTS->pos.get()->at(k));
+            glm::dmat3 rt = POINTS->rotTens.at(k);
+            glm::dmat3 rtInv = glm::transpose(rt);
+            // Ponizej po prostu wektor Burgersa w ukladzie kartezjanskim
+            glm::dvec3 bV = rt * POINTS->fracts.at(k) * (INT->structList[POINTS->crCNum.at(k)]).c2o * POINTS->millerVs.at(k);
+            glm::dvec3 cd = rt * pos; // DISLOCATION CORE?
+            // Skaldowa srubowa, skladowa krawedziowa (?)
+            double be = sqrt(bV.x * bV.x + bV.y * bV.y); // krawedziowa?
+            double bz = bV.z; // srubowa?
             LATT->du.clear();
             LATT->du.resize(LATT->nAt.size());
 
-            if(nm == 0) {  // classical
+            if(nm == 0) {
                 for(int i = 0; i < LATT->nAt.size(); i++) {
                     glm::dvec3 coord1 = rt * LATT->coords[i];
                     glm::dvec3 dist1 = coord1 - cd;
                     if(glm::length2(dist1) < 1.e-8) {
-                        QMessageBox::warning(this,
-                                             "PROBLEM",
-                                             QString(" ERROR  atom nr %1 is too close to disl core").arg(i + 1));
+                        QMessageBox::warning(this, "PROBLEM", QString(" ERROR  atom nr %1 is too close to disl core").arg(i + 1));
                         return;
                     }
                     LATT->du[i] = rtInv * Calc::mixed_u(dist1, be, bz);
                 }
             }
-            if(nm > 0) { // iterations
+            if(nm > 0) {
                 int count_moved = 0;
                 int n_Errors = 0;
                 int n_errors = 0;
@@ -1223,21 +1215,21 @@ void MainWindow::SL_performDislCalc(QString ff) {
                     double duNorm = 0.8 * glm::length(du0);
                     double ddd = 0.;
                     do {
-                        gsl_multiroot_fdfsolver *s; // = gsl_multiroot_fdfsolver_alloc(T, 3);
-                        gsl_vector *x; // = gsl_vector_alloc(3);
+                        gsl_multiroot_fdfsolver *s;
+                        gsl_vector *x;
                         count++;
                         p.u0x = LATT->du[i].x;
                         p.u0y = LATT->du[i].y;
                         p.u0z = LATT->du[i].z;
+                        /// UWAGA: x1, x2, x3 zmienia sie z kolejnymi iteracjami!
+                        // czyli x1 = x1_0 + u1, itd.
                         glm::dvec3 temp = coord1 + LATT->du[i] - cd;
                         if((temp.x * temp.x + temp.y * temp.y) < 1.e-10) {
                             LATT->du[i] = glm::dvec3(0., 0., 0.);
-                            std::cout << " Atom " << i << " in the center of dislocation core" << std::endl;
                             n_errors++;
                             goto _END;
                         }
-                        gsl_multiroot_function_fdf
-                                f = {&Calc::Love_function, &Calc::Beta_function, &Calc::Love_fdf, 3, &p};
+                        gsl_multiroot_function_fdf f = {&Calc::Love_function, &Calc::Beta_function, &Calc::Love_fdf, 3, &p};
                         x = gsl_vector_alloc(3);
                         gsl_vector_set(x, 0, temp.x);
                         gsl_vector_set(x, 1, temp.y);
@@ -1250,8 +1242,7 @@ void MainWindow::SL_performDislCalc(QString ff) {
                         diff.x = gsl_vector_get(s->f, 0);
                         diff.y = gsl_vector_get(s->f, 1);
                         diff.z = gsl_vector_get(s->f, 2);
-                        LATT->du[i] -=
-                                diff; //std::cout << "=1=   i=" << i << "   count=" << count << " ------    du=  " << LATT->du[i].x << "   " << LATT->du[i].y << "    " << LATT->du[i].z << std::endl;
+                        LATT->du[i] -= diff;
                         ddd = glm::distance(du0, LATT->du[i]);
 
                         status = gsl_multiroot_test_residual(s->f, crit_stop);
@@ -1261,48 +1252,33 @@ void MainWindow::SL_performDislCalc(QString ff) {
                     crit += diff.x * diff.x + diff.y * diff.y + diff.z * diff.z;
 
                     if(ddd > duNorm) {
-                        std::cout << " i=" << i << "   count=" << count << "   diff  " << diff.x << "   " << diff.y
-                                  << "    " << diff.z << std::endl;
-                        std::cout << "  du0  = " << du0.x << ",  " << du0.y << ",  " << du0.z << std::endl;
-                        std::cout << "  du  = " << LATT->du[i].x << ",  " << LATT->du[i].y << ",  " << LATT->du[i].z
-                                  << std::endl;  //glm::dvec3 point = MiscFunc::convert(POINTS->pos.get()->at(i));
                         glm::dvec3 ac = LATT->coords[i];
-                        std::cout << " duNorm = " << duNorm << "        ddd = " << ddd << "       coord X = " << ac.x
-                                  << "       coord Y = " << ac.y << std::endl;
                         double rrr = sqrt(ac.x * ac.x + ac.y * ac.y);
-                        std::cout << "       x = " << ac.x / rrr << "       y = " << ac.y / rrr << std::endl;
-                        std::cout << "+++++++++   atom nr. " << i << " was moved!" << std::endl;
                         LATT->du[i].x = du0.x;
                         count_moved++;
-                    } //if ( ddd>duNorm )
+                    }
                     continue;
                     _END:
-                    std::cout << "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" << std::endl;
                     n_Errors++;
-                } // for
-                std::cout << "  count_moved = " << count_moved << std::endl;
-            } // if ( nm>0 )
+                }
+            }
 
 
             for(int i = 0; i < LATT->nAt.size(); i++)
-                LATT->du[i] = rtInv * LATT->du[i];// atoms->beta[i] = rot_inv*mixed_beta(i, coord1[i]+atoms->du[i]-cd, be, bz)*rot_tensor;}
+                LATT->du[i] = rtInv * LATT->du[i];
+
+            // SREDNIA PO WSZYSTKICH ATOMACH (????)
             sumU = glm::dvec3(0.0, 0.0, 0.0);
             for(int i = 0; i < LATT->nAt.size(); i++) {
                 sumU += LATT->du[i];
             }
             sumU /= double(LATT->nAt.size());
-            std::cout << "Dislocation nr. " << k + 1 << "     sumU = (" << sumU.x << ", " << sumU.y << ", " << sumU.z
-                      << ")" << std::endl; // " << n_dislocations << "
-
             for(int i = 0; i < LATT->nAt.size(); i++) {
                 LATT->du[i] -= sumU;
-                LATT->u[i] += LATT->du[i];//u0;
-//  f_numb << i << " ***du****    " << LATT->du[i].x << "    " << LATT->du[i].y << "    " << LATT->du[i].z << std::endl;
-//  f_numb << i << " ***U****    " << LATT->u[i].x << "    " << LATT->u[i].y << "    " << LATT->u[i].z << std::endl;
+                LATT->u[i] += LATT->du[i];
             }
-        } // line.at(0)=='!' && line.at(1)=='!'
+        }
     }
-//  f_numb.close();  
     file.close();
 }
 
