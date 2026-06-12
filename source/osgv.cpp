@@ -8,28 +8,12 @@ const double camFact = 0.15;
 extern Internal *INT;
 extern MainWindow mainwindow;
 
-OsgViewerQt::OsgViewerQt(OsgScene *scene1, double fovy) : QGLWidget(), 
+OsgViewerQt::OsgViewerQt(OsgScene *scene1, double fovy) : QWidget(),
                                                 m_refreshPeriod(defaultRefreshPeriod)
 {
         setThreadingModel(osgViewer::ViewerBase::SingleThreaded);
 	setAttribute(Qt::WA_DeleteOnClose);
-        //osgViewer::ViewerBase::CullDrawThreadPerContext
-        //osgViewer::ViewerBase::SingleThreaded
-        //osgViewer::ViewerBase::DrawThreadPerContext
-        //osgViewer::ViewerBase::CullThreadPerCameraDrawThreadPerContext
-        // disable the default setting of viewer.done() by pressing Escape.
-        //setKeyEventSetsDone(0);
         m_gw = createGraphicsWindow(0, 0, 800, 600);
-	QGLWidget::makeCurrent();
-	unsigned int contextID = m_gw->getState()->getContextID();
-	bool goodGraph = osg::isGLExtensionSupported(contextID, "GL_EXT_draw_instanced");
-	//if ( goodGraph ) std::cout << "graph OK" << std::endl;
-        //else {
-	  if ( !goodGraph && !INT->msgGraph ) {
-             QMessageBox::information(0, "For your information", "Because of missing OpenGL extensions 'GL_EXT_draw_instanced'\n"  "the program will work poorly on your system.");
-	     INT->msgGraph = true;
-	} //}     
-	
         QWidget* widget1 = addViewWidget( scene1, fovy );
         addView( m_view );
         

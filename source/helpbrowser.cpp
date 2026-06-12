@@ -8,7 +8,7 @@ HelpBrowser::HelpBrowser(const QString &path, const QString &page, QWidget *pare
                          : QWidget(parent) 
 { 
     setAttribute(Qt::WA_DeleteOnClose); 
-    setAttribute(Qt::WA_GroupLeader); 
+    // Qt::WA_GroupLeader removed in Qt6 
     textBrowser = new QTextBrowser; 
     homeButton = new QPushButton(tr("&Home")); 
     backButton = new QPushButton(tr("&Back")); 

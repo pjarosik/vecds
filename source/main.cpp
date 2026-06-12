@@ -1,4 +1,5 @@
 #include "../include/mainwindow.h"
+#include <QSurfaceFormat>
 
 Atoms *AT;
 Lattice *LATT;
@@ -87,11 +88,14 @@ int main(int argc, char *argv[])
 {
   //Q_INIT_RESOURCE(stylesheet);
 
+  // Set a default surface format before QApplication so all QOpenGLWidgets
+  // get a DoubleBuffer + depth24 config that GLX can always match.
+  QSurfaceFormat fmt;
+  fmt.setDepthBufferSize(24);
+  fmt.setSwapBehavior(QSurfaceFormat::DoubleBuffer);
+  QSurfaceFormat::setDefaultFormat(fmt);
+
   QApplication app(argc, argv);
-  if ( ( QGLFormat::openGLVersionFlags() & QGLFormat::OpenGL_Version_1_5)==0 ) {
-       QMessageBox::critical(0, "OpenGL features missing", "OpenGL version 1.5 or higher is required to run this program.\n",  "The program will now exit.");
-       return -1;
-  }
 
   CreateInfMatrices();
 

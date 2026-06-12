@@ -1,0 +1,38 @@
+cmake_minimum_required(VERSION 3.16)
+project(osgQt6)
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_AUTOMOC ON)
+
+find_package(OpenSceneGraph 3.6 REQUIRED osgViewer osgGA osgDB osgText osgWidget osgUtil osg)
+find_package(Qt6 REQUIRED COMPONENTS Widgets OpenGL OpenGLWidgets)
+
+add_library(osgQt6 SHARED
+    src/osgQt/GraphicsWindowQt.cpp
+)
+
+target_compile_definitions(osgQt6 PRIVATE OSGQT_LIBRARY)
+
+target_include_directories(osgQt6
+    PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    PRIVATE
+        ${OPENSCENEGRAPH_INCLUDE_DIRS}
+)
+
+target_link_libraries(osgQt6
+    PUBLIC
+        ${OPENSCENEGRAPH_LIBRARIES}
+        Qt6::Widgets
+        Qt6::OpenGL
+        Qt6::OpenGLWidgets
+)
+
+install(TARGETS osgQt6
+    LIBRARY DESTINATION lib
+)
+
+install(DIRECTORY include/osgQt
+    DESTINATION include
+)

@@ -1,7 +1,7 @@
 #ifndef OSGVIEWERQT_H
 #define OSGVIEWERQT_H
 
-#include <QGLWidget>
+#include <QWidget>
 #include <QtCore/QTimer>
 #include <QGridLayout>
 
@@ -18,7 +18,7 @@
 #include "picking.h"
 #include "internal.h"
 
-class OsgViewerQt : public QGLWidget, public osgViewer::CompositeViewer
+class OsgViewerQt : public QWidget, public osgViewer::CompositeViewer
 {
     Q_OBJECT
 

@@ -31,8 +31,9 @@
 
 ######################################################################
 # REQUIRE a reasonably recent version of CMake.
-cmake_minimum_required (VERSION 2.8.12)
+cmake_minimum_required (VERSION 3.16)
 project (vecds LANGUAGES CXX Fortran)
+set(CMAKE_CXX_STANDARD 17)
 set (TARGET vecds)
 set (VECDS_INCLUDES ${CMAKE_SOURCE_DIR}/include)
 
@@ -46,16 +47,26 @@ include (FindPackageHandleStandardArgs)
 ######################################################################
 # find required system packages.
 find_package (OpenSceneGraph 3.6.5 REQUIRED osg osgDB osgGA osgManipulator osgSim osgText osgUtil osgViewer osgWidget)
-find_package (Qt5 REQUIRED Widgets OpenGL)
+find_package (Qt6 REQUIRED COMPONENTS Widgets OpenGL OpenGLWidgets)
 find_package(GSL REQUIRED)
+
+# Local osgQt6 build (Qt6 port of osgQt)
+set(OSGQT6_INSTALL_DIR "${CMAKE_SOURCE_DIR}/external/osgQt6")
+find_library(OSGQT6_LIBRARY NAMES osgQt6 PATHS "${OSGQT6_INSTALL_DIR}/lib" NO_DEFAULT_PATH)
+if(NOT OSGQT6_LIBRARY)
+    message(FATAL_ERROR "osgQt6 library not found in ${OSGQT6_INSTALL_DIR}/lib. "
+        "Build it first with: scripts/build_osgqt.sh")
+endif()
+set(OSGQT6_INCLUDE_DIR "${OSGQT6_INSTALL_DIR}/include")
 
 ######################################################################
 # Include the subdirectory containing header files.
 include_directories (${VECDS_INCLUDES})
 include_directories (${OPENSCENEGRAPH_INCLUDE_DIRS})
 include_directories ("FEMApp")
+include_directories (${OSGQT6_INCLUDE_DIR})
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread -DGLM_ENABLE_EXPERIMENTAL")
 
 
 ######################################################################
@@ -82,34 +93,40 @@ set (SOURCES
 
 ######################################################################
 # Set up a bunch of targets for the meta-object code generator
-set (VECDS_INCLUDES
-  include/osgv.h     
+set (VECDS_MOC_HEADERS
+  include/osgv.h
   include/simplepad.h
-  include/dialogs.h  
-  include/helpbrowser.h  
-  include/mainwindow.h  
-  include/osgscene.h  
+  include/dialogs.h
+  include/helpbrowser.h
+  include/mainwindow.h
+  include/osgscene.h
 )
-qt_wrap_cpp (VECDS_INCLUDES_MOC ${VECDS_INCLUDES})
+qt6_wrap_cpp (VECDS_INCLUDES_MOC ${VECDS_MOC_HEADERS})
+qt6_add_resources (VECDS_RESOURCES source/vecds.qrc)
 
 
 ######################################################################
 # Indicate the entry point of the excecutable and libraries to include
 # during the link process.
-add_executable(${TARGET} ${SOURCES} ${VECDS_INCLUDES_MOC})
-target_link_libraries(${TARGET} ${OPENSCENEGRAPH_LIBRARIES} Qt5::Widgets Qt5::OpenGL GSL::gsl
-"${CMAKE_SOURCE_DIR}/FEMApp/Release/libFEMAppLibRelease.a"
-"${CMAKE_SOURCE_DIR}/FEMApp/Release/libFEMGraphLibRelease.a"
-"${CMAKE_SOURCE_DIR}/FEMApp/Release/libFEMLibRelease.a"
-"${CMAKE_SOURCE_DIR}/FEMApp/Release/libGraphLibRelease.a"
-"${CMAKE_SOURCE_DIR}/FEMApp/Release/libXMLLibRelease.a"
-"${CMAKE_SOURCE_DIR}/FEMApp/Release/libLangLibRelease.a"
-"${CMAKE_SOURCE_DIR}/FEMApp/Release/libMolecularLibRelease.a"
-"${CMAKE_SOURCE_DIR}/FEMApp/Release/libMathLibRelease.a"
-"${CMAKE_SOURCE_DIR}/FEMApp/Release/libCoupledFieldsRelease.a"
--lgfortran
--llapack
--losgQt5
+add_executable(${TARGET} ${SOURCES} ${VECDS_INCLUDES_MOC} ${VECDS_RESOURCES})
+target_link_libraries(${TARGET}
+    ${OPENSCENEGRAPH_LIBRARIES}
+    Qt6::Widgets
+    Qt6::OpenGL
+    Qt6::OpenGLWidgets
+    GSL::gsl
+    "${CMAKE_SOURCE_DIR}/FEMApp/Release/libFEMAppLibRelease.a"
+    "${CMAKE_SOURCE_DIR}/FEMApp/Release/libFEMGraphLibRelease.a"
+    "${CMAKE_SOURCE_DIR}/FEMApp/Release/libFEMLibRelease.a"
+    "${CMAKE_SOURCE_DIR}/FEMApp/Release/libGraphLibRelease.a"
+    "${CMAKE_SOURCE_DIR}/FEMApp/Release/libXMLLibRelease.a"
+    "${CMAKE_SOURCE_DIR}/FEMApp/Release/libLangLibRelease.a"
+    "${CMAKE_SOURCE_DIR}/FEMApp/Release/libMolecularLibRelease.a"
+    "${CMAKE_SOURCE_DIR}/FEMApp/Release/libMathLibRelease.a"
+    "${CMAKE_SOURCE_DIR}/FEMApp/Release/libCoupledFieldsRelease.a"
+    -lgfortran
+    -llapack
+    ${OSGQT6_LIBRARY}
 )
 
 install(TARGETS ${TARGET} DESTINATION .)
