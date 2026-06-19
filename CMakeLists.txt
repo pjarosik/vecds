@@ -86,9 +86,10 @@ set (SOURCES
   source/dialogs.cpp  
   source/helpbrowser.cpp  
   source/lattice.cpp   
-  source/mainwindow.cpp  
-  source/osgscene.cpp  
+  source/mainwindow.cpp
+  source/osgscene.cpp
   source/picking.cpp
+  source/displace.f
 )
 
 ######################################################################

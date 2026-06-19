@@ -26,6 +26,12 @@ extern Lattice *LATT;
 extern Internal *INT;
 extern Points *POINTS;
 
+// Fortran displacement-field routine (source/displace.f)
+extern "C" {
+  void displace_(int *n_dis, int *n_atoms, double *d_pos, double *d_b,
+                 double *d_plane, double *coords, double *u);
+}
+
 
 MainWindow::MainWindow()
 {
@@ -970,6 +976,19 @@ void MainWindow::SL_calcDisl()
  std::cout << "SL_calcDisl" << std::endl;
   INT->outLog << "SL_calcDisl()" << std::endl;
   mview1->setDone(true);
+
+  QStringList methods;
+  methods << "Cholewinski" << "Fortran";
+  bool okMethod = false;
+  QString method = QInputDialog::getItem(this, "Calculate displacement field",
+                                         "Method:", methods, 0, false, &okMethod);
+  if ( !okMethod ) { mview1->setDone(false); return; }
+  if ( method == "Fortran" ) {
+     mview1->setDone(false);
+     SL_performDislCalcFortran();
+     return;
+  }
+
   for (int i=0; i<LATT->n_atoms; i++ )  LATT->u[i] = glm::dvec3(0., 0., 0.);
   QString cd0 = INT->currDir;
   QString cd1 = cd0.append("/data/AAA");
@@ -1135,9 +1154,55 @@ void MainWindow::SL_performDislCalc(QString ff)
         }
      } // line.at(0)=='!' && line.at(1)=='!'
   }
-//  f_numb.close();  
+//  f_numb.close();
   file.close();
-} 
+}
+
+void MainWindow::SL_performDislCalcFortran()
+{
+  std::cout << "SL_performDislCalcFortran" << std::endl;
+  INT->outLog << "SL_performDislCalcFortran()" << std::endl;
+  mview1->setDone(true);
+
+  int n_dis   = POINTS->n_points;
+  int n_atoms = LATT->n_atoms;
+  if ( n_dis<1 || n_atoms<1 ) {
+     QMessageBox::warning(this, "PROBLEM", "No dislocations or no atoms defined");
+     mview1->setDone(false);
+     return;
+  }
+
+  // Column-major (3, n) arrays for Fortran: column j holds the 3 components.
+  std::vector<double> d_pos(3*n_dis);
+  std::vector<double> d_b(3*n_dis);
+  std::vector<double> d_plane(3*n_dis);
+  std::vector<double> coords(3*n_atoms);
+  std::vector<double> u(3*n_atoms, 0.0);
+
+  for ( int k=0; k<n_dis; k++ ) {
+     glm::dvec3 pos = MiscFunc::convert(POINTS->pos.get()->at(k));
+     d_pos[3*k+0] = pos.x;   d_pos[3*k+1] = pos.y;   d_pos[3*k+2] = pos.z;
+     glm::dvec3 bv = POINTS->millerVs.at(k);
+     d_b[3*k+0] = bv.x;      d_b[3*k+1] = bv.y;      d_b[3*k+2] = bv.z;
+     glm::dvec3 pl = POINTS->millerPs.at(k);
+     d_plane[3*k+0] = pl.x;  d_plane[3*k+1] = pl.y;  d_plane[3*k+2] = pl.z;
+  }
+
+  for ( int i=0; i<n_atoms; i++ ) {
+     glm::dvec3 c = LATT->coords[i];
+     coords[3*i+0] = c.x;    coords[3*i+1] = c.y;    coords[3*i+2] = c.z;
+  }
+
+  displace_(&n_dis, &n_atoms, d_pos.data(), d_b.data(), d_plane.data(),
+            coords.data(), u.data());
+
+  for ( int i=0; i<n_atoms; i++ )
+     LATT->u[i] = glm::dvec3(u[3*i+0], u[3*i+1], u[3*i+2]);
+
+  std::cout << "SL_performDislCalcFortran: displacement field computed for "
+            << n_atoms << " atoms (" << n_dis << " dislocations)" << std::endl;
+  mview1->setDone(false);
+}
 
 void MainWindow::SL_move()
 {

@@ -209,6 +209,7 @@ public slots:
     void SL_actPoint();
     void SL_keypress(int k);
     void SL_performDislCalc(QString ff);
+    void SL_performDislCalcFortran();
     
 private slots:
 
