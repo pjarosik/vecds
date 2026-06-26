@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QtCore/QTimer>
 #include <QGridLayout>
+#include <QResizeEvent>
 
 #include <osgViewer/CompositeViewer>
 #include <osgViewer/ViewerEventHandlers>
@@ -29,6 +30,7 @@ public:
     virtual void paintEvent(QPaintEvent* event)  { frame(); }
 
     QWidget *addViewWidget( OsgScene *scene1, double fovy );
+    void updateProjection( double w, double h );
     void removeViewWidget();
     osg::ref_ptr<osgQt::GraphicsWindowQt> createGraphicsWindow( int x, int y, int w, int h, const std::string& name="", bool windowDecoration=false );
     void setRefreshPeriod(unsigned int period);
@@ -47,7 +49,10 @@ public:
     
     //void saveScreen(QString name);
     void keyPressEvent( QKeyEvent *event );
-    
+
+protected:
+    virtual void resizeEvent( QResizeEvent *event );
+
 private:
     
     osg::ref_ptr<osgViewer::View> m_view;
@@ -56,6 +61,7 @@ private:
     double m_width;
     double m_height;
     double m_ratio;
+    double m_fovy;
     double m_zNear;
     double m_zFar;
     unsigned int m_refreshPeriod;

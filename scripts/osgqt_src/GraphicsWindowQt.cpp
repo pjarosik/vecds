@@ -250,8 +250,19 @@ void GLWidget::setKeyboardModifiers( QInputEvent* event )
 
 void GLWidget::resizeEvent( QResizeEvent* event )
 {
+    // IMPORTANT: let QOpenGLWidget handle the resize first. The base class
+    // implementation is what recreates the backing FBO at the new size (and
+    // calls resizeGL()). If we skip it, the FBO stays frozen at its initial
+    // size, OSG renders into that stale buffer and Qt stretches it to fill
+    // the resized widget -> the whole 3D view gets distorted on resize.
+    QOpenGLWidget::resizeEvent( event );
+
     const QSize& size = event->size();
 
+    // Re-query the device pixel ratio live: the value at construction time may
+    // be stale (the widget had no screen yet), and it can change when the
+    // window is moved between screens.
+    _devicePixelRatio = devicePixelRatioF();
     int scaled_width = static_cast<int>(size.width()*_devicePixelRatio);
     int scaled_height = static_cast<int>(size.height()*_devicePixelRatio);
     _gw->resized( x(), y(), scaled_width,  scaled_height);

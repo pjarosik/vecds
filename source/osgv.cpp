@@ -18,6 +18,8 @@ OsgViewerQt::OsgViewerQt(OsgScene *scene1, double fovy) : QWidget(),
         addView( m_view );
         
         QGridLayout* grid = new QGridLayout;
+        grid->setContentsMargins( 0, 0, 0, 0 );
+        grid->setSpacing( 0 );
         grid->addWidget( widget1, 0, 0 );
         setLayout( grid );
 
@@ -59,6 +61,13 @@ OsgViewerQt::~OsgViewerQt()
 
         m_camera->setClearColor(INT->bgColor); //( osg::Vec4(0.2, 0.2, 0.6, 1.0) );
         m_camera->setViewport( new osg::Viewport(0, 0, traits->width, traits->height) );
+        // We own the projection matrix and recompute it on every resize
+        // (see updateProjection / resizeEvent), so stop OSG from also
+        // rescaling it during GraphicsContext::resized() - otherwise the two
+        // corrections fight and the scene gets distorted when the window is
+        // resized to a different aspect ratio.
+        m_camera->setProjectionResizePolicy( osg::Camera::FIXED );
+        m_fovy = fovy;
         m_width = static_cast<double>(traits->width);
         m_height = static_cast<double>(traits->height);
         m_ratio = m_width/m_height;
@@ -75,7 +84,27 @@ OsgViewerQt::~OsgViewerQt()
 
         return m_gw->getGLWidget();
     }
-    
+
+    void OsgViewerQt::updateProjection(double w, double h)
+    {
+        if ( !m_camera.valid() || w<=0.0 || h<=0.0 ) return;
+        m_width = w;
+        m_height = h;
+        m_ratio = m_width/m_height;
+        if ( m_fovy==0.0 ) m_camera->setProjectionMatrixAsOrtho(-camFact*m_width, camFact*m_width, -camFact*m_height, camFact*m_height, 1.0, 1000000.0 );
+        else               m_camera->setProjectionMatrixAsPerspective(m_fovy, m_ratio, 1.0, 10000000.0 );
+    }
+
+    void OsgViewerQt::resizeEvent(QResizeEvent* event)
+    {
+        QWidget::resizeEvent(event);
+        // The GLWidget fills this widget (grid layout, zero margins), so the
+        // new size is the GL drawable's aspect ratio. Keep the projection in
+        // sync with it so the 3D view never stretches on resize.
+        const QSize& s = event->size();
+        updateProjection(static_cast<double>(s.width()), static_cast<double>(s.height()));
+    }
+
     void OsgViewerQt::removeViewWidget()
     {
 	removeView(m_view);
