@@ -9,6 +9,7 @@ class Gener
 { 
  public:
   static int genLattice(const int nx0, const int ny0, const int nz0, const int nx1, const int ny1, const int nz1);
-  
-};  
+  static int genBonds(double tolerance = 0.35);
+
+};
 #endif // GENER_H

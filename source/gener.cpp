@@ -47,3 +47,36 @@ int Gener::genLattice(const int nx0, const int ny0, const int nz0, const int nx1
 
     return count;
 }
+
+// Generate bonds between atoms based on proximity. Two atoms are bonded when
+// their distance is no larger than the sum of their covalent radii plus a
+// tolerance, and they are of different elements (no homogeneous bonds).
+// Mirrors create_bonds() from the wurtzite generator. Atom indices stored in
+// bond1/bond2 are 1-based (the scene renderer subtracts 1). Any previously
+// generated bonds are cleared first, so this also serves to regenerate bonds
+// after the atom coordinates change.
+int Gener::genBonds(double tolerance)
+{
+    LATT->bond1->clear();
+    LATT->bond2->clear();
+
+    const int n = LATT->n_atoms;
+    for (int i=0; i<n; i++) {
+       int ai = LATT->nAt.get()->at(i);
+       double ri = AT->a_rad1[ai];
+       glm::dvec3 ci = LATT->coords[i];
+       for (int j=i+1; j<n; j++) {
+          int aj = LATT->nAt.get()->at(j);
+          if ( ai==aj ) continue;  // avoid homogeneous bonds
+          double maxDist = ri + AT->a_rad1[aj] + tolerance;
+          glm::dvec3 d = ci - LATT->coords[j];
+          double dist2 = d.x*d.x + d.y*d.y + d.z*d.z;
+          if ( dist2 <= maxDist*maxDist ) {
+             LATT->bond1->push_back(i+1);
+             LATT->bond2->push_back(j+1);
+          }
+       }
+    }
+    LATT->n_bonds = static_cast<int>(LATT->bond1->size());
+    return LATT->n_bonds;
+}

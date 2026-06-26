@@ -962,7 +962,8 @@ void MainWindow::SL_update()
   INT->outLog << "SL_update()" << std::endl;
 
   for (int i=0; i<LATT->n_atoms; i++ )  LATT->coords[i] += LATT->u[i];
-  mview1->setDone(false);  
+  Gener::genBonds();  // remove old bonds and regenerate from the new coordinates
+  mview1->setDone(false);
   scene->displayBvect(false);
   INT->refrAtoms = true;
   INT->showPoints = false;
@@ -1726,7 +1727,8 @@ void MainWindow::SL_genAtoms()
    int xb = ans.at(1).toInt(); int xe = ans.at(2).toInt();
    int yb = ans.at(3).toInt(); int ye = ans.at(4).toInt();
    int zb = ans.at(5).toInt(); int ze = ans.at(6).toInt();
-   LATT->n_atoms = LATT->n_marked = Gener::genLattice(xb, yb, zb, xe, ye, ze);// std::cout << "SL_genAtoms   n_atoms=" << LATT->n_atoms << std::endl;   
+   LATT->n_atoms = LATT->n_marked = Gener::genLattice(xb, yb, zb, xe, ye, ze);// std::cout << "SL_genAtoms   n_atoms=" << LATT->n_atoms << std::endl;
+   Gener::genBonds();
    delete qf;
    iAt = QString(" file: %1  %2 atoms  ").arg(LATT->name).arg(LATT->n_atoms+1);
    std::string dateTimeString = MiscFunc::dateTime().toStdString();
