@@ -201,6 +201,38 @@ void OsgScene::displayBvect(bool sw) {
         m_worldPoints->addChild(
                 drawArrow(pos, MiscFunc::convert(glm::normalize(bV)), length, radius, INT->axPr1, INT->axPr2,
                           osg::Vec4(0.5, 0.5, 0.5, 0.5))); //(geod.get());//osg::X_AXIS
+
+        // Draw the conventional edge-dislocation T-bar symbol at the same
+        // position, as two cuboids. The bar and stem lie in the glide plane
+        // (row 0 = Burgers direction, row 1 = dislocation line direction of the
+        // stored rotation tensor, see Calc::rotation_tensor), while each cuboid
+        // is elongated along the glide-plane normal (row 2) from -nHalf to
+        // +nHalf. For a (001) plane the bar/stem lie on the OXY plane and the
+        // cuboids extend along OZ.
+        glm::dmat3 R = POINTS->rotTens.at(i);
+        glm::dvec3 bDir = glm::normalize(glm::dvec3(R[0][0], R[1][0], R[2][0])); // Burgers direction -> bar
+        glm::dvec3 sDir = glm::normalize(glm::dvec3(R[0][1], R[1][1], R[2][1])); // line direction   -> stem
+        glm::dvec3 nDir = glm::normalize(glm::dvec3(R[0][2], R[1][2], R[2][2])); // glide-plane normal
+        glm::dvec3 gpos = MiscFunc::convert(pos);
+        double tLen = length*0.3;            // bar half-length and stem length
+        double nLen = 20.0;              // extent along the normal (-10 .. +10)
+        float w = 3.0f * radius;         // slab thickness in-plane
+        osg::Vec4 tColor(0.78f, 0.675f, 0.671f, 1.0f);
+
+        // Orientation: local x -> bDir, local y -> sDir, local z -> nDir
+        // (OSG row-vector convention: matrix rows are the world images).
+        osg::Matrixd rot;
+        rot.makeIdentity();
+        rot(0, 0) = bDir.x; rot(0, 1) = bDir.y; rot(0, 2) = bDir.z;
+        rot(1, 0) = sDir.x; rot(1, 1) = sDir.y; rot(1, 2) = sDir.z;
+        rot(2, 0) = nDir.x; rot(2, 1) = nDir.y; rot(2, 2) = nDir.z;
+
+        // Bar: spans 2*tLen along bDir, centred on the dislocation position.
+        m_worldPoints->addChild(drawCuboid(MiscFunc::convert(gpos), rot,
+                                           2.0f * tLen, w, nLen, tColor));
+        // Stem: spans tLen along sDir, starting at the position (centre offset).
+        m_worldPoints->addChild(drawCuboid(MiscFunc::convert(gpos + sDir * (tLen * 0.5)), rot,
+                                           w, tLen, nLen, tColor));
     }
     m_worldReferenceFrame.get()->addChild(m_worldPoints.get());
     m_switchRoot.get()->addChild(m_worldReferenceFrame.get());
@@ -489,6 +521,22 @@ OsgScene::drawBond(osg::Vec3 point1, osg::Vec3 point2, float r, osg::Vec4 color)
     osg::ref_ptr<osg::Geode> geo = new osg::Geode;
     geo->addDrawable(cyl.get());
     mt->setMatrix(osg::Matrix::rotate(osg::Vec3(0.0, 0.0, 1.0), dir) * osg::Matrix::translate(point1));
+    mt->addChild(geo.get());
+    return mt.get();
+}
+
+// Draw an oriented box. lx/ly/lz are the full edge lengths along the local
+// x/y/z axes, and 'rot' maps those local axes to world directions (in OSG's
+// row-vector convention the rows of rot are the world images of x/y/z).
+osg::ref_ptr<osg::MatrixTransform>
+OsgScene::drawCuboid(osg::Vec3 center, const osg::Matrixd &rot, float lx, float ly, float lz, osg::Vec4 color) {
+    osg::ref_ptr<osg::MatrixTransform> mt = new osg::MatrixTransform();
+    osg::ref_ptr<osg::ShapeDrawable> box = new osg::ShapeDrawable(
+            new osg::Box(osg::Vec3(0., 0., 0.), lx, ly, lz), hints);
+    box->setColor(color);
+    osg::ref_ptr<osg::Geode> geo = new osg::Geode;
+    geo->addDrawable(box.get());
+    mt->setMatrix(rot * osg::Matrix::translate(center));
     mt->addChild(geo.get());
     return mt.get();
 }
